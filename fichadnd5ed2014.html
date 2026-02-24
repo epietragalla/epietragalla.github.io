@@ -54,7 +54,8 @@
       }
 
       .header-row.l3 {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 130px; /* Define um espaço fixo para o botão no final */
+        align-items: end;
       }
 
       /* Container para alinhar Input e Botão de Dados */
@@ -390,7 +391,7 @@
 
       .guide-item span {
         display: block;
-        margin-bottom: 15px;
+        margin-bottom: 5px;
         text-align: left;
       }
 
@@ -415,28 +416,30 @@
         font-weight: bold;
       }
 
-      /* Estilo da tag para o nível nas habilidades */
+      
       .lvl-tag {
-        display: inline-block;
-        background: var(--dnd-red);
-        color: white;
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-weight: bold;
-        margin-right: 5px;
-        font-size: 10px;
-        vertical-align: middle;
-        box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
-      }
+        display: block;
+  width: 100%;   
+  box-sizing: border-box; 
+  background: var(--dnd-red);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  font-size: 11px;
+  text-transform: uppercase;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
 
       /* Estilo do botão de gerar nome */
       .btn-gerar-nome {
-        background: var(--dnd-red);
+        background: black;
         color: white;
         border: none;
         border-radius: 3px;
-        font-size: 9px;
-        padding: 3px 6px;
+        font-size: 12px;
+        padding: 6px 6px;
         cursor: pointer;
         margin-top: 4px;
         font-weight: bold;
@@ -446,6 +449,9 @@
 
   <body>
     <div class="btn-container">
+      <button type="button" class="btn-save" onclick="limparFicha()">
+        🧹 Limpar Ficha
+      </button>
       <button type="button" class="btn-save" onclick="baixarFicha()">
         💾 Salvar HTML
       </button>
@@ -466,7 +472,7 @@
                 class="btn-gerar-nome"
                 onclick="gerarNomeAleatorio()"
               >
-                🎲 Gerador de Nome
+                🎲 Gerar Nome
               </button>
             </div>
           </div>
@@ -604,7 +610,17 @@
 
         <div class="header-row l3">
           <div>
-            <label>Nome do jogador</label><input type="text" id="player_name" />
+            <label>Nome do jogador</label>
+            <input type="text" id="player_name" />
+          </div>
+          <div style="display: flex; justify-content: flex-end">
+            <button
+              type="button"
+              class="btn-gerar-nome"
+              onclick="descansoLongo()"
+            >
+              ⛺ Descanso Longo
+            </button>
           </div>
         </div>
       </div>
@@ -1049,6 +1065,16 @@
             </div>
           </div>
 
+          <div
+            id="spell-slots-tracker"
+            style="
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+              gap: 8px;
+              margin-bottom: 15px;
+            "
+          ></div>
+
           <div class="box-list">
             <label
               style="
@@ -1094,48 +1120,7 @@
               id="t1"
               onchange="mostrarTextoCompleto(this, 't1_display', 't1_custom')"
               style="font-size: 11px; margin-bottom: 5px"
-            >
-              <option value="">Selecione um traço</option>
-              <option
-                value="Eu idolatro um herói particular da minha fé, e constantemente me refiro a seus feitos e exemplos."
-              >
-                Eu idolatro um herói...
-              </option>
-              <option
-                value="Eu consigo encontrar semelhanças mesmo entre os inimigos mais violentos, com empatia e sempre trabalhando pela paz."
-              >
-                Eu consigo encontrar...
-              </option>
-              <option
-                value="Eu vejo presságios em cada evento e ação. Os deuses estão falando conosco, nós apenas temos de ouvi-los."
-              >
-                Eu vejo presságios...
-              </option>
-              <option value="Nada pode abalar minha atitude otimista.">
-                Nada pode abalar...
-              </option>
-              <option
-                value="Eu cito (corretamente ou não) textos sagrados e provérbios em quase qualquer situação"
-              >
-                Eu cito textos...
-              </option>
-              <option
-                value="Eu sou tolerante (ou intolerante) a qualquer outra fé, e respeito (ou condeno) a adoração a outros deuses."
-              >
-                Eu sou tolerante...
-              </option>
-              <option
-                value="Eu aprecio comida requintada, bebidas e a elite entre o alto escalão de meu templo. Uma vida dura me irrita."
-              >
-                Eu aprecio comida...
-              </option>
-              <option
-                value="Eu passei tanto tempo no templo que possuo pouca prática em lidar com as pessoas mundo a fora."
-              >
-                Eu passei tanto...
-              </option>
-              <option value="custom">Escreva seu próprio traço</option>
-            </select>
+            ></select>
 
             <div
               id="t1_display"
@@ -1169,40 +1154,7 @@
               id="t2"
               onchange="mostrarTextoCompleto(this, 't2_display', 't2_custom')"
               style="font-size: 11px; margin-bottom: 5px"
-            >
-              <option value="">Selecione um ideal</option>
-              <option
-                value="Tradição. As tradições ancestrais de adoração e sacrifício devem ser preservadas e perpetradas. (Leal)"
-              >
-                Tradição (Leal)
-              </option>
-              <option
-                value="Caridade. Eu sempre tento ajudar aqueles em necessidade, não importando o custo pessoal. (Bom)"
-              >
-                Caridade (Bom)
-              </option>
-              <option
-                value="Mudança. Nós devemos ajudar a conduzir as mudanças que os deuses estão constantemente trabalhando para o mundo. (Caótico)"
-              >
-                Mudança (Caótico)
-              </option>
-              <option
-                value="Poder. Eu espero que um dia eu consiga chegar ao topo na hierarquia da minha religião. (Leal)"
-              >
-                Poder (Leal)
-              </option>
-              <option
-                value="Fé. Eu acredito que minha divindade guia minhas ações. Eu tenho fé que, se eu trabalhar duro, coisas boas acontecerão. (Leal)"
-              >
-                Fé (Leal)
-              </option>
-              <option
-                value="Aspiração. Eu busco ser digno da graça do meu deus ao corresponder minhas ações aos seus ensinamentos. (Qualquer)"
-              >
-                Aspiração (Qualquer)
-              </option>
-              <option value="custom">Escreva seu prórpio ideal</option>
-            </select>
+            ></select>
 
             <div
               id="t2_display"
@@ -1237,38 +1189,7 @@
               id="t3"
               onchange="mostrarTextoCompleto(this, 't3_display', 't3_custom')"
               style="font-size: 11px; margin-bottom: 5px"
-            >
-              <option value="">Selecione um vínculo</option>
-              <option
-                value="Eu morreria para recuperar uma relíquia ancestral de minha fé, perdida há muito tempo."
-              >
-                Morrer para recuperar...
-              </option>
-              <option
-                value="Eu ainda terei minha vingança contra o templo corrupto que me acusou de heresia."
-              >
-                Vingança contra o...
-              </option>
-              <option
-                value="Eu devo minha vida ao sacerdote que me acolheu quando meus pais morreram."
-              >
-                Devo minha vida ao...
-              </option>
-              <option value="Tudo o que faço, faço pelo povo.">
-                Tudo o que faço, faço pelo povo.
-              </option>
-              <option
-                value="Eu farei qualquer coisa para proteger o templo que sirvo."
-              >
-                Farei qualquer coisa...
-              </option>
-              <option
-                value="Eu busco guardar um texto sagrado que meus inimigos dizem ser herético e tentam destruí-lo."
-              >
-                Guardar um texto...
-              </option>
-              <option value="custom">Escreva seu próprio vínculo</option>
-            </select>
+            ></select>
 
             <div
               id="t3_display"
@@ -1302,38 +1223,7 @@
               id="t4"
               onchange="mostrarTextoCompleto(this, 't4_display', 't4_custom')"
               style="font-size: 11px; margin-bottom: 5px"
-            >
-              <option value="">Selecione um defeito</option>
-              <option
-                value="Eu julgo os outros severamente, e a mim mesmo mais ainda."
-              >
-                Julgo os outros severamente...
-              </option>
-              <option
-                value="Eu deposito muita confiança naqueles que detêm o poder na hierarquia de meu templo."
-              >
-                Confiança excessiva...
-              </option>
-              <option
-                value="Minha devoção muitas vezes me cega perante aqueles que professam a fé do meu deus."
-              >
-                Devoção me cega...
-              </option>
-              <option value="Meu pensamento é inflexível.">
-                Meu pensamento é...
-              </option>
-              <option
-                value="Eu suspeito de estranhos e sempre espero o pior deles."
-              >
-                Suspeito de estranhos...
-              </option>
-              <option
-                value="Depois de escolher um objetivo, eu fico obcecado em cumpri-lo, até mesmo em detrimento de qualquer outra coisa em minha vida."
-              >
-                Obcecado em cumprir...
-              </option>
-              <option value="custom">Escreva seu próprio defeito</option>
-            </select>
+            ></select>
 
             <div
               id="t4_display"
@@ -1446,6 +1336,153 @@
     </div>
 
     <script>
+      const slotsDB = {
+        // Progressão padrão: Mago, Clérigo, Bardo, Druida, Feiticeiro
+        full: [
+          [2, 0, 0, 0, 0, 0, 0, 0, 0],
+          [3, 0, 0, 0, 0, 0, 0, 0, 0],
+          [4, 2, 0, 0, 0, 0, 0, 0, 0],
+          [4, 3, 0, 0, 0, 0, 0, 0, 0],
+          [4, 3, 2, 0, 0, 0, 0, 0, 0],
+          [4, 3, 3, 0, 0, 0, 0, 0, 0],
+          [4, 3, 3, 1, 0, 0, 0, 0, 0],
+          [4, 3, 3, 2, 0, 0, 0, 0, 0],
+          [4, 3, 3, 3, 1, 0, 0, 0, 0],
+          [4, 3, 3, 3, 2, 0, 0, 0, 0],
+          [4, 3, 3, 3, 2, 1, 0, 0, 0],
+          [4, 3, 3, 3, 2, 1, 0, 0, 0],
+          [4, 3, 3, 3, 2, 1, 1, 0, 0],
+          [4, 3, 3, 3, 2, 1, 1, 0, 0],
+          [4, 3, 3, 3, 2, 1, 1, 1, 0],
+          [4, 3, 3, 3, 2, 1, 1, 1, 0],
+          [4, 3, 3, 3, 2, 1, 1, 1, 1],
+          [4, 3, 3, 3, 3, 1, 1, 1, 1],
+          [4, 3, 3, 3, 3, 2, 1, 1, 1],
+          [4, 3, 3, 3, 3, 2, 2, 1, 1],
+        ],
+        // Paladino e Patrulheiro
+        half: [
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [2, 0, 0, 0, 0, 0, 0, 0, 0],
+          [3, 0, 0, 0, 0, 0, 0, 0, 0],
+          [3, 0, 0, 0, 0, 0, 0, 0, 0],
+          [4, 2, 0, 0, 0, 0, 0, 0, 0],
+          [4, 2, 0, 0, 0, 0, 0, 0, 0],
+          [4, 3, 0, 0, 0, 0, 0, 0, 0],
+          [4, 3, 0, 0, 0, 0, 0, 0, 0],
+          [4, 3, 2, 0, 0, 0, 0, 0, 0],
+          [4, 3, 2, 0, 0, 0, 0, 0, 0],
+          [4, 3, 3, 0, 0, 0, 0, 0, 0],
+          [4, 3, 3, 0, 0, 0, 0, 0, 0],
+          [4, 3, 3, 1, 0, 0, 0, 0, 0],
+          [4, 3, 3, 1, 0, 0, 0, 0, 0],
+          [4, 3, 3, 2, 0, 0, 0, 0, 0],
+          [4, 3, 3, 2, 0, 0, 0, 0, 0],
+          [4, 3, 3, 3, 1, 0, 0, 0, 0],
+          [4, 3, 3, 3, 1, 0, 0, 0, 0],
+          [4, 3, 3, 3, 2, 0, 0, 0, 0],
+          [4, 3, 3, 3, 2, 0, 0, 0, 0],
+        ],
+        // Trapaceiro Arcano e Cavaleiro Arcano
+        third: [
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [2, 0, 0, 0, 0, 0, 0, 0, 0],
+          [3, 0, 0, 0, 0, 0, 0, 0, 0],
+          [3, 0, 0, 0, 0, 0, 0, 0, 0],
+          [3, 0, 0, 0, 0, 0, 0, 0, 0],
+          [4, 2, 0, 0, 0, 0, 0, 0, 0],
+          [4, 2, 0, 0, 0, 0, 0, 0, 0],
+          [4, 2, 0, 0, 0, 0, 0, 0, 0],
+          [4, 3, 0, 0, 0, 0, 0, 0, 0],
+          [4, 3, 0, 0, 0, 0, 0, 0, 0],
+          [4, 3, 0, 0, 0, 0, 0, 0, 0],
+          [4, 3, 2, 0, 0, 0, 0, 0, 0],
+          [4, 3, 2, 0, 0, 0, 0, 0, 0],
+          [4, 3, 2, 0, 0, 0, 0, 0, 0],
+          [4, 3, 3, 0, 0, 0, 0, 0, 0],
+          [4, 3, 3, 0, 0, 0, 0, 0, 0],
+          [4, 3, 3, 0, 0, 0, 0, 0, 0],
+          [4, 3, 3, 1, 0, 0, 0, 0, 0],
+          [4, 3, 3, 1, 0, 0, 0, 0, 0],
+        ],
+        // Bruxo (Pacto de Magia - Slots sempre no mesmo nível)
+        warlock: [
+          [1, 1],
+          [2, 1],
+          [2, 2],
+          [2, 2],
+          [2, 3],
+          [2, 3],
+          [2, 4],
+          [2, 4],
+          [2, 5],
+          [2, 5],
+          [3, 5],
+          [3, 5],
+          [3, 5],
+          [3, 5],
+          [3, 5],
+          [3, 5],
+          [4, 5],
+          [4, 5],
+          [4, 5],
+          [4, 5],
+        ],
+      };
+
+      function atualizarSlotsMagia() {
+        const c = document.getElementById("class_name").value;
+        const sc = document.getElementById("subclass_name").value;
+        const lvl = parseInt(document.getElementById("level_val").value) || 1;
+        const container = document.getElementById("spell-slots-tracker");
+
+        if (!container) return;
+        container.innerHTML = "";
+
+        let slotsDisponiveis = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+        let isWarlock = c === "Bruxo";
+
+        // Lógica de definição de slots baseada no PHB
+        if (["Mago", "Clérigo", "Bardo", "Druida", "Feiticeiro"].includes(c)) {
+          slotsDisponiveis = slotsDB.full[lvl - 1];
+        } else if (["Paladino", "Patrulheiro"].includes(c)) {
+          slotsDisponiveis = slotsDB.half[lvl - 1];
+        } else if (sc === "Trapaceiro Arcano" || sc === "Cavaleiro Arcano") {
+          slotsDisponiveis = slotsDB.third[lvl - 1];
+        } else if (isWarlock) {
+          const wData = slotsDB.warlock[lvl - 1];
+          // Warlock usa um sistema diferente: [quantidade, nível]
+          slotsDisponiveis[wData[1] - 1] = wData[0];
+        }
+
+        // Renderização visual
+        slotsDisponiveis.forEach((qtd, index) => {
+          if (qtd > 0) {
+            let slotBox = document.createElement("div");
+            slotBox.className = "box-list";
+            slotBox.style.cssText =
+              "padding: 5px; text-align: center; margin-bottom: 0; background: #fff; border: 1px solid #ddd;";
+
+            let label = isWarlock
+              ? `Pacto (Nível ${index + 1})`
+              : `${index + 1}º Nível`;
+            slotBox.innerHTML = `<label style="font-size: 7px; margin-bottom: 3px;">${label}</label>`;
+
+            let circlesWrap = document.createElement("div");
+            circlesWrap.className = "circles";
+            circlesWrap.style.justifyContent = "center";
+
+            for (let j = 0; j < qtd; j++) {
+              circlesWrap.innerHTML += `<input type="checkbox" id="slot_${index}_${j}" style="width:12px; height:12px;">`;
+            }
+
+            slotBox.appendChild(circlesWrap);
+            container.appendChild(slotBox);
+          }
+        });
+      }
+
       function mostrarTextoCompleto(selectEl, displayId, customId) {
         const displayDiv = document.getElementById(displayId);
         const customArea = document.getElementById(customId);
@@ -5975,9 +6012,10 @@
       // 3. Função ÚNICA e corrigida para o Guia de Referência Rápida
       function atualizarGuia() {
         const c = document.getElementById("class_name").value;
+        const sc = document.getElementById("subclass_name").value;
         const lvl = parseInt(document.getElementById("level_val").value) || 1;
 
-        // Atualiza cabeçalhos (Raça, Classe, etc.)
+        // 1. Atualiza cabeçalhos (Raça, Classe, etc.)
         const fields = {
           race: "race_name",
           subrace: "subrace_name",
@@ -5994,7 +6032,6 @@
 
           if (titleEl) {
             let label = titleEl.innerText.split(":")[0];
-            // Altera o rótulo dinamicamente para Ladino
             if (id === "subclass")
               label = c === "Ladino" ? "Arquétipo" : "Subclasse";
             titleEl.innerText = label + ": " + (val || "---");
@@ -6006,61 +6043,90 @@
               text =
                 c && dataPHB.subclasses[c] ? dataPHB.subclasses[c][val] : "---";
             else if (id === "race") text = dataPHB.races[val];
-            // Adicionada a busca pelo texto da sub-raça abaixo
             else if (id === "subrace") text = dataPHB.subraces[val];
             else if (id === "class") text = dataPHB.classes[val];
             else if (id === "bg") text = dataPHB.backgrounds[val];
             else if (id === "align") text = dataPHB.alignments[val];
-
             descEl.innerText = limparTexto(text || "---");
           }
         }
 
-        // Progressão de Classe e Subclasse
+        // 2. LÓGICA DE PROGRESSÃO DE NÍVEL (COM DESTAQUE PARA SUBCLASSE)
         let progressoHTML = "";
-        const sc = document.getElementById("subclass_name").value;
-
         if (c && progressoClasses[c]) {
-          // Define a etiqueta: "Arquétipo" para Ladino, "Subclasse" para os demais
-          let etiquetaSub = c === "Ladino" ? "Arquétipo" : "Subclasse"; //
+          // Define se exibe "Arquétipo" (Ladino) ou "Subclasse" (Demais)
+          let etiquetaNome = c === "Ladino" ? "Arquétipo" : "Subclasse";
 
           for (let i = 1; i <= lvl; i++) {
-            if (progressoClasses[c][i]) {
-              progressoHTML += `<div style="margin-bottom: 10px;"><span class="lvl-tag">Nível ${i}</span> ${progressoClasses[c][i]}</div>`;
-            }
-
+            let hBase = progressoClasses[c][i];
             let subKey = c + "_" + sc;
-            if (sc && progressoClasses[subKey] && progressoClasses[subKey][i]) {
-              progressoHTML += `<div style="margin-bottom: 10px; border-left: 2px solid var(--dnd-red); padding-left: 10px;">
-                <span class="lvl-tag" style="background:#444;">${etiquetaSub}</span> ${progressoClasses[subKey][i]}
-            </div>`;
+            let hSub =
+              sc && progressoClasses[subKey]
+                ? progressoClasses[subKey][i]
+                : null;
+
+            if (hBase || hSub) {
+              progressoHTML += `<div style="margin-bottom: 20px;">`;
+
+              // Etiqueta de Nível (Vermelha Padrão)
+              progressoHTML += `<span class="lvl-tag">Nível ${i}</span>`;
+
+              // Box de fundo cinza claro para o conteúdo
+              progressoHTML += `<div style="background: #f4f4f4; padding: 12px; border-radius: 4px; border: 1px solid #e0e0e0; font-size: 13px; line-height: 1.5; color: #333;">`;
+
+              if (hBase) {
+                progressoHTML += `<div>${hBase}</div>`;
+              }
+
+              if (hSub) {
+                // Divisor caso existam as duas habilidades no mesmo nível
+                if (hBase) {
+                  progressoHTML += `<hr style="border: 0; border-top: 1px solid #ccc; margin: 10px 0;">`;
+                }
+                // Etiqueta da Subclasse (Cinza Chumbo, fonte menor)
+                progressoHTML += `<div>
+                  <span class="lvl-tag" style="background: #333; font-size: 10px; padding: 3px 5px; margin-bottom: 5px; box-shadow: none;">${etiquetaNome}</span> 
+                  <div style="margin-top: 3px;">${hSub}</div>
+                </div>`;
+              }
+
+              progressoHTML += `</div></div>`;
             }
           }
         }
 
+        // 3. Processamento de Talentos e Idiomas (Mantendo sua lógica de colunas)
         let talentosHTML = "";
-        const seletoresTalentos = document.querySelectorAll(".talento-select");
-
-        seletoresTalentos.forEach((sel) => {
-          const talentoNome = sel.value;
-          if (talentoNome && talentosPHB[talentoNome]) {
-            talentosHTML += `
-            <div style="border-bottom: 1px solid #ddd; padding: 4px 0; margin-bottom: 4px; text-align: justify; line-height: 1.4;">
-                <strong style="color: #333;">${talentoNome}</strong>: ${limparTexto(talentosPHB[talentoNome])}
+        document.querySelectorAll(".talento-select").forEach((sel) => {
+          const tNome = sel.value;
+          if (tNome && talentosPHB[tNome]) {
+            talentosHTML += `<div style="border-bottom: 1px solid #ddd; padding: 4px 0; margin-bottom: 4px; text-align: justify; line-height: 1.4;">
+                <strong style="color: #333;">${tNome}</strong>: ${limparTexto(talentosPHB[tNome])}
             </div>`;
           }
         });
-
-        const descTalentosGuia = document.getElementById("desc-talentos-guia");
-        if (descTalentosGuia) {
-          descTalentosGuia.innerHTML =
-            talentosHTML || "Nenhum talento selecionado.";
+        if (document.getElementById("desc-talentos-guia")) {
+          document.getElementById("desc-talentos-guia").innerHTML =
+            talentosHTML || "---";
         }
 
-        // 3. SEÇÃO DO GRIMÓRIO (Estrutura com descrição no topo e componentes simples)
+        let idiomasHTML = "";
+        document.querySelectorAll(".idioma-select").forEach((sel) => {
+          const idm = sel.value;
+          if (idm && dataPHB.languages[idm]) {
+            idiomasHTML += `<div style="border-bottom: 1px solid #ddd; padding: 4px 0; margin-bottom: 4px; text-align: justify; line-height: 1.4;">
+                <strong style="color: #333;">${idm}</strong>: ${dataPHB.languages[idm]}
+            </div>`;
+          }
+        });
+        if (document.getElementById("desc-languages")) {
+          document.getElementById("desc-languages").innerHTML =
+            idiomasHTML || "---";
+        }
+
+        // 4. Grimório Detalhado (Mantendo sua formatação original)
         let magiasTextoHTML = "";
-        const seletores = document.querySelectorAll(".magia-select");
-        seletores.forEach((sel) => {
+        document.querySelectorAll(".magia-select").forEach((sel) => {
           const mNome = sel.value;
           if (mNome) {
             let mData = null;
@@ -6070,22 +6136,19 @@
                 break;
               }
             }
-
             if (mData) {
               magiasTextoHTML += `
-                    <div class="spell-detail-box" style="margin-bottom: 25px; padding: 15px; border-left: 0px solid var(--dnd-red); background: #fdfaf3; border-radius: 4px;">
-                        <b style="color: var(--dnd-red); font-size: 15px; text-transform: uppercase;">${mNome} (${mData.en}) </b> 
-                        
-                        <div style="color: #555;"> ${mData.level_school} / Fonte: ${mData.source} </div>
-                        <p style="margin: 12px 0; font-size: 13px; line-height: 1.5; text-align: justify; color: #111; font-weight: 500;">${limparTexto(mData.desc)}</p> 
-                        <div style="display: flex; gap: 15px; font-size: 11px; padding-top: 5px; border-top: 0px solid #ddd; color: #666;">                  
-                            <div style="min-width: 140px;"><b>Tempo Conjuração:</b>${mData.time}</div>
-                            <div style="min-width: 140px;"><b>Alcance:</b>${mData.range}</div>
-                            <div style="min-width: 140px;"><b>Duração:</b>${mData.dur}</div>
-                             <div style="min-width:140px;"><b>Conjuradores:</b>${mData.casters}</div>
-                            <div style="min-width: 140px;"><b>Componentes:</b>${mData.comp}</div>
-                        </div>
-                    </div>`;
+                <div class="spell-detail-box" style="margin-bottom: 25px; padding: 15px; background: #fdfaf3; border-radius: 4px;">
+                    <b style="color: var(--dnd-red); font-size: 15px; text-transform: uppercase;">${mNome} (${mData.en}) </b>  
+                    <div style="color: #555;"> ${mData.level_school} / Fonte: ${mData.source} </div>
+                    <p style="margin: 12px 0; font-size: 13px; line-height: 1.5; text-align: justify; color: #111; font-weight: 500;">${limparTexto(mData.desc)}</p> 
+                    <div style="display: flex; gap: 15px; font-size: 11px; color: #666; flex-wrap: wrap;">                  
+                        <div style="min-width: 140px;"><b>Tempo:</b> ${mData.time}</div>
+                        <div style="min-width: 140px;"><b>Alcance:</b> ${mData.range}</div>
+                        <div style="min-width: 140px;"><b>Duração:</b> ${mData.dur}</div>
+                        <div style="min-width: 140px;"><b>Comp:</b> ${mData.comp}</div>
+                    </div>
+                </div>`;
             }
           }
         });
@@ -6093,66 +6156,14 @@
         const progressionContainer =
           document.getElementById("desc-progression");
         if (progressionContainer) {
-          // Injeta o HTML puro para que negritos e quebras de linha funcionem
           progressionContainer.innerHTML =
-            progressoHTML ||
-            "Selecione uma classe e nível para ver as habilidades.";
-
+            progressoHTML || "Selecione uma classe e nível.";
           if (magiasTextoHTML) {
-            // LEGENDA DE COMPONENTES LADO A LADO
-            const legendaComponentes = `
-                <div style="margin-top: 30px; padding: 15px; border: 1px solid #ccc; background: #fff; font-size: 10px; color: #555; border-radius: 4px;">
-                    <b style="color: var(--dnd-red); text-transform: uppercase; display: block; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px;">Legenda de Componentes de Magia</b>
-                    <div style="display: flex; gap: 20px; justify-content: space-between; flex-wrap: wrap;">
-                        <div style="flex: 1; min-width: 250px;"><b>Verbal (V):</b> A maioria das magias exige a entoação de palavras místicas. A combinação particular de sons, com o específico timbre e entonação, põe o filamento da magia em ação.</div>
-                        <div style="flex: 1; min-width: 250px;"><b>Somático (S):</b> Gestos para conjurar magias podem incluir uma forte gesticulação ou um intricado conjunto de gestos. É necessário ter livre ao menos uma das mãos para executá-los.</div>
-                        <div style="flex: 1; min-width: 250px;"><b>Material (M):</b> Requer objetos particulares especificados. O conjurador precisa de uma mão livre para acessá-los, que pode ser a mesma mão usada para os gestos somáticos.</div>
-                    </div>
-                </div>`;
-
-            // LEGENDA DAS ESCOLAS DE MAGIA LADO A LADO
-            const legendaEscolas = `
-                <div style="margin-top: 15px; padding: 15px; border: 1px solid #ccc; background: #fff; font-size: 10px; color: #555; border-radius: 4px;">
-                    <b style="color: var(--dnd-red); text-transform: uppercase; display: block; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px;">Legenda das Escolas de Magia</b>
-                    <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: space-between;">
-                        <div style="flex: 1; min-width: 200px;"><b>Abjuração:</b> Magias protetoras que criam barreiras, negam efeitos nocivos ou banem criaturas.</div>
-                        <div style="flex: 1; min-width: 200px;"><b>Adivinhação:</b> Revelam informações, segredos esquecidos, vislumbres do futuro ou a verdade por trás de ilusões.</div>
-                        <div style="flex: 1; min-width: 200px;"><b>Conjuração:</b> Envolvem a transposição de objetos ou criaturas, invocações ou criação de efeitos a partir do nada.</div>
-                        <div style="flex: 1; min-width: 200px;"><b>Encantamento:</b> Afetam a mente de outros, influenciando ou controlando seu comportamento.</div>
-                        <div style="flex: 1; min-width: 200px;"><b>Evocação:</b> Manipulam energias mágicas para produzir efeitos como explosões de fogo ou curas.</div>
-                        <div style="flex: 1; min-width: 200px;"><b>Ilusão:</b> Enganam os sentidos ou a mente de outros através de sons ou imagens fantasmagóricas.</div>
-                        <div style="flex: 1; min-width: 200px;"><b>Necromancia:</b> Manipulam a energia da vida e da morte, podendo drenar vida ou criar mortos-vivos.</div>
-                        <div style="flex: 1; min-width: 200px;"><b>Transmutação:</b> Mudam as propriedades de uma criatura, objeto ou ambiente.</div>
-                    </div>
-                </div>`;
-
             progressionContainer.innerHTML += `
-                <hr style="border: 0; border-top: 3px (--dnd-red); margin: 20px 0;">
+                <hr style="border: 0; border-top: 3px solid var(--dnd-red); margin: 30px 0 20px 0;">
                 <h2 style="color: var(--dnd-red); text-transform: uppercase; margin-bottom: 20px; font-size: 18px; border-bottom: 1px solid var(--dnd-red);">Grimório Detalhado</h2>
-                ${magiasTextoHTML}
-                ${legendaComponentes}
-                ${legendaEscolas}`;
+                ${magiasTextoHTML}`;
           }
-        }
-
-        let idiomasHTML = "";
-        const seletoresIdiomas = document.querySelectorAll(".idioma-select");
-
-        seletoresIdiomas.forEach((sel) => {
-          const idm = sel.value;
-          if (idm && dataPHB.languages[idm]) {
-            // O segredo é não usar tags de parágrafo internas e definir o estilo na div contêiner
-            idiomasHTML += `
-            <div style="border-bottom: 1px solid #ddd; padding: 4px 0; margin-bottom: 4px; text-align: justify; line-height: 1.4;">
-                <strong style="color: #333;">${idm}</strong>: ${dataPHB.languages[idm]}
-            </div>`;
-          }
-        });
-
-        const descLanguagesEl = document.getElementById("desc-languages");
-        if (descLanguagesEl) {
-          descLanguagesEl.innerHTML =
-            idiomasHTML || "Nenhum idioma selecionado.";
         }
       }
 
@@ -8189,6 +8200,7 @@
           document.getElementById("spell_atk_mod").value =
             (atk >= 0 ? "+" : "") + atk;
         }
+        atualizarSlotsMagia();
       }
 
       function ajustarCampo(id, delta) {
@@ -8248,6 +8260,105 @@
         document.title = `${charName}_${charClass}`;
         window.print();
         document.title = originalTitle;
+      }
+      function limparFicha() {
+        if (
+          !confirm(
+            "Tem certeza que deseja limpar todos os dados da ficha? Esta ação não pode ser desfeita.",
+          )
+        ) {
+          return;
+        }
+
+        // 1. Limpa Inputs de texto, números e seletores principais
+        const idsParaResetar = [
+          "char_name",
+          "player_name",
+          "level_val",
+          "race_name",
+          "subrace_name",
+          "class_name",
+          "subclass_name",
+          "bg_name",
+          "align",
+          "hp_at",
+          "hp_max",
+          "insp_val",
+          "ca_val",
+          "speed_val",
+          "hit_dice",
+          "spell_save_dc",
+        ];
+
+        idsParaResetar.forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) {
+            if (id === "level_val") el.value = 1;
+            else if (id === "ca_val") el.value = 10;
+            else if (id === "spell_save_dc") el.value = 8;
+            else el.value = "";
+          }
+        });
+
+        // 2. Limpa todos os Textareas
+        document.querySelectorAll("textarea").forEach((t) => (t.value = ""));
+
+        // 3. Reseta todos os Checkboxes (Perícias e Salvaguardas)
+        document.querySelectorAll('input[type="checkbox"]').forEach((c) => {
+          c.checked = false;
+          c.dataset.auto = "false";
+        });
+
+        // 4. Remove linhas dinâmicas (Magias, Talentos, Idiomas)
+        document.getElementById("magias-container").innerHTML = "";
+        document.getElementById("talentos-container").innerHTML = "";
+        document.getElementById("idiomas-container").innerHTML = "";
+
+        // 5. Limpa os campos de bônus visuais (+0)
+        document
+          .querySelectorAll(".val-bonus")
+          .forEach((span) => (span.innerText = "+0"));
+        document
+          .querySelectorAll(".mod")
+          .forEach((div) => (div.innerText = "+0"));
+
+        // 6. Reinicia a estrutura básica e os cálculos
+        setup(); // Recria os atributos e perícias padrão
+
+        // 7. Limpa o Guia de Referência
+        atualizarGuia();
+
+        alert("Ficha reiniciada com sucesso!");
+      }
+
+      function descansoLongo() {
+        if (
+          !confirm(
+            "Deseja realizar um Descanso Longo? Isso restaurará a sua vida ao máximo e recuperará todos os espaços de magia.",
+          )
+        ) {
+          return;
+        }
+
+        // 1. Restaurar Pontos de Vida (HP)
+        const hpMax = document.getElementById("hp_max").value;
+        if (hpMax) {
+          document.getElementById("hp_at").value = hpMax;
+        }
+
+        // 2. Limpar Espaços de Magia (Slots)
+        // Procura por todos os inputs que começam com "slot_"
+        const slots = document.querySelectorAll('input[id^="slot_"]');
+        slots.forEach((s) => (s.checked = false));
+
+        // 3. Limpar Salvaguardas contra a Morte (Death Saves)
+        // Procura os checkboxes na secção de salvaguardas contra morte
+        const deathSaves = document.querySelectorAll(
+          '.circles input[type="checkbox"]',
+        );
+        deathSaves.forEach((ds) => (ds.checked = false));
+
+        alert("Descanso concluído! Vida e magias restauradas.");
       }
 
       window.onload = setup;
