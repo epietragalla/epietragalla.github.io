@@ -719,184 +719,66 @@
       text-transform: none;
       color: #666;
     }
-
-    #print-area {
-      display: none;
-    }
-
-    @media print {
-      @page {
-        size: A4;
-        margin: 1cm;
-      }
-
-      body {
-        background: white !important;
-        padding: 0;
+@media print {
+    /* 1. Remove margens da folha configuradas pelo navegador */
+    @page {
         margin: 0;
-      }
-
-      .btn-container,
-      .sheet,
-      .guide-section,
-      .insp-btn,
-      .btn-gerar-nome,
-      .btn-step {
-        display: none !important;
-      }
-
-      #print-area {
-        display: block !important;
-        width: 100%;
-        color: black;
-        font-family: "Segoe UI", sans-serif;
-      }
-
-      .p-header-container {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        margin-bottom: 15px;
-        padding-bottom: 10px;
-      }
-
-      .p-header-row {
-        display: grid;
-        gap: 10px;
-        align-items: end;
-      }
-
-      .p-l1 {
-        grid-template-columns: 1.5fr 1fr 2.3fr 0.2fr;
-      }
-
-      .p-l2 {
-        grid-template-columns: 0.7fr 1fr 1.3fr 1fr;
-      }
-
-      .p-l3 {
-        grid-template-columns: 1fr;
-      }
-
-      .p-field {
-        border-bottom: 1px solid #666;
-        padding: 2px 0;
-        min-height: 18px;
-        font-size: 10pt;
-      }
-
-      .p-label {
-        font-size: 7pt;
-        font-weight: bold;
-        text-transform: uppercase;
-        color: #555;
-      }
-
-      .p-main-grid {
-        display: grid;
-        grid-template-columns: 100px 220px 1fr;
-        gap: 15px;
-      }
-
-      .p-attr-box {
-        border: 1px solid black;
-        border-radius: 8px;
-        text-align: center;
-        padding: 5px 5px 20px 5px;
-        margin-bottom: 8px;
-      }
-
-      .p-attr-mod {
-        font-size: 18pt;
-        font-weight: bold;
-      }
-
-      .p-attr-score {
-        font-size: 9pt;
-        border: 1px solid black;
-        width: 22px;
-        margin: 0 auto;
-      }
-
-      .p-box {
-        border: 1px solid black;
-        padding: 6px;
-        margin-bottom: 10px;
-        border-radius: 4px;
-      }
-
-      .p-box-title {
-        font-weight: bold;
-        text-transform: uppercase;
-        font-size: 7pt;
-        border-bottom: 1px solid black;
-        margin-bottom: 5px;
-        background: #eee;
-        padding: 1px 4px;
-      }
-
-      .p-line {
-        display: flex;
-        align-items: center;
-        font-size: 8pt;
-        border-bottom: 1px solid #eee;
-        height: 14px;
-      }
-
-      .p-check {
-        width: 7px;
-        height: 7px;
-        border: 1px solid black;
-        margin-right: 5px;
-      }
-
-      .p-check.filled {
-        background: black;
-      }
-
-      .p-combat-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 5px;
-        margin-bottom: 8px;
-      }
-
-      .p-stat-card {
-        border: 1px solid black;
-        text-align: center;
-        padding: 4px;
-        border-radius: 4px;
-      }
-
-      .p-stat-card b {
-        font-size: 12pt;
-        display: block;
-      }
-
-      .p-spell-info {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 5px;
-        font-size: 8pt;
-        text-align: center;
-        margin-bottom: 5px;
-      }
-
-      .p-slots-grid {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 4px;
-        margin-top: 5px;
-      }
-
-      .p-slot-mini {
-        border: 1px solid #ccc;
-        padding: 2px;
-        font-size: 7pt;
-        min-width: 40px;
-        text-align: center;
-      }
     }
+
+    /* 2. Esconde botões e controles de interface */
+    .btn-container, 
+    .btn-save, 
+    .btn-gerar-nome, 
+    .btn-print-hide,
+    .insp-btn, 
+    .btn-step,
+    #import_file,
+    .attr-control button {
+        display: none !important;
+    }
+
+    /* 3. Reseta o body para ocupar 100% sem bordas ou espaços */
+    body {
+        background: white !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100%;
+    }
+
+    /* 4. Ajusta a ficha para expandir ao máximo */
+    .sheet {
+        width: 100% !important;
+        max-width: none !important;
+        border: none !important;      /* Remove a borda externa preta */
+        box-shadow: none !important;   /* Remove a sombra */
+        padding: 5mm !important;       /* Padding mínimo apenas para não colar no corte da impressora */
+        margin: 0 !important;
+        background: white !important;
+        filter: grayscale(100%);       /* Tudo em Preto e Branco */
+    }
+
+    /* 5. Mantém a fidelidade dos campos de texto */
+    input, select, textarea {
+        border-bottom: 1px solid #ccc !important;
+        background: transparent !important;
+        color: black !important;
+        appearance: none;
+        -webkit-appearance: none;
+    }
+
+    /* Força o navegador a imprimir cores de fundo e divisórias */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    /* 6. Guia de Referência: Quebra de página automática */
+    .guide-section {
+        page-break-before: auto; /* Deixa fluir, ou use 'always' se preferir em folha separada */
+        margin-top: 10px !important;
+        border: 1px solid #eee !important; /* Borda interna leve apenas para separar as seções */
+    }
+}
   </style>
 </head>
 
@@ -1546,110 +1428,7 @@
     </div>
     <div
       style="margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd; text-align: right; font-size: 10px; color: #888; font-style: italic; letter-spacing: 1px;">
-      Ficha Automatizada de D&D 5Ed 2014 -VERSÃO 3.2
-    </div>
-  </div>
-  <div id="print-area">
-    <div class="p-header-container">
-      <div class="p-header-row p-l1">
-        <div><label class="p-label">Nome do Personagem</label>
-          <div id="pr-name" class="p-field"></div>
-        </div>
-        <div><label class="p-label">Classe</label>
-          <div id="pr-class" class="p-field"></div>
-        </div>
-        <div><label class="p-label">Subclasse</label>
-          <div id="pr-subclass" class="p-field"></div>
-        </div>
-        <div><label class="p-label">Nível</label>
-          <div id="pr-lvl" class="p-field"></div>
-        </div>
-      </div>
-      <div class="p-header-row p-l2">
-        <div><label class="p-label">Raça</label>
-          <div id="pr-race" class="p-field"></div>
-        </div>
-        <div><label class="p-label">Sub-raça</label>
-          <div id="pr-subrace" class="p-field"></div>
-        </div>
-        <div><label class="p-label">Alinhamento</label>
-          <div id="pr-align" class="p-field"></div>
-        </div>
-        <div><label class="p-label">Antecedente</label>
-          <div id="pr-bg" class="p-field"></div>
-        </div>
-      </div>
-      <div class="p-header-row p-l3">
-        <div><label class="p-label">Nome do Jogador</label>
-          <div id="pr-player" class="p-field"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="p-main-grid">
-      <div id="pr-col1">
-      </div>
-
-      <div>
-        <div style="display:flex; gap:10px; margin-bottom:10px;">
-          <div class="p-box" style="flex:1; text-align:center;"><label class="p-label">Inspiração</label>
-            <div id="pr-insp" style="font-size:14pt; font-weight:bold;"></div>
-          </div>
-          <div class="p-box" style="flex:1; text-align:center;"><label class="p-label">Bônus Prof.</label>
-            <div id="pr-prof" style="font-size:14pt; font-weight:bold;"></div>
-          </div>
-        </div>
-        <div class="p-box">
-          <div class="p-box-title">Salvaguarda contra Morte</div>
-          <div style="font-size:8pt">Sucessos: <span id="pr-death-s"></span></div>
-          <div style="font-size:8pt">Falhas: &nbsp; <span id="pr-death-f"></span></div>
-        </div>
-        <div class="p-box">
-          <div class="p-box-title">Salvaguardas</div>
-          <div id="pr-saves"></div>
-        </div>
-        <div class="p-box">
-          <div class="p-box-title">Perícias</div>
-          <div id="pr-skills"></div>
-        </div>
-      </div>
-
-      <div>
-        <div class="p-combat-row">
-          <div class="p-stat-card"><label class="p-label">CA</label><b id="pr-ca"></b></div>
-          <div class="p-stat-card"><label class="p-label">Iniciativa</label><b id="pr-inic"></b></div>
-          <div class="p-stat-card"><label class="p-label">Deslocamento<label><b id="pr-speed"></b></div>
-        </div>
-        <div class="p-box" style="text-align:center;">
-          <label class="p-label">Pontos de Vida</label><b style="font-size:14pt;" id="pr-hp"></b> |
-          <label class="p-label" style="display:inline">Dados de vida:</label> <span id="pr-hd"></span>
-        </div>
-
-        <div class="p-box">
-          <div class="p-box-title">Conjuração & Magia</div>
-          <div class="p-spell-info">
-            <div><label class="p-label">Atributo de Conjuração<label>
-                  <div id="pr-sp-attr"></div>
-            </div>
-            <div><label class="p-label">CD para evitar suas Magias</label>
-              <div id="pr-sp-dc"></div>
-            </div>
-            <div><label class="p-label">Modificador de Atauqe Mágico</label>
-              <div id="pr-sp-atk"></div>
-            </div>
-          </div>
-          <label class="p-label">Espaços de Magia (Slots):</label>
-          <div id="pr-sp-slots" class="p-slots-grid"></div>
-        </div>
-
-        <div class="p-box">
-          <div class="p-box-title">Personalidade</div>
-          <div style="font-size:8.5pt; margin-bottom:5px;"><b>Traços:</b> <span id="pr-t1"></span></div>
-          <div style="font-size:8.5pt; margin-bottom:5px;"><b>Ideais:</b> <span id="pr-t2"></span></div>
-          <div style="font-size:8.5pt; margin-bottom:5px;"><b>Vínculos:</b> <span id="pr-t3"></span></div>
-          <div style="font-size:8.5pt;"><b>Defeitos:</b> <span id="pr-t4"></span></div>
-        </div>
-      </div>
+      Ficha Automatizada de D&D 5Ed 2014 -VERSÃO 3.5
     </div>
   </div>
   <script>
@@ -8357,78 +8136,8 @@
       a.click();
     }
     function imprimirPDF() {
-      const setT = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val || "---"; };
-      const setH = (id, val) => { const el = document.getElementById(id); if (el) el.innerHTML = val || "---"; };
-      const getV = (id) => document.getElementById(id)?.value || "";
-      try {
-        setT("pr-name", getV("char_name"));
-        setT("pr-class", getV("class_name"));
-        const subC = getV("subclass_name");
-        setT("pr-subclass", (subC === "" || subC.includes("Selecione")) ? "NÃO POSSUI" : subC);
-        setT("pr-lvl", getV("level_val"));
-        setT("pr-race", getV("race_name"));
-        const subR = getV("subrace_name");
-        setT("pr-subrace", (subR === "" || subR.includes("Selecione")) ? "NÃO POSSUI" : subR);
-        setT("pr-align", getV("align"));
-        setT("pr-bg", getV("bg_name"));
-        setT("pr-player", getV("player_name"));
-        let attrHtml = "";
-        attrs.forEach(at => {
-          attrHtml += `<div class="p-attr-box"><b>${at.n}</b><div class="p-attr-mod">${document.getElementById(at.id + "_mod").innerText}</div><div class="p-attr-score">${getV(at.id + "_score")}</div></div>`;
-        });
-        setH("pr-col1", attrHtml);
-        setT("pr-insp", getV("insp_val"));
-        setT("pr-prof", document.getElementById("prof_bonus").value);
-        const dSaves = document.querySelectorAll('.death-row input[type="checkbox"]');
-        let dHtmlS = ""; let dHtmlF = "";
-        for (let i = 0; i < 3; i++) dHtmlS += dSaves[i]?.checked ? " ● " : " ○ ";
-        for (let i = 3; i < 6; i++) dHtmlF += dSaves[i]?.checked ? " ● " : " ○ ";
-        setT("pr-death-s", dHtmlS); setT("pr-death-f", dHtmlF);
-        let svHtml = "";
-        attrs.forEach(at => {
-          const isProf = document.querySelector(`.save-prof[data-attr="${at.id}"]`)?.checked;
-          const mod = document.getElementById("save_" + at.id).innerText;
-          svHtml += `<div class="p-line"><div class="p-check ${isProf ? 'filled' : ''}"></div><span style="width:20px; font-weight:bold">${mod}</span>${at.n}</div>`;
-        });
-        setH("pr-saves", svHtml);
-
-        let skHtml = "";
-        skills.forEach(sk => {
-          const safeId = sk.n.replace(/\s+/g, "");
-          const isProf = document.getElementById("check_" + safeId)?.checked;
-          const mod = document.getElementById("sk_" + safeId).innerText;
-          skHtml += `<div class="p-line"><div class="p-check ${isProf ? 'filled' : ''}"></div><span style="width:20px; font-weight:bold">${mod}</span>${sk.n}</div>`;
-        });
-        setH("pr-skills", skHtml);
-        setT("pr-ca", getV("ca_val"));
-        setT("pr-inic", getV("inic_val"));
-        setT("pr-speed", getV("speed_val"));
-        setT("pr-hp", getV("hp_at") + " / " + getV("hp_max"));
-        setT("pr-hd", getV("hit_dice"));
-        setT("pr-pass", getV("passive_perc"));
-        setT("pr-sp-attr", getV("spell_attr_val"));
-        setT("pr-sp-dc", getV("spell_save_dc"));
-        setT("pr-sp-atk", getV("spell_atk_mod"));
-        let slotsHtml = "";
-        const sourceSlots = document.querySelectorAll("#spell-slots-tracker .box-list");
-        sourceSlots.forEach(slotBox => {
-          const label = slotBox.querySelector('label').innerText;
-          const checks = slotBox.querySelectorAll('input[type="checkbox"]');
-          let bullets = "";
-          checks.forEach(c => bullets += c.checked ? "●" : "○");
-          slotsHtml += `<div class="p-slot-mini"><b>${label}</b><br>${bullets}</div>`;
-        });
-        setH("pr-sp-slots", slotsHtml || "Sem slots.");
-        setT("pr-t1", document.getElementById("t1_display").innerText);
-        setT("pr-t2", document.getElementById("t2_display").innerText);
-        setT("pr-t3", document.getElementById("t3_display").innerText);
-        setT("pr-t4", document.getElementById("t4_display").innerText);
-        window.print();
-      } catch (e) {
-        console.error("Erro PDF:", e);
-        alert("Erro ao popular PDF.");
-      }
-    }
+    window.print();
+}
     function safeGet(id) {
       const el = document.getElementById(id);
       return el ? el.innerText : "---";
@@ -8517,17 +8226,12 @@
         "[PHB] Machadinha": { preco: "5 po", dano: "1d6", tipo: "cortante", peso: "1 kg", prop: "Leve, arremesso (distância 6/18)" },
         "[PHB] Martelo Leve": { preco: "2 po", dano: "1d4", tipo: "concussão", peso: "1 kg", prop: "Leve, arremesso (distância 6/18)" },
         "[PHB] Porrete": { preco: "1 pp", dano: "1d4", tipo: "concussão", peso: "1 kg", prop: "Leve" },
-        "[CoS] Lança de Prata": { preco: "100 po", dano: "1d6", tipo: "perfurante", peso: "1,5 kg", prop: "Prateada, arremesso (6/18), versátil (1d8)" },
-        "[CoS] Lança de Sangue": { preco: "Raro", dano: "1d6", tipo: "perfurante", peso: "1,5 kg", prop: "Mágica (+2 Atk/Dano). Se matar inimigo, ganha 2d6 PV temporários. Versátil (1d8)" },
-        "[CoS] Fêmur de Sta. Markóvia": { preco: "Relíquia", dano: "1d6", tipo: "concussão", peso: "1 kg", prop: "Maça +2. +1d8 dano radiante vs mortos-vivos. Destrói esqueletos/zumbis se ND < 1/2" },
-        "[CoS] Cajado de Gulthias": { preco: "Raro", dano: "1d6", tipo: "concussão", peso: "2 kg", prop: "Versátil (1d8). Vantagem em interações com plantas malignas. Drena vida no acerto" }
       },
       "Armas Simples à Distância": {
         "[PHB] Arco Curto": { preco: "25 po", dano: "1d6", tipo: "perfurante", peso: "1 kg", prop: "Munição (distância 24/96), duas mãos" },
         "[PHB] Besta Leve": { preco: "25 po", dano: "1d8", tipo: "perfurante", peso: "2,5 kg", prop: "Munição (distância 24/96), recarga, duas mãos" },
         "[PHB] Dardo": { preco: "5 pc", dano: "1d4", tipo: "perfurante", peso: "0,1 kg", prop: "Acuidade, arremesso (distância 6/18)" },
         "[PHB] Funda": { preco: "1 pp", dano: "1d4", tipo: "concussão", peso: "-", prop: "Munição (distância 9/36)" },
-        "[CoS] Mosquete de Katsky": { preco: "Raro", dano: "1d12", tipo: "perfurante", peso: "5 kg", prop: "Arma de Fogo (Cripta 37). Munição (12/36), recarga, duas mãos" }
       },
       "Armas Marciais Corpo-a-Corpo": {
         "[PHB] Alabarda": { preco: "20 po", dano: "1d10", tipo: "cortante", peso: "3 kg", prop: "Pesada, alcance, duas mãos" },
@@ -8547,10 +8251,7 @@
         "[PHB] Martelo de Guerra": { preco: "15 po", dano: "1d8", tipo: "concussão", peso: "1 kg", prop: "Versátil (1d10)" },
         "[PHB] Picareta de Guerra": { preco: "5 po", dano: "1d8", tipo: "perfurante", peso: "1 kg", prop: "-" },
         "[PHB] Rapieira": { preco: "25 po", dano: "1d8", tipo: "perfurante", peso: "1 kg", prop: "Acuidade" },
-        "[PHB] Tridente": { preco: "5 po", dano: "1d6", tipo: "perfurante", peso: "2 kg", prop: "Arremesso (distância 6/18), versátil (1d8)" },
-        "[CoS] Espada Solar": { preco: "Artefato", dano: "1d8", tipo: "radiante", peso: "1,5 kg", prop: "Mágica (+2 Atk/Dano). Lâmina de luz solar. +1d8 vs mortos-vivos. Acuidade, versátil (1d10)" },
-        "[CoS] Maça de Terror": { preco: "Raro", dano: "1d6", tipo: "concussão", peso: "2 kg", prop: "Mágica. Possui 3 cargas para emanar aura de medo (SAB CD 15) em raio de 9m" },
-        "[CoS] Lâmina do Destino": { preco: "Raro", dano: "1d6", tipo: "perfurante", peso: "1 kg", prop: "Espada Curta +1 Senciente. Pode conjurar Manto do Cruzado (1x/dia)" }
+        "[PHB] Tridente": { preco: "5 po", dano: "1d6", tipo: "perfurante", peso: "2 kg", prop: "Arremesso (distância 6/18), versátil (1d8)" },      
       },
       "Armas Marciais à Distância": {
         "[PHB] Arco Longo": { preco: "50 po", dano: "1d8", tipo: "perfurante", peso: "1 kg", prop: "Munição (distância 45/180), pesada, duas mãos" },
@@ -8781,11 +8482,9 @@
         "[PHB] Cota de malha": { custo: "75 po", ca: 16, forca: "13", furtiv: "Desvantagem", peso: "27,5 kg" },
         "[PHB] Cota de talas": { custo: "200 po", ca: 17, forca: "15", furtiv: "Desvantagem", peso: "30 kg" },
         "[PHB] Placas": { custo: "1.500 po", ca: 18, forca: "15", furtiv: "Desvantagem", peso: "32,5 kg" },
-        "[CoS] Armadura de Sergei": { custo: "Raro", ca: 18, forca: "15", furtiv: "Desvantagem", peso: "32,5 kg", desc: "Armadura de placas +2 magicamente preservada." }
       },
       "Escudo": {
         "[PHB] Escudo": { custo: "10 po", ca: 2, dex: 0, forca: "-", furtiv: "-", peso: "3 kg" },
-        "[CoS] Escudo da Ordem": { custo: "Raro", ca: 2, dex: 0, forca: "-", furtiv: "-", peso: "3 kg", desc: "Escudo +2 com emblema do dragão. +2 na iniciativa." }
       }
     };
     function carregarSeletorArmaduras() {
@@ -8914,95 +8613,149 @@
       });
     }
     function exportarFichaJSON() {
-      const dados = {
-        char_name: document.getElementById("char_name").value,
-        player_name: document.getElementById("player_name").value,
-        class_name: document.getElementById("class_name").value,
-        subclass_name: document.getElementById("subclass_name").value,
-        level_val: document.getElementById("level_val").value,
-        race_name: document.getElementById("race_name").value,
-        subrace_name: document.getElementById("subrace_name").value,
-        align: document.getElementById("align").value,
-        bg_name: document.getElementById("bg_name").value,
-        atributos: attrs.reduce((acc, at) => { acc[at.id] = document.getElementById(at.id + "_score").value; return acc; }, {}),
-        hp_at: document.getElementById("hp_at").value,
-        hp_max: document.getElementById("hp_max").value,
-        insp_val: document.getElementById("insp_val").value,
-        ca_val: document.getElementById("ca_val").value,
-        speed_val: document.getElementById("speed_val").value,
-        hit_dice: document.getElementById("hit_dice").value,
-        death_saves: Array.from(document.querySelectorAll('.circles input[type="checkbox"]')).map(cb => cb.checked),
-        slots_gastos: Array.from(document.querySelectorAll("#spell-slots-tracker input[type='checkbox']")).map(cb => cb.checked),
-        saves_prof: Array.from(document.querySelectorAll(".save-prof")).map(cb => cb.checked),
-        skills_prof: Array.from(document.querySelectorAll(".skill-prof")).map(cb => cb.checked),
-        armas_cards: Array.from(document.querySelectorAll(".weapon-entry-guia")).map(el => el.dataset.weaponName),
-        armas_visual_cards: Array.from(document.querySelectorAll("#weapon-cards-container .weapon-card")).length, // apenas contagem se necessário
-        armaduras_cards: Array.from(document.querySelectorAll(".armor-entry-guia")).map(el => el.dataset.name),
-        itens_aventura: Array.from(document.querySelectorAll(".item-entry-guia strong")).map(el => el.innerText),
-        idiomas: Array.from(document.querySelectorAll(".idioma-select")).map(sel => sel.value),
-        talentos: Array.from(document.querySelectorAll(".talento-select")).map(sel => sel.value),
-        magias: Array.from(document.querySelectorAll(".magia-select")).map(sel => sel.value),
-        equip_area: document.getElementById("equip_area").value,
-        t1: document.getElementById("t1").value,
-        t2: document.getElementById("t2").value,
-        t3: document.getElementById("t3").value,
-        t4: document.getElementById("t4").value,
-        t5: document.getElementById("t5").value,
-        notes: document.getElementById("notes_full_page") ? document.getElementById("notes_full_page").value : ""
-      };
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dados, null, 2));
-      const a = document.createElement('a');
-      a.setAttribute("href", dataStr);
-      a.setAttribute("download", (dados.char_name || "Ficha") + ".json");
-      a.click();
+  const dados = {
+    char_name: document.getElementById("char_name").value,
+    player_name: document.getElementById("player_name").value,
+    class_name: document.getElementById("class_name").value,
+    subclass_name: document.getElementById("subclass_name").value,
+    level_val: document.getElementById("level_val").value,
+    race_name: document.getElementById("race_name").value,
+    subrace_name: document.getElementById("subrace_name").value,
+    align: document.getElementById("align").value,
+    bg_name: document.getElementById("bg_name").value,
+    atributos: attrs.reduce((acc, at) => { acc[at.id] = document.getElementById(at.id + "_score").value; return acc; }, {}),
+    hp_at: document.getElementById("hp_at").value,
+    hp_max: document.getElementById("hp_max").value,
+    insp_val: document.getElementById("insp_val").value,
+    ca_val: document.getElementById("ca_val").value,
+    speed_val: document.getElementById("speed_val").value,
+    hit_dice: document.getElementById("hit_dice").value,
+    death_saves: Array.from(document.querySelectorAll('.circles input[type="checkbox"]')).map(cb => cb.checked),
+    slots_gastos: Array.from(document.querySelectorAll("#spell-slots-tracker input[type='checkbox']")).map(cb => cb.checked),
+    saves_prof: Array.from(document.querySelectorAll(".save-prof")).map(cb => cb.checked),
+    skills_prof: Array.from(document.querySelectorAll(".skill-prof")).map(cb => cb.checked),
+    
+    // ARMAS: Pega o dataset limpo
+    armas_cards: Array.from(document.querySelectorAll(".weapon-entry-guia")).map(el => el.dataset.weaponName),
+    
+    // ARMADURAS: Pega o dataset limpo
+    armaduras_cards: Array.from(document.querySelectorAll(".armor-entry-guia")).map(el => el.dataset.name),
+    
+    // ITENS: AJUSTADO para pegar o dataset.name (evita erro do <strong>)
+    itens_aventura: Array.from(document.querySelectorAll(".item-entry-guia")).map(el => el.dataset.name),
+
+    idiomas: Array.from(document.querySelectorAll(".idioma-select")).map(sel => sel.value),
+    talentos: Array.from(document.querySelectorAll(".talento-select")).map(sel => sel.value),
+    magias: Array.from(document.querySelectorAll(".magia-select")).map(sel => sel.value),
+    equip_area: document.getElementById("equip_area").value,
+    
+    // PERSONALIDADE: Salva o valor do select e também o texto da área customizada
+    t1: document.getElementById("t1").value,
+    t1_c: document.getElementById("t1_custom").value,
+    t2: document.getElementById("t2").value,
+    t2_c: document.getElementById("t2_custom").value,
+    t3: document.getElementById("t3").value,
+    t3_c: document.getElementById("t3_custom").value,
+    t4: document.getElementById("t4").value,
+    t4_c: document.getElementById("t4_custom").value,
+    
+    t5: document.getElementById("t5").value,
+    notes: document.getElementById("notes_full_page") ? document.getElementById("notes_full_page").value : ""
+  };
+
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dados, null, 2));
+  const a = document.createElement('a');
+  a.setAttribute("href", dataStr);
+  a.setAttribute("download", (dados.char_name || "Ficha") + ".json");
+  a.click();
+}
+
+function importarFichaJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    const d = JSON.parse(e.target.result);
+    
+    // Limpar containers
+    document.getElementById("magias-container").innerHTML = "";
+    document.getElementById("talentos-container").innerHTML = "";
+    document.getElementById("idiomas-container").innerHTML = "";
+    document.getElementById("desc-weapons-guia").innerHTML = "---";
+    document.getElementById("desc-armors-guia").innerHTML = "---";
+    document.getElementById("desc-items-guia").innerHTML = "---";
+    document.getElementById("weapon-cards-container").innerHTML = "";
+    document.getElementById("armor-cards-container").innerHTML = "";
+    document.getElementById("item-cards-container").innerHTML = "";
+
+    // Preencher dados básicos
+    document.getElementById("char_name").value = d.char_name || "";
+    document.getElementById("player_name").value = d.player_name || "";
+    document.getElementById("class_name").value = d.class_name || "";
+    atualizarSubclasses();
+    document.getElementById("subclass_name").value = d.subclass_name || "";
+    document.getElementById("level_val").value = d.level_val || 1;
+    document.getElementById("race_name").value = d.race_name || "";
+    atualizarSubracas();
+    document.getElementById("subrace_name").value = d.subrace_name || "";
+    document.getElementById("bg_name").value = d.bg_name || "";
+    document.getElementById("align").value = d.align || "";
+    carregarCaracteristicasAntecedente();
+
+    // Atributos
+    for (let at in d.atributos) { 
+        if(document.getElementById(at + "_score")) document.getElementById(at + "_score").value = d.atributos[at]; 
     }
-    function importarFichaJSON(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        const d = JSON.parse(e.target.result);
-        document.getElementById("magias-container").innerHTML = "";
-        document.getElementById("talentos-container").innerHTML = "";
-        document.getElementById("idiomas-container").innerHTML = "";
-        document.getElementById("desc-weapons-guia").innerHTML = "---";
-        document.getElementById("desc-armors-guia").innerHTML = "---";
-        document.getElementById("desc-items-guia").innerHTML = "---";
-        document.getElementById("char_name").value = d.char_name;
-        document.getElementById("class_name").value = d.class_name;
-        atualizarSubclasses();
-        document.getElementById("subclass_name").value = d.subclass_name;
-        document.getElementById("level_val").value = d.level_val;
-        document.getElementById("race_name").value = d.race_name;
-        atualizarSubracas();
-        document.getElementById("subrace_name").value = d.subrace_name;
-        document.getElementById("bg_name").value = d.bg_name;
-        carregarCaracteristicasAntecedente();
-        for (let at in d.atributos) { document.getElementById(at + "_score").value = d.atributos[at]; }
-        document.getElementById("hp_at").value = d.hp_at;
-        document.getElementById("hp_max").value = d.hp_max;
-        document.getElementById("equip_area").value = d.equip_area || "";
-        document.getElementById("t5").value = d.t5 || "";
-        if (d.idiomas) d.idiomas.forEach(v => { adicionarIdioma(); document.querySelector(".idioma-row:last-child select").value = v; });
-        if (d.talentos) d.talentos.forEach(v => { adicionarTalento(); document.querySelector(".talento-row:last-child select").value = v; });
-        if (d.magias) d.magias.forEach(v => { adicionarMagia(); document.querySelector(".magia-row:last-child select").value = v; });
-        if (d.armas_cards) d.armas_cards.forEach(v => { document.getElementById("select_arma_phb").value = v; adicionarArmaCard(); });
-        if (d.armaduras_cards) d.armaduras_cards.forEach(v => { document.getElementById("select_armadura_phb").value = v; adicionarArmaduraCard(); });
-        if (d.itens_aventura) d.itens_aventura.forEach(v => { document.getElementById("select_item_phb").value = v; adicionarItemCard(); });
-        calcular(true);
-        const sCbs = document.querySelectorAll(".save-prof");
-        if (d.saves_prof) d.saves_prof.forEach((v, i) => { if (sCbs[i]) sCbs[i].checked = v; });
-        const skCbs = document.querySelectorAll(".skill-prof");
-        if (d.skills_prof) d.skills_prof.forEach((v, i) => { if (skCbs[i]) skCbs[i].checked = v; });
-        const deathCbs = document.querySelectorAll('.circles input[type="checkbox"]');
-        if (d.death_saves) d.death_saves.forEach((v, i) => { if (deathCbs[i]) deathCbs[i].checked = v; });
-        const slotCbs = document.querySelectorAll("#spell-slots-tracker input[type='checkbox']");
-        if (d.slots_gastos) d.slots_gastos.forEach((v, i) => { if (slotCbs[i]) slotCbs[i].checked = v; });
-        atualizarGuia();
-        alert("Ficha carregada!");
-      };
-      reader.readAsText(file);
-    }
+
+    // Listas dinâmicas
+    if (d.idiomas) d.idiomas.forEach(v => { adicionarIdioma(); document.querySelector(".idioma-row:last-child select").value = v; });
+    if (d.talentos) d.talentos.forEach(v => { adicionarTalento(); document.querySelector(".talento-row:last-child select").value = v; });
+    if (d.magias) d.magias.forEach(v => { adicionarMagia(); document.querySelector(".magia-row:last-child select").value = v; });
+    
+    // Equipamentos (Usa os seletores invisíveis para reconstruir os cards e o guia)
+    if (d.armas_cards) d.armas_cards.forEach(v => { document.getElementById("select_arma_phb").value = v; adicionarArmaCard(); });
+    if (d.armaduras_cards) d.armaduras_cards.forEach(v => { document.getElementById("select_armadura_phb").value = v; adicionarArmaduraCard(); });
+    if (d.itens_aventura) d.itens_aventura.forEach(v => { document.getElementById("select_item_phb").value = v; adicionarItemCard(); });
+
+    // Status de combate e textos
+    document.getElementById("hp_at").value = d.hp_at || "";
+    document.getElementById("hp_max").value = d.hp_max || "";
+    document.getElementById("equip_area").value = d.equip_area || "";
+    document.getElementById("t5").value = d.t5 || "";
+    
+    // Restaurar Personalidade Customizada
+    if(d.t1) document.getElementById("t1").value = d.t1;
+    if(d.t1_c) document.getElementById("t1_custom").value = d.t1_c;
+    if(d.t2) document.getElementById("t2").value = d.t2;
+    if(d.t2_c) document.getElementById("t2_custom").value = d.t2_c;
+    if(d.t3) document.getElementById("t3").value = d.t3;
+    if(d.t3_c) document.getElementById("t3_custom").value = d.t3_c;
+    if(d.t4) document.getElementById("t4").value = d.t4;
+    if(d.t4_c) document.getElementById("t4_custom").value = d.t4_c;
+
+    // Rodar cálculo para atualizar modificadores e slots
+    calcular(true);
+
+    // Restaurar Checkboxes
+    const sCbs = document.querySelectorAll(".save-prof");
+    if (d.saves_prof) d.saves_prof.forEach((v, i) => { if (sCbs[i]) sCbs[i].checked = v; });
+    const skCbs = document.querySelectorAll(".skill-prof");
+    if (d.skills_prof) d.skills_prof.forEach((v, i) => { if (skCbs[i]) skCbs[i].checked = v; });
+    const deathCbs = document.querySelectorAll('.circles input[type="checkbox"]');
+    if (d.death_saves) d.death_saves.forEach((v, i) => { if (deathCbs[i]) deathCbs[i].checked = v; });
+    const slotCbs = document.querySelectorAll("#spell-slots-tracker input[type='checkbox']");
+    if (d.slots_gastos) d.slots_gastos.forEach((v, i) => { if (slotCbs[i]) slotCbs[i].checked = v; });
+
+    // Sincronizar visual de textos de personalidade
+    ["t1","t2","t3","t4"].forEach(id => mostrarTextoCompleto(document.getElementById(id), id + "_display", id + "_custom"));
+    
+    if (d.notes && document.getElementById("notes_full_page")) document.getElementById("notes_full_page").value = d.notes;
+
+    atualizarGuia();
+    alert("Ficha carregada com sucesso!");
+  };
+  reader.readAsText(file);
+}
     window.onload = () => {
       setup();
       carregarSeletorArmas();
