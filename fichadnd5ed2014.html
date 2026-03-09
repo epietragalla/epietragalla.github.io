@@ -720,12 +720,9 @@
       color: #666;
     }
 @media print {
-    /* 1. Remove margens da folha configuradas pelo navegador */
     @page {
         margin: 0;
     }
-
-    /* 2. Esconde botões e controles de interface */
     .btn-container, 
     .btn-save, 
     .btn-gerar-nome, 
@@ -736,28 +733,22 @@
     .attr-control button {
         display: none !important;
     }
-
-    /* 3. Reseta o body para ocupar 100% sem bordas ou espaços */
     body {
         background: white !important;
         padding: 0 !important;
         margin: 0 !important;
         width: 100%;
     }
-
-    /* 4. Ajusta a ficha para expandir ao máximo */
     .sheet {
         width: 100% !important;
         max-width: none !important;
-        border: none !important;      /* Remove a borda externa preta */
-        box-shadow: none !important;   /* Remove a sombra */
-        padding: 5mm !important;       /* Padding mínimo apenas para não colar no corte da impressora */
+        border: none !important;      
+        box-shadow: none !important;   
+        padding: 5mm !important;      
         margin: 0 !important;
         background: white !important;
-        filter: grayscale(100%);       /* Tudo em Preto e Branco */
+        filter: grayscale(100%);       
     }
-
-    /* 5. Mantém a fidelidade dos campos de texto */
     input, select, textarea {
         border-bottom: 1px solid #ccc !important;
         background: transparent !important;
@@ -765,23 +756,18 @@
         appearance: none;
         -webkit-appearance: none;
     }
-
-    /* Força o navegador a imprimir cores de fundo e divisórias */
     * {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
     }
-
-    /* 6. Guia de Referência: Quebra de página automática */
     .guide-section {
-        page-break-before: auto; /* Deixa fluir, ou use 'always' se preferir em folha separada */
+        page-break-before: auto; 
         margin-top: 10px !important;
-        border: 1px solid #eee !important; /* Borda interna leve apenas para separar as seções */
+        border: 1px solid #eee !important; 
     }
 }
   </style>
 </head>
-
 <body>
   <div class="btn-container">
     <button type="button" class="btn-save" style="position: relative;">
@@ -8677,7 +8663,7 @@ function importarFichaJSON(event) {
   reader.onload = function (e) {
     const d = JSON.parse(e.target.result);
     
-    // Limpar containers
+    // 1. Limpar containers antes de reconstruir
     document.getElementById("magias-container").innerHTML = "";
     document.getElementById("talentos-container").innerHTML = "";
     document.getElementById("idiomas-container").innerHTML = "";
@@ -8688,7 +8674,7 @@ function importarFichaJSON(event) {
     document.getElementById("armor-cards-container").innerHTML = "";
     document.getElementById("item-cards-container").innerHTML = "";
 
-    // Preencher dados básicos
+    // 2. Preencher dados básicos
     document.getElementById("char_name").value = d.char_name || "";
     document.getElementById("player_name").value = d.player_name || "";
     document.getElementById("class_name").value = d.class_name || "";
@@ -8702,28 +8688,35 @@ function importarFichaJSON(event) {
     document.getElementById("align").value = d.align || "";
     carregarCaracteristicasAntecedente();
 
-    // Atributos
+    // 3. Atributos
     for (let at in d.atributos) { 
         if(document.getElementById(at + "_score")) document.getElementById(at + "_score").value = d.atributos[at]; 
     }
 
-    // Listas dinâmicas
+    // 4. Reconstruir Listas dinâmicas
     if (d.idiomas) d.idiomas.forEach(v => { adicionarIdioma(); document.querySelector(".idioma-row:last-child select").value = v; });
     if (d.talentos) d.talentos.forEach(v => { adicionarTalento(); document.querySelector(".talento-row:last-child select").value = v; });
     if (d.magias) d.magias.forEach(v => { adicionarMagia(); document.querySelector(".magia-row:last-child select").value = v; });
     
-    // Equipamentos (Usa os seletores invisíveis para reconstruir os cards e o guia)
+    // 5. Reconstruir Equipamentos (Cards e Guia)
     if (d.armas_cards) d.armas_cards.forEach(v => { document.getElementById("select_arma_phb").value = v; adicionarArmaCard(); });
     if (d.armaduras_cards) d.armaduras_cards.forEach(v => { document.getElementById("select_armadura_phb").value = v; adicionarArmaduraCard(); });
     if (d.itens_aventura) d.itens_aventura.forEach(v => { document.getElementById("select_item_phb").value = v; adicionarItemCard(); });
 
-    // Status de combate e textos
+    // 6. Rodar cálculo inicial (Atualiza modificadores e gera checkboxes de slots)
+    calcular(true);
+
+    // 7. Restaurar Status de combate e textos (Depois do calcular para garantir que nada seja sobrescrito)
     document.getElementById("hp_at").value = d.hp_at || "";
     document.getElementById("hp_max").value = d.hp_max || "";
+    document.getElementById("insp_val").value = d.insp_val || 0;     // ADICIONADO
+    document.getElementById("ca_val").value = d.ca_val || 10;       // ADICIONADO
+    document.getElementById("speed_val").value = d.speed_val || "";  // ADICIONADO
+    document.getElementById("hit_dice").value = d.hit_dice || "";    // ADICIONADO
     document.getElementById("equip_area").value = d.equip_area || "";
     document.getElementById("t5").value = d.t5 || "";
     
-    // Restaurar Personalidade Customizada
+    // 8. Restaurar Personalidade Customizada
     if(d.t1) document.getElementById("t1").value = d.t1;
     if(d.t1_c) document.getElementById("t1_custom").value = d.t1_c;
     if(d.t2) document.getElementById("t2").value = d.t2;
@@ -8733,10 +8726,7 @@ function importarFichaJSON(event) {
     if(d.t4) document.getElementById("t4").value = d.t4;
     if(d.t4_c) document.getElementById("t4_custom").value = d.t4_c;
 
-    // Rodar cálculo para atualizar modificadores e slots
-    calcular(true);
-
-    // Restaurar Checkboxes
+    // 9. Restaurar Checkboxes
     const sCbs = document.querySelectorAll(".save-prof");
     if (d.saves_prof) d.saves_prof.forEach((v, i) => { if (sCbs[i]) sCbs[i].checked = v; });
     const skCbs = document.querySelectorAll(".skill-prof");
@@ -8755,6 +8745,7 @@ function importarFichaJSON(event) {
     alert("Ficha carregada com sucesso!");
   };
   reader.readAsText(file);
+  event.target.value = ""; // Limpa o input para permitir carregar o mesmo arquivo em seguida
 }
     window.onload = () => {
       setup();
