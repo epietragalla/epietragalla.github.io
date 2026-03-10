@@ -1540,13 +1540,12 @@
         if (qtd > 0) {
           let slotBox = document.createElement("div");
           slotBox.className = "box-list";
-          // Ajuste responsivo: largura mínima para caber em colunas flexíveis
           slotBox.style.cssText = "padding: 5px; text-align: center; margin-bottom: 5px; background: #fff; border: 1px solid #ddd; min-width: 70px; flex: 1;";
           let label = isWarlock ? `Pacto (${index + 1}º)` : `${index + 1}º Nvl`;
           slotBox.innerHTML = `<label style="font-size: 8px; margin-bottom: 3px;">${label}</label>`;
           let circlesWrap = document.createElement("div");
           circlesWrap.className = "circles";
-          circlesWrap.style.cssText = "display: flex; gap: 4px; justify-content: center; flex-wrap: wrap;"; // Permite quebrar linha nos círculos se necessário
+          circlesWrap.style.cssText = "display: flex; gap: 4px; justify-content: center; flex-wrap: wrap;"; 
           for (let j = 0; j < qtd; j++) {
             circlesWrap.innerHTML += `<input type="checkbox" style="width:14px; height:14px; margin:0;">`;
           }
@@ -6305,26 +6304,30 @@
       },
       "Meio-Elfo (Half-Elf)": { nomes: [], sobrenomes: [] }
     };
-    function gerarNomeAleatorio() {
-      const raca = document.getElementById("race_name").value;
-      if (!raca || raca === "") return;
-      let nomes = [];
-      let sobrenomes = [];
-      if (raca === "Meio-Elfo (Half-Elf)") {
-        const fonte = Math.random() > 0.5 ? "Elfo (Elf)" : "Humano (Human)";
-        nomes = nomesDb[fonte].nomes;
-        sobrenomes = nomesDb[fonte].sobrenomes;
-      } else if (nomesDb[raca]) {
-        nomes = nomesDb[raca].nomes;
-        sobrenomes = nomesDb[raca].sobrenomes;
-      } else {
-        nomes = nomesDb["Humano (Human)"].nomes;
-        sobrenomes = nomesDb["Humano (Human)"].sobrenomes;
-      }
-      const nomeAleatorio = nomes[Math.floor(Math.random() * nomes.length)];
-      const sobrenomeAleatorio = sobrenomes[Math.floor(Math.random() * sobrenomes.length)];
-      document.getElementById("char_name").value = nomeAleatorio + " " + sobrenomeAleatorio;
-    }
+  function gerarNomeAleatorio() {
+  const raca = document.getElementById("race_name").value;
+
+  if (!raca || raca === "") {
+    alert("Ei, aventureiro! Você precisa escolher uma Raça primeiro para eu saber que tipo de nome gerar.");
+    return;
+  }
+  let nomes = [];
+  let sobrenomes = [];
+  if (raca === "Meio-Elfo (Half-Elf)") {
+    const fonte = Math.random() > 0.5 ? "Elfo (Elf)" : "Humano (Human)";
+    nomes = nomesDb[fonte].nomes;
+    sobrenomes = nomesDb[fonte].sobrenomes;
+  } else if (nomesDb[raca]) {
+    nomes = nomesDb[raca].nomes;
+    sobrenomes = nomesDb[raca].sobrenomes;
+  } else {
+    nomes = nomesDb["Humano (Human)"].nomes;
+    sobrenomes = nomesDb["Humano (Human)"].sobrenomes;
+  }
+  const nomeAleatorio = nomes[Math.floor(Math.random() * nomes.length)];
+  const sobrenomeAleatorio = sobrenomes[Math.floor(Math.random() * sobrenomes.length)];
+  document.getElementById("char_name").value = nomeAleatorio + " " + sobrenomeAleatorio;
+}
     const talentosPHB = {
       "Adepto Elemental (Elemental Adept)":
         "Pré-requisito: Capacidade de conjurar ao menos uma magia. Escolha um dos seguintes tipos de dano: ácido, frio, fogo, elétrico ou trovejante. Magias que você conjura ignoram resistência a dano do tipo escolhido. Além disso, quando você rola o dano para uma magia que conjurou que cause dano desse tipo, você pode tratar qualquer 1 no dado de dano como um 2. Você pode escolher este talento várias vezes. Cada vez que o fizer, você deve escolher um tipo de dano diferente.",
@@ -8142,7 +8145,7 @@
             <div style="${col1} " class="atk-val">--</div> 
             <div style="${col2} text-align: left;" class="dmg-val">--</div> 
             <div style="${col3} text-align: left;">${wData.preco}</div> 
-            <div style="${col4} padding-left: 5px; font-size: 10px; white-space: normal; word-break: break-word;">
+            <div style="${col4} padding-left: 5px; font-size: 12px; white-space: normal; word-break: break-word;">
                 ${wData.peso} (${wData.prop})
             </div>
         </div>
@@ -8221,43 +8224,43 @@
       i.value = Math.max(0, parseInt(i.value) + val);
     }
     function calcular(resetProficiencies = false) {
-      const lvl = parseInt(document.getElementById("level_val").value) || 1;
-      const prof = Math.floor((lvl - 1) / 4) + 2;
-      document.getElementById("prof_bonus").value = `+${prof}`;
-      const race = document.getElementById("race_name").value;
-      const subrace = document.getElementById("subrace_name").value;
-      const className = document.getElementById("class_name").value;
-      const subClassName = document.getElementById("subclass_name").value;
-      const background = document.getElementById("bg_name").value;
-      let bonusAtributos = { FOR: 0, DES: 0, CON: 0, INT: 0, SAB: 0, CAR: 0 };
-      let hpExtraPerLevel = 0;
-      if (resetProficiencies) {
+    const lvl = parseInt(document.getElementById("level_val").value) || 1;
+    const prof = Math.floor((lvl - 1) / 4) + 2;
+    document.getElementById("prof_bonus").value = `+${prof}`;
+    const race = document.getElementById("race_name").value;
+    const subrace = document.getElementById("subrace_name").value;
+    const className = document.getElementById("class_name").value;
+    const subClassName = document.getElementById("subclass_name").value;
+    const background = document.getElementById("bg_name").value;
+    let bonusAtributos = { FOR: 0, DES: 0, CON: 0, INT: 0, SAB: 0, CAR: 0 };
+    let hpExtraPerLevel = 0;
+    if (resetProficiencies) {
         document.querySelectorAll(".save-prof, .skill-prof").forEach((c) => {
-          if (c.dataset.auto === "true") {
-            c.checked = false;
-            c.dataset.auto = "false";
-          }
+            if (c.dataset.auto === "true") {
+                c.checked = false;
+                c.dataset.auto = "false";
+            }
         });
-      }
-      if (mecanicasPHB.races[race]) {
+    }
+    if (mecanicasPHB.races[race]) {
         const rData = mecanicasPHB.races[race];
         Object.keys(bonusAtributos).forEach(k => { if (rData[k]) bonusAtributos[k] += rData[k]; });
         if (rData.speed) document.getElementById("speed_val").value = rData.speed;
 
         if (resetProficiencies && rData.skills) {
-          rData.skills.forEach(s => {
-            let check = document.getElementById("check_" + s.replace(/\s+/g, ""));
-            if (check) { check.checked = true; check.dataset.auto = "true"; }
-          });
+            rData.skills.forEach(s => {
+                let check = document.getElementById("check_" + s.replace(/\s+/g, ""));
+                if (check) { check.checked = true; check.dataset.auto = "true"; }
+            });
         }
-      }
-      if (subrace && mecanicasPHB.subraces[subrace]) {
+    }
+    if (subrace && mecanicasPHB.subraces[subrace]) {
         const srData = mecanicasPHB.subraces[subrace];
         Object.keys(bonusAtributos).forEach(k => { if (srData[k]) bonusAtributos[k] += srData[k]; });
         if (srData.hpBonus) hpExtraPerLevel += srData.hpBonus;
-      }
-      let mods = {};
-      attrs.forEach(at => {
+    }
+    let mods = {};
+    attrs.forEach(at => {
         const baseScore = parseInt(document.getElementById(`${at.id}_score`).value) || 10;
         const currentBonus = bonusAtributos[at.id] || 0;
         const m = Math.floor((baseScore + currentBonus - 10) / 2);
@@ -8268,37 +8271,72 @@
         const sCheck = document.querySelector(`.save-prof[data-attr="${at.id}"]`);
         const sVal = m + (sCheck && sCheck.checked ? prof : 0);
         document.getElementById(`save_${at.id}`).innerText = (sVal >= 0 ? "+" : "") + sVal;
-      });
-      if (mecanicasPHB.classes[className]) {
+    });
+    if (mecanicasPHB.classes[className]) {
         const cData = mecanicasPHB.classes[className];
         document.getElementById("hit_dice").value = cData.hitDice;
-
         let totalHP = cData.hp + mods["CON"] + hpExtraPerLevel;
-        if (lvl > 1) totalHP += (Math.floor(cData.hp / 2 + 1) + mods["CON"] + hpExtraPerLevel) * (lvl - 1);
-
+        if (lvl > 1) totalHP += (Math.floor(cData.hp / 2 + 1) + mods["CON"] + hpExtraPerLevel) * (lvl - 1);     
         const hpMaxField = document.getElementById("hp_max");
         if (resetProficiencies || hpMaxField.value === "") {
-          hpMaxField.value = totalHP;
+            hpMaxField.value = totalHP;
         }
-
         if (resetProficiencies) {
-          cData.saves.forEach(s => {
-            const cb = document.querySelector(`.save-prof[data-attr="${s}"]`);
-            if (cb) { cb.checked = true; cb.dataset.auto = "true"; }
-          });
+            cData.saves.forEach(s => {
+                const cb = document.querySelector(`.save-prof[data-attr="${s}"]`);
+                if (cb) { cb.checked = true; cb.dataset.auto = "true"; }
+            });
         }
-      }
-      skills.forEach(sk => {
+    }
+    skills.forEach(sk => {
         const safeId = sk.n.replace(/\s+/g, "");
         const isProf = document.getElementById(`check_${safeId}`).checked;
         const total = mods[sk.a] + (isProf ? prof : 0);
         document.getElementById(`sk_${safeId}`).innerText = (total >= 0 ? "+" : "") + total;
-      });
-      document.getElementById("inic_val").value = (mods["DES"] >= 0 ? "+" : "") + mods["DES"];
-      const percProf = document.getElementById("check_Percepção").checked;
-      document.getElementById("passive_perc").value = 10 + mods["SAB"] + (percProf ? prof : 0);
-      atualizarSlotsMagia();
+    });
+    document.getElementById("inic_val").value = (mods["DES"] >= 0 ? "+" : "") + mods["DES"];
+    const percProf = document.getElementById("check_Percepção").checked;
+    document.getElementById("passive_perc").value = 10 + mods["SAB"] + (percProf ? prof : 0);
+    const armasNoGuia = document.querySelectorAll("#desc-weapons-guia .weapon-entry-guia");
+    armasNoGuia.forEach(entry => {
+        const wName = entry.dataset.weaponName;
+        let wData = null;
+        let catEncontrada = "";
+
+        for (const cat in armasDB) {
+            if (armasDB[cat][wName]) {
+                wData = armasDB[cat][wName];
+                catEncontrada = cat;
+                break;
+            }
+        }
+        if (wData) {
+            const ehDistancia = catEncontrada.toLowerCase().includes("distância");
+            const temAcuidade = wData.prop.toLowerCase().includes("acuidade");
+                        let mUsar = mods["FOR"];
+            if (ehDistancia) mUsar = mods["DES"];
+            else if (temAcuidade) mUsar = Math.max(mods["FOR"], mods["DES"]);
+            const atkFinal = mUsar + prof;
+            entry.querySelector(".atk-val").innerText = (atkFinal >= 0 ? "+" : "") + atkFinal;
+            entry.querySelector(".dmg-val").innerText = `${wData.dano}${mUsar >= 0 ? "+" : ""}${mUsar} ${wData.tipo}`;
+        }
+    });
+    const spellAbilityMap = { 
+        "Bardo (Bard)": "CAR", "Bruxo (Warlock)": "CAR", "Clérigo (Cleric)": "SAB", 
+        "Druida (Druid)": "SAB", "Feiticeiro (Sorcerer)": "CAR", "Paladino (Paladin)": "CAR", 
+        "Patrulheiro (Ranger)": "SAB", "Mago (Wizard)": "INT", 
+        "Ladino (Rogue)_Trapaceiro Arcano (Arcane Trickster)": "INT", 
+        "Guerreiro (Fighter)_Cavaleiro Arcano (Eldritch Knight)": "INT" 
+    };
+    let abilityKey = spellAbilityMap[className] || (subClassName ? spellAbilityMap[className + "_" + subClassName] : null);
+    if (abilityKey && mods[abilityKey] !== undefined) {
+        const m = mods[abilityKey];
+        document.getElementById("spell_attr_val").value = (m >= 0 ? "+" : "") + m;
+        document.getElementById("spell_save_dc").value = 8 + prof + m;
+        document.getElementById("spell_atk_mod").value = (prof + m >= 0 ? "+" : "") + (prof + m);
     }
+    atualizarSlotsMagia();
+}
     function ajustarCampo(id, delta) {
       const input = document.getElementById(id);
       let val = parseInt(input.value.replace("+", "")) || 0;
@@ -8651,7 +8689,7 @@
         <div style="display: flex; font-size: 12px; align-items: flex-start; line-height: 1.3; ">
             <div style="${col1}">${iData.custo}</div> 
             <div style="${col2}  text-align: center; ">${iData.peso}</div> 
-            <div style="${col3} padding-left: 5px; font-size: 10px; white-space: normal; text-align: justify; word-break: break-word;">
+            <div style="${col3} padding-left: 5px; font-size: 12px; white-space: normal; text-align: justify; word-break: break-word;">
                 ${iData.desc}
             </div>
         </div>
