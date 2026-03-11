@@ -277,7 +277,7 @@
       width: 30px;
       text-align: center;
       border-bottom: 1px solid #000;
-      margin-right: 8px;
+      margin-right: 0px;
       font-size: 12px;
     }
 
@@ -524,6 +524,35 @@
       border-color: var(--dnd-red);
     }
 
+    .skill-arrows {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0 4px;
+      line-height: 0.6;
+    }
+
+    .arrow-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      margin: 0;
+      font-size: 8px;
+      color: #999;
+      transition: color 0.2s;
+    }
+
+    .arrow-btn:hover {
+      color: var(--dnd-red);
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+    }
+
     /* Para TABLETS (Telas médias) */
     @media (max-width: 900px) {
       .main-layout {
@@ -578,6 +607,8 @@
         -webkit-appearance: none;
         margin: 0;
       }
+
+
 
       /* Para CELULARES (Telas pequenas) */
       @media (max-width: 600px) {
@@ -819,6 +850,7 @@
           <select id="class_name"
             onchange="atualizarSubclasses(); atualizarSlotsMagia(); atualizarGuia(); calcular(true);">
             <option value="">Selecione...</option>
+            <option value="Artífice (Artificer)">Artífice (Artificer)</option>
             <option value="Bárbaro (Barbarian)">Bárbaro (Barbarian)</option>
             <option value="Bardo (Bard)">Bardo (Bard)</option>
             <option value="Bruxo (Warlock)">Bruxo (Warlock)</option>
@@ -1418,7 +1450,7 @@
     </div>
     <div
       style="margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd; text-align: right; font-size: 10px; color: #888; font-style: italic; letter-spacing: 1px;">
-      Ficha Automatizada de D&D 5Ed 2014 -VERSÃO 3.5
+      Ficha Automatizada de D&D 5Ed 2014 -VERSÃO 3.7
     </div>
   </div>
   <script>
@@ -1515,6 +1547,28 @@
         [4, 5], // Nvl 19: 4 slots, Nvl 5
         [4, 5], // Nvl 20: 4 slots, Nvl 5
       ],
+      artificer: [
+        [2, 0, 0, 0, 0, 0, 0, 0, 0], // Nvl 1
+        [2, 0, 0, 0, 0, 0, 0, 0, 0], // Nvl 2
+        [3, 0, 0, 0, 0, 0, 0, 0, 0], // Nvl 3
+        [3, 0, 0, 0, 0, 0, 0, 0, 0], // Nvl 4
+        [4, 2, 0, 0, 0, 0, 0, 0, 0], // Nvl 5
+        [4, 2, 0, 0, 0, 0, 0, 0, 0], // Nvl 6
+        [4, 3, 0, 0, 0, 0, 0, 0, 0], // Nvl 7
+        [4, 3, 0, 0, 0, 0, 0, 0, 0], // Nvl 8
+        [4, 3, 2, 0, 0, 0, 0, 0, 0], // Nvl 9
+        [4, 3, 2, 0, 0, 0, 0, 0, 0], // Nvl 10
+        [4, 3, 3, 0, 0, 0, 0, 0, 0], // Nvl 11
+        [4, 3, 3, 0, 0, 0, 0, 0, 0], // Nvl 12
+        [4, 3, 3, 1, 0, 0, 0, 0, 0], // Nvl 13
+        [4, 3, 3, 1, 0, 0, 0, 0, 0], // Nvl 14
+        [4, 3, 3, 2, 0, 0, 0, 0, 0], // Nvl 15
+        [4, 3, 3, 2, 0, 0, 0, 0, 0], // Nvl 16
+        [4, 3, 3, 3, 1, 0, 0, 0, 0], // Nvl 17
+        [4, 3, 3, 3, 1, 0, 0, 0, 0], // Nvl 18
+        [4, 3, 3, 3, 2, 0, 0, 0, 0], // Nvl 19
+        [4, 3, 3, 3, 2, 0, 0, 0, 0], // Nvl 20
+      ]
     };
 
     function atualizarSlotsMagia() {
@@ -1524,15 +1578,22 @@
       const container = document.getElementById("spell-slots-tracker");
       if (!container) return;
       container.innerHTML = "";
+
       let slotsDisponiveis = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-      let isWarlock = c === "Bruxo (Warlock)";
+
       const fullCasters = ["Mago (Wizard)", "Clérigo (Cleric)", "Bardo (Bard)", "Druida (Druid)", "Feiticeiro (Sorcerer)"];
       const halfCasters = ["Paladino (Paladin)", "Patrulheiro (Ranger)"];
       const thirdCasters = ["Trapaceiro Arcano (Arcane Trickster)", "Cavaleiro Arcano (Eldritch Knight)"];
-      if (fullCasters.includes(c)) slotsDisponiveis = slotsDB.full[lvl - 1];
-      else if (halfCasters.includes(c)) slotsDisponiveis = slotsDB.half[lvl - 1];
-      else if (thirdCasters.includes(sc)) slotsDisponiveis = slotsDB.third[lvl - 1];
-      else if (isWarlock) {
+
+      if (fullCasters.includes(c)) {
+        slotsDisponiveis = slotsDB.full[lvl - 1];
+      } else if (c === "Artífice (Artificer)") {
+        slotsDisponiveis = slotsDB.artificer[lvl - 1]; // Usa a tabela específica
+      } else if (halfCasters.includes(c)) {
+        slotsDisponiveis = slotsDB.half[lvl - 1];
+      } else if (thirdCasters.includes(sc)) {
+        slotsDisponiveis = slotsDB.third[lvl - 1];
+      } else if (c === "Bruxo (Warlock)") {
         const wData = slotsDB.warlock[lvl - 1];
         slotsDisponiveis[wData[1] - 1] = wData[0];
       }
@@ -1545,7 +1606,7 @@
           slotBox.innerHTML = `<label style="font-size: 8px; margin-bottom: 3px;">${label}</label>`;
           let circlesWrap = document.createElement("div");
           circlesWrap.className = "circles";
-          circlesWrap.style.cssText = "display: flex; gap: 4px; justify-content: center; flex-wrap: wrap;"; 
+          circlesWrap.style.cssText = "display: flex; gap: 4px; justify-content: center; flex-wrap: wrap;";
           for (let j = 0; j < qtd; j++) {
             circlesWrap.innerHTML += `<input type="checkbox" style="width:14px; height:14px; margin:0;">`;
           }
@@ -6304,30 +6365,30 @@
       },
       "Meio-Elfo (Half-Elf)": { nomes: [], sobrenomes: [] }
     };
-  function gerarNomeAleatorio() {
-  const raca = document.getElementById("race_name").value;
+    function gerarNomeAleatorio() {
+      const raca = document.getElementById("race_name").value;
 
-  if (!raca || raca === "") {
-    alert("Ei, aventureiro! Você precisa escolher uma Raça primeiro para eu saber que tipo de nome gerar.");
-    return;
-  }
-  let nomes = [];
-  let sobrenomes = [];
-  if (raca === "Meio-Elfo (Half-Elf)") {
-    const fonte = Math.random() > 0.5 ? "Elfo (Elf)" : "Humano (Human)";
-    nomes = nomesDb[fonte].nomes;
-    sobrenomes = nomesDb[fonte].sobrenomes;
-  } else if (nomesDb[raca]) {
-    nomes = nomesDb[raca].nomes;
-    sobrenomes = nomesDb[raca].sobrenomes;
-  } else {
-    nomes = nomesDb["Humano (Human)"].nomes;
-    sobrenomes = nomesDb["Humano (Human)"].sobrenomes;
-  }
-  const nomeAleatorio = nomes[Math.floor(Math.random() * nomes.length)];
-  const sobrenomeAleatorio = sobrenomes[Math.floor(Math.random() * sobrenomes.length)];
-  document.getElementById("char_name").value = nomeAleatorio + " " + sobrenomeAleatorio;
-}
+      if (!raca || raca === "") {
+        alert("Ei, aventureiro! Você precisa escolher uma Raça primeiro para eu saber que tipo de nome gerar.");
+        return;
+      }
+      let nomes = [];
+      let sobrenomes = [];
+      if (raca === "Meio-Elfo (Half-Elf)") {
+        const fonte = Math.random() > 0.5 ? "Elfo (Elf)" : "Humano (Human)";
+        nomes = nomesDb[fonte].nomes;
+        sobrenomes = nomesDb[fonte].sobrenomes;
+      } else if (nomesDb[raca]) {
+        nomes = nomesDb[raca].nomes;
+        sobrenomes = nomesDb[raca].sobrenomes;
+      } else {
+        nomes = nomesDb["Humano (Human)"].nomes;
+        sobrenomes = nomesDb["Humano (Human)"].sobrenomes;
+      }
+      const nomeAleatorio = nomes[Math.floor(Math.random() * nomes.length)];
+      const sobrenomeAleatorio = sobrenomes[Math.floor(Math.random() * sobrenomes.length)];
+      document.getElementById("char_name").value = nomeAleatorio + " " + sobrenomeAleatorio;
+    }
     const talentosPHB = {
       "Adepto Elemental (Elemental Adept)":
         "Pré-requisito: Capacidade de conjurar ao menos uma magia. Escolha um dos seguintes tipos de dano: ácido, frio, fogo, elétrico ou trovejante. Magias que você conjura ignoram resistência a dano do tipo escolhido. Além disso, quando você rola o dano para uma magia que conjurou que cause dano desse tipo, você pode tratar qualquer 1 no dado de dano como um 2. Você pode escolher este talento várias vezes. Cada vez que o fizer, você deve escolher um tipo de dano diferente.",
@@ -6413,7 +6474,52 @@
         "Você domina técnicas para tirar vantagem de cada vacilo na guarda de um inimigo, ganhando os seguintes benefícios: Quando você atinge uma criatura com um ataque de oportunidade, o deslocamento da criatura se torna 0 pelo resto do turno. Criaturas provocam ataques de oportunidade de você mesmo que realizem a ação de Desengajar antes de saírem do seu alcance. Quando uma criatura a até 1,5 metro de você realizar um ataque contra um alvo diferente de você (e o alvo não possuir este talento), você pode usar sua reação para realizar um ataque com arma corpo-a-corpo contra a criatura atacante.",
       "Sortudo (Lucky)":
         "Você tem uma sorte inexplicável que parece surgir nos momentos exatos. Você tem 3 pontos de sorte. Sempre que você fizer uma jogada de ataque, teste de habilidade ou teste de resistência, você pode gastar um ponto de sorte para rolar um d20 adicional. Você pode escolher gastar um ponto de sorte depois de rolar o dado, mas antes de saber o resultado. Você decide qual dos d20s usar para a jogada. Você também pode gastar um ponto de sorte quando uma jogada de ataque for feita contra você. Jogue um d20 e escolha se o ataque usa a jogada do atacante ou a sua. Você recupera seus pontos de sorte gastos após terminar um descanso longo.",
+      "Adepto de Metamagia (Metamagic Adept)":
+        "Pré-requisito: Característica Conjuração ou Magia de Pacto. Você aprendeu a exercer sua vontade sobre suas magias para alterar a forma como elas funcionam: Você aprende duas opções de Metamagia à sua escolha da classe Feiticeiro. Você só pode usar uma opção de Metamagia em uma magia quando a conjura, a menos que a opção diga o contrário. Sempre que você ganha um nível, você pode substituir uma dessas opções de Metamagia por outra da classe Feiticeiro. Além disso, você ganha 2 pontos de feitiçaria para alimentar suas Metamagias (esses pontos são adicionados a quaisquer outros pontos de feitiçaria que você tenha, mas só podem ser usados em Metamagia). Você recupera todos os pontos de feitiçaria gastos ao terminar um descanso longo.",
+
+      "Adepto Místico (Eldritch Adept)":
+        "Pré-requisito: Característica Conjuração ou Magia de Pacto. Estudando saberes ocultos, você desbloqueou o poder místico dentro de si. Você aprende uma Invocação Mística à sua escolha da classe Bruxo. Se a invocação tiver um pré-requisito de qualquer tipo, você pode escolhê-la apenas se for um bruxo que atenda a esse pré-requisito. Sempre que você ganha um nível, você pode substituir essa invocação por outra da classe Bruxo.",
+
+      "Cozinheiro (Chef)":
+        "Tempo e prática ensinaram a você como preparar refeições que sustentam seus aliados. Você ganha os seguintes benefícios: Aumente seu valor de Constituição ou Sabedoria em 1, até o máximo de 20. Você ganha proficiência com utensílios de cozinheiro, se ainda não a tiver. Como parte de um descanso curto, você pode preparar comida especial, desde que tenha os ingredientes e utensílios de cozinheiro à mão. Você pode preparar comida para até quatro pessoas + seu bônus de proficiência. No final do descanso curto, qualquer criatura que comer a comida e gastar um ou mais Dados de Vida para recuperar pontos de vida recupera 1d8 pontos de vida adicionais. Com 1 hora de trabalho ou ao terminar um descanso longo, você pode preparar um número de guloseimas igual ao seu bônus de proficiência. Uma criatura pode usar uma ação bônus para comer uma dessas guloseimas e ganhar pontos de vida temporários iguais ao seu bônus de proficiência.",
+
+      "Especialista em Perícia (Skill Expert)":
+        "Você concentrou seu treinamento em uma perícia específica. Você ganha os seguintes benefícios: Aumente um valor de habilidade à sua escolha em 1, até o máximo de 20. Você ganha proficiência em uma perícia à sua escolha. Você ganha Especialização em uma perícia em que já seja proficiente, o que significa que seu bônus de proficiência é dobrado para qualquer teste que você fizer com essa perícia. A perícia escolhida não pode já estar se beneficiando de uma característica como Especialização.",
+
+      "Esmagador (Crusher)":
+        "Você treinou para desferir golpes esmagadores. Você ganha os seguintes benefícios: Aumente seu valor de Força ou Constituição em 1, até o máximo de 20. Uma vez por turno, quando você atingir uma criatura com um ataque que causa dano de concussão, você pode mover a criatura para um espaço desocupado a até 1,5 metro de distância, desde que o alvo não seja mais que uma categoria de tamanho maior que você. Quando você atinge um acerto crítico contra uma criatura com um ataque que causa dano de concussão, as jogadas de ataque contra essa criatura têm vantagem até o início do seu próximo turno.",
+
+      "Iniciado em Artifício (Artificer Initiate)":
+        "Você aprendeu alguns dos segredos dos artífices. Você ganha os seguintes benefícios: Você aprende um truque da lista de magias de artífice e uma magia de 1º nível da mesma lista. Inteligência é o seu atributo de conjuração para essas magias. Você pode conjurar a magia de 1º nível uma vez sem gastar espaço de magia, e recupera a habilidade após um descanso longo. Você também pode conjurá-la usando espaços de magia que você tenha. Você ganha proficiência com um tipo de ferramenta de artesão à sua escolha, e pode usar esse tipo de ferramenta como foco de conjuração para qualquer magia que use Inteligência como atributo de conjuração.",
+
+      "Iniciado em Combate (Fighting Initiate)":
+        "Pré-requisito: Proficiência com uma arma marcial. Seu treinamento marcial ajudou você a dominar um estilo particular de luta. Você aprende uma opção de Estilo de Luta à sua escolha da classe Guerreiro. Se você já tiver um Estilo de Luta, o que você escolher deve ser diferente. Sempre que você ganhar um nível que conceda a característica de Aumento no Valor de Habilidade, você pode substituir este Estilo de Luta por outro da classe Guerreiro.",
+
+      "Mestre das Armas de Fogo (Gunner)":
+        "Você tem uma mão firme e um olho rápido com armas de fogo. Você ganha os seguintes benefícios: Aumente seu valor de Destreza em 1, até o máximo de 20. Você ganha proficiência com armas de fogo. Você ignora a propriedade de recarga de armas de fogo. Estar a até 1,5 metro de uma criatura hostil não impõe desvantagem nas suas jogadas de ataque à distância.",
+
+      "Mestre do Veneno (Poisoner)":
+        "Você pode preparar e aplicar venenos mortais. Você ganha os seguintes benefícios: Quando você faz uma jogada de dano e causa dano de veneno, você ignora a resistência a dano de veneno do alvo. Você pode aplicar veneno a uma arma ou munição como uma ação bônus, em vez de uma ação. Você ganha proficiência com o kit de envenenamento. Com 1 hora de trabalho e gastando 50 po em materiais, você pode criar um número de doses de veneno potente igual ao seu bônus de proficiência. O veneno mantém a potência até ser usado ou após 24 horas. Uma criatura atingida por uma arma ou munição com este veneno deve passar num TR de Constituição CD 14 ou sofrerá 2d8 de dano de veneno e ficará envenenada até o final do seu próximo turno.",
+
+      "Perfurador (Piercer)":
+        "Você treinou para desferir ataques perfurantes com precisão letal. Você ganha os seguintes benefícios: Aumente seu valor de Força ou Destreza em 1, até o máximo de 20. Uma vez por turno, quando você atingir uma criatura com um ataque que causa dano perfurante, você pode rolar novamente um dos dados de dano da arma e deve usar a nova rolagem. Quando você atinge um acerto crítico contra uma criatura com um ataque que causa dano perfurante, você pode rolar um dado de dano adicional da arma ao determinar o dano extra do acerto crítico.",
+
+      "Retalhador (Slasher)":
+        "Você aprendeu onde cortar para obter o máximo de eficiência. Você ganha os seguintes benefícios: Aumente seu valor de Força ou Destreza em 1, até o máximo de 20. Uma vez por turno, quando você atingir uma criatura com um ataque que causa dano cortante, você pode reduzir o deslocamento do alvo em 3 metros até o início do seu próximo turno. Quando você atinge um acerto crítico contra uma criatura com um ataque que causa dano cortante, você fere gravemente o alvo; a criatura tem desvantagem em todas as jogadas de ataque até o início do seu próximo turno.",
+
+      "Telecinético (Telekinetic)":
+        "Você aprendeu a mover as coisas com sua mente. Você ganha os seguintes benefícios: Aumente seu valor de Inteligência, Sabedoria ou Carisma em 1, até o máximo de 20. Você aprende o truque <i>mãos mágicas</i>. Se você já o conhece, o alcance da magia aumenta em 9 metros. Você pode conjurá-la sem componentes verbais ou somáticos e pode tornar a mão invisível. Como uma ação bônus, você pode tentar empurrar telepaticamente uma criatura que possa ver a até 9 metros. O alvo deve passar num TR de Força (CD 8 + proficiência + modificador usado no aumento de atributo) ou será movido 1,5 metro em sua direção ou para longe de você. Uma criatura pode falhar voluntariamente neste teste.",
+
+      "Telepata (Telepathic)":
+        "Você despertou a habilidade de se comunicar mentalmente com outros. Você ganha os seguintes benefícios: Aumente seu valor de Inteligência, Sabedoria ou Carisma em 1, até o máximo de 20. Você pode falar telepaticamente com qualquer criatura que possa ver a até 18 metros. Você não precisa compartilhar um idioma, mas a criatura deve ser capaz de entender pelo menos um idioma. Você pode conjurar <i>detectar pensamentos</i> sem gastar espaço de magia ou componentes. Uma vez que o faça, você não pode fazê-lo novamente até terminar um descanso longo ou gastar um espaço de magia de 2º nível ou superior.",
+
+      "Toque Feérico (Fey Touched)":
+        "Sua exposição à Agrestia das Fadas transformou você. Você ganha os seguintes benefícios: Aumente seu valor de Inteligência, Sabedoria ou Carisma em 1, até o máximo de 20. Você aprende a magia <i>passo nebuloso</i> e uma magia de 1º nível à sua escolha. A magia de 1º nível deve ser da escola de Adivinhação ou Encantamento. Você pode conjurar cada uma dessas magias uma vez sem gastar espaços de magia e recupera a habilidade após um descanso longo. Você também pode conjurá-las usando espaços de magia que você tenha.",
+
+      "Toque Sombrio (Shadow Touched)":
+        "Sua exposição ao Pendor das Sombras transformou você. Você ganha os seguintes benefícios: Aumente seu valor de Inteligência, Sabedoria ou Carisma em 1, até o máximo de 20. Você aprende a magia <i>invisibilidade</i> e uma magia de 1º nível à sua escolha. A magia de 1º nível deve ser da escola de Ilusão ou Necromancia. Você pode conjurar cada uma dessas magias uma vez sem gastar espaços de magia e recupera a habilidade após um descanso longo. Você também pode conjurá-las usando espaços de magia que você tenha."
     };
+
     const idiomasDB = [
       "Comum (Common)",
       "Anão (Dwarvish)",
@@ -6435,6 +6541,133 @@
       "Gíria de Ladrão (Thieves' Cant)",
     ];
     const progressoClasses = {
+      "Artífice (Artificer)": {
+        1: `<b>Geringonça Mágica:</b> No 1º nível, você aprende a imbuir uma fagulha de magia em objetos mundanos. Para usar esta característica, você deve ter ferramentas de ladrão ou ferramentas de artesão em mãos. Você toca um objeto Minúsculo não mágico como uma ação e concede a ele uma propriedade mágica à sua escolha:
+        <br>• O objeto emite luz plena num raio de 1,5 metro e penumbra por mais 1,5 metro.
+        <br>• Sempre que for tocado por uma criatura, o objeto emite uma mensagem gravada que pode ser ouvida a até 3 metros de distância. Você grava a mensagem quando escolhe esta propriedade, e a gravação não pode ter mais de 6 segundos.
+        <br>• O objeto emite continuamente uma escolha sua de um efeito sensorial visual ou um odor (um som, um cheiro, um gosto ou um efeito visual). O efeito é perceptível a até 3 metros de distância.
+        <br>• Um efeito visual estático aparece numa das superfícies do objeto. Este efeito pode ser uma imagem, um texto, um logotipo ou até 25 palavras.
+        <br>A propriedade escolhida dura indefinidamente. Como uma ação, você pode tocar o objeto para encerrar a propriedade precocemente. Você pode imbuir um número de objetos igual ao seu modificador de Inteligência (mínimo de 1 objeto). Se você tentar exceder esse máximo, a propriedade mais antiga termina imediatamente.
+        <br><br><b>Conjuração:</b> Você estudou a natureza da magia e aprendeu a canalizá-la através de objetos.
+        <br>• <b>Ferramentas Necessárias:</b> Você produz seus efeitos mágicos de artífice por meio de ferramentas. Você deve usar um foco de conjuração – ferramentas de ladrão ou algum tipo de ferramenta de artesão com a qual você seja proficiente – para as suas magias de artífice. Após infundir um item, você também pode usar o item infundido como foco.
+        <br>• <b>Truques:</b> Você conhece dois truques à sua escolha da lista de magias de artífice. Você aprende truques adicionais em níveis superiores.
+        <br>• <b>Preparando e Conjurando Magias:</b> Escolha um número de magias de artífice igual ao seu modificador de Inteligência + metade do seu nível de artífice, arredondado para baixo (mínimo de uma magia). As magias devem ser de um nível para o qual você possua espaços de magia.
+        <br>• <b>Atributo de Conjuração:</b> Inteligência é o seu atributo para conjurar suas magias de artífice.
+        <br><b>CD para suas magias</b> = 8 + bônus de proficiência + seu modificador de Inteligência.
+        <br><b>Modificador de ataque de magia</b> = seu bônus de proficiência + seu modificador de Inteligência.
+        <br>• <b>Conjuração de Ritual:</b> Você pode conjurar uma magia de artífice como um ritual se ela tiver o descritor ritual e você a tiver preparada.`,
+        2: `<b>Infundir Item:</b> No 2º nível, você ganha a habilidade de imbuir itens mundanos com infusões mágicas.
+        <br>• <b>Infusões Conhecidas:</b> Você conhece quatro infusões de artífice à sua escolha. Quando você ganha um nível nesta classe, você pode substituir uma de suas infusões conhecidas por uma nova.
+        <br>• <b>Infundindo um Item:</b> Ao final de um descanso longo, você pode tocar um objeto não mágico e imbuí-lo com uma de suas infusões, tornando-o um item mágico. Se a infusão exigir harmonização, você pode se harmonizar no momento em que infundir o item. Se você tentar infundir mais itens do que seu limite, a infusão mais antiga termina. Suas infusões permanecem no item indefinidamente, mas se você morrer, as infusões desaparecem após um número de dias igual ao seu modificador de Inteligência (mínimo de 1 dia). Se você desaprender uma infusão, ela desaparece imediatamente.
+        <br>• <b>Limite de Itens:</b> Você pode manter um número de itens infundidos simultaneamente igual ao indicado na coluna Itens Infundidos da tabela O Artífice. Você não pode imbuir mais de uma de suas infusões em um único objeto, e não pode ter a mesma infusão em dois itens ao mesmo tempo (a menos que a descrição da infusão diga o contrário).`,
+        3: `<b>Especialista Artífice:</b> No 3º nível, você escolhe o tipo de especialista que você é: Alquimista, Armeiro, Artilheiro ou Ferreiro de Batalha. Sua escolha lhe concede características no 3º nível e novamente no 5º, 9º e 15º nível.
+        <br><br><b>A Ferramenta Certa para o Trabalho:</b> No 3º nível, você aprendeu como produzir exatamente a ferramenta que precisa. Com ferramentas de ladrão ou ferramentas de artesão em mãos, você pode produzir magicamente um conjunto de ferramentas de artesão em um espaço desocupado a até 1,5 metro de você. Esta criação requer 1 hora de trabalho ininterrupto, que pode coincidir com um descanso curto ou longo. Embora sejam produtos de magia, as ferramentas não são mágicas e desaparecem quando você usa esta característica novamente.`,
+        4: `<b>Aumento no Valor de Habilidade:</b> Você pode aumentar um valor de habilidade, à sua escolha, em 2 ou você pode aumentar dois valores de habilidade, à sua escolha, em 1. Como padrão, você não pode elevar um valor de habilidade acima de 20 com essa característica.`,
+        5: `<b>Característica de Especialista Artífice:</b> Você recebe uma habilidade baseada na sua especialização escolhida.`,
+        6: `<b>Especialidade em Ferramentas:</b> A partir do 6º nível, seu bônus de proficiência é dobrado para qualquer teste de habilidade que use sua proficiência com ferramentas.
+        <br><br><b>Infusões Conhecidas (6):</b> Você agora conhece 6 infusões.
+        <br><b>Itens Infundidos (3):</b> Você agora pode manter até 3 itens infundidos simultaneamente.`,
+        7: `<b>Lampejo de Gênio:</b> No 7º nível, você ganha a habilidade de criar soluções instantâneas sob pressão. Quando você ou outra criatura que você possa ver a até 9 metros de você faz um teste de habilidade ou um teste de resistência, você pode usar sua reação para adicionar seu modificador de Inteligência (mínimo de +1) ao resultado do teste.
+        <br>Você pode usar esta característica um número de vezes igual ao seu modificador de Inteligência (mínimo de uma vez). Você recupera todos os usos gastos quando termina um descanso longo.`,
+        8: `<b>Aumento no Valor de Habilidade:</b> Você pode aumentar um valor de habilidade em 2 ou dois em 1 (Máximo 20).`,
+        9: `<b>Característica de Especialista Artífice:</b> Você recebe uma habilidade baseada na sua especialização escolhida.`,
+        10: `<b>Adepto em Itens Mágicos:</b> No 10º nível, você alcançou um entendimento profundo sobre como usar e fabricar itens mágicos:
+        <br>• Você pode se harmonizar com até quatro itens mágicos ao mesmo tempo.
+        <br>• Se você fabricar um item mágico com a raridade comum ou incomum, leva um quarto do tempo normal e custa metade do ouro do que normalmente custaria.
+        <br><br><b>Infusões Conhecidas (8):</b> Você agora conhece 8 infusões.
+        <br><b>Itens Infundidos (4):</b> Você agora pode manter até 4 itens infundidos simultaneamente.`,
+        11: `<b>Item de Armazenar Magia:</b> No 11º nível, você aprende como armazenar uma magia em um objeto. Sempre que você terminar um descanso longo, você pode tocar uma arma simples ou marcial, ou um item que você possa usar como foco de conjuração (como uma varinha). Escolha uma magia de 1º ou 2º nível da lista de magias de artífice que exija 1 ação para ser conjurada (você não precisa tê-la preparada).
+        <br>Enquanto estiver segurando o objeto, uma criatura pode usar uma ação para conjurar a magia armazenada nele, usando o seu modificador de atributo de conjuração. Se a magia exigir concentração, a criatura deve se concentrar nela. A magia permanece no objeto até que seja usada um número de vezes igual ao dobro do seu modificador de Inteligência (mínimo de duas vezes) ou até que você use esta característica novamente para armazenar uma magia em um objeto.`,
+        12: `<b>Aumento no Valor de Habilidade:</b> Você pode aumentar um valor de habilidade em 2 ou dois em 1 (Máximo 20).`,
+        13: `<b>Nível 13:</b> (Progressão de espaços de magia conforme a tabela do Artífice).`,
+        14: `<b>Savant em Itens Mágicos:</b> No 14º nível, seu conhecimento sobre itens mágicos se aprofunda:
+        <br>• Você pode se harmonizar com até cinco itens mágicos ao mesmo tempo.
+        <br>• Você ignora todos os requisitos de classe, raça, magia e nível para se harmonizar ou usar um item mágico.
+        <br><br><b>Infusões Conhecidas (10):</b> Você agora conhece 10 infusões.
+        <br><b>Itens Infundidos (5):</b> Você agora pode manter até 5 itens infundidos simultaneamente.`,
+        15: `<b>Característica de Especialista Artífice:</b> Você recebe uma habilidade baseada na sua especialização escolhida.`,
+        16: `<b>Aumento no Valor de Habilidade:</b> Você pode aumentar um valor de habilidade em 2 ou dois em 1 (Máximo 20).`,
+        17: `<b>Nível 17:</b> (Acesso a magias de 5º nível de Artífice).`,
+        18: `<b>Mestre em Itens Mágicos:</b> No 18º nível, você pode se harmonizar com até seis itens mágicos ao mesmo tempo.
+        <br><br><b>Infusões Conhecidas (12):</b> Você agora conhece 12 infusões.
+        <br><b>Itens Infundidos (6):</b> Você agora pode manter até 6 itens infundidos simultaneamente.`,
+        19: `<b>Aumento no Valor de Habilidade:</b> Você pode aumentar um valor de habilidade em 2 ou dois em 1 (Máximo 20).`,
+        20: `<b>Alma do Artifício:</b> No 20º nível, você desenvolve um vínculo místico com seus itens mágicos, o qual você pode usar para se proteger:
+        <br>• Você ganha um bônus de +1 em todos os testes de resistência para cada item mágico com o qual esteja harmonizado no momento.
+        <br>• Se você for reduzido a 0 pontos de vida mas não morto imediatamente, você pode usar sua reação para encerrar uma de suas infusões de artífice ativas, fazendo com que você caia para 1 ponto de vida em vez de 0.`
+      },
+      "Artífice (Artificer)_Alquimista (Alchemist)": {
+        3: `<b>Proficiência com Ferramentas:</b> Você ganha proficiência com suprimentos de alquimista[cite: 482]. Se você já tem esta proficiência, ganha proficiência com um outro tipo de ferramentas de artesão à sua escolha[cite: 482].
+        <br><br><b>Magias de Alquimista:</b> Você sempre tem certas magias preparadas depois de atingir certos níveis nesta classe[cite: 484]. Essas magias contam como magias de artífice para você, mas não contam no número de magias de artífice que você prepara[cite: 485].
+        <br>• 3º Nível: <i>palavra curativa, raio nauseante</i>[cite: 487].
+        <br><br><b>Elixir Experimental:</b> Sempre que terminar um descanso longo, você pode produzir magicamente um elixir experimental em um frasco vazio que tocar[cite: 494]. Jogue na tabela Elixir Experimental para ver o efeito[cite: 495]. Como uma ação, uma criatura pode beber o elixir ou administrá-lo a uma criatura incapacitada[cite: 496]. Você pode criar elixires adicionais ao gastar um espaço de magia do 1º círculo ou maior para cada um; ao fazê-lo, você escolhe o efeito[cite: 497, 498].
+        <br><b>Tabela de Elixires:</b>
+        <br>1. <b>Cura:</b> Recupera 2d4 + Modificador de Inteligência em PV[cite: 505].
+        <br>2. <b>Rapidez:</b> Deslocamento aumenta em 3 metros por 1 hora[cite: 505].
+        <br>3. <b>Resiliência:</b> Bônus de +1 na CA por 10 minutos[cite: 505].
+        <br>4. <b>Ousadia:</b> Adiciona 1d4 a cada jogada de ataque e salvaguarda por 1 minuto[cite: 512].
+        <br>5. <b>Voo:</b> Deslocamento de voo de 3 metros por 10 minutos[cite: 513].
+        <br>6. <b>Transformação:</b> Efeito da magia <i>alterar-se</i> por 10 minutos[cite: 514, 515].
+        <br>Ao atingir certos níveis, você faz mais elixires no fim de um descanso longo: dois no 6º nível e três no 15º nível[cite: 501].`,
+        5: `<b>Sábio Alquímico:</b> Você desenvolveu domínio magistral de substâncias químicas mágicas[cite: 517]. Sempre que conjurar uma magia usando seus suprimentos de alquimista como foco, você ganha um bônus em uma jogada da magia[cite: 518]. Aquela jogada deve recuperar pontos de vida ou ser uma jogada de dano ácido, ígneo, necrótico ou venenoso[cite: 519]. O bônus é igual ao seu modificador de Inteligência (mínimo de +1)[cite: 520].
+        <br><br><b>Magias de Alquimista:</b> 5º nível: <i>esfera flamejante, flecha ácida de Melf</i>[cite: 487].`,
+        9: `<b>Reagentes Restauradores:</b> Você pode incorporar reagentes restauradores:
+        <br>• Quando uma criatura bebe um elixir seu, ela ganha PV temporários igual a 2d6 + modificador de Inteligência (mínimo de 1)[cite: 523].
+        <br>• Você pode conjurar <i>restauração menor</i> sem gastar espaço de magia e sem prepará-la, usando suprimentos de alquimista como foco[cite: 524]. Você pode usar isso Mod. Int vezes (mínimo 1) e recupera no descanso longo[cite: 525].
+        <br><br><b>Magias de Alquimista:</b> 9º nível: <i>forma gasosa, palavra curativa em massa</i>[cite: 487].`,
+        13: `<b>Magias de Alquimista:</b> 13º nível: <i>malogro, proteção contra a morte</i>[cite: 487].`,
+        15: `<b>Maestria Química:</b> Você foi exposto a tantos produtos químicos que ganhou resistência a dano ácido e venenoso e se tornou imune à condição envenenado[cite: 528, 529].
+        <br>Além disso, você pode conjurar <i>restauração maior</i> e <i>cura completa</i> sem gastar o espaço de magia, sem prepará-las e sem componentes materiais, usando suprimentos de alquimista como foco[cite: 530]. Uma vez que conjure uma dessas magias com esta característica, não poderá repetir aquela magia específica até terminar um descanso longo[cite: 531].
+        <br><br><b>Magias de Alquimista:</b> 17º nível: <i>névoa mortal, animar mortos</i>[cite: 487].`
+      },
+      "Artífice (Artificer)_Armeiro (Armorer)": {
+        3: `<b>Ferramentas do Ofício:</b> Você ganha proficiência com armaduras pesadas e com ferramentas de ferreiro[cite: 539]. Se já possui a proficiência com a ferramenta, escolha outra de artesão[cite: 540].
+        <br><br><b>Magias de Armeiro:</b> 3º nível: <i>mísseis mágicos, onda trovejante</i>[cite: 546].
+        <br><br><b>Armadura Arcana:</b> Como uma ação, você transforma uma armadura que veste em uma Armadura Arcana usando ferramentas de ferreiro[cite: 550]. Ela ignora requisitos de Força, serve como foco de conjuração, adere em você (não pode ser removida contra sua vontade) e substitui membros faltantes[cite: 552, 553, 554, 560].
+        <br><br><b>Modelo de Armadura:</b> Escolha um modelo ao terminar um descanso curto ou longo (usa Inteligência para ataques e dano)[cite: 564, 566, 567]:
+        <br>• <b>Protetor:</b> Inclui as <i>Manoplas do Trovão</i> (1d8 trovejante; alvo tem desvantagem em ataques contra outros) e o <i>Campo Defensivo</i> (ação bônus para ganhar PV temporários iguais ao nível de artífice, Prof. vezes por descanso longo)[cite: 569, 570, 572, 574].
+        <br>• <b>Infiltrador:</b> Inclui o <i>Lançador de Relâmpago</i> (alcance 27/90m; 1d6 elétrico + 1d6 extra 1x por turno), <i>Passos Poderosos</i> (+1,5m de deslocamento) e <i>Campo de Amortecimento</i> (vantagem em Furtividade)[cite: 576, 577, 578, 579, 580].`,
+        5: `<b>Ataque Extra:</b> Você pode atacar duas vezes, ao invés de uma, sempre que executar a ação Atacar no seu turno[cite: 584].
+        <br><br><b>Magias de Armeiro:</b> 5º nível: <i>despedaçar, reflexos</i>[cite: 546].`,
+        9: `<b>Modificações de Armadura:</b> Sua armadura agora conta como quatro itens separados para Infundir Item: peitoral, botas, capacete e a arma especial[cite: 588]. O número máximo de itens que você pode infundir aumenta em 2, mas os extras devem ser parte da Armadura Arcana[cite: 590].
+        <br><br><b>Magias de Armeiro:</b> 9º nível: <i>padrão hipnótico, relâmpago</i>[cite: 546].`,
+        13: `<b>Magias de Armeiro:</b> 13º nível: <i>escudo ardente, invisibilidade maior</i>[cite: 546].`,
+        15: `<b>Armadura Aperfeiçoada:</b>
+        <br>• <b>Protetor:</b> Quando uma criatura a até 9m termina o turno, use sua reação para forçar salvaguarda de Força ou puxá-la até 9m para perto (pode fazer um ataque se ela chegar a 1,5m)[cite: 593, 594].
+        <br>• <b>Infiltrador:</b> Alvos do Lançador de Relâmpago brilham (meia-luz 1,5m), têm desvantagem contra você e o próximo ataque contra eles tem vantagem e causa 1d6 elétrico extra[cite: 596, 597, 598].
+        <br><br><b>Magias de Armeiro:</b> 17º nível: <i>criar passagem, muralha de energia</i>[cite: 546].`
+      },
+      "Artífice (Artificer)_Artilheiro (Artillerist)": {
+        3: `<b>Proficiência com Ferramentas:</b> Ganha proficiência com ferramentas de entalhador[cite: 607].
+        <br><br><b>Magias de Artilheiro:</b> 3º nível: <i>égide, onda trovejante</i>[cite: 613].
+        <br><br><b>Canhão Místico:</b> Como uma ação, crie um canhão Pequeno (ocupa espaço) ou Minúsculo (segurado na mão) que dura 1 hora ou até cair a 0 PV[cite: 616, 617, 623]. Tem CA 18 e PV igual a 5x nível de artífice[cite: 620]. Use ação bônus (se estiver a 18m) para ativar[cite: 627].
+        <br><b>Tipos:</b>
+        <br>• <b>Balista de Força:</b> Ataque mágico 36m; 2d8 energético e empurra 1,5m[cite: 632].
+        <br>• <b>Lança-chamas:</b> Cone de 4,5m; 2d8 ígneo (TR Des metade)[cite: 632].
+        <br>• <b>Protetor:</b> Aliados a até 3m ganham 1d8 + Mod. Int em PV temporários[cite: 632].`,
+        5: `<b>Arma de Fogo Arcana:</b> Você transforma varinha, cajado ou bordão em arma de fogo arcana entalhando sigilos[cite: 635, 636]. Serve como foco de conjuração[cite: 638]. Ao conjurar magia de dano por meio dela, jogue 1d8 e adicione o bônus ao dano[cite: 639, 640].
+        <br><br><b>Magias de Artilheiro:</b> 5º nível: <i>despedaçar, raio ardente</i>[cite: 613].`,
+        9: `<b>Canhão Explosivo:</b> As jogadas de dano do canhão aumentam em 1d8[cite: 644]. Como uma ação, você pode ordenar que o canhão se detone se estiver a 18m; criaturas a até 6m sofrem 3d8 energético (TR Des metade)[cite: 645, 646].
+        <br><br><b>Magias de Artilheiro:</b> 9º nível: <i>bola de fogo, muralha de vento</i>[cite: 613].`,
+        13: `<b>Magias de Artilheiro:</b> 13º nível: <i>muralha de fogo, tempestade glacial</i>[cite: 613].`,
+        15: `<b>Posição Fortificada:</b> Você e aliados têm meia cobertura enquanto estiverem a até 3 metros de um Canhão Místico[cite: 650]. Agora você pode ter dois canhões ativos ao mesmo tempo, podendo criá-los com a mesma ação e ativá-los com a mesma ação bônus[cite: 651].
+        <br><br><b>Magias de Artilheiro:</b> 17º nível: <i>cone de frio, muralha de energia</i>[cite: 613].`
+      },
+      "Artífice (Artificer)_Ferreiro de Batalha (Battle Smith)": {
+        3: `<b>Proficiência com Ferramentas:</b> Ganha proficiência com ferramentas de ferreiro[cite: 669].
+        <br><br><b>Magias de Ferreiro de Batalha:</b> 3º nível: <i>égide, heroísmo</i>[cite: 690].
+        <br><br><b>Prontidão em Batalha:</b> Ganha proficiência com armas marciais[cite: 694]. Ao atacar com arma mágica, usa Inteligência para ataque e dano[cite: 694].
+        <br><br><b>Defensor de Aço:</b> Você cria um defensor de aço (amigável, age após seu turno)[cite: 697, 675]. Como ação bônus, você o comanda[cite: 676].
+        <br><b>Estatísticas Chave:</b> CA 15; PV 2+Int+(5x nível artífice); Despedaçamento (1d8+BP energético)[cite: 687, 688, 714]. Reação: <i>Defletir Ataque</i> (impõe desvantagem em ataque contra outros a 1,5m)[cite: 716].`,
+        5: `<b>Ataque Extra:</b> Você pode atacar duas vezes, ao invés de uma, sempre que executar a ação Atacar no seu turno[cite: 721].
+        <br><br><b>Magias de Ferreiro de Batalha:</b> 5º nível: <i>marca da punição, vínculo de proteção</i>[cite: 690].`,
+        9: `<b>Solavanco Arcano:</b> Quando você ou o defensor acerta um ataque de arma mágica, pode canalizar energia (Mod. Int vezes por descanso longo)[cite: 725, 728, 729]:
+        <br>• Causa 2d6 de dano energético extra[cite: 726].
+        <br>• Cura 2d6 PV de uma criatura/objeto a até 9m do alvo[cite: 726, 727].`,
+        13: `<b>Magias de Ferreiro de Batalha:</b> 13º nível: <i>aura de pureza, escudo ardente</i>[cite: 690].`,
+        15: `<b>Defensor Aprimorado:</b> O dano e a cura do Solavanco Arcano aumentam para 4d6[cite: 733]. O defensor ganha +2 na CA[cite: 734]. Quando usar <i>Defletir Ataque</i>, o atacante sofre 1d4 + Mod. Int de dano energético[cite: 735].
+        <br><br><b>Magias de Ferreiro de Batalha:</b> 17º nível: <i>curar ferimentos em massa, destruição banidora</i>[cite: 690].`
+      },
       "Bárbaro (Barbarian)": {
         1: `<b>Fúria:</b> Em batalha, você luta com uma ferocidade primitiva. No seu turno, você pode entrar em fúria com uma ação bônus. Enquanto estiver em fúria, você recebe os seguintes benefícios se você não estiver vestindo uma armadura pesada:
         <br>• Você tem vantagem em testes de Força e testes de resistência de Força.
@@ -6486,6 +6719,31 @@
         <br> <b>Águia:</b> Quando estiver em fúria, você adquire um deslocamento de voo igual ao seu deslocamento de caminhada. Esse benefício funciona apenas em pequenos explosões: você cai se terminar seu turno no ar e não tiver nada em que possa se agarrar.
         <br> <b>Lobo:</b> Quando estiver em fúria, você pode usar uma ação bônus no seu turno para derrubar uma criatura Grande ou menor no chão quando você atingi-la com um ataque corpo-a-corpo com arma.`
       },
+      "Bárbaro (Barbarian)_Trilha da Fera (Path of the Beast)": {
+        3: `<b>Forma da Fera:</b> Quando você entra em fúria, você pode se transformar, revelando o poder bestial dentro de você. Até a fúria acabar, você manifesta uma arma natural. Ela conta como uma arma simples para você e você adiciona seu modificador de Força às jogadas de ataque e dano. Escolha a forma toda vez que entrar em fúria:
+        <br>• <b>Mordida:</b> Seu pescoço se alonga e suas mandíbulas tornam-se bestiais. Causa 1d8 de dano perfurante. Uma vez em cada um de seus turnos, quando você atinge uma criatura com esta mordida e está com menos de metade de seus PV, você recupera PV iguais ao seu bônus de proficiência.
+        <br>• <b>Garras:</b> Suas mãos se transformam em garras. Causa 1d6 de dano cortante. Quando você usa a ação Atacar com as garras, pode realizar um ataque adicional com elas como parte da mesma ação.
+        <br>• <b>Cauda:</b> Você manifesta uma cauda chicoteante com espinhos. Causa 1d8 de dano perfurante e tem a propriedade alcance. Se uma criatura que você pode ver a até 3 metros atingir você com um ataque, você pode usar sua reação para balançar a cauda e rolar 1d8, aplicando o resultado como bônus na sua CA.`,
+        6: `<b>Alma Bestial:</b> O poder selvagem dentro de você aumenta. Suas armas naturais da Forma da Fera agora contam como mágicas para o propósito de ultrapassar resistência e imunidade a ataques não mágicos. Além disso, ao terminar um descanso curto ou longo, escolha um benefício que dura até o próximo descanso:
+        <br>• Você ganha deslocamento de natação igual ao seu deslocamento de caminhada e pode respirar debaixo d'água.
+        <br>• Você ganha deslocamento de escalada igual ao seu deslocamento de caminhada e pode subir em superfícies verticais ou teto sem precisar de teste.
+        <br>• Quando você faz um teste de Atletismo para saltar, você rola um d20 adicional e adiciona o número rolado ao total do salto (em pés).`,
+        10: `<b>Fúria Infecciosa:</b> Quando você atinge uma criatura com suas armas naturais enquanto está em fúria, a besta dentro de você pode amaldiçoar o alvo. O alvo deve passar num TR de Sabedoria (CD 8 + seu modificador de Con + seu BP) ou sofrer um efeito (sua escolha):
+        <br>• O alvo deve usar a reação dele para realizar um ataque corpo-a-corpo contra outra criatura à escolha de você que você possa ver.
+        <br>• O alvo sofre 2d12 de dano psíquico.
+        <br>Você pode usar esta característica um número de vezes igual ao seu BP, recuperando os usos em descanso longo.`,
+        14: `<b>Invocar a Caçada:</b> A besta dentro de você se torna tão poderosa que você pode espalhar sua ferocidade. Quando você entra em fúria, você pode escolher um número de outras criaturas voluntárias que você possa ver a até 9 metros igual ao seu modificador de Constituição (mínimo de uma). Você ganha 5 PV temporários para cada criatura que aceitar este benefício. Até a fúria acabar, as criaturas escolhidas podem rolar 1d6 e adicionar o resultado ao dano de seus ataques uma vez em cada um de seus turnos.`
+      },
+      "Bárbaro (Barbarian)_Trilha da Magia Selvagem (Path of Wild Magic)": {
+        3: `<b>Percepção de Magia:</b> Como uma ação, você pode abrir seus sentidos para detectar a presença de magia. Até o final do seu próximo turno, você sabe a localização de qualquer feitiço ou item mágico a até 18 metros que não esteja atrás de cobertura total. Se detectar magia, você sabe a qual escola ela pertence. Você pode usar isso BP vezes por descanso longo.
+        <br><b>Surto Selvagem:</b> A energia mágica canalizada em sua fúria explode de você. Quando você entra em fúria, role 1d8 na tabela de Magia Selvagem do Bárbaro para determinar o efeito (exemplos: teletransporte bônus, infusão de armas com dano de força, ou explosão de luz cegante).`,
+        6: `<b>Magia Reforçante:</b> Você pode canalizar sua magia selvagem para ajudar a si mesmo ou a um aliado. Como uma ação bônus, você toca uma criatura (podendo ser você). Role 1d3 para conferir um benefício por 10 minutos:
+        <br>1. A criatura adiciona 1d4 em jogadas de ataque e testes de atributo.
+        <br>2. Role 1d3; a criatura recupera um espaço de magia gasto daquele nível ou inferior.
+        <br>Você pode usar esta característica BP vezes por descanso longo.`,
+        10: `<b>Reação Instável:</b> Quando você está em fúria e sofre dano ou falha em um teste de resistência, você pode usar sua reação para causar um novo Surto Selvagem. O efeito atual termina e você role 1d8 na tabela para o novo efeito.`,
+        14: `<b>Surto Controlado:</b> Sempre que você rolar na tabela de Surto Selvagem, você pode rolar o dado duas vezes e escolher qual dos dois efeitos prefere. Se rolar o mesmo número nos dois dados, você pode ignorar o resultado e escolher qualquer opção da tabela.`
+      },
       "Bardo (Bard)": {
         1: `<b>Conjuração:</b> Você aprendeu a desembaraçar e moldar a trama da realidade de acordo com seus desejos e música.
         <br><br><b>Truques:</b> Você conhece dois truques à sua escolha da lista de magias de bardo.
@@ -6531,6 +6789,22 @@
         <br><br><b>Inspiração de Combate:</b> Também no 3º nível, você aprende a inspirar os outros em batalha. Uma criatura que tiver um dado de Inspiração Bárdica seu pode gastar esse dado para adicionar o resultado à rolagem de dano da arma que ela acabou de fazer. Alternativamente, quando uma jogada de ataque é feita contra a criatura, ela pode usar sua reação para rolar o dado de Inspiração Bárdica e adicionar o resultado à sua CA contra aquele ataque.`,
         6: `<b>Ataque Extra:</b> A partir do 6º nível, você pode atacar duas vezes, ao invés de uma, sempre que realizar a ação de Ataque no seu turno.`,
         14: `<b>Magia de Combate:</b> No 14º nível, você dominou a arte de tecer conjuração e uso de armas em um ato harmônico. Quando você usar sua ação para conjurar uma magia de bardo, você pode fazer um ataque com arma com uma ação bônus.`
+      },
+      "Bardo (Bard)_Colégio da Criação (College of Creation)": {
+        3: `<b>Nota de Potencial:</b> Quando você dá um dado de Inspiração Bárdica a uma criatura, a nota assume a forma de um minúsculo lampejo flutuante. Quando a criatura usa o dado, a nota concede um benefício baseado no tipo de rolagem:
+        <br>• <b>Teste de Atributo:</b> A criatura pode rolar o dado de Inspiração novamente e escolher qual dos dois números usar.
+        <br>• <b>Ataque:</b> O alvo do ataque e cada criatura que você escolher a até 1,5 metro dele deve passar num TR de Constituição contra a CD de sua magia ou sofrer dano trovejante igual ao número rolado no dado de Inspiração.
+        <br>• <b>Salvaguarda:</b> A criatura ganha PV temporários iguais ao número rolado no dado de Inspiração + seu modificador de Carisma (mínimo de 1).
+        <br><br><b>Performance da Criação:</b> Com uma ação, você pode criar magicamente um item não mágico em um espaço desocupado a até 3 metros. O item deve ser de tamanho Médio ou menor e seu valor não pode exceder 20 vezes seu nível de bardo. O item desaparece após BP horas. Você pode usar isso uma vez por descanso longo ou gastando um espaço de magia de 2º nível ou superior.`,
+        6: `<b>Performance Animadora:</b> Como uma ação, você pode animar um item não mágico Pequeno, Médio ou Grande a até 9 metros. O item torna-se um Item Dançante sob seu comando por 1 hora ou até cair a 0 PV. Ele age logo após seu turno e obedece ordens mentais (ação bônus). Se você não der ordens, ele apenas se defende.`,
+        14: `<b>Crescendo Criativo:</b> Você pode usar a Performance da Criação para criar múltiplos itens ao mesmo tempo (número igual ao seu modificador de Carisma). Apenas um deles pode ser do tamanho máximo permitido, e você ignora o limite de valor de ouro dos itens criados.`
+      },
+      "Bardo (Bard)_Colégio da Eloquência (College of Eloquence)": {
+        3: `<b>Língua de Prata:</b> Você é mestre em dizer exatamente o que as pessoas querem ouvir. Sempre que você fizer um teste de Carisma (Persuasão) ou Carisma (Enganação), você pode tratar uma rolagem de 9 ou menos no d20 como um 10.
+        <br><b>Palavras Inquietantes:</b> Você pode girar palavras com magia para minar a resistência de um inimigo. Com uma ação bônus, escolha uma criatura a até 18 metros e gaste um uso de Inspiração Bárdica. Role o dado; a criatura deve subtrair o número rolado da próxima salvaguarda que ela fizer antes do início do seu próximo turno.`,
+        6: `<b>Inspiração Infalível:</b> Suas palavras inspiradoras são tão persuasivas que tendem a durar. Se uma criatura adicionar seu dado de Inspiração Bárdica a uma jogada de ataque, teste de atributo ou salvaguarda e falhar, ela mantém o dado para usar novamente.
+        <br><b>Fala Universal:</b> Você ganhou a habilidade mágica de se fazer entender por qualquer criatura. Como uma ação, escolha uma ou mais criaturas a até 18 metros (até o número do seu BP). Por 1 hora, as criaturas podem entender sua fala independentemente do idioma. Você pode usar isso uma vez por descanso longo ou gastando um espaço de magia.`,
+        14: `<b>Inspiração Infecciosa:</b> Quando uma criatura a até 18 metros de você usa um dado de Inspiração Bárdica e tem sucesso, você pode usar sua reação para dar um dado de Inspiração Bárdica a outra criatura diferente (que não seja você) a até 18 metros sem gastar seus usos da característica. Você pode usar esta reação um número de vezes igual ao seu modificador de Carisma por descanso longo.`
       },
       "Bruxo (Warlock)": {
         1: `<b>Patrono Transcendental:</b> No 1º nível, você conclui uma barganha com um ser transcendental à sua escolha: a Arquifada, o Corruptor ou o Grande Antigo. Sua escolha lhe confere características no 1º nível e novamente no 6º, 10º e 14º nível.
@@ -6705,6 +6979,34 @@
         9: `<b>Magias de Domínio:</b> 9º nível: <i>coluna de chamas, imobilizar monstro</i>.`,
         17: `<b>Avatar da Batalha:</b> No 17º nível, você ganha resistência a danos de concussão, cortante e perfurante de armas não-mágicas.`
       },
+      "Clérigo (Cleric)_Domínio da Ordem (Order Domain)": {
+        1: `<b>Magias:</b> 1º nível: <i>comando, heroísmo</i>.
+        <br><b>Proficiências Adicionais:</b> Você ganha proficiência com armaduras pesadas e na perícia Intimidação ou Persuasão (sua escolha).
+        <br><b>Voz da Autoridade:</b> Você pode invocar o poder da lei para ordenar um aliado a atacar. Se você conjurar uma magia de 1º nível ou superior que tenha um aliado como alvo, esse aliado pode usar a reação dele imediatamente após a magia para realizar um ataque com arma contra uma criatura à sua escolha que você possa ver.`,
+        2: `<b>Canalizar Divindade: Demanda da Ordem:</b> Você pode usar seu Canalizar Divindade para exercer uma presença intimidadora. Como uma ação, cada criatura à sua escolha a até 9 metros deve fazer um TR de Sabedoria. Se falhar, a criatura fica enfeitiçada por você até o final do seu próximo turno ou até sofrer dano. Você também pode ordenar que a criatura largue o que estiver segurando quando ela falhar no teste.`,
+        6: `<b>Personificação da Lei:</b> Você se torna tão imbuído de ordem que pode conjurar certas magias num piscar de olhos. Quando você conjura uma magia da escola de Encantamento de 1º nível ou superior, pode mudar o tempo de conjuração para 1 ação bônus. Você pode usar isso um número de vezes igual ao seu Mod. de Sabedoria por descanso longo.`,
+        8: `<b>Golpe Divino:</b> Você infunde seus ataques com energia psíquica. Uma vez em cada um de seus turnos, ao atingir uma criatura com um ataque com arma, pode causar 1d8 de dano psíquico extra. No nível 14, aumenta para 2d8.`,
+        17: `<b>Ira da Ordem:</b> Inimigos que você marca para punição sucumbem rapidamente. Quando você usa sua Voz da Autoridade para fazer um aliado atacar, o ataque desse aliado causa 2d8 de dano psíquico extra se atingir.`
+      },
+      "Clérigo (Cleric)_Domínio da Paz (Peace Domain)": {
+        1: `<b>Magias:</b> 1º nível: <i>heroísmo, santuário</i>.
+        <br><b>Implemento da Paz:</b> Você ganha proficiência em Intuição, Atuação ou Persuasão (sua escolha).
+        <br><b>Elo Encorajador:</b> Como uma ação, escolha criaturas voluntárias a até 9 metros (incluindo você) igual ao seu BP. Por 10 minutos, uma vez em cada turno, as criaturas vinculadas podem rolar 1d4 e adicionar o resultado a uma jogada de ataque, teste de atributo ou salvaguarda enquanto estiverem a até 9 metros uma da outra.`,
+        2: `<b>Canalizar Divindade: Bálsamo da Paz:</b> Como uma ação, você pode se mover até o seu deslocamento sem provocar ataques de oportunidade. Sempre que você passar a até 1,5 metro de uma criatura durante esse movimento, você pode curar essa criatura em 2d6 + seu Mod. de Sabedoria.`,
+        6: `<b>Elo Protetor:</b> O vínculo criado pelo seu Elo Encorajador pode proteger contra danos. Se uma criatura vinculada estiver prestes a sofrer dano e outra criatura vinculada estiver a até 9 metros, a segunda criatura pode usar a reação dela para se teletransportar para um espaço desocupado a até 1,5 metro da primeira e sofrer o dano no lugar dela.`,
+        8: `<b>Conjuração Potente:</b> Você adiciona seu modificador de Sabedoria ao dano de seus truques de clérigo.`,
+        17: `<b>Elo Expansivo:</b> Os benefícios do Elo Encorajador e Elo Protetor agora funcionam a até 18 metros de distância. Além disso, quando uma criatura usa o Elo Protetor para sofrer dano por outra, ela ganha resistência a essa instância de dano.`
+      },
+      "Clérigo (Cleric)_Domínio do Crepúsculo (Twilight Domain)": {
+        1: `<b>Magias:</b> 1º nível: <i>fogo das fadas, sono</i>.
+        <br><b>Proficiências Adicionais:</b> Você ganha proficiência com armaduras pesadas e armas marciais.
+        <br><b>Olhos da Noite:</b> Você tem visão no escuro com alcance de 90 metros. Você pode compartilhar essa visão com BP criaturas voluntárias a até 3 metros por 1 hora (1x por descanso longo ou gastando espaço de magia).
+        <br><b>Bênção do Vigilante:</b> Como uma ação, você toca uma criatura (podendo ser você) e concede a ela vantagem na próxima jogada de iniciativa que ela fizer.`,
+        2: `<b>Canalizar Divindade: Santuário do Crepúsculo:</b> Como uma ação, você emana uma esfera de penumbra de 9 metros de raio centrada em você por 1 minuto. No final do turno de cada aliado (incluindo você) na esfera, você pode: conceder 1d6 + nível de clérigo de PV temporários OU encerrar um efeito de amedrontado ou enfeitiçado na criatura.`,
+        6: `<b>Passos do Crepúsculo:</b> Você pode atrair o poder da penumbra para voar. Como uma ação bônus, enquanto estiver em penumbra ou escuridão, você ganha deslocamento de voo igual ao seu deslocamento de caminhada por 1 minuto. Você pode usar isso BP vezes por descanso longo.`,
+        8: `<b>Golpe Divino:</b> +1d8 de dano radiante extra no ataque com arma (2d8 no nível 14).`,
+        17: `<b>Mortalha Crepuscular:</b> A penumbra do seu Santuário do Crepúsculo protege você e seus aliados como uma cobertura suave. Você e seus aliados recebem os benefícios de meia cobertura (+2 na CA e TR de Destreza) enquanto estiverem dentro da esfera.`
+      },
       "Druida (Druid)": {
         1: `<b>Druídico:</b> Você conhece o Druídico, a linguagem secreta dos druidas. Você pode falar o idioma e usá-lo para deixar mensagens escondidas. Você e outros que conheçam esse idioma enxergam automaticamente essas mensagens. Outros percebem a presença da mensagem com um teste de Sabedoria (Percepção) CD 15 bem sucedido, mas não conseguem decifrá-la sem mágica.
         <br><br><b>Conjuração:</b> Utilizando a essência divina da própria natureza, você pode conjurar magias para moldar essa essência à sua vontade.
@@ -6752,6 +7054,31 @@
         <br><br><b>Formas do Círculo (Melhoria):</b> A partir do 6º nível, você pode se transformar em uma besta com um nível de desafio tão alto quanto o seu nível de druida dividido por 3, arredondado para baixo.`,
         10: `<b>Forma Selvagem Elemental:</b> No 10º nível, você pode gastar dois usos de Forma Selvagem ao mesmo tempo para se transformar em um elemental da água, um elemental do ar, um elemental do fogo ou um elemental da terra.`,
         14: `<b>Mil Formas:</b> No 14º nível, você aprende a usar a magia <i>alterar-se</i> à vontade, sem gastar espaços de magia.`
+      },
+      "Druida (Druid)_Círculo de Esporos (Circle of Spores)": {
+        2: `<b>Magias:</b> 2º nível: <i>mãos gélidas</i>.
+        <br><b>Halo de Esporos:</b> Você é cercado por esporos invisíveis e necróticos. Quando uma criatura que você pode ver se move para um espaço a até 3 metros de você ou começa o turno dela ali, você pode usar sua reação para causar 1d4 de dano necrótico (TR de Constituição anula). O dano aumenta para 1d6 no nível 6, 1d8 no 10 e 1d10 no 14.
+        <br><b>Entidade Simbiótica:</b> Como ação bônus, você pode gastar um uso de Forma Selvagem para despertar seus esporos em vez de se transformar. Você ganha 4 PV temporários por nível de druida, o dano do Halo de Esporos é dobrado, e seus ataques com arma causam 1d6 de dano necrótico extra.`,
+        6: `<b>Infestação de Fungos:</b> Se uma besta ou humanoide Pequeno ou Médio morrer a até 3 metros de você, você pode usar sua reação para animá-lo como um zumbi com 1 PV que dura 1 hora. Ele age imediatamente após o seu turno.`,
+        10: `<b>Esporos Propagadores:</b> Enquanto sua Entidade Simbiótica estiver ativa, você pode usar uma ação bônus para lançar esporos em uma área de 3 metros de raio a até 9 metros. Criaturas na área sofrem o dano do seu Halo de Esporos.`,
+        14: `<b>Corpo Fúngico:</b> Os esporos em seu corpo tornam você imune a cegueira, surdez, amedrontado e envenenado. Além disso, qualquer acerto crítico contra você torna-se um acerto normal, a menos que você esteja incapacitado.`
+      },
+      "Druida (Druid)_Círculo das Estrelas (Circle of Stars)": {
+        2: `<b>Mapa Estelar:</b> Você possui um mapa estelar (objeto Minúsculo) que serve como foco. Você conhece o truque <i>orientação</i> e a magia <i>raio guia</i>. Você pode conjurar <i>raio guia</i> sem gastar espaços de magia BP vezes por descanso longo.
+        <br><b>Forma Estrelada:</b> Como ação bônus, gaste um uso de Forma Selvagem para assumir uma forma luminosa. Escolha uma constelação:
+        <br>• <b>Arqueiro:</b> Ação bônus: Ataque de magia à distância (18m) causa 1d8 + Mod. Sab de dano radiante.
+        <br>• <b>Cálice:</b> Quando conjura magia de cura, você ou outro a até 9 metros recupera 1d8 + Mod. Sab.
+        <br>• <b>Dragão:</b> Em testes de INT, SAB ou Constituição para manter concentração, trate qualquer rolagem de 9 ou menos como um 10.`,
+        6: `<b>Presságio Cósmico:</b> Sempre que terminar um descanso longo, role um dado. Se for Par (Weal), você pode usar sua reação para adicionar 1d6 a uma jogada de ataque, teste ou salvaguarda de uma criatura a até 9m. Se for Ímpar (Woe), use reação para subtrair 1d6 da jogada.`,
+        10: `<b>Constelações Cintilantes:</b> O dano do Arqueiro e a cura do Cálice aumentam para 2d8. Na forma do Dragão, você ganha deslocamento de voo de 6 metros. Além disso, você pode trocar de constelação no início de cada um de seus turnos.`,
+        14: `<b>Repleto de Estrelas:</b> Enquanto estiver na Forma Estrelada, você se torna parcialmente incorpóreo. Você ganha resistência a danos de concussão, perfurante e cortante.`
+      },
+      "Druida (Druid)_Círculo do Fogo Selvagem (Circle of Wildfire)": {
+        2: `<b>Magias:</b> 2º nível: <i>mãos flamejantes, curar ferimentos</i>.
+        <br><b>Invocar Espírito do Fogo Selvagem:</b> Como uma ação, você gasta um uso de Forma Selvagem para invocar um espírito de fogo. Ele surge a até 9 metros; criaturas a até 3 metros dele fazem TR de Destreza ou sofrem 2d6 de fogo. O espírito dura 1 hora, tem seus próprios PV e age após o seu turno. Você pode usar uma ação bônus para comandá-lo a atacar ou se teletransportar (causando dano onde sai e onde chega).`,
+        6: `<b>Vínculo Ardente:</b> Enquanto seu espírito estiver invocado, suas magias que causam dano de fogo ou restauram PV ganham um bônus de 1d8. Além disso, você pode conjurar magias a partir da posição do espírito.`,
+        10: `<b>Vingança Flamejante:</b> Quando uma criatura Pequena ou maior morre a até 9 metros de você ou do espírito, uma chama surge no cadáver. Se uma criatura passar por ali, ela sofre 2d10 + Mod. Sab de fogo ou recupera essa mesma quantia em PV (sua escolha).`,
+        14: `<b>Fogo Regenerativo:</b> Se você cair a 0 PV, seu espírito pode se sacrificar para fazer você voltar com metade dos seus PV máximos e imediatamente explodir, causando dano a inimigos próximos.`
       },
       "Feiticeiro (Sorcerer)": {
         1: `<b>Conjuração:</b> Uma linhagem antiga ou uma influência mística confere a você a habilidade de conjurar magias.
@@ -6802,6 +7129,21 @@
         6: `<b>Dobrar a Sorte:</b> A partir do 6º nível, você tem a habilidade de torcer o destino usando seu caos. Quando uma criatura que você possa ver fizer uma jogada de ataque, um teste de habilidade ou de resistência, você pode usar sua reação e gastar 2 pontos de feitiçaria para rolar 1d4 e aplicar o resultado como bônus ou penalidade na jogada da criatura.`,
         14: `<b>Caos Controlado:</b> No 14º nível, você ganha algum controle sobre os surtos de sua magia selvagem. Sempre que você rolar na tabela de Surto de Magia Selvagem, você pode rolar duas vezes e usar qualquer um dos resultados.`,
         18: `<b>Bombardeio Primal:</b> A partir do 18º nível, a energia nociva de suas magias se torna mais intensa. Quando você rolar o dano de uma magia e rolar o valor máximo em qualquer um dos dados, escolha um desses dados, role-o novamente e adicione-o ao dano total. Você pode usar essa característica apenas uma vez por turno.`
+      },
+      "Feiticeiro (Sorcerer)_Mente Aberrante (Aberrant Mind)": {
+        1: `<b>Magia Psiónica:</b> Você aprende magias extras (1º nvl: <i>braços de hadar, riso histérico de tasha, mensagem</i>). Você pode substituir essas magias por outras de Adivinhação ou Encantamento das listas de Mago, Bruxo ou Feiticeiro ao subir de nível.
+        <br><b>Fala Telepática:</b> Como ação bônus, cria elo telepático com criatura a até 9 metros. Dura minutos igual ao seu nível de feiticeiro.`,
+        6: `<b>Feitiçaria Psiónica:</b> Quando conjura uma das magias da sua característica Magia Psiónica, você pode gastar pontos de feitiçaria igual ao nível da magia em vez de espaços de magia. Se fizer isso, a magia não exige componentes verbais, somáticos ou materiais não consumíveis.
+        <br><b>Defesa Psíquica:</b> Você tem resistência a dano psíquico e vantagem em salvaguardas contra ser encantado ou amedrontado.`,
+        14: `<b>Revelação em Carne:</b> Como ação bônus, gaste 1 ou mais pontos para transformar seu corpo por 1 minuto: ver invisíveis (9m), ganhar natação e guelras, ganhar voo, ou tornar-se maleável para passar em espaços de 2,5 cm.`,
+        18: `<b>Implosão em Fenda:</b> Como ação, teletransporta-se até 36 metros. Criaturas no espaço que você deixou devem fazer TR de Força ou serem puxadas para o centro e sofrerem 3d10 de dano de energia.`
+      },
+      "Feiticeiro (Sorcerer)_Alma Mecânica (Clockwork Soul)": {
+        1: `<b>Magia da Ordem:</b> Magias extras (1º nvl: <i>alarme, proteção contra o bem e mal</i>).
+        <br><b>Restaurar o Equilíbrio:</b> Quando uma criatura que você pode ver a até 18 metros está prestes a rolar com vantagem ou desvantagem, você pode usar sua reação para anular o bônus/ônus. Uso = BP vezes por descanso longo.`,
+        6: `<b>Baluarte da Lei:</b> Como ação bônus, gaste de 1 a 5 pontos de feitiçaria para criar um escudo ao redor de você ou de alguém a até 9 metros. O escudo tem dados de d8 igual aos pontos gastos. Quando o alvo sofre dano, ele gasta os dados para reduzir o dano.`,
+        14: `<b>Transe de Ordem:</b> Como ação bônus, você entra num estado de consciência perfeita por 1 minuto. Ataques contra você não podem ter vantagem, e sempre que fizer um ataque, teste ou salvaguarda, você trata qualquer rolagem de 9 ou menos no d20 como um 10.`,
+        18: `<b>Cavalaria Mecânica:</b> Você invoca espíritos da ordem. Cubo de 9 metros centrado em você: recupera até 100 PV distribuídos entre criaturas, repara objetos instantaneamente e encerra magias de 6º nível ou inferior à sua escolha.`
       },
       "Guerreiro (Fighter)": {
         1: `<b>Estilo de Luta:</b> Você adota um estilo de combate particular como sua especialidade. Escolha uma das opções a seguir. Você não pode escolher a mesma opção de Estilo de Luta mais de uma vez, mesmo se puder escolher de novo mais tarde.
@@ -6867,6 +7209,26 @@
         10: `<b>Golpe Arcano:</b> No 10º nível, quando você atingir uma criatura com um ataque com arma, aquela criatura terá desvantagem no próximo teste de resistência que ela fizer contra uma magia que você conjurar antes do final do seu próximo turno.`,
         15: `<b>Investida Arcana:</b> No 15º nível, você ganha a habilidade de se teleportar até 9 metros para um espaço desocupado que possa ver quando usar o seu Surto de Ação. Você pode se teleportar antes ou depois da ação adicional.`,
         18: `<b>Magia de Guerra Aprimorada:</b> A partir do 18º nível, quando você usar sua ação para conjurar uma magia, você pode realizar um ataque com arma como uma ação bônus.`
+      },
+      "Guerreiro (Fighter)_Cavaleiro Rúnico (Rune Knight)": {
+        3: `<b>Entalhe de Runas:</b> Você aprende a usar runas de gigantes para imbuir seu equipamento. Você conhece duas runas (ex: Nuvem, Fogo, Gelo, Pedra). Ao fim de um descanso longo, você pode entalhar essas runas em objetos diferentes. Cada runa concede um benefício passivo e um efeito ativo que pode ser usado uma vez por descanso curto/longo.
+        <br><b>Gigante nato:</b> Como ação bônus, você se torna Grande por 1 minuto. Você ganha vantagem em testes de Força e suas salvaguardas, e uma vez por turno, causa 1d6 de dano extra com ataques de arma. Uso = BP vezes por descanso longo.`,
+        7: `<b>Escudo Rúnico:</b> Você aprende a proteger seus aliados. Se uma criatura que você pode ver a até 18 metros for atingida por um ataque, você pode usar sua reação para forçar o atacante a rolar novamente o d20 e usar o novo resultado. Uso = BP vezes por descanso longo.`,
+        10: `<b>Estatura Elevada:</b> Seu crescimento mágico se torna permanente. Você aumenta sua altura em 3d4 polegadas. O dano extra do Gigante Nato aumenta para 1d8.`,
+        15: `<b>Mestre das Runas:</b> Você agora pode usar cada uma das suas runas entalhadas duas vezes antes de precisar de um descanso curto ou longo.`,
+        18: `<b>Juggernaut Rúnico:</b> Ao usar o Gigante Nato, você pode se tornar Enorme. Seu alcance aumenta em 1,5 metro e o dano extra aumenta para 1d10.`
+      },
+      "Guerreiro (Fighter)_Combatente Psíquico (Psi Warrior)": {
+        3: `<b>Poder Psiônico:</b> Você possui uma reserva de Dados de Energia Psiônica (d6). Quantidade = 2x BP. Recupera um dado por descanso curto e todos por longo.
+        <br>• <b>Campo de Proteção:</b> Reação: Ao sofrer dano (você ou aliado a até 9m), gaste um dado para reduzir o dano em [Resultado + Mod. Int].
+        <br>• <b>Golpe Psiônico:</b> 1x por turno: Ao atingir com arma a até 9m, gaste um dado para causar dano de energia extra igual a [Resultado + Mod. Int].
+        <br>• <b>Movimento Telecinético:</b> Como ação, move um objeto ou criatura (vontade própria) a até 9 metros. Uso gratuito 1x por descanso longo, depois gasta dado.`,
+        7: `<b>Adepto Telecinético:</b> Seus dados aumentam para d8.
+        <br>• <b>Salto Impulsionado:</b> Ação Bônus: Gasta um dado para ganhar voo até o final do turno.
+        <br>• <b>Empurrão Telecinético:</b> Quando usa o Golpe Psiônico, pode forçar o alvo a um TR de Força ou ser derrubado e empurrado 3 metros.`,
+        10: `<b>Mente Protegida:</b> Você ganha resistência a dano psíquico. Se começar seu turno amedrontado ou encantado, pode gastar um dado psiônico para encerrar o efeito.`,
+        15: `<b>Baluarte de Força:</b> Com uma ação bônus, você cria uma cobertura cintilante para você e aliados a até 9 metros. Todos ganham cobertura meia (+2 CA e TR Des) por 1 minuto.`,
+        18: `<b>Mestre Telecinético:</b> Você pode conjurar a magia <i>telecinésia</i> sem componentes, usando Inteligência. Uso gratuito 1x por descanso longo, depois gasta dado.`
       },
       "Ladino (Rogue)": {
         1: `<b>Especialização:</b> No 1º nível, você escolhe duas de suas perícias que seja proficiente, ou uma perícia que seja proficiente e ferramentas de ladrão. Seu bônus de proficiência é dobrado em qualquer teste de habilidade que fizer com elas.
@@ -6944,7 +7306,6 @@
         13: `<b>Redirecionar:</b> A partir do 13º nível, quando for alvo de um ataque enquanto uma criatura dentro de 1,5 metros de alcance está concedendo cobertura contra esse ataque, pode usar sua reação para que o alvo do ataque seja essa criatura em vez de você.`,
         17: `<b>Alma do Enganador:</b> A partir do 17º nível, seus pensamentos não podem ser lidos por telepatia ao menos que você permita. Você pode transmitir falsos pensamentos com um teste de Carisma (Enganação) contra a Sabedoria (Intuição) do leitor. Magias de verdade indicarão que você é sincero se você escolher, e você não pode ser compelido a dizer a verdade por magia.`
       },
-
       "Ladino (Rogue)_Batedor (Scout)": {
         3: `<b>Escaramuçador:</b> A partir do 3º nível, você pode mover-se até a metade do seu deslocamento com uma reação quando um inimigo termina seu turno dentro de 1,5 metros de alcance. Este movimento não provoca ataques de oportunidade.
         <br><br><b>Sobrevivente:</b> Quando você escolhe este arquétipo no 3º nível, você ganha proficiência nas perícias Natureza e Sobrevivência. Seu bônus de proficiência é duplicado para qualquer teste de perícia que faça que use qualquer uma dessas proficiências.`,
@@ -6960,25 +7321,22 @@
         17: `<b>Mestre Duelista:</b> A partir do 17º nível, se você errar uma jogada de ataque, pode repetir novamente o teste, desta vez com vantagem. Uma vez que usar esta característica só poderá usar novamente depois de terminar um descanso curto ou longo.`
       },
       "Ladino (Rogue)_Fantasma (Phantom)": {
-        3: `<b>Sussurros dos Mortos:</b> Começando no 3º nível, sempre que terminar um descanso curto ou longo, você pode escolher uma perícia ou uma ferramenta com a qual não tenha proficiência, para se tornar proficiente com ela, até usar essa característica para escolher uma diferente.
-        <br><br><b>Lamentações da Cova:</b> Imediatamente depois de causar o dano do seu Ataque Furtivo a uma criatura em seu turno, você pode ter como alvo uma segunda criatura que possa ver a até 9 metros da primeira. Role metade do número de dados de Ataque Furtivo (arredondado para cima) e a segunda criatura sofre dano necrótico igual ao número rolado. Pode usar isso um número de vezes igual ao seu bônus de proficiência por descanso longo.`,
-        9: `<b>Símbolos dos Falecidos:</b> No 9º nível, como uma reação quando uma criatura que você pode ver morre a 9 metros, você pode fazer com que uma bugiganga da alma apareça em sua mão (máx. igual ao seu bônus de proficiência).
-        <br>• Enquanto a possui, tem vantagem em TR de morte e de Constituição.
-        <br>• Quando causa dano do Ataque Furtivo, pode destruir uma bugiganga para usar Lamentações da Cova sem gastar usos da característica.
-        <br>• Como uma ação, pode destruir uma bugiganga para fazer uma pergunta ao espírito associado, que responde de forma concisa em uma linguagem que conheceu em vida.`,
-        13: `<b>Caminhada Fantasma:</b> No 13º nível, como uma ação bônus, você assume uma forma espectral por 10 minutos. Tem voo 3m, pode pairar, e ataques contra você têm desvantagem. Pode se mover através de criaturas e objetos (terreno difícil), sofrendo 1d10 de dano de energia se terminar o turno dentro de um. Pode usar novamente após descanso longo ou destruindo uma bugiganga da alma na ação bônus.`,
-        17: `<b>Amigo da Morte:</b> No 17º nível, quando usa Lamentações da Cova, pode causar o dano necrótico à primeira e à segunda criatura. No final de um descanso longo, uma bugiganga da alma aparece em sua mão se você não tiver nenhuma.`
+        3: `<b>Sussurros dos Mortos:</b> Os ecos daqueles que morreram se agarram em você. Sempre que terminar um descanso curto ou longo, você pode escolher uma perícia ou proficiência em ferramenta que não possua para ganhá-la temporariamente.
+        <br><b>Lamentos da Sepultura:</b> Imediatamente após causar dano de Ataque Furtivo em seu turno, você pode canalizar o poder da morte para ferir mais alguém. Escolha uma segunda criatura a até 9 metros; ela sofre dano necrótico igual a metade dos dados de Ataque Furtivo (arredondado para cima). Uso = BP vezes por descanso longo.`,
+        9: `<b>Símbolos dos Falecidos:</b> Quando uma criatura morre a até 9 metros, você pode usar sua reação para capturar a alma em uma bugiganga (objeto Pequeno). Enquanto a possui, tem vantagem em salvaguardas de Constituição e de morte. Pode destruir a bugiganga para usar Lamentos da Sepultura sem gastar usos ou para falar com o espírito da alma presa.`,
+        13: `<b>Caminhada Fantasma:</b> Ação Bônus: Você entra numa forma espectral por 10 minutos. Tem voo 3m, pode atravessar objetos (sofre dano se parar dentro) e ataques contra você têm desvantagem.`,
+        17: `<b>Amigo da Morte:</b> Quando usa Lamentos da Sepultura, agora você causa o dano necrótico ao alvo original E ao segundo alvo. Além disso, se terminar um descanso longo sem bugigangas da alma, uma surge magicamente na sua mão.`
       },
       "Ladino (Rogue)_Lâmina da Alma (Soulknife)": {
-        3: `<b>Poder Psiônico:</b> No 3º nível, você abriga uma fonte de energia psiônica representada por dados de d6 (número igual a 2x bônus de proficiência). O dado aumenta no nível 5 (d8), 11 (d10) e 17 (d12). Recupera no descanso longo ou 1 dado por descanso curto/longo (ação bônus).
-        <br><br>  <b>Talento Psíquico:</b> Se falhar num teste de perícia/ferramenta proficiente, role o dado e some ao teste. Só gasta o dado se for bem sucedido.
-        <br><br>  <b>Sussurros Psíquicos:</b> Como ação, escolha criaturas (até seu bônus prof.) para falar telepaticamente por horas igual ao dado rolado (alcance 1,6 km). O primeiro uso após descanso longo é gratuito.
-        <br><br> <b>Lâminas Psíquicas:</b> Ao realizar a ação Atacar, você pode manifestar uma lâmina em sua mão livre. É arma corpo-a-corpo simples (acuidade, arremesso 18m), causa 1d6 + mod. habilidade como dano psíquico e desaparece após o ataque. Pode fazer um segundo ataque (ação bônus) com outra lâmina (dano 1d4).`,
-        9: `<b>Lâminas da Alma:</b> No 9º nível, você ganha novos poderes:
-        <br><br>  <b>Golpe Teleguiado:</b> Se errar ataque com Lâmina Psíquica, role dado psiônico e some à jogada. Só gasta o dado se acertar.
-        <br><br>  <b>Teletransporte Psíquico:</b> Como ação bônus, joga uma lâmina a até 3m vezes o número rolado no dado e se teletransporta para onde ela cair.`,
-        13: `<b>Véu Psíquico:</b> No 13º nível, como ação, você fica invisível (com equipamento) por 1 hora. Termina se causar dano ou forçar teste de resistência. Requer descanso longo para usar de novo ou o gasto de 1 dado psiônico.`,
-        17: `<b>Despedaçar a Mente:</b> No 17º nível, ao causar dano do Ataque Furtivo com Lâmina Psíquica, force TR de Sabedoria (CD 8+prof+Destreza). Falha: alvo atordoado por 1 min (repete teste fim de cada turno). Requer descanso longo para usar de novo ou o gasto de 3 dados psiônicos.`
+        3: `<b>Poder Psiônico:</b> Dados Psiônicos (d6). Quantidade = 2x BP.
+        <br>• <b>Talento Psíquico:</b> Se falhar num teste de perícia/ferramenta, role o dado e some. Só gasta o dado se o teste passar.
+        <br>• <b>Sussurros Psíquicos:</b> Telepatia com BP criaturas a até 1,5 km por [Resultado] horas.
+        <br><b>Lâminas Psíquicas:</b> Ao atacar (ação Atacar), manifesta lâmina de energia. Dano: 1d6 + Mod (Psíquico). Propriedades: Acuidade, Arremesso (18m). Pode fazer um segundo ataque bônus (1d4 + Mod).`,
+        9: `<b>Lâminas da Alma:</b> 
+        <br>• <b>Golpe Teleguiado:</b> Se errar ataque com lâmina, gaste dado para somar ao acerto. Só gasta dado se acertar.
+        <br>• <b>Teleporte Psíquico:</b> Ação Bônus: Arremessa lâmina e teletransporta-se [Resultado do dado x 3] metros.`,
+        13: `<b>Véu Psíquico:</b> Como uma ação, você fica invisível por 1 hora (ou até atacar/forçar TR). 1x por descanso longo ou gasta dado psiônico.`,
+        17: `<b>Despedaçar a Mente:</b> Ao causar Ataque Furtivo com a lâmina, force TR de Sabedoria ou o alvo fica atordoado por 1 minuto.`
       },
       "Monge (Monk)": {
         1: `<b>Defesa sem Armadura:</b> A partir do 1º nível, enquanto você não estiver usando nenhuma armadura e não estiver empunhando um escudo, sua Classe de Armadura será 10 + seu modificador de Destreza + seu modificador de Sabedoria.
@@ -7039,6 +7397,30 @@
         11: `<b>Disciplina Adicional:</b> Você aprende uma nova disciplina elemental de sua escolha (Algumas requerem nível 11).`,
         17: `<b>Disciplina Adicional:</b> Você aprende uma nova disciplina elemental de sua escolha (Algumas requerem nível 17).`
       },
+      "Monge (Monk)_Caminho da Misericórdia (Way of Mercy)": {
+        3: `<b>Implementos da Misericórdia:</b> Você ganha proficiência nas perícias Intuição e Medicina, e proficiência com o kit de herbalismo. Você também recebe uma máscara especial de médico (muitas vezes com aparência de pássaro ou crânio).
+        <br><b>Mão da Cura:</b> Como uma ação bônus, você pode gastar 1 ponto de ki para tocar uma criatura e restaurar um número de PV igual a uma rolagem do seu dado de Artes Marciais + seu modificador de Sabedoria. Quando você usa sua Rajada de Golpes, pode substituir um dos ataques desarmados por este efeito sem gastar ki adicional.
+        <br><b>Mão do Dano:</b> Uma vez por turno, quando você atinge uma criatura com um ataque desarmado, você pode gastar 1 ponto de ki para causar dano necrótico extra igual a uma rolagem do seu dado de Artes Marciais + seu modificador de Sabedoria.`,
+        6: `<b>Toque do Médico:</b> Sua habilidade em manipular o ki agora pode curar condições. Quando você usa sua Mão da Cura, pode remover uma das seguintes condições do alvo: cego, surdo, paralisado, envenenado ou atordoado. Além disso, sua Mão do Dano agora deixa o alvo envenenado até o final do seu próximo turno.`,
+        11: `<b>Rajada de Cura e Dano:</b> Você pode agora usar seu ki com maior eficiência. Quando você usa sua Rajada de Golpes, pode substituir ambos os ataques desarmados por usos da sua Mão da Cura sem gastar pontos de ki extras para a cura.`,
+        17: `<b>Mão da Misericórdia Suprema:</b> Como uma ação, você toca o corpo de uma criatura que morreu nas últimas 24 horas e gasta 5 pontos de ki. A criatura retorna à vida com 1 PV. Se a criatura morreu com alguma das condições citadas no Toque do Médico, elas são removidas. Uma vez que você usa esta característica, não pode usá-la novamente até terminar um descanso longo.`
+      },
+      "Monge (Monk)_Caminho do Eu Astral (Way of the Astral Self)": {
+        3: `<b>Braços do Eu Astral:</b> Como uma ação bônus, você pode gastar 1 ponto de ki para invocar os braços do seu eu astral. Criaturas a até 3 metros devem fazer TR de Destreza ou sofrer dano de energia igual a duas rolagens do seu dado de Artes Marciais. Por 10 minutos:
+        <br>• Você pode usar seu modificador de Sabedoria em vez de Força em testes e salvaguardas de Força.
+        <br>• Você pode usar os braços astrais para ataques desarmados (alcance aumenta em 1,5m).
+        <br>• Os ataques causam dano de energia em vez de dano normal.`,
+        6: `<b>Semblante do Eu Astral:</b> Como uma ação bônus (ou parte da invocação dos braços), gasta 1 ponto de ki para invocar o semblante astral por 10 minutos:
+        <br>• <b>Visão de Espírito:</b> Você vê normalmente em escuridão mágica e normal (36m).
+        <br>• <b>Sabedoria do Espírito:</b> Vantagem em testes de Intuição e Percepção.
+        <br>• <b>Palavras do Espírito:</b> Pode direcionar sua fala para uma criatura a até 18m ou amplificar sua voz para ser ouvida a até 180m.`,
+        11: `<b>Corpo do Eu Astral:</b> Quando você tem tanto os braços quanto o semblante invocados, você pode manifestar a armadura do eu astral:
+        <br>• <b>Deflexão de Energia:</b> Quando sofre dano de ácido, frio, fogo, elétrico ou trovejante, pode usar sua reação para reduzir o dano em valor igual a uma rolagem do seu dado de Artes Marciais + Mod. Sabedoria.
+        <br>• <b>Golpes Fortalecidos:</b> Uma vez por turno, ao atingir com os braços astrais, causa dano extra igual ao seu dado de Artes Marciais.`,
+        17: `<b>Eu Astral Desperto:</b> Como uma ação bônus, gasta 5 pontos de ki para invocar a forma astral completa por 10 minutos. Além dos benefícios anteriores:
+        <br>• <b>Armadura Astral:</b> +2 de bônus na CA.
+        <br>• <b>Ataque Astral:</b> Você pode realizar três ataques em vez de dois quando usa a ação Atacar no seu turno com os braços astrais.`
+      },
       "Paladino (Paladin)": {
         1: `<b>Sentido Divino:</b> A presença de um mal forte é percebida por seus sentidos como um odor nocivo e o bem poderoso soa como uma música celestial em seus ouvidos. Com uma ação, você pode abrir sua consciência para detectar tais forças. Até o final do seu próximo turno, você sabe a localização de qualquer celestial, corruptor ou morto-vivo a até 18 metros de você que não esteja sob cobertura total. Você sabe o tipo (celestial, corruptor ou morto-vivo) de qualquer ser cuja presença você sinta, mas não sua identidade específica. Dentro do mesmo alcance, você também detecta a presença de qualquer lugar ou objeto que tenha sido consagrado ou profanado. Você pode usar essa característica um número de vezes igual a 1 + seu modificador de Carisma. Você recupera todos os usos gastos quando termina um descanso longo.
         <br><br><b>Cura pelas Mãos:</b> Seu toque abençoado pode curar ferimentos. Você tem uma reserva de poder curativo que se regenera quando você termina um descanso longo. Com essa reserva, você pode restaurar um número total de pontos de vida igual ao seu nível de paladino multiplicado por 5. 
@@ -7068,7 +7450,6 @@
         19: `<b>Incremento no Valor de Habilidade:</b> +2 em um atributo ou +1 em dois (Máximo 20).`,
         20: `<b>Característica de Juramento Sagrado:</b> Você recebe a habilidade suprema do seu juramento.`
       },
-
       "Paladino (Paladin)_Juramento de Devoção (Oath of Devotion)": {
         3: `<b>Magias de Juramento:</b> 3º nível: <i>proteção contra o bem e mal, santuário</i>.
         <br><br><b>Canalizar Divindade: Arma Sagrada:</b> Com uma ação, você imbui uma arma que esteja segurando com energia positiva. Por 1 minuto, você adiciona seu modificador de Carisma às jogadas de ataque (mínimo +1). A arma emite luz plena num raio de 6 metros.
@@ -7077,7 +7458,6 @@
         15: `<b>Pureza de Espírito:</b> Você está sob o efeito permanente da magia <i>proteção contra o bem e mal</i>.`,
         20: `<b>Nimbo Sagrado:</b> Com uma ação, você emana uma aura de luz solar por 1 minuto. Luz plena brilha num raio de 9 metros. Inimigos que começarem o turno na luz sofrem 10 de dano radiante. Você tem vantagem em TR contra magias conjuradas por mortos-vivos ou corruptores.`
       },
-
       "Paladino (Paladin)_Juramento dos Anciões (Oath of the Ancients)": {
         3: `<b>Magias de Juramento:</b> 3º nível: <i>fogo das fadas, auxílio divino</i>.
         <br><br><b>Canalizar Divindade: Ira da Natureza:</b> Com uma ação, vinhas espectrais tentam enredar uma criatura a até 3 metros. O alvo deve passar num TR de Força ou Destreza ou ficará impedido.
@@ -7086,7 +7466,6 @@
         15: `<b>Sentinela Imortal:</b> Quando reduzido a 0 PV e não morrer imediatamente, você pode escolher cair para 1 PV (1x por descanso longo). Além disso, você não sofre as penalidades da velhice e não pode ser envelhecido magicamente.`,
         20: `<b>Campeão Ancião:</b> Você pode assumir a forma de uma força da natureza por 1 minuto. Você recupera 10 PV no início de cada turno; pode conjurar magias de paladino de 1 ação como ação bônus; e inimigos a até 3 metros têm desvantagem em TR contra suas magias e Canalizar Divindade.`
       },
-
       "Paladino (Paladin)_Juramento de Vingança (Oath of Vengeance)": {
         3: `<b>Magias de Juramento:</b> 3º nível: <i>perdição, marca do caçador</i>.
         <br><br><b>Canalizar Divindade: Abjurar Inimigo:</b> Com uma ação, escolha uma criatura a até 18 metros. Ela deve passar num TR de Sabedoria ou ficará amedrontada e com deslocamento 0 por 1 minuto (corruptores e mortos-vivos têm desvantagem).
@@ -7094,6 +7473,28 @@
         7: `<b>Vingador Implacável:</b> Quando você atingir uma criatura com um ataque de oportunidade, você pode se mover até metade do seu deslocamento como parte da mesma reação sem provocar ataques de oportunidade.`,
         15: `<b>Alma de Vingança:</b> Quando uma criatura sob efeito do seu Voto de Inimizade realizar um ataque, você pode usar sua reação para realizar um ataque corpo-a-corpo contra ela se ela estiver ao seu alcance.`,
         20: `<b>Anjo da Vingança:</b> Por 1 hora, você assume uma forma angelical (asas de voo 18m) e emana uma aura de ameaça de 9 metros. Inimigos na aura devem passar num TR de Sabedoria ou ficarão amedrontados. Ataques contra alvos amedrontados pela aura têm vantagem.`
+      },
+      "Paladino (Paladin)_Juramento da Glória (Oath of Glory)": {
+        3: `<b>Magias:</b> 3º nível: <i>auxílio divino, riso histérico de tasha</i>.
+        <br><b>Canalizar Divindade: Atleta Inigualável:</b> Como ação bônus, você ganha vantagem em testes de Atletismo e Acrobacia, dobra a capacidade de carga e aumenta a distância de saltos em 3 metros por 10 minutos.
+        <br><b>Canalizar Divindade: Punição Inspiradora:</b> Logo após atingir uma criatura com sua Punição Divina, você distribui PV temporários igual a 2d8 + seu nível de paladino entre criaturas a até 9 metros.`,
+        7: `<b>Aura de Alacridade:</b> Você emana uma aura de energia realizadora. Seu deslocamento aumenta em 3 metros. Além disso, o deslocamento de qualquer aliado que comece o turno a até 1,5 metro de você também aumenta em 3 metros até o final do turno dele. No nível 18, o raio da aura aumenta para 3 metros.`,
+        15: `<b>Defesa Gloriosa:</b> Quando você ou outra criatura que você possa ver a até 3 metros for atingida por um ataque, você pode usar sua reação para conceder um bônus na CA contra aquele ataque igual ao seu modificador de Carisma. Se o ataque errar, você pode realizar um ataque com arma contra o atacante como parte da mesma reação.`,
+        20: `<b>Lenda Viva:</b> Como uma ação, você se torna um avatar de glória por 1 minuto:
+        <br>• Você tem vantagem em todos os testes de Carisma.
+        <br>• Uma vez em cada um de seus turnos, se você errar um ataque com arma, você pode fazer com que ele atinja o alvo em vez disso.
+        <br>• Se falhar em um TR, você pode usar sua reação para refazer o teste e usar o novo resultado.`
+      },
+      "Paladino (Paladin)_Juramento dos Vigilantes (Oath of the Watchers)": {
+        3: `<b>Magias:</b> 3º nível: <i>alarme, detectar magia</i>.
+        <br><b>Canalizar Divindade: Vontade do Vigilante:</b> Como ação, você concede a BP criaturas a até 9 metros vantagem em TR de Inteligência, Sabedoria e Carisma por 1 minuto.
+        <br><b>Canalizar Divindade: Abjurar o Extraplanar:</b> Como ação, cada elemental, fada, ínfero ou aberração a até 9 metros faz TR de Sabedoria ou será expulso por 1 minuto (igual à Expulsão de Mortos-Vivos).`,
+        7: `<b>Aura do Sentinela:</b> Você emana uma aura que aguça os reflexos. Você e aliados a até 3 metros ganham um bônus na iniciativa igual ao seu BP. No nível 18, o alcance aumenta para 9 metros.`,
+        15: `<b>Reprimenda Vigilante:</b> Quando você ou uma criatura que você vê a até 9 metros tem sucesso em um TR de INT, SAB ou CAR, você pode usar sua reação para causar 2d8 + Mod. Carisma de dano de energia ao conjurador da magia ou efeito.`,
+        20: `<b>Baluarte Mortal:</b> Como uma ação, você se torna um guardião supremo por 1 minuto:
+        <br>• Você ganha Visão Verdadeira num raio de 36 metros.
+        <br>• Você tem vantagem em jogadas de ataque contra aberrações, elementais, fadas e ínferos.
+        <br>• Quando você atinge uma criatura com um ataque, pode forçá-la a um TR de Carisma ou será banida para seu plano nativo (se não for o plano atual).`
       },
       "Patrulheiro (Ranger)": {
         1: `<b>Inimigo Favorito:</b> Você tem experiência significativa estudando, rastreando, caçando e, até mesmo, falando com certos tipos de inimigos. Escolha um tipo de inimigo favorito: bestas, celestiais, constructos, corruptores, dragões, elementais, fadas, gigantes, monstruosidades, lodos, plantas ou mortos-vivos. Alternativamente, você pode escolher duas raças de humanoides (como gnomos e orcs). 
@@ -7132,7 +7533,6 @@
         19: `<b>Incremento no Valor de Habilidade:</b> +2 em um atributo ou +1 em dois (Máximo 20).`,
         20: `<b>Matador de Inimigos:</b> Você se torna um caçador incomparável. Uma vez em cada um de seus turnos, você pode adicionar seu modificador de Sabedoria na jogada de ataque ou na jogada de dano de um ataque contra um de seus inimigos favoritos. Você escolhe usar antes ou depois da rolagem.`
       },
-
       "Patrulheiro (Ranger)_Caçador (Hunter)": {
         3: `<b>Presa do Caçador:</b> Escolha uma das seguintes opções:
         <br><br> <b>Assassino de Colossos:</b> Quando atinge criatura com arma, causa +1d8 de dano extra se ela estiver abaixo do máximo de PV (1x por turno).
@@ -7157,6 +7557,27 @@
         7: `<b>Treinamento Excepcional:</b> No seu turno, se a besta não atacar, você pode usar uma ação bônus para comandá-la a usar a ação Correr, Desengajar, Esquivar ou Ajudar. Além disso, os ataques da besta contam como mágicos.`,
         11: `<b>Fúria Bestial:</b> Quando você comanda sua besta a usar a ação de Ataque, ela pode realizar dois ataques (ou usar a ação de Ataque Múltiplo, se possuir).`,
         15: `<b>Compartilhar Magias:</b> Quando você conjura uma magia visando a si mesmo, você pode fazer com que a magia também afete seu companheiro animal, desde que ele esteja a até 9 metros de você.`
+      },
+      "Patrulheiro (Ranger)_Andarilho Feérico (Fey Wanderer)": {
+        3: `<b>Magias:</b> 3º nível: <i>fogo das fadas</i>. Além disso, você ganha um traço feérico (como flores no cabelo ou cheiro de canela).
+        <br><b>Golpes Pavorosos:</b> Você infunde seus ataques com a mente caótica de Faéria. Uma vez por turno, ao atingir uma criatura com uma arma, causa 1d4 de dano psíquico extra. O dano aumenta para 1d6 no nível 11.
+        <br><b>Glamour de Outro Mundo:</b> Sua presença é aumentada por magia feérica. Você adiciona seu modificador de Sabedoria (mínimo de +1) a todos os seus testes de Carisma. Além disso, ganha proficiência em Enganação, Atuação ou Persuasão.`,
+        7: `<b>Reviravolta Sedutora:</b> Você tem vantagem em TR contra ser encantado ou amedrontado. Se você ou uma criatura que você vê a até 36m tiver sucesso num TR contra esses efeitos, você pode usar sua reação para forçar outra criatura a até 36m a um TR de Sabedoria contra sua CD ou ficará encantada ou amedrontada por você por 1 minuto.`,
+        11: `<b>Reforços Feéricos:</b> Você pode conjurar <i>convocar feérico</i> sem gastar componentes materiais. Você pode conjurá-la uma vez por descanso longo sem espaço de magia. Quando conjurada desta forma, a magia não requer concentração e dura 1 minuto.`,
+        15: `<b>Presença de Névoa:</b> Você pode se desfazer em névoa. Você pode conjurar <i>passo nebuloso</i> um número de vezes igual ao seu BP por descanso longo sem gastar espaços de magia. Quando o faz, pode levar uma criatura voluntária a até 1,5 metro de você.`
+      },
+      "Patrulheiro (Ranger)_Protetor do Enxame (Swarmkeeper)": {
+        3: `<b>Magias:</b> 3º nível: <i>mãos mágicas</i> (o enxame age como a mão), <i>fada do fogo</i>.
+        <br><b>Enxame Agrupado:</b> Um enxame de espíritos da natureza o acompanha. Uma vez por turno, ao atingir uma criatura com um ataque, o enxame pode:
+        <br>• Causar 1d6 de dano de energia extra.
+        <br>• Forçar o alvo a um TR de Força contra sua CD ou ser empurrado 4,5 metros.
+        <br>• O enxame move você 1,5 metro horizontalmente em um espaço desocupado.`,
+        7: `<b>Maré de Agitação:</b> Você pode condensar seu enxame para carregá-lo. Como uma ação bônus, você ganha deslocamento de voo de 3 metros e pode pairar até o final do seu próximo turno. Uso = BP vezes por descanso longo.`,
+        11: `<b>Enxame Poderoso:</b> Seu enxame se torna mais forte:
+        <br>• O dano do enxame aumenta para 1d8.
+        <br>• Se o enxame empurrar uma criatura, você pode derrubá-la caída se ela falhar no TR.
+        <br>• Quando o enxame move você, você ganha meia cobertura (+2 CA/TR Des) até o início do seu próximo turno.`,
+        15: `<b>Dispersão do Enxame:</b> Quando você sofre dano, você pode usar sua reação para se dissipar momentaneamente no seu enxame. Você ganha resistência àquela instância de dano e se teletransporta para um espaço desocupado a até 9 metros. Uso = BP vezes por descanso longo.`
       },
       "Mago (Wizard)": {
         1: `<b>Conjuração:</b> Como um estudioso da magia arcana, você possui um grimório contendo magias que mostram os primeiros vislumbres do seu verdadeiro poder.
@@ -7184,7 +7605,6 @@
         10: `<b>Abjuração Aprimorada:</b> Quando você conjurar uma magia de abjuração que requeira que você realize um teste de habilidade como parte da conjuração (como em <i>contramágica</i> ou <i>dissipar magia</i>), você adiciona seu bônus de proficiência a esse teste.`,
         14: `<b>Resistência à Magia:</b> Você tem vantagem em testes de resistência contra magia. Além disso, você tem resistência contra o dano de magias.`
       },
-
       "Mago (Wizard)_Escola de Conjuração (School of Conjuration)": {
         2: `<b>Conjuração Instruída:</b> O custo e tempo para copiar magias de conjuração é reduzido à metade.
         <br><br><b>Conjuração Menor:</b> Você pode usar sua ação para conjurar um objeto inanimado em sua mão ou no chão, em um espaço desocupado que você possa ver a até 3 metros. O objeto não pode ter mais de 90 cm de lado e não pode pesar mais de 5 kg. Sua forma deve ser a de um objeto não-mágico que você já tenha visto. O objeto é visivelmente mágico e desaparece após 1 hora, se sofrer dano ou se você usar essa característica novamente.`,
@@ -7192,7 +7612,6 @@
         10: `<b>Conjuração Focada:</b> Enquanto você estiver concentrado em uma magia de conjuração, sua concentração não pode ser interrompida por sofrer dano.`,
         14: `<b>Invocações Resistentes:</b> Qualquer criatura que você invocar ou criar com uma magia de conjuração terá 30 pontos de vida temporários.`
       },
-
       "Mago (Wizard)_Escola de Adivinhação (School of Divination)": {
         2: `<b>Adivinhação Instruída:</b> O custo e tempo para copiar magias de adivinhação é reduzido à metade.
         <br><br><b>Presságio:</b> Quando você termina um descanso longo, role dois d20s e anote os números rolados. Você pode substituir qualquer jogada de ataque, teste de resistência ou teste de habilidade feito por você ou por outra criatura que você possa ver por uma dessas rolagens de presságio. Você deve fazer isso antes da rolagem ocorrer e pode usar cada rolo de presságio apenas uma vez por dia.`,
@@ -7200,7 +7619,6 @@
         10: `<b>O Terceiro Olho:</b> Você pode usar sua ação para abrir seu terceiro olho. Escolha um dos seguintes benefícios, que dura até você ficar incapacitado ou terminar um descanso curto ou longo: Visão no Escuro (18m), Visão Etérea (dentro de 18m), Compreensão Maior (ler qualquer idioma) ou Ver Invisibilidade (dentro de 3 metros).`,
         14: `<b>Presságio Maior:</b> Você rola três d20s para a sua característica Presságio, em vez de dois.`
       },
-
       "Mago (Wizard)_Escola de Encantamento (School of Enchantment)": {
         2: `<b>Encantamento Instruído:</b> O custo e tempo para copiar magias de encantamento é reduzido à metade.
         <br><br><b>Olhar Hipnotizante:</b> Com uma ação, escolha uma criatura a até 1,5 metro de você que possa ver ou ouvir você. Ela deve passar num teste de resistência de Sabedoria contra a CD das suas magias ou ficará hipnotizada até o fim do seu próximo turno. O deslocamento dela cai para 0 e ela fica incapacitada. Você pode usar sua ação nos turnos seguintes para manter o efeito, mas ele encerra se você se afastar ou a criatura sofrer dano.`,
@@ -7208,7 +7626,6 @@
         10: `<b>Dividir Encantamento:</b> Quando você conjurar uma magia de encantamento de 1º nível ou superior que tenha apenas uma criatura como alvo, você pode fazer com que ela afete uma segunda criatura.`,
         14: `<b>Alterar Memórias:</b> Quando você conjura uma magia de encantamento para enfeitiçar uma ou mais criaturas, você pode fazer com que uma delas não perceba que foi enfeitiçada. Além disso, você pode usar sua ação para fazer o alvo esquecer parte do tempo em que esteve enfeitiçado (até um número de horas igual a 1 + Mod. Carisma).`
       },
-
       "Mago (Wizard)_Escola de Evocação (School of Evocation)": {
         2: `<b>Evocação Instruída:</b> O custo e tempo para copiar magias de evocação é reduzido à metade.
         <br><br><b>Esculpir Magias:</b> Você pode criar bolsões de segurança em suas evocações. Quando conjura uma magia de evocação que afete outras criaturas que você possa ver, você pode escolher um número de criaturas igual a 1 + o nível da magia. As criaturas escolhidas passam automaticamente nos testes de resistência contra a magia e não sofrem dano se normalmente sofreriam metade.`,
@@ -7216,7 +7633,6 @@
         10: `<b>Evocação Potencializada:</b> Você pode adicionar seu modificador de Inteligência ao dano de qualquer magia de evocação de mago que você conjurar.`,
         14: `<b>Sobrecarga:</b> Você pode maximizar o dano de magias de mago de 1º ao 5º nível. Na primeira vez que fizer isso antes de um descanso longo, não sofre nada. Se usar de novo, você sofre 2d12 de dano necrótico para cada nível da magia. Esse dano ignora resistência e imunidade.`
       },
-
       "Mago (Wizard)_Escola de Ilusão (School of Illusion)": {
         2: `<b>Ilusão Instruída:</b> O custo e tempo para copiar magias de ilusão é reduzido à metade.
         <br><br><b>Ilusão Menor Aprimorada:</b> Você aprende o truque <i>ilusão menor</i>. Se já o conhecer, aprende outro truque de mago. Quando você conjura <i>ilusão menor</i>, você pode criar tanto um som quanto uma imagem com uma única conjuração.`,
@@ -7224,7 +7640,6 @@
         10: `<b>Eu Ilusório:</b> Você pode criar uma duplicata ilusória de si mesmo como uma reação instintiva quando uma criatura realizar uma jogada de ataque contra você. O ataque erra você automaticamente e a ilusão desaparece. Você recupera essa característica após um descanso curto ou longo.`,
         14: `<b>Realidade Ilusória:</b> Você aprende o segredo de tecer energia sombria em suas ilusões para torná-las reais. Quando você conjurar uma magia de ilusão de 1º nível ou superior, você pode escolher um objeto inanimado e não-mágico que faça parte da ilusão e torná-lo real por 1 minuto. O objeto não pode causar dano.`
       },
-
       "Mago (Wizard)_Escola de Necromancia (School of Necromancy)": {
         2: `<b>Necromancia Instruída:</b> O custo e tempo para copiar magias de necromancia é reduzido à metade.
         <br><br><b>Colheita Sinistra:</b> Você ganha a habilidade de colher energia vital de criaturas que você mata. Uma vez por turno, quando você matar uma ou mais criaturas com uma magia de 1º nível ou superior, você recupera PV iguais ao dobro do nível da magia (ou triplo se for da escola de Necromancia). Você não ganha esse benefício por matar constructos ou mortos-vivos.`,
@@ -7232,7 +7647,6 @@
         10: `<b>Acostumado à Morte-Vida:</b> Você tem resistência a dano necrótico e seu limite de pontos de vida máximos não pode ser reduzido.`,
         14: `<b>Comandar Mortos-Vivos:</b> Você pode usar sua ação para tentar subjugar um morto-vivo. Ele deve fazer um TR de Carisma contra a CD da sua magia. Se falhar, ele se torna amigável a você e obedece seus comandos. Se o morto-vivo tiver Inteligência 8 ou mais, ele tem vantagem no teste; se tiver 12 ou mais, ele repete o teste ao final de cada hora.`
       },
-
       "Mago (Wizard)_Escola de Transmutação (School of Transmutation)": {
         2: `<b>Transmutação Instruída:</b> O custo e tempo para copiar magias de transmutação é reduzido à metade.
         <br><br><b>Alquimia Menor:</b> Você pode alterar temporariamente as propriedades físicas de um objeto não-mágico, transformando-o em madeira, pedra, ferro, cobre ou prata. Você deve gastar 10 minutos para cada 0,3 metros cúbicos de material. O objeto reverte à forma original após 1 hora ou se você perder a concentração.`,
@@ -7240,6 +7654,27 @@
         10: `<b>Metamorfo:</b> Você adiciona <i>metamorfose</i> ao seu grimório. Você pode conjurar <i>metamorfose</i> em si mesmo sem gastar espaços de magia, mas se transforma em uma besta com ND 1 ou menor. Você recupera essa característica após um descanso curto ou longo.`,
         14: `<b>Mestre Transmutador:</b> Você pode consumir a energia da sua Pedra de Transmutador para um efeito: Transformação Maior (objeto em outro), Panaceia (cura tudo e PV total), Restaurar Vida (conjura <i>reviver os mortos</i>) ou Restaurar Juventude (reduz idade aparente). A pedra é destruída.`
       },
+      "Mago (Wizard)_Lâmina Cantante (Bladesinging)": {
+        2: `<b>Treinamento em Guerra e Canção:</b> Você ganha proficiência com armaduras leves, um tipo de arma de uma mão à sua escolha e na perícia Atuação.
+        <br><b>Cantoria da Lâmina:</b> Como ação bônus, você inicia uma cantoria de 1 minuto (2x por descanso longo). Enquanto ativa:
+        <br>• Bônus na CA igual ao seu modificador de Inteligência (mínimo de +1).
+        <br>• Deslocamento de caminhada aumenta em 3 metros.
+        <br>• Vantagem em testes de Acrobacia.
+        <br>• Bônus em testes de concentração de Constituição igual ao seu Mod. Inteligência.`,
+        6: `<b>Ataque Extra Especial:</b> Você pode atacar duas vezes em vez de uma sempre que realizar a ação Atacar no seu turno. Além disso, você pode substituir um desses ataques por um de seus truques que tenha o tempo de conjuração de 1 ação.`,
+        10: `<b>Canção de Defesa:</b> Enquanto sua Cantoria da Lâmina estiver ativa, quando você sofrer dano, pode usar sua reação para gastar um espaço de magia e reduzir o dano sofrido em um valor igual a cinco vezes o nível do espaço gasto.`,
+        14: `<b>Canção de Vitória:</b> Enquanto sua Cantoria da Lâmina estiver ativa, você adiciona seu modificador de Inteligência (mínimo de +1) ao dano de seus ataques com arma corpo-a-corpo.`
+      },
+      "Mago (Wizard)_Ordem dos Escribas (Order of Scribes)": {
+        2: `<b>Pena do Mago:</b> Como uma ação, você cria magicamente uma pena que não precisa de tinta, escreve em qualquer superfície e pode apagar o que escreveu. Ela reduz o tempo de cópia de magias para 2 minutos por nível de magia.
+        <br><b>Grimório Desperto:</b> Seu livro de magias ganha consciência. Enquanto o segura:
+        <br>• Você pode usá-lo como foco de conjuração.
+        <br>• Ao conjurar magia de mago usando um espaço, pode trocar o tipo de dano pelo de outra magia do mesmo nível no seu livro.
+        <br>• Você pode conjurar uma magia de mago como ritual usando o tempo normal de conjuração (1x por descanso longo).`,
+        6: `<b>Manifestar Mente:</b> Como uma ação bônus, você manifesta a mente do seu livro como uma imagem espectral Minúscula a até 18m. Você pode ver e ouvir através dela. Quando conjura uma magia, pode fazê-la originar-se do espaço da mente manifestada (BP vezes por descanso longo).`,
+        10: `<b>Mestre Escritor:</b> Sempre que terminar um descanso longo, você pode criar um pergaminho mágico contendo uma magia de 1º ou 2º nível do seu livro. A magia é conjurada no pergaminho como se usasse um espaço de 1 nível acima. Só você pode usar o pergaminho e ele some no próximo descanso longo.`,
+        14: `<b>Uno com a Palavra:</b> Enquanto sua mente manifestada estiver ativa, se você sofrer dano, pode usar sua reação para fazer a mente absorver o golpe e desaparecer. Role 3d6; você ignora um número de páginas do seu livro igual ao resultado. Você não pode conjurar as magias daquelas páginas até terminar 1d6 descansos longos.`
+      }
     };
     const mecanicasPHB = {
       races: {
@@ -7265,6 +7700,7 @@
         "Gnomo das Rochas (Rock Gnome)": { CON: 1 },
       },
       classes: {
+        "Artífice (Artificer)": { hp: 8, saves: ["CON", "INT"], hitDice: "1d8" },
         "Bárbaro (Barbarian)": { hp: 12, saves: ["FOR", "CON"], hitDice: "1d12" },
         "Bardo (Bard)": { hp: 8, saves: ["DES", "CAR"], hitDice: "1d8" },
         "Bruxo (Warlock)": { hp: 8, saves: ["SAB", "CAR"], hitDice: "1d8" },
@@ -7344,6 +7780,7 @@
         "Gnomo das Rochas (Rock Gnome)": "<span class='guia-label'>Resumo:</span> Como um gnomo das rochas, você possui uma resiliência natural e um talento para engenhosidade mecânica. <br><br><b class='guia-label2'>Aumento no Valor de Atributo:</b> Seu valor de Constituição aumenta em 1. <br><br><b class='guia-label2'>Conhecimento de Artífice:</b> Sempre que você fizer um teste de Inteligência (História) relacionado a itens mágicos, objetos alquímicos ou mecanismos tecnológicos, você pode adicionar o dobro do seu bônus de proficiência. <br><br><b class='guia-label2'>Funileiro:</b> Você possui proficiência com ferramentas de funileiro. Você pode gastar 1 hora e 10 po em materiais para construir um dispositivo mecânico miúdo (Isqueiro, Brinquedo ou Caixa de Música)."
       },
       classes: {
+        "Artífice (Artificer)": "<span class='guia-label'>Resumo:</span> Mestres da invenção mágica, os artífices exploram a natureza da magia como se fosse uma ciência, transformando objetos comuns em itens de poder extraordinário. Eles veem a magia como um sistema a ser decifrado e manipulado através de ferramentas, engenhosidade e invenção.<br><br><span class='guia-label'>Dados de vida:</span> 1d8 por nível de artífice.<br><br><span class='guia-label'>Salvaguardas:</span> Constituição e Inteligência.<br><br><span class='guia-label'>Proficiências:</span><br>• Armaduras: Armaduras leves, médias e escudos.<br>• Armas: Armas simples e armas de fogo (se o Mestre permitir o uso de armas de fogo no cenário).<br>• Ferramentas: Ferramentas de ladrão, ferramentas de funileiro e um tipo de ferramenta de artesão à sua escolha.<br>• Perícias: Escolha duas entre Arcanismo, História, Investigação, Medicina, Natureza, Percepção e Prestidigitação.<br><br><span class='guia-label'>Equipamentos:</span> Você começa com o seguinte equipamento, além do equipamento concedido pelo seu antecedente:<br>• (a) duas armas simples à sua escolha ou (b) uma besta leve e 20 virotes.<br>• (a) armadura de couro batido ou (b) brunea.<br>• Ferramentas de ladrão e um pacote de explorador de masmorras.",
         "Bárbaro (Barbarian)": "<span class='guia-label'>Resumo:</span> Para um bárbaro, a fúria é mais do que apenas uma emoção; é a ferocidade de um predador encurralado, o ímpeto implacável de uma tempestade, a agitação frenética do mar. <br><br><span class='guia-label'>Dados de vida:</span> 1d12 por nível de bárbaro.<br><br><span class='guia-label'>Salvaguardas:</span> Força e Constituição.<br><br><span class='guia-label'>Proficiências:</span><br>• Armaduras: Armaduras leves, médias e escudos.<br>• Armas: Armas simples e marciais.<br>• Ferramentas: Nenhuma.<br>• Perícias: Escolha duas entre Adestrar Animais, Atletismo, Intimidação, Natureza, Percepção e Sobrevivência.<br><br><span class='guia-label'>Equipamentos:</span> Você começa com o seguinte equipamento, além do equipamento concedido pelo seu antecedente:<br>• (a) um machado grande ou (b) qualquer arma marcial corpo-a-corpo.<br>• (a) duas machadinhas ou (b) qualquer arma simples.<br>• Um pacote de explorador e quatro azagaias.",
         "Bardo (Bard)": "<span class='guia-label'>Resumo:</span> O bardo tece magia através de palavras e música para inspirar aliados, desmoralizar inimigos, manipular mentes, curar ferimentos e criar ilusões. Quer como erudito, skald ou malandro, um bardo usa a sua arte para extrair magia da trama do cosmos.<br><br><span class='guia-label'>Dados de vida:</span> 1d8 por nível de bardo. <br><br><span class='guia-label'>Salvaguardas:</span> Destreza e Carisma.<br><br><span class='guia-label'>Proficiências:</span><br>• Armaduras: Armaduras leves.<br>• Armas: Armas simples, bestas de mão, espadas longas, rapieiras e espadas curtas.<br>• Ferramentas: Três instrumentos musicais à sua escolha.<br>• Perícias: Escolha quaisquer três.<br><br><span class='guia-label'>Equipamentos:</span> Você começa com o seguinte equipamento, além do equipamento concedido pelo seu antecedente:<br>• (a) uma rapieira, (b) uma espada longa ou (c) qualquer arma simples.<br>• (a) um pacote de diplomata ou (b) um pacote de artista.<br>• (a) um alaúde ou (b) qualquer outro instrumento musical.<br>• Armadura de couro e uma adaga.",
         "Bruxo (Warlock)": "<span class='guia-label'>Resumo:</span> Bruxos são investigadores dos segredos selados no universo, buscando seu conhecimento através de pactos feitos com entidades misteriosas de poder sobrenatural através de saber acadêmico e místico.<br><br><span class='guia-label'>Dados de vida:</span> 1d8 por nível de bruxo.<br><br><span class='guia-label'>Salvaguardas:</span> Sabedoria e Carisma.<br><br><span class='guia-label'>Proficiências:</span><br>• Armaduras: Armaduras leves.<br>• Armas: Armas simples.<br>• Ferramentas: Nenhuma.<br>• Perícias: Escolha duas entre Arcanismo, Enganação, História, Intimidação, Natureza, Investigação e Religião.<br><br><span class='guia-label'>Equipamentos:</span> Você começa com o seguinte equipamento, além do equipamento concedido pelo seu antecedente:<br>• (a) uma besta leve e 20 virotes ou (b) qualquer arma simples.<br>• (a) uma algibeira de componentes ou (b) um foco arcano.<br>• (a) um pacote de estudioso ou (b) um pacote de explorador de masmorras.<br>• Armadura de couro, qualquer arma simples e duas adagas.",
@@ -7358,18 +7795,30 @@
         "Mago (Wizard)": "<span class='guia-label'>Resumo:</span> Magos são usuários de magia soberanos que transformam a realidade através de estudo, dedicação e um grimório repleto de segredos tirando proveito da trama mística que permeia o cosmos.<br><br><span class='guia-label'>Dados de vida:</span> 1d6 por nível de mago.<br><br><span class='guia-label'>Salvaguardas:</span> Inteligência e Sabedoria.<br><br><span class='guia-label'>Proficiências:</span><br>• Armaduras: Nenhuma.<br>• Armas: Adagas, dardos, fundas, bordões e bestas leves.<br>• Ferramentas: Nenhuma.<br>• Perícias: Escolha duas entre Arcanismo, História, Intuição, Investigação, Medicina e Religião.<br><br><span class='guia-label'>Equipamentos:</span> Você começa com o seguinte equipamento, além do equipamento concedido pelo seu antecedente:<br>• (a) um bordão ou (b) uma adaga.<br>• (a) uma algibeira de componentes ou (b) um foco arcano.<br>• (a) um pacote de estudioso ou (b) um pacote de explorador.<br>• Um grimório."
       },
       subclasses: {
+        "Artífice (Artificer)": {
+          "Alquimista (Alchemist)": "Um alquimista é um especialista em combinar reagentes para produzir efeitos místicos. Alquimistas usam suas criações para dar e sugar a vida.",
+          "Armeiro (Armorer)": "Um artífice que se especializa como um armeiro modifica armaduras para funcionar quase como uma segunda pele. A armadura é aprimorada para afiar a magia do artífice, liberar ataques potentes e gerar uma defesa formidável.",
+          "Artilheiro (Artillerist)": "Um artilheiro se especializa em usar magia para arremessar energia, projéteis e explosões no campo de batalha. Este poder destrutivo é valorizado por exércitos nas guerras em muitos mundos diferentes.",
+          "Ferreiro de Batalha (Battle Smith)": "Uma combinação de protetor e médico, um ferreiro de batalha é um especialista em defender os outros e reparar tanto materiais quanto pessoas. Para auxiliar em seu trabalho, um ferreiro de batalha é acompanhado por um defensor de aço."
+        },
         "Bárbaro (Barbarian)": {
           "Caminho do Furioso (Path of the Berserker)": "Para alguns bárbaros, a fúria é um meio para um fim – esse fim é a violência. O Caminho do Furioso é um caminho de fúria livre, entumecido em sangue. A medida que você entra na fúria de um furioso, você vibra no caos da batalha, despreocupado com a sua própria saúde ou bem-estar.",
-          "Caminho do Guerreiro Totêmico (Path of the Totem Warrior)": "O Caminho do Guerreiro Totêmico é uma jornada espiritual, à partir do momento que o bárbaro aceita um espirito animal como seu guia, protetor e inspiração. Em batalha, seu espirito totêmico preenche você com força sobrenatural, adicionando combustível mágico a sua fúria bárbara. A maioria das tribos bárbaras consideram que um animal totêmico possui parentesco a um clã em particular. Em tais casos, é incomum a um indivíduo possuir mais de um espirito animal totêmico, apesar de existirem exceções."
+          "Caminho do Guerreiro Totêmico (Path of the Totem Warrior)": "O Caminho do Guerreiro Totêmico é uma jornada espiritual, à partir do momento que o bárbaro aceita um espirito animal como seu guia, protetor e inspiração. Em batalha, seu espirito totêmico preenche você com força sobrenatural, adicionando combustível mágico a sua fúria bárbara. A maioria das tribos bárbaras consideram que um animal totêmico possui parentesco a um clã em particular. Em tais casos, é incomum a um indivíduo possuir mais de um espirito animal totêmico, apesar de existirem exceções.",
+          "Trilha da Fera (Path of the Beast)": "Bárbaros que seguem a Trilha da Fera retiram sua fúria de uma fagulha bestial que queima dentro de suas almas. Aquela fera vem à tona nos espasmos da fúria, transformando fisicamente o bárbaro.",
+          "Trilha da Magia Selvagem (Path of Wild Magic)": "Bárbaros cheios de magia seguem a Trilha da Magia Selvagem. Muitos lugares no multiverso abundam em beleza, emoção intensa e magia desenfreada que podem influenciar profundamente as pessoas."
         },
         "Bardo (Bard)": {
           "Colégio do Conhecimento (College of Lore)": "Bardos do Colégio do Conhecimento conhecem algo sobre a maioria das coisas, coletando pedaços de conhecimento de fontes tão diversas quanto tomos eruditos ou contos de camponeses. Quer seja cantando baladas populares em taverna, quer seja elaborando composições para cortes reais, esses bardos usam seus dons para manter a audiência enfeitiçada. A fidelidade desses bardos reside na busca pela beleza e verdade, não na lealdade a um monarca ou em seguir os dogmas de uma divindade.",
-          "Colégio da Bravura (College of Valor)": "Os bardos do Colégio da Bravura são escaldos destemidos de quem os contos mantem viva a memória dos grandes heróis do passado, dessa forma inspirando uma nova geração de heróis. Esses bardos se reúnem em salões de hidromel ou ao redor de fogueiras para cantar os feitos dos grandiosos, tanto do passado quanto do presente. Eles viajam pelos lugares para testemunhar grandes eventos em primeira mão e para garantir que a memória desses eventos não se perca nesse mundo."
+          "Colégio da Bravura (College of Valor)": "Os bardos do Colégio da Bravura são escaldos destemidos de quem os contos mantem viva a memória dos grandes heróis do passado, dessa forma inspirando uma nova geração de heróis. Esses bardos se reúnem em salões de hidromel ou ao redor de fogueiras para cantar os feitos dos grandiosos, tanto do passado quanto do presente. Eles viajam pelos lugares para testemunhar grandes eventos em primeira mão e para garantir que a memória desses eventos não se perca nesse mundo.",
+          "Colégio da Criação (College of Creation)": "Os bardos do Colégio da Criação se alimentam da canção primordial por meio da dança, música e poesia. Bardos acreditam que o cosmos é uma obra de arte — a criação dos primeiros dragões e deuses.",
+          "Colégio da Eloquência (College of Eloquence)": "Membros do Colégio da Eloquência dominam a arte da oratória. Esses bardos possuem uma mistura de lógica e teatralidade, apelando às emoções das audiências."
         },
         "Bruxo (Warlock)": {
           "A Arquifada (The Archfey)": "Seu patrono é um senhor ou senhora das fadas, uma criatura lendária que detém segredos que foram esquecidos antes das raças mortais nascerem. As motivações desses seres são, muitas vezes, inescrutáveis e, as vezes, excêntricas e podem envolver esforços para adquirir grandes poderes mágicos ou resolução de desavenças antigas. Incluem-se dentre esses seres o Príncipe do Frio; a Rainha do Ar e Trevas, regente da Corte do Crepúsculo; Titania da Corte do Verão; seu cônjuge, Oberon, o Senhor Verdejante; Hyrsam, o Príncipe dos Tolos; e bruxas antigas.",
           "O Ínfero (The Fiend)": "Você realizou um pacto com um corruptor dos planos de existência inferiores, um ser cujos objetivos são o mal, mesmo se você se opor a esses objetivos. Tais seres desejam corromper ou destruir todas as coisas, em última análise, até mesmo você. Corruptores poderosos o bastante para forjar pactos incluem lordes demônios como Demogorgon, Orcus, Fraz'Urb-luu e Bafomé; arquidiabos como Asmodeus, Dispater, Mefistófeles e Belial; senhores das profundezas e balors que sejam excepcionalmente poderosos.",
-          "O Grande Antigo (The Great Old One)": "Seu patrono é uma entidade misteriosa cuja natureza é profundamente alheia ao tecido da realidade. Ela deve ter vindo do Reino Distante, o espaço além da realidade, ou ela pode ser um dos deuses anciãos conhecido apenas nas lendas. Seus motivos são incompreensíveis para os mortais e seu conhecimento é tão imenso e antigo que, até mesmo, as mais grandiosas bibliotecas desbotam em comparação com os vastos segredos que ele detém."
+          "O Grande Antigo (The Great Old One)": "Seu patrono é uma entidade misteriosa cuja natureza é profundamente alheia ao tecido da realidade. Ela deve ter vindo do Reino Distante, o espaço além da realidade, ou ela pode ser um dos deuses anciãos conhecido apenas nas lendas. Seus motivos são incompreensíveis para os mortais e seu conhecimento é tão imenso e antigo que, até mesmo, as mais grandiosas bibliotecas desbotam em comparação com os vastos segredos que ele detém.",
+          "O Gênio (The Genie)": "Você fez um pacto com um dos tipos mais raros de gênio, um gênio nobre. Tais entidades governam vastos feudos nos Planos Elementais.",
+          "O Insondável (The Fathomless)": "Você imergiu em um pacto com as profundezas. Uma entidade do oceano ou do Plano Elemental da Água agora lhe permite atrair seu poder talássico."
         },
         "Clérigo (Cleric)": {
           "Domínio da Vida (Life Domain)": "O domínio da vida foca na vívida energia positiva – uma das forças fundamentais do universo que sustenta toda a vida. Os deuses da vida promovem a vitalidade e a saúde, curando os doentes e feridos, cuidando dos necessitados, além de afastar as forças da morte e hordas de mortos-vivos.",
@@ -7378,45 +7827,61 @@
           "Domínio da Luz (Light Domain)": "Deuses da luz – como Helm, Lathander, Pholtus, Branchala, a Chama Prateada, Belenus, Apolo e Re-Horakhty – promovem os ideias do renascimento e renovação, verdade, vigilância e beleza, muitas vezes usando o símbolo do sol. Clérigos de um deus da luz são almas esclarecidas infundidas com radiação e o poder divino da visão do discernimento, conhecidos por afastar as mentiras e incineras a escuridão.",
           "Domínio do Conhecimento (Knowledge Domain)": "Os deuses do conhecimento – como Oghma, Boccob, Gilean, Aureon e Thoth – valorizam o estudo e compreensão acima de tudo. Alguns ensinam que o conhecimento deve ser coletado e partilhado em bibliotecas e universidades ou promovem o conhecimento prático do artesanato e da invenção.",
           "Domínio da Natureza (Nature Domain)": "Os deuses da natureza são tão variados como a própria natureza do mundo, desde deuses inescrutáveis de profundas florestas até divindades amigáveis associadas a alguma fonte ou bosque em particular. Esses clérigos devem caçar monstruosidades malignas que usurpam dos bosques, abençoar a colheita dos fieis ou murchar a cultura dos que irritarem seus deuses.",
-          "Domínio da Tempestade (Tempest Domain)": "Deuses cujo portfólio contenha o domínio da Tempestade governam tormentas, mares e céus. Estão inclusos deuses dos relâmpagos e trovões, deuses dos terremotos, alguns deuses do fogo e certos deuses da violência, força física e coragem."
+          "Domínio da Tempestade (Tempest Domain)": "Deuses cujo portfólio contenha o domínio da Tempestade governam tormentas, mares e céus. Estão inclusos deuses dos relâmpagos e trovões, deuses dos terremotos, alguns deuses do fogo e certos deuses da violência, força física e coragem.",
+          "Domínio da Ordem (Order Domain)": "O domínio da Ordem representa disciplina, assim como a devoção às leis que governam a sociedade, uma instituição ou a filosofia. Clérigos da Ordem meditam sobre lógica e justiça enquanto servem a seus deuses.",
+          "Domínio da Paz (Peace Domain)": "O bálsamo da paz floresce no coração de comunidades saudáveis, entre nações amigas e nas almas daqueles com corações gentis. Os deuses da paz inspiram pessoas de todos os tipos a resolver conflitos.",
+          "Domínio do Crepúsculo (Twilight Domain)": "A transição crepuscular de luz para escuridão muitas vezes traz calma e até mesmo alegria. Os deuses do crepúsculo guardam contra os horrores da noite."
         },
         "Druida (Druid)": {
           "Círculo da Lua (Circle of the Moon)": "Os druidas do Círculo da Lua são ferrenhos guardiões na natureza. Sua ordem se reuni nas noites de lua cheia para partilhar notícias e trocar informações. Eles assombram as partes mais profundas das florestas, onde eles podia ir por semanas a fio antes de cruzar o caminho de outro humanoide e, muito menos outro druida.",
-          "Círculo da Terra (Circle of the Land)": "O Círculo da Terra é constituído por místicos e sábios que salvaguardam conhecimento e ritos antigos através de uma vasta tradição oral. Esses druidas se encontram em círculos sagrados de árvores ou monólitos para sussurrar segredos primordiais em Druídico. Como membro desse círculo, sua magia é influenciada pela terra onde você é iniciado nos ritos misteriosos do círculo."
+          "Círculo da Terra (Circle of the Land)": "O Círculo da Terra é constituído por místicos e sábios que salvaguardam conhecimento e ritos antigos através de uma vasta tradição oral. Esses druidas se encontram em círculos sagrados de árvores ou monólitos para sussurrar segredos primordiais em Druídico. Como membro desse círculo, sua magia é influenciada pela terra onde você é iniciado nos ritos misteriosos do círculo.",
+          "Círculo de Esporos (Circle of Spores)": "Druidas do Círculo de Esporos encontram a beleza no apodrecimento. Eles veem dentro do mofo e outros fungos a habilidade de transformar material inerte em uma abundante vida.",
+          "Círculo das Estrelas (Circle of Stars)": "O Círculo das Estrelas permite que druidas atraiam o poder da luz das estrelas. Esses druidas têm rastreado padrões celestes desde tempos imemoriais, descobrindo segredos escondidos entre as constelações.",
+          "Círculo do Fogo Selvagem (Circle of Wildfire)": "Druidas do Círculo do Fogo Selvagem compreendem que a destruição é, algumas vezes, precursora da criação, como quando um incêndio em uma floresta promove um crescimento posterior."
         },
         "Feiticeiro (Sorcerer)": {
           "Linhagem Dracônica (Draconic Bloodline)": "Sua magia inata vem de magia dracônica que foi misturada ao seu sangue ou ao sangue dos seus ancestrais. Geralmente, os feiticeiros com essa origem traçam sua descendência de poderosos feiticeiros da antiguidade que fizeram uma barganha com um dragão ou que tenham um dragão como parente.",
-          "Magia Selvagem (Wild Magic)": "Sua magia inata vem das forças selvagens do caos que constituem a base da ordem da criação. Você deve ter sido exposto a algum tipo de magia bruta, talvez de um portal planar que levava ao Limbo, a Planos Elementais ou ao misterioso Reino Distante."
+          "Magia Selvagem (Wild Magic)": "Sua magia inata vem das forças selvagens do caos que constituem a base da ordem da criação. Você deve ter sido exposto a algum tipo de magia bruta, talvez de um portal planar que levava ao Limbo, a Planos Elementais ou ao misterioso Reino Distante.",
+          "Alma Mecânica (Clockwork Soul)": "A força cósmica da ordem o impregnou com magia. Aquele poder surge de Mecânos, um plano moldado inteiramente pela eficiência de engrenagens.",
+          "Mente Aberrante (Aberrant Mind)": "Uma influência alienígena estendeu seus tentáculos ao redor de sua mente, concedendo-lhe poder psiónico. Agora você pode tocar outras mentes com esse poder."
         },
         "Guerreiro (Fighter)": {
           "Campeão (Champion)": "O arquétipo Campeão foca no desenvolvimento da pura força física acompanhada por uma perfeição mortal. Aqueles que trilham o caminho desse arquétipo combinam rigorosos treinamentos com excelência física para desferir golpes devastadores.",
           "Mestre de Batalha (Battle Master)": "Aqueles que emulam o arquétipo de Mestre de Batalha empregam técnicas marciais passadas de geração em geração. Para um Mestre de Batalha, o combate é um campo acadêmico, as vezes, incluindo assuntos além da batalha, como forjaria e caligrafia.",
-          "Cavaleiro Arcano (Eldritch Knight)": "O arquétipo de Cavaleiro Arcano combina a maestria marcial comum a todos os guerreiros, com um cuidadoso estudo de magia. Os cavaleiros arcanos usam técnicas mágicas similares as praticadas pelos magos. Eles focam seu estudo em duas das oito escolas: abjuração e evocação."
+          "Cavaleiro Arcano (Eldritch Knight)": "O arquétipo de Cavaleiro Arcano combina a maestria marcial comum a todos os guerreiros, com um cuidadoso estudo de magia. Os cavaleiros arcanos usam técnicas mágicas similares as praticadas pelos magos. Eles focam seu estudo em duas das oito escolas: abjuração e evocação.",
+          "Cavaleiro Rúnico (Rune Knight)": "Cavaleiros Rúnicos aprimoram sua proeza marcial usando o poder sobrenatural das runas, uma prática ancestral que se originou com os gigantes.",
+          "Combatente Psíquico (Psi Warrior)": "Desperto para o poder psiónico interno, um combatente psíquico é um guerreiro que amplia seu poder físico com golpes de armas infundidas de energia psiônica."
         },
         "Ladino (Rogue)": {
           "Assassino (Assassin)": "Você focou seu treinamento na macabra arte da morte. Aqueles que devotam-se a esse arquétipo são diversos: assassinos de aluguel, espiões, caçadores de recompensa e, até mesmo, padres especialmente treinados em exterminar os inimigos das suas divindades.",
           "Ladrão (Thief)": "Você aprimorou suas habilidades na arte do furto de pequenos itens. Gatunos, bandidos, batedores de carteira e outros criminosos geralmente seguem esse arquétipo, mas também aqueles ladinos que preferem se ver como caçadores de tesouro profissionais e exploradores.",
           "Trapaceiro Arcano (Arcane Trickster)": "Alguns ladinos aprimoram suas finas perícias de furtividade e agilidade com magia, aprendendo truques de encantamento e ilusão. Esses ladinos incluem não somente batedores de carteira e assaltantes, mas também trapaceiros, enganadores e um número significativo de aventureiros.",
-          "Inquiridor (Inquisitive)": "Subclasse não presente no Livro do Jogador (2014).",
-          "Mentor (Mastermind)": "Subclasse não presente no Livro do Jogador (2014).",
-          "Batedor (Scout)": "Subclasse não presente no Livro do Jogador (2014).",
-          "Espadachim (Swashbuckler)": "Subclasse não presente no Livro do Jogador (2014).",
-          "Fantasma (Phantom)": "Subclasse não presente no Livro do Jogador (2014).",
-          "Lâmina da Alma (Soulknife)": "Subclasse não presente no Livro do Jogador (2014)."
+          "Inquiridor (Inquisitive)": "Como arquétipo Inquiridor você é notável em desentear segredos e mistérios irreparáveis. Você confia em seus olhos afiados para detalhes, mas também em sua habilidade de ler as pessoas.",
+          "Mentor (Mastermind)": "Seu foco está em pessoas, na influência e nos segredos que elas têm. Muitos espiões, cortesãs e manipuladores escolhem este arquétipo para agir como as mentes por trás das operações.",
+          "Batedor (Scout)": "Você é hábil em furtividade e sobrevivência longe das ruas de uma cidade. Os ladinos que abraçam este arquétipo sentem-se em casa em ambientes selvagens entre guardas e batedores.",
+          "Espadachim (Swashbuckler)": "Você foca seu treinamento na arte da lâmina, contando com velocidade, elegância e charme em partes iguais. Você se destaca em combate individual e se move com agilidade graciosa.",
+          "Fantasma (Phantom)": "Muitos ladinos caminham no limite entre a vida e a morte. Ladinos que se especializam como Fantasmas tornam-se de fato como os próprios espíritos, obtendo conhecimento dos mortos e ficando imersos em energia negativa.",
+          "Lâmina da Alma (Soulknife)": "Muitos ladinos descobrem que suas habilidades naturais são aumentadas por um poder psiônico latente. Ladinos que se especializam como Lâminas da Alma utilizam esse poder para manifestar armas de energia psíquica pura."
         },
         "Monge (Monk)": {
           "Caminho da Mão Aberta (Way of the Open Hand)": "Monges do Caminho da Mão Aberta são os mestres supremos das artes de combate marcial, tanto armado quanto desarmado. Eles aprendem técnicas para empurrar e derrubar seus oponentes, manipulando o chi para curar os ferimentos dos seus corpos e praticando uma meditação avançada.",
           "Caminho da Sombra (Way of Shadow)": "Monges do Caminho da Sombra seguem uma tradição que valoriza furtividade e subterfugio. Esses monges devem ser chamados de ninjas ou dançarinos das sombras e eles servem como espiões e assassinos.",
-          "Caminho dos Quatro Elementos (Way of the Four Elements)": "Você segue uma tradição monástica que ensina você a dominar os elementos. Quando você foca seu chi, você pode se alinhar com as forças da criação e moldar os elementos a sua vontade, usando-os como uma extensão do seu corpo."
+          "Caminho dos Quatro Elementos (Way of the Four Elements)": "Você segue uma tradição monástica que ensina você a dominar os elementos. Quando você foca seu chi, você pode se alinhar com as forças da criação e moldar os elementos a sua vontade, usando-os como uma extensão do seu corpo.",
+          "Caminho da Misericórdia (Way of Mercy)": "Monges do Caminho da Misericórdia aprendem a manipular a força vital de outros para auxiliar àqueles em necessidade. Eles são médicos nômades para os pobres e feridos.",
+          "Caminho do Eu Astral (Way of the Astral Self)": "Um monge que segue o Caminho do Eu Astral acredita que seu corpo é uma ilusão. Ele vê seu ki como uma representação da sua forma verdadeira, um eu astral."
         },
         "Paladino (Paladin)": {
           "Juramento de Devoção (Oath of Devotion)": "O Juramento de Devoção vincula um paladino aos mais sublimes ideias de justiça, virtude e ordem. Algumas vezes chamados de campeões, cavaleiros brancos ou guerreiros sagrados, esses paladinos atendem o ideal do cavaleiro na armadura brilhante.",
           "Juramento dos Anciões (Oath of the Ancients)": "O Juramento dos Anciões é um compromisso de proteger a luz e o que cresce no mundo. Paladinos que fazem este juramento lançam sua sorte com o lado da luz na batalha cósmica contra as trevas, porque eles amam as coisas belas e vivificantes do mundo.",
-          "Juramento de Vingança (Oath of Vengeance)": "O Juramento de Vingança é um comprometimento solene de punir aqueles que cometeram pecados graves. Para esses paladinos – algumas vezes chamados de vingadores ou de cavaleiros negros – sua própria pureza não é tão importante quando trazer justiça."
+          "Juramento de Vingança (Oath of Vengeance)": "O Juramento de Vingança é um comprometimento solene de punir aqueles que cometeram pecados graves. Para esses paladinos – algumas vezes chamados de vingadores ou de cavaleiros negros – sua própria pureza não é tão importante quando trazer justiça.",
+          "Juramento da Glória (Oath of Glory)": "Paladinos que fazem o Juramento da Glória acreditam que eles e seus companheiros estão destinados a alcançar a glória através de feitos de heroísmo.",
+          "Juramento dos Vigilantes (Oath of the Watchers)": "O Juramento dos Vigilantes vincula paladinos a proteger reinos mortais das predações de criaturas extraplanares."
         },
         "Patrulheiro (Ranger)": {
           "Caçador (Hunter)": "Alguns patrulheiros buscam dominar armas para proteger melhor a civilização dos terrores do ambiente selvagem. Membros do Conclave do Caçador aprendem técnicas especializadas de luta usadas contra as mais terríveis ameaças.",
-          "Mestre das Bestas (Beast Master)": "Muitos patrulheiros sentem-se mais a vontade no ambiente selvagem que na civilização, ao ponto de animais consideram-nos como semelhantes. Patrulheiros do Conclave da Besta desenvolvem um vínculo poderoso com uma besta, posteriormente fortalecendo esse vínculo com o uso de magia."
+          "Mestre das Bestas (Beast Master)": "Muitos patrulheiros sentem-se mais a vontade no ambiente selvagem que na civilização, ao ponto de animais consideram-nos como semelhantes. Patrulheiros do Conclave da Besta desenvolvem um vínculo poderoso com uma besta, posteriormente fortalecendo esse vínculo com o uso de magia.",
+          "Andarilho Feérico (Fey Wanderer)": "Uma mística feérica o cerca, graças a dádiva de um arquifeérico. Você agora é um andarilho feérico, um guardião que representa os reinos mortal e feérico.",
+          "Protetor do Enxame (Swarmkeeper)": "Sentindo uma profunda conexão com o ambiente ao seu redor, alguns guardiões se vinculam com um enxame de espíritos da natureza."
         },
         "Mago (Wizard)": {
           "Escola de Abjuração (School of Abjuration)": "A Escola de Abjuração enfatiza magias que bloqueiam, expulsão ou protegem. Você compreende que terminar efeitos nocivos, proteger os fracos e banir influências malignas é tudo, menos um vazio filosófico.",
@@ -7426,7 +7891,9 @@
           "Escola de Evocação (School of Evocation)": "Você foca seu estudo para criar poderosos efeitos elementais, como um frio cortante, uma chama intensa, um trovão estrondoso, um relâmpago devastador e ácido ardente. Alguns evocadores encontram emprego nas forças militares, servindo como artilharia.",
           "Escola de Ilusão (School of Illusion)": "Você focou seus estudos em magias que ofuscam os sentidos, confundem a mente e enganam até mesmo os povos mais sábios. Sua mágica é sutil, mas as ilusões criadas pela sua mente afiada fazem o impossível parecer real.",
           "Escola de Necromancia (School of Necromancy)": "A Escola de Necromancia explora as forças cósmicas da vida, morte e morte-vida. Enquanto progride, você aprende a retirar a força vital de uma criatura enquanto sua magia destróis seu corpo, transformando a energia vital em poder mágico.",
-          "Escola de Transmutação (School of Transmutation)": "Você é um estudante de magias que modificam energia e matéria. Para você, o mundo não é uma coisa fixa, mas sim eminentemente mutável e você se deleita em ser um agente da mudança."
+          "Escola de Transmutação (School of Transmutation)": "Você é um estudante de magias que modificam energia e matéria. Para você, o mundo não é uma coisa fixa, mas sim eminentemente mutável e você se deleita em ser um agente da mudança.",
+          "Lâmina Cantante (Bladesinging)": "Lâminas cantantes dominam uma tradição de magia que incorporam luta com espadas e dança.",
+          "Ordem dos Escribas (Order of Scribes)": "Entre magos, a Ordem dos Escribas é a que mais se dedica aos livros. Um mago desta ordem desperta magicamente seu livro."
         }
       },
       backgrounds: {
@@ -8004,16 +8471,30 @@
       const lvl = parseInt(document.getElementById("level_val").value) || 1;
       const selSub = document.getElementById("subclass_name");
       const valorAtual = selSub.value;
+
       selSub.innerHTML = '<option value="">Selecione...</option>';
       selSub.disabled = false;
+
       if (c) {
-        if (c === "Ladino (Rogue)" && lvl < 3) {
+        // Classes que escolhem subclasse apenas no nível 3
+        const escolherNoNivel3 = [
+          "Ladino (Rogue)",
+          "Artífice (Artificer)",
+          "Guerreiro (Fighter)",
+          "Paladino (Paladin)",
+          "Bárbaro (Barbarian)",
+          "Bardo (Bard)",
+          "Monge (Monk)",
+          "Patrulheiro (Ranger)"
+        ];
+
+        if (escolherNoNivel3.includes(c) && lvl < 3) {
           selSub.disabled = true;
           selSub.innerHTML = `<option value="">Requer Nível 3...</option>`;
         } else {
           if (dataPHB.subclasses[c]) {
             Object.keys(dataPHB.subclasses[c]).forEach((s) => {
-              let selected = s === valorAtual ? "selected" : "";
+              let selected = (s === valorAtual) ? "selected" : "";
               selSub.innerHTML += `<option value="${s}" ${selected}>${s}</option>`;
             });
           }
@@ -8189,7 +8670,16 @@
       });
       skills.forEach((sk) => {
         const safeId = sk.n.replace(/\s+/g, "");
-        skillList.innerHTML += `<div class="row"><input type="checkbox" class="skill-prof" data-attr="${sk.a}" id="check_${safeId}" onchange="calcular()"><span class="val-bonus" id="sk_${safeId}">+0</span><span>${sk.n} <small style="color:#888">(${sk.a})</small></span></div>`;
+        skillList.innerHTML += `
+            <div class="row">
+                <input type="checkbox" class="skill-prof" data-attr="${sk.a}" id="check_${safeId}" onchange="calcular()">
+                <span class="val-bonus" id="sk_${safeId}" data-manual="0" style="min-width: 30px; text-align: center;">+0</span>
+                <div style="display: flex; flex-direction: column; align-items: center; line-height: 0.5; margin: 0 6px;">
+                    <button type="button" style="background:none; border:none; cursor:pointer; font-size:9px; color:#888; padding:2px 0;" onclick="modificarManualSkill('${safeId}', 1)">▲</button>
+                    <button type="button" style="background:none; border:none; cursor:pointer; font-size:9px; color:#888; padding:2px 0;" onclick="modificarManualSkill('${safeId}', -1)">▼</button>
+                </div>
+                <span>${sk.n} <small style="color:#888">(${sk.a})</small></span>
+            </div>`;
       });
       adicionarTalento();
       adicionarMagia();
@@ -8224,43 +8714,47 @@
       i.value = Math.max(0, parseInt(i.value) + val);
     }
     function calcular(resetProficiencies = false) {
-    const lvl = parseInt(document.getElementById("level_val").value) || 1;
-    const prof = Math.floor((lvl - 1) / 4) + 2;
-    document.getElementById("prof_bonus").value = `+${prof}`;
-    const race = document.getElementById("race_name").value;
-    const subrace = document.getElementById("subrace_name").value;
-    const className = document.getElementById("class_name").value;
-    const subClassName = document.getElementById("subclass_name").value;
-    const background = document.getElementById("bg_name").value;
-    let bonusAtributos = { FOR: 0, DES: 0, CON: 0, INT: 0, SAB: 0, CAR: 0 };
-    let hpExtraPerLevel = 0;
-    if (resetProficiencies) {
+      const lvl = parseInt(document.getElementById("level_val").value) || 1;
+      const prof = Math.floor((lvl - 1) / 4) + 2;
+      document.getElementById("prof_bonus").value = `+${prof}`;
+      const race = document.getElementById("race_name").value;
+      const subrace = document.getElementById("subrace_name").value;
+      const className = document.getElementById("class_name").value;
+      const subClassName = document.getElementById("subclass_name").value;
+      const background = document.getElementById("bg_name").value;
+      if (resetProficiencies) {
         document.querySelectorAll(".save-prof, .skill-prof").forEach((c) => {
-            if (c.dataset.auto === "true") {
-                c.checked = false;
-                c.dataset.auto = "false";
-            }
+          if (c.dataset.auto === "true") {
+            c.checked = false;
+            c.dataset.auto = "false";
+          }
         });
-    }
-    if (mecanicasPHB.races[race]) {
+        if (mecanicasPHB.races[race] && mecanicasPHB.races[race].skills) {
+          mecanicasPHB.races[race].skills.forEach(s => {
+            let check = document.getElementById("check_" + s.replace(/\s+/g, ""));
+            if (check) { check.checked = true; check.dataset.auto = "true"; }
+          });
+        }
+        if (mecanicasPHB.classes[className]) {
+          const cData = mecanicasPHB.classes[className];
+          cData.saves.forEach(s => {
+            const cb = document.querySelector(`.save-prof[data-attr="${s}"]`);
+            if (cb) { cb.checked = true; cb.dataset.auto = "true"; }
+          });
+        }
+      }
+      let bonusAtributos = { FOR: 0, DES: 0, CON: 0, INT: 0, SAB: 0, CAR: 0 };
+      if (mecanicasPHB.races[race]) {
         const rData = mecanicasPHB.races[race];
         Object.keys(bonusAtributos).forEach(k => { if (rData[k]) bonusAtributos[k] += rData[k]; });
         if (rData.speed) document.getElementById("speed_val").value = rData.speed;
-
-        if (resetProficiencies && rData.skills) {
-            rData.skills.forEach(s => {
-                let check = document.getElementById("check_" + s.replace(/\s+/g, ""));
-                if (check) { check.checked = true; check.dataset.auto = "true"; }
-            });
-        }
-    }
-    if (subrace && mecanicasPHB.subraces[subrace]) {
+      }
+      if (subrace && mecanicasPHB.subraces[subrace]) {
         const srData = mecanicasPHB.subraces[subrace];
         Object.keys(bonusAtributos).forEach(k => { if (srData[k]) bonusAtributos[k] += srData[k]; });
-        if (srData.hpBonus) hpExtraPerLevel += srData.hpBonus;
-    }
-    let mods = {};
-    attrs.forEach(at => {
+      }
+      let mods = {};
+      attrs.forEach(at => {
         const baseScore = parseInt(document.getElementById(`${at.id}_score`).value) || 10;
         const currentBonus = bonusAtributos[at.id] || 0;
         const m = Math.floor((baseScore + currentBonus - 10) / 2);
@@ -8271,72 +8765,69 @@
         const sCheck = document.querySelector(`.save-prof[data-attr="${at.id}"]`);
         const sVal = m + (sCheck && sCheck.checked ? prof : 0);
         document.getElementById(`save_${at.id}`).innerText = (sVal >= 0 ? "+" : "") + sVal;
-    });
-    if (mecanicasPHB.classes[className]) {
+      });
+      if (mecanicasPHB.classes[className]) {
         const cData = mecanicasPHB.classes[className];
         document.getElementById("hit_dice").value = cData.hitDice;
+        let hpExtraPerLevel = (subrace && mecanicasPHB.subraces[subrace].hpBonus) ? 1 : 0;
         let totalHP = cData.hp + mods["CON"] + hpExtraPerLevel;
-        if (lvl > 1) totalHP += (Math.floor(cData.hp / 2 + 1) + mods["CON"] + hpExtraPerLevel) * (lvl - 1);     
+        if (lvl > 1) totalHP += (Math.floor(cData.hp / 2 + 1) + mods["CON"] + hpExtraPerLevel) * (lvl - 1);
         const hpMaxField = document.getElementById("hp_max");
         if (resetProficiencies || hpMaxField.value === "") {
-            hpMaxField.value = totalHP;
+          hpMaxField.value = totalHP;
         }
-        if (resetProficiencies) {
-            cData.saves.forEach(s => {
-                const cb = document.querySelector(`.save-prof[data-attr="${s}"]`);
-                if (cb) { cb.checked = true; cb.dataset.auto = "true"; }
-            });
-        }
-    }
-    skills.forEach(sk => {
+      }
+      skills.forEach(sk => {
         const safeId = sk.n.replace(/\s+/g, "");
-        const isProf = document.getElementById(`check_${safeId}`).checked;
-        const total = mods[sk.a] + (isProf ? prof : 0);
-        document.getElementById(`sk_${safeId}`).innerText = (total >= 0 ? "+" : "") + total;
-    });
-    document.getElementById("inic_val").value = (mods["DES"] >= 0 ? "+" : "") + mods["DES"];
-    const percProf = document.getElementById("check_Percepção").checked;
-    document.getElementById("passive_perc").value = 10 + mods["SAB"] + (percProf ? prof : 0);
-    const armasNoGuia = document.querySelectorAll("#desc-weapons-guia .weapon-entry-guia");
-    armasNoGuia.forEach(entry => {
+        const checkEl = document.getElementById(`check_${safeId}`);
+        const valEl = document.getElementById(`sk_${safeId}`);
+
+        if (checkEl && valEl) {
+          const isProf = checkEl.checked;
+          const manualBonus = parseInt(valEl.dataset.manual) || 0;
+          const total = mods[sk.a] + (isProf ? prof : 0) + manualBonus;
+          valEl.innerText = (total >= 0 ? "+" : "") + total;
+        }
+      });
+      document.getElementById("inic_val").value = (mods["DES"] >= 0 ? "+" : "") + mods["DES"];
+      const percProf = document.getElementById("check_Percepção").checked;
+      document.getElementById("passive_perc").value = 10 + mods["SAB"] + (percProf ? prof : 0);
+      const armasNoGuia = document.querySelectorAll("#desc-weapons-guia .weapon-entry-guia");
+      armasNoGuia.forEach(entry => {
         const wName = entry.dataset.weaponName;
         let wData = null;
         let catEncontrada = "";
-
         for (const cat in armasDB) {
-            if (armasDB[cat][wName]) {
-                wData = armasDB[cat][wName];
-                catEncontrada = cat;
-                break;
-            }
+          if (armasDB[cat][wName]) { wData = armasDB[cat][wName]; catEncontrada = cat; break; }
         }
         if (wData) {
-            const ehDistancia = catEncontrada.toLowerCase().includes("distância");
-            const temAcuidade = wData.prop.toLowerCase().includes("acuidade");
-                        let mUsar = mods["FOR"];
-            if (ehDistancia) mUsar = mods["DES"];
-            else if (temAcuidade) mUsar = Math.max(mods["FOR"], mods["DES"]);
-            const atkFinal = mUsar + prof;
-            entry.querySelector(".atk-val").innerText = (atkFinal >= 0 ? "+" : "") + atkFinal;
-            entry.querySelector(".dmg-val").innerText = `${wData.dano}${mUsar >= 0 ? "+" : ""}${mUsar} ${wData.tipo}`;
+          const ehDistancia = catEncontrada.toLowerCase().includes("distância");
+          const temAcuidade = wData.prop.toLowerCase().includes("acuidade");
+          let mUsar = mods["FOR"];
+          if (ehDistancia) mUsar = mods["DES"];
+          else if (temAcuidade) mUsar = Math.max(mods["FOR"], mods["DES"]);
+          const atkFinal = mUsar + prof;
+          entry.querySelector(".atk-val").innerText = (atkFinal >= 0 ? "+" : "") + atkFinal;
+          entry.querySelector(".dmg-val").innerText = `${wData.dano}${mUsar >= 0 ? "+" : ""}${mUsar} ${wData.tipo}`;
         }
-    });
-    const spellAbilityMap = { 
-        "Bardo (Bard)": "CAR", "Bruxo (Warlock)": "CAR", "Clérigo (Cleric)": "SAB", 
-        "Druida (Druid)": "SAB", "Feiticeiro (Sorcerer)": "CAR", "Paladino (Paladin)": "CAR", 
-        "Patrulheiro (Ranger)": "SAB", "Mago (Wizard)": "INT", 
-        "Ladino (Rogue)_Trapaceiro Arcano (Arcane Trickster)": "INT", 
-        "Guerreiro (Fighter)_Cavaleiro Arcano (Eldritch Knight)": "INT" 
-    };
-    let abilityKey = spellAbilityMap[className] || (subClassName ? spellAbilityMap[className + "_" + subClassName] : null);
-    if (abilityKey && mods[abilityKey] !== undefined) {
+      });
+      const spellAbilityMap = {
+        "Artífice (Artificer)": "INT",
+        "Bardo (Bard)": "CAR", "Bruxo (Warlock)": "CAR", "Clérigo (Cleric)": "SAB",
+        "Druida (Druid)": "SAB", "Feiticeiro (Sorcerer)": "CAR", "Paladino (Paladin)": "CAR",
+        "Patrulheiro (Ranger)": "SAB", "Mago (Wizard)": "INT",
+        "Ladino (Rogue)_Trapaceiro Arcano (Arcane Trickster)": "INT",
+        "Guerreiro (Fighter)_Cavaleiro Arcano (Eldritch Knight)": "INT"
+      };
+      let abilityKey = spellAbilityMap[className] || (subClassName ? spellAbilityMap[className + "_" + subClassName] : null);
+      if (abilityKey && mods[abilityKey] !== undefined) {
         const m = mods[abilityKey];
         document.getElementById("spell_attr_val").value = (m >= 0 ? "+" : "") + m;
         document.getElementById("spell_save_dc").value = 8 + prof + m;
         document.getElementById("spell_atk_mod").value = (prof + m >= 0 ? "+" : "") + (prof + m);
+      }
+      atualizarSlotsMagia();
     }
-    atualizarSlotsMagia();
-}
     function ajustarCampo(id, delta) {
       const input = document.getElementById(id);
       let val = parseInt(input.value.replace("+", "")) || 0;
@@ -8727,7 +9218,7 @@
       },
       "Escudo": {
         "[PHB] Escudo": { custo: "10 po", ca: 2, dex: 0, forca: "-", furtiv: "-", peso: "3 kg" },
-      }
+      },
     };
     function carregarSeletorArmaduras() {
       const select = document.getElementById("select_armadura_phb");
@@ -8966,6 +9457,14 @@
       };
       reader.readAsText(file);
       event.target.value = "";
+    }
+    function modificarManualSkill(safeId, delta) {
+      const el = document.getElementById('sk_' + safeId);
+      if (!el) return;
+      let currentManual = parseInt(el.dataset.manual) || 0;
+      el.dataset.manual = currentManual + delta;
+      calcular();
+
     }
     window.onload = () => {
       setup();
