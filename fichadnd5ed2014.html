@@ -826,31 +826,223 @@
         print-color-adjust: exact !important;
       }
     }
+
+    #dice-log-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 250px;
+      max-height: 300px;
+      background: #fff;
+      border: 2px solid var(--dnd-red);
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    #dice-log-header {
+      background: var(--dnd-red);
+      color: white;
+      padding: 8px;
+      font-size: 12px;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      text-transform: uppercase;
+    }
+
+    #dice-log-content {
+      padding: 10px;
+      font-size: 11px;
+      overflow-y: auto;
+      background: #fdfaf3;
+      flex: 1;
+    }
+
+    .roll-entry {
+      border-bottom: 1px solid #ddd;
+      padding: 4px 0;
+      animation: fadeIn 0.3s;
+    }
+
+    .val-bonus {
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .val-bonus:hover {
+      background: #fff0f0;
+      color: var(--dnd-red);
+      border-radius: 3px;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media print {
+      #dice-log-container {
+        display: none !important;
+      }
+    }
+
+    .quick-roll-btn {
+      background: #fff;
+      border: 1px solid #999;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 2px 6px;
+      transition: all 0.2s;
+    }
+
+    .quick-roll-btn:hover {
+      background: #ddd;
+      transform: translateY(-1px);
+    }
+
+    .quick-roll-btn:active {
+      transform: translateY(0);
+    }
+
+    .header-fixed-top {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 5000;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .sheet {
+      /* Aumente o margin-top para a ficha começar abaixo das duas barras */
+      margin-top: 60px;
+      background: var(--bg);
+      width: 100%;
+      max-width: 950px;
+      padding: 30px;
+      border: 2px solid #000;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      box-sizing: border-box;
+    }
+
+    @media print {
+      .header-fixed-top {
+        display: none !important;
+      }
+
+      .sheet {
+        margin-top: 0 !important;
+      }
+    }
   </style>
 </head>
 
 <body>
-  <div class="btn-container">
-    <button type="button" class="btn-save" style="position: relative;">
-      📥 Importar Dados
-      <input type="file" id="import_file" onchange="importarFichaJSON(event)"
-        style="position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;">
-    </button>
-    <button type="button" class="btn-save" onclick="exportarFichaJSON()">
-      📤 Exportar Dados
-    </button>
-    <button type="button" class="btn-save" onclick="limparFicha()">
-      🧹 Limpar Ficha
-    </button>
-    <button type="button" class="btn-save" onclick="baixarFicha()">
-      💾 Salvar HTML
-    </button>
-    <button type="button" class="btn-save btn-pdf" onclick="imprimirPDF()">
-      🖨️ Exportar PDF
-    </button>
-    <button type="button" class="btn-save btn-pdf" onclick="gerarPersonagemAleatorio()">
-      🎲 Ficha Aleatória
-    </button>
+  <div id="dice-log-container" style="display: none;">
+    <div id="dice-log-header">
+      <span>Histórico de Dados</span>
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <button onclick="document.getElementById('dice-log-content').innerHTML=''"
+          style="background:none; border:none; color:white; cursor:pointer; font-size:10px;">Limpar</button>
+        <button onclick="toggleDiceLog()"
+          style="background:none; border:none; color:white; cursor:pointer; font-size:14px; font-weight:bold;">✕</button>
+      </div>
+    </div>
+    <div id="dice-quick-rolls"
+      style="display: flex; flex-wrap: wrap; gap: 4px; padding: 5px; background: #eee; border-bottom: 1px solid #ccc; justify-content: center;">
+      <button class="quick-roll-btn" onclick="rolarManual(4)">d4</button>
+      <button class="quick-roll-btn" onclick="rolarManual(6)">d6</button>
+      <button class="quick-roll-btn" onclick="rolarManual(8)">d8</button>
+      <button class="quick-roll-btn" onclick="rolarManual(10)">d10</button>
+      <button class="quick-roll-btn" onclick="rolarManual(12)">d12</button>
+      <button class="quick-roll-btn" onclick="rolarManual(20)"
+        style="background: var(--dnd-red); color: white;">d20</button>
+      <button class="quick-roll-btn" onclick="rolarManual(100)">d100</button>
+    </div>
+    <div id="dice-log-content">
+      <div style="color:gray; font-style:italic;">Clique em um bônus ou nos dados acima...</div>
+    </div>
+  </div>
+  <button id="btn-reabrir-log" onclick="toggleDiceLog()"
+    style="display: block; position: fixed; bottom: 20px; right: 20px; width: 45px; height: 45px; border-radius: 50%; background: var(--dnd-red); color: white; border: 2px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; z-index: 1999; font-size: 20px;">🎲</button>
+  <button id="btn-reabrir-log" onclick="toggleDiceLog()"
+    style="display: none; position: fixed; bottom: 20px; right: 20px; width: 45px; height: 45px; border-radius: 50%; background: var(--dnd-red); color: white; border: 2px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; z-index: 1999; font-size: 20px;">🎲</button>
+  <div class="header-fixed-top">
+    <div id="auth-bar"
+      style="background: #111; padding: 10px; display: flex; justify-content: center; align-items: center; color: white; font-size: 12px; border-bottom: 2px solid var(--dnd-red); min-height: 25px;">
+      <div id="auth-status-guest" style="width: 100%; text-align: center;">
+        <button onclick="abrirModalAuth('login')" class="quick-roll-btn" style="margin-left:10px;">Entrar</button>
+        <button onclick="abrirModalAuth('cadastro')" class="quick-roll-btn">Cadastrar</button>
+      </div>
+      <div id="auth-status-user"
+        style="display: none; width: 100%; max-width: 950px; justify-content: space-between; align-items: center;">
+        <span id="user-email-display" style="font-weight: bold; color: #ccc;">Aventureiro: ...</span>
+        <div style="display: inline-flex; gap: 10px;">
+          <button onclick="salvarNaNuvem()" class="quick-roll-btn"
+            style="background: green; color: white; border:none;">☁️ Salvar na Nuvem</button>
+          <button onclick="abrirGaleriaNuvem()" class="quick-roll-btn">📂 Minhas Fichas</button>
+          <button onclick="deslogar()" class="quick-roll-btn"
+            style="background: #444; color: white; border:none;">Sair</button>
+        </div>
+      </div>
+    </div>
+    <div class="btn-container-inner"
+      style="background: #111; padding: 10px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+      <label class="btn-save" style="display: inline-block; cursor: pointer; margin: 0; text-align: center;">
+        📥 Importar Dados
+        <input type="file" id="import_file" onchange="importarFichaJSON(event)" style="display: none;">
+      </label>
+      <button type="button" class="btn-save" onclick="exportarFichaJSON()">📤 Exportar Dados</button>
+      <button type="button" class="btn-save" onclick="limparFicha()">🧹 Limpar Ficha</button>
+      <button type="button" class="btn-save" onclick="baixarFicha()">💾 Salvar HTML</button>
+      <button type="button" class="btn-save btn-pdf" onclick="imprimirPDF()">🖨️ Exportar PDF</button>
+      <button type="button" class="btn-save btn-pdf" onclick="gerarPersonagemAleatorio()">🎲 Ficha Aleatória</button>
+    </div>
+  </div>
+  <div id="auth-modal"
+    style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:white; padding:20px; border:2px solid var(--dnd-red); z-index:10000; color:black; border-radius:8px; box-shadow:0 0 50px rgba(0,0,0,0.8); width: 300px;">
+    <h3 id="modal-title" style="margin-top:0;">Entrar</h3>
+    <label>E-mail</label>
+    <input type="email" id="auth-email" placeholder="email@exemplo.com"
+      style="margin-bottom:10px; background:#f4f4f4; padding:8px; border:1px solid #ccc;">
+    <label>Senha</label>
+    <input type="password" id="auth-pass" placeholder="Sua senha"
+      style="margin-bottom:15px; background:#f4f4f4; padding:8px; border:1px solid #ccc;">
+    <div style="display:flex; gap:10px;">
+      <button id="auth-submit-btn" class="btn-save" style="flex:1;">Confirmar</button>
+      <button onclick="document.getElementById('auth-modal').style.display='none'" class="btn-save"
+        style="flex:1; background:#666;">Sair</button>
+    </div>
+  </div>
+  <div id="gallery-modal"
+    style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:white; padding:20px; border:2px solid var(--dnd-red); z-index:10001; color:black; border-radius:8px; box-shadow:0 0 50px rgba(0,0,0,0.8); width: 320px;">
+    <h3 style="margin-top:0;">Minhas Fichas na Nuvem</h3>
+    <label>Selecione o Personagem:</label>
+    <select id="nuvem-select"
+      style="margin-bottom:20px; background:#f4f4f4; padding:8px; border:1px solid #ccc; display: block; width: 100%; font-size: 14px;"></select>
+    <div style="display:flex; flex-direction: column; gap:10px;">
+      <div style="display:flex; gap:10px;">
+        <button onclick="confirmarCargaNuvem()" class="btn-save"
+          style="flex:1; background: green; color: white; border:none; position:static;">Carregar</button>
+        <button onclick="deletarFichaNuvem()" class="btn-save"
+          style="flex:1; background: #822000; color: white; border:none; position:static;">Deletar</button>
+      </div>
+      <button onclick="document.getElementById('gallery-modal').style.display='none'" class="btn-save"
+        style="width:100%; background:#666; position:static;">Sair</button>
+    </div>
   </div>
   <div class="sheet">
     <div class="header-container">
@@ -1171,6 +1363,48 @@
           <label>Equipamento</label><textarea id="equip_area" style="height: 100px"></textarea>
         </div>
         <div class="box-list">
+          <label>Condições e Status</label>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2px; font-size: 9px;">
+            <label class="row" style="border:none; text-transform:none;"><input type="checkbox" class="condicao-check"
+                data-name="Amedrontado">Amedrontado</label>
+            <label class="row" style="border:none; text-transform:none;"><input type="checkbox" class="condicao-check"
+                data-name="Caído">Caído</label>
+            <label class="row" style="border:none; text-transform:none;"><input type="checkbox" class="condicao-check"
+                data-name="Cego">Cego</label>
+            <label class="row" style="border:none; text-transform:none;"><input type="checkbox" class="condicao-check"
+                data-name="Enfeitiçado">Enfeitiçado</label>
+            <label class="row" style="border:none; text-transform:none;"><input type="checkbox" class="condicao-check"
+                data-name="Envenenado">Envenenado</label>
+            <label class="row" style="border:none; text-transform:none;"><input type="checkbox" class="condicao-check"
+                data-name="Agarrado">Agarrado</label>
+            <label class="row" style="border:none; text-transform:none;"><input type="checkbox" class="condicao-check"
+                data-name="Incapacitado">Incapacitado</label>
+            <label class="row" style="border:none; text-transform:none;"><input type="checkbox" class="condicao-check"
+                data-name="Invisível">Invisível</label>
+            <label class="row" style="border:none; text-transform:none;"><input type="checkbox" class="condicao-check"
+                data-name="Paralisado">Paralisado</label>
+            <label class="row" style="border:none; text-transform:none;"><input type="checkbox" class="condicao-check"
+                data-name="Petrificado">Petrificado</label>
+            <label class="row" style="border:none; text-transform:none;"><input type="checkbox" class="condicao-check"
+                data-name="Impedido">Impedido</label>
+            <label class="row" style="border:none; text-transform:none;"><input type="checkbox" class="condicao-check"
+                data-name="Atordoado">Atordoado</label>
+            <label class="row" style="border:none; text-transform:none;"><input type="checkbox" class="condicao-check"
+                data-name="Inconsciente">Inconsciente</label>
+            <div style="grid-column: span 2; display: flex; align-items: center; gap: 5px; margin-top: 5px;">
+              <label style="margin:0;">Exaustão:</label>
+              <input type="number" id="exaustao_val" value="0" min="0" max="6"
+                style="width: 30px; text-align: center; border: 1px solid #ccc; font-size: 12px;">
+            </div>
+          </div>
+        </div>
+
+        <div class="box-list">
+          <label>Log de Combate Rápido</label>
+          <textarea id="combat_log" style="height: 60px; font-size: 10px; background: #fdfdfd;"
+            placeholder="Ex: Benção ativa (10 rodadas), Fúria ligada..."></textarea>
+        </div>
+        <div class="box-list">
           <label style="
               display: flex;
               justify-content: space-between;
@@ -1424,6 +1658,13 @@
             Aguardando dados...
           </div>
         </div>
+        <div id="box-recursos-classe" class="box-list" style="margin-top: 5px; background: #fff; display: none;">
+          <h3
+            style="margin-bottom: 10px; margin-top:5px; font-size: 10px; border-bottom: 1px solid #ddd; text-transform: uppercase; font-weight: bold; color:#666;">
+            Recursos de Classe
+          </h3>
+          <div id="class-resources-tracker" style="display: flex; flex-direction: column; gap: 8px;"></div>
+        </div>
       </section>
     </div>
     <div class="guide-section">
@@ -1478,9 +1719,12 @@
     </div>
     <div
       style="margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd; text-align: right; font-size: 10px; color: #888; font-style: italic; letter-spacing: 1px;">
-      Ficha Automatizada de D&D 5Ed 2014 -VERSÃO 4.5
+      Ficha Automatizada de D&D 5Ed 2014 -VERSÃO 5.0
     </div>
   </div>
+  <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
   <script>
     const proficienciasFixasDB = {
       backgrounds: {
@@ -1501,6 +1745,8 @@
         "Meio-Orc (Half-Orc)": ["Intimidação"]
       }
     };
+    let ultimaClasse = "";
+    let ultimoNivel = "";
     function atualizarSlotsMagia() {
       const c = document.getElementById("class_name").value;
       const sc = document.getElementById("subclass_name").value;
@@ -2183,7 +2429,6 @@
       const subClassName = document.getElementById("subclass_name").value;
       const backgroundRaw = document.getElementById("bg_name").value;
       const background = backgroundRaw.split(" (")[0];
-
       if (resetProficiencies) {
         document.querySelectorAll(".skill-prof, .save-prof").forEach((c) => {
           if (c.dataset.auto === "true") {
@@ -2220,7 +2465,6 @@
           });
         }
       }
-
       let bonusAtributos = { FOR: 0, DES: 0, CON: 0, INT: 0, SAB: 0, CAR: 0 };
       if (mecanicasPHB.races[race]) {
         const rData = mecanicasPHB.races[race];
@@ -2231,7 +2475,6 @@
         const srData = mecanicasPHB.subraces[subrace];
         Object.keys(bonusAtributos).forEach(k => { if (srData[k]) bonusAtributos[k] += srData[k]; });
       }
-
       let mods = {};
       attrs.forEach(at => {
         const baseScore = parseInt(document.getElementById(`${at.id}_score`).value) || 10;
@@ -2241,45 +2484,31 @@
         const bSpan = document.getElementById(`${at.id}_bonus_display`);
         if (bSpan) bSpan.innerText = currentBonus > 0 ? `+${currentBonus}` : "";
         document.getElementById(`${at.id}_mod`).innerText = (m >= 0 ? "+" : "") + m;
-
         const sCheck = document.querySelector(`.save-prof[data-attr="${at.id}"]`);
         const sValSpan = document.getElementById(`save_${at.id}`);
         const manualBonus = parseInt(sValSpan.dataset.manual) || 0;
         const sVal = m + (sCheck && sCheck.checked ? prof : 0) + manualBonus;
         sValSpan.innerText = (sVal >= 0 ? "+" : "") + sVal;
       });
-
-      // --- CÁLCULO DE PV MÁXIMO E DADOS DE VIDA (CORRIGIDO) ---
       if (mecanicasPHB.classes[className]) {
         const cData = mecanicasPHB.classes[className];
         const modCon = mods["CON"] || 0;
-
-        // Extrai o número após o 'd' (ex: "1d10" vira 10)
         const valorDado = parseInt(cData.hitDice.split('d')[1]) || 8;
         const mediaFixa = Math.floor(valorDado / 2) + 1;
-
-        // PV Nível 1: Dado cheio + CON | Níveis seguintes: Média + CON
         let totalHP = valorDado + modCon;
         if (lvl > 1) {
           totalHP += (mediaFixa + modCon) * (lvl - 1);
         }
-
-        // Bônus Extra por Nível
         let hpExtraPorNivel = 0;
         if (subrace.includes("Anão da Colina") || subrace.includes("Hill Dwarf")) hpExtraPorNivel += 1;
         if (className.includes("Feiticeiro") && subClassName.includes("Dracônica")) hpExtraPorNivel += 1;
         const temRobusto = Array.from(document.querySelectorAll(".talento-select")).some(sel => sel.value.includes("Robusto") || sel.value.includes("Tough"));
         if (temRobusto) hpExtraPorNivel += 2;
-
         totalHP += (hpExtraPorNivel * lvl);
         if (totalHP < lvl) totalHP = lvl;
-
         document.getElementById("hp_max").value = totalHP;
-
-        // ATUALIZAÇÃO DOS DADOS DE VIDA: Ex: "1d8", "5d10"
         document.getElementById("hit_dice").value = lvl + "d" + valorDado;
       }
-
       skills.forEach(sk => {
         const safeId = sk.n.replace(/\s+/g, "");
         const checkEl = document.getElementById(`check_${safeId}`);
@@ -2291,16 +2520,16 @@
           valEl.innerText = (total >= 0 ? "+" : "") + total;
         }
       });
-
       document.getElementById("inic_val").value = (mods["DES"] >= 0 ? "+" : "") + mods["DES"];
       const percCheck = document.getElementById("check_Percepção");
       const percProfLvl = percCheck ? (parseInt(percCheck.dataset.profLevel) || 0) : 0;
       document.getElementById("passive_perc").value = 10 + mods["SAB"] + (percProfLvl * prof);
-
       atualizarSubclasses();
       atualizarSlotsMagia();
       atualizarResumoPericias();
       atualizarGuia();
+      atualizarRecursosClasse();
+      vincularCliquesRolagem();
     }
     function ajustarCampo(id, delta) {
       const input = document.getElementById(id);
@@ -2387,6 +2616,9 @@
       if (document.getElementById("select_item_phb")) document.getElementById("select_item_phb").selectedIndex = 0;
       document.querySelectorAll(".val-bonus").forEach((span) => (span.innerText = "+0"));
       document.querySelectorAll(".mod").forEach((div) => (div.innerText = "+0"));
+      document.querySelectorAll(".condicao-check").forEach(c => c.checked = false);
+      document.getElementById("exaustao_val").value = 0;
+      document.getElementById("combat_log").value = "";
       setup();
       atualizarGuia();
       alert("Ficha reiniciada com sucesso!");
@@ -2614,88 +2846,95 @@
       });
     }
     function exportarFichaJSON() {
-    const dados = {
+      const dados = {
         info: {
-            char_name: document.getElementById("char_name").value,
-            player_name: document.getElementById("player_name").value,
-            class_name: document.getElementById("class_name").value,
-            subclass_name: document.getElementById("subclass_name").value,
-            level_val: document.getElementById("level_val").value,
-            race_name: document.getElementById("race_name").value,
-            subrace_name: document.getElementById("subrace_name").value,
-            bg_name: document.getElementById("bg_name").value,
-            align: document.getElementById("align").value,
+          char_name: document.getElementById("char_name").value,
+          player_name: document.getElementById("player_name").value,
+          class_name: document.getElementById("class_name").value,
+          subclass_name: document.getElementById("subclass_name").value,
+          level_val: document.getElementById("level_val").value,
+          race_name: document.getElementById("race_name").value,
+          subrace_name: document.getElementById("subrace_name").value,
+          bg_name: document.getElementById("bg_name").value,
+          align: document.getElementById("align").value,
         },
         habilidades: attrs.reduce((acc, at) => {
-            acc[at.id] = document.getElementById(at.id + "_score").value;
-            return acc;
+          acc[at.id] = document.getElementById(at.id + "_score").value;
+          return acc;
         }, {}),
         saves: attrs.reduce((acc, at) => {
-            const cb = document.querySelector(`.save-prof[data-attr="${at.id}"]`);
-            const span = document.getElementById(`save_${at.id}`);
-            acc[at.id] = {
-                prof: cb ? cb.checked : false,
-                manual: span ? span.dataset.manual : "0",
-                auto: cb ? cb.dataset.auto : "false"
-            };
-            return acc;
+          const cb = document.querySelector(`.save-prof[data-attr="${at.id}"]`);
+          const span = document.getElementById(`save_${at.id}`);
+          acc[at.id] = {
+            prof: cb ? cb.checked : false,
+            manual: span ? span.dataset.manual : "0",
+            auto: cb ? cb.dataset.auto : "false"
+          };
+          return acc;
         }, {}),
         pericias: skills.reduce((acc, sk) => {
-            const safeId = sk.n.replace(/\s+/g, "");
-            const cb = document.getElementById(`check_${safeId}`);
-            const span = document.getElementById(`sk_${safeId}`);
-            acc[safeId] = {
-                profLevel: cb ? cb.dataset.profLevel : "0",
-                manual: span ? span.dataset.manual : "0",
-                auto: cb ? cb.dataset.auto : "false"
-            };
-            return acc;
+          const safeId = sk.n.replace(/\s+/g, "");
+          const cb = document.getElementById(`check_${safeId}`);
+          const span = document.getElementById(`sk_${safeId}`);
+          acc[safeId] = {
+            profLevel: cb ? cb.dataset.profLevel : "0",
+            manual: span ? span.dataset.manual : "0",
+            auto: cb ? cb.dataset.auto : "false"
+          };
+          return acc;
         }, {}),
         combate: {
-            hp_at: document.getElementById("hp_at").value,
-            hp_max: document.getElementById("hp_max").value,
-            ca_val: document.getElementById("ca_val").value,
-            insp_val: document.getElementById("insp_val").value,
-            speed_val: document.getElementById("speed_val").value,
-            hit_dice: document.getElementById("hit_dice").value,
-            death_saves: Array.from(document.querySelectorAll('.circles input[type="checkbox"]')).map(cb => cb.checked)
+          hp_at: document.getElementById("hp_at").value,
+          hp_max: document.getElementById("hp_max").value,
+          ca_val: document.getElementById("ca_val").value,
+          insp_val: document.getElementById("insp_val").value,
+          speed_val: document.getElementById("speed_val").value,
+          hit_dice: document.getElementById("hit_dice").value,
+          death_saves: Array.from(document.querySelectorAll('.circles input[type="checkbox"]')).map(cb => cb.checked)
         },
         magia: {
-            slots_gastos: Array.from(document.querySelectorAll("#spell-slots-tracker input[type='checkbox']")).map(cb => cb.checked),
-            lista: Array.from(document.querySelectorAll(".magia-select")).map(sel => sel.value)
+          slots_gastos: Array.from(document.querySelectorAll("#spell-slots-tracker input[type='checkbox']")).map(cb => cb.checked),
+          lista: Array.from(document.querySelectorAll(".magia-select")).map(sel => sel.value)
         },
         listas: {
-            talentos: Array.from(document.querySelectorAll(".talento-select")).map(sel => sel.value),
-            idiomas: Array.from(document.querySelectorAll(".idioma-select")).map(sel => sel.value),
-            armas: Array.from(document.querySelectorAll(".weapon-entry-guia")).map(el => el.dataset.weaponName),
-            armaduras: Array.from(document.querySelectorAll(".armor-entry-guia")).map(el => el.dataset.name),
-            itens: Array.from(document.querySelectorAll(".item-entry-guia")).map(el => el.dataset.name)
+          talentos: Array.from(document.querySelectorAll(".talento-select")).map(sel => sel.value),
+          idiomas: Array.from(document.querySelectorAll(".idioma-select")).map(sel => sel.value),
+          armas: Array.from(document.querySelectorAll(".weapon-entry-guia")).map(el => el.dataset.weaponName),
+          armaduras: Array.from(document.querySelectorAll(".armor-entry-guia")).map(el => el.dataset.name),
+          itens: Array.from(document.querySelectorAll(".item-entry-guia")).map(el => el.dataset.name)
         },
         textos: {
-            t1: document.getElementById("t1").value,
-            t1_c: document.getElementById("t1_custom").value,
-            t2: document.getElementById("t2").value,
-            t2_c: document.getElementById("t2_custom").value,
-            t3: document.getElementById("t3").value,
-            t3_c: document.getElementById("t3_custom").value,
-            t4: document.getElementById("t4").value,
-            t4_c: document.getElementById("t4_custom").value,
-            t5: document.getElementById("t5").value,
-            equip: document.getElementById("equip_area").value,
-            notes: document.getElementById("notes_full_page") ? document.getElementById("notes_full_page").value : ""
+          t1: document.getElementById("t1").value,
+          t1_c: document.getElementById("t1_custom").value,
+          t2: document.getElementById("t2").value,
+          t2_c: document.getElementById("t2_custom").value,
+          t3: document.getElementById("t3").value,
+          t3_c: document.getElementById("t3_custom").value,
+          t4: document.getElementById("t4").value,
+          t4_c: document.getElementById("t4_custom").value,
+          t5: document.getElementById("t5").value,
+          equip: document.getElementById("equip_area").value,
+          notes: document.getElementById("notes_full_page") ? document.getElementById("notes_full_page").value : ""
+        },
+        recursos_gastos: Array.from(document.querySelectorAll("#class-resources-tracker input[type='checkbox']")).map(cb => cb.checked),
+        combate_status: {
+          condicoes: Array.from(document.querySelectorAll(".condicao-check")).map(cb => cb.checked),
+          exaustao: document.getElementById("exaustao_val").value,
+          log: document.getElementById("combat_log").value
         }
-    };
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dados, null, 2));
-    const a = document.createElement('a');
-    a.setAttribute("href", dataStr);
-    a.setAttribute("download", (dados.info.char_name || "Ficha") + ".json");
-    a.click();
-}
+
+      };
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dados, null, 2));
+      const a = document.createElement('a');
+      a.setAttribute("href", dataStr);
+      a.setAttribute("download", (dados.info.char_name || "Ficha") + ".json");
+      a.click();
+    }
     function importarFichaJSON(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function (e) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
         const d = JSON.parse(e.target.result);
         document.getElementById("magias-container").innerHTML = "";
         document.getElementById("talentos-container").innerHTML = "";
@@ -2720,35 +2959,35 @@
         document.getElementById("subrace_name").value = info.subrace_name || "";
         carregarCaracteristicasAntecedente();
         for (let id in d.habilidades) {
-            if (document.getElementById(id + "_score")) document.getElementById(id + "_score").value = d.habilidades[id];
+          if (document.getElementById(id + "_score")) document.getElementById(id + "_score").value = d.habilidades[id];
         }
         if (d.pericias) {
-            for (let safeId in d.pericias) {
-                const item = d.pericias[safeId];
-                const cb = document.getElementById(`check_${safeId}`);
-                const span = document.getElementById(`sk_${safeId}`);
-                if (cb) {
-                    cb.dataset.profLevel = item.profLevel || "0";
-                    cb.checked = (item.profLevel !== "0");
-                    if (item.profLevel === "2") {
-                        cb.style.outline = "2px solid #d4af37";
-                        cb.style.boxShadow = "0 0 5px #d4af37";
-                    } else {
-                        cb.style.outline = "none";
-                        cb.style.boxShadow = "none";
-                    }
-                }
-                if (span) span.dataset.manual = item.manual || "0";
+          for (let safeId in d.pericias) {
+            const item = d.pericias[safeId];
+            const cb = document.getElementById(`check_${safeId}`);
+            const span = document.getElementById(`sk_${safeId}`);
+            if (cb) {
+              cb.dataset.profLevel = item.profLevel || "0";
+              cb.checked = (item.profLevel !== "0");
+              if (item.profLevel === "2") {
+                cb.style.outline = "2px solid #d4af37";
+                cb.style.boxShadow = "0 0 5px #d4af37";
+              } else {
+                cb.style.outline = "none";
+                cb.style.boxShadow = "none";
+              }
             }
+            if (span) span.dataset.manual = item.manual || "0";
+          }
         }
         if (d.saves) {
-            for (let id in d.saves) {
-                const item = d.saves[id];
-                const cb = document.querySelector(`.save-prof[data-attr="${id}"]`);
-                const span = document.getElementById(`save_${id}`);
-                if (cb) cb.checked = item.prof;
-                if (span) span.dataset.manual = item.manual || "0";
-            }
+          for (let id in d.saves) {
+            const item = d.saves[id];
+            const cb = document.querySelector(`.save-prof[data-attr="${id}"]`);
+            const span = document.getElementById(`save_${id}`);
+            if (cb) cb.checked = item.prof;
+            if (span) span.dataset.manual = item.manual || "0";
+          }
         }
         if (d.listas.idiomas) d.listas.idiomas.forEach(v => { adicionarIdioma(); document.querySelector(".idioma-row:last-child select").value = v; });
         if (d.listas.talentos) d.listas.talentos.forEach(v => { adicionarTalento(); document.querySelector(".talento-row:last-child select").value = v; });
@@ -2756,7 +2995,28 @@
         if (d.listas.armas) d.listas.armas.forEach(v => { document.getElementById("select_arma_phb").value = v; adicionarArmaCard(); });
         if (d.listas.armaduras) d.listas.armaduras.forEach(v => { document.getElementById("select_armadura_phb").value = v; adicionarArmaduraCard(); });
         if (d.listas.itens) d.listas.itens.forEach(v => { document.getElementById("select_item_phb").value = v; adicionarItemCard(); });
+
         calcular();
+        atualizarRecursosClasse();
+
+        const resCbs = document.querySelectorAll("#class-resources-tracker input[type='checkbox']");
+        if (d.recursos_gastos) {
+          d.recursos_gastos.forEach((valor, i) => {
+            if (resCbs[i]) resCbs[i].checked = valor;
+          });
+        }
+
+        if (d.combate_status) {
+          const condChecks = document.querySelectorAll(".condicao-check");
+          if (d.combate_status.condicoes) {
+            d.combate_status.condicoes.forEach((val, i) => {
+              if (condChecks[i]) condChecks[i].checked = val;
+            });
+          }
+          if (document.getElementById("exaustao_val")) document.getElementById("exaustao_val").value = d.combate_status.exaustao || 0;
+          if (document.getElementById("combat_log")) document.getElementById("combat_log").value = d.combate_status.log || "";
+        }
+
         const slotCbs = document.querySelectorAll("#spell-slots-tracker input[type='checkbox']");
         if (d.magia.slots_gastos) d.magia.slots_gastos.forEach((v, i) => { if (slotCbs[i]) slotCbs[i].checked = v; });
         const dsCbs = document.querySelectorAll('.circles input[type="checkbox"]');
@@ -2780,15 +3040,15 @@
         document.getElementById("equip_area").value = t.equip || "";
         if (document.getElementById("notes_full_page")) document.getElementById("notes_full_page").value = t.notes || "";
         ["t1", "t2", "t3", "t4"].forEach(id => {
-            const sel = document.getElementById(id);
-            mostrarTextoCompleto(sel, id + "_display", id + "_custom");
+          const sel = document.getElementById(id);
+          mostrarTextoCompleto(sel, id + "_display", id + "_custom");
         });
         atualizarGuia();
         alert("Ficha carregada com sucesso!");
-    };
-    reader.readAsText(file);
-    event.target.value = "";
-}
+      };
+      reader.readAsText(file);
+      event.target.value = "";
+    }
     function modificarManualSkill(safeId, delta) {
       const el = document.getElementById('sk_' + safeId);
       if (!el) return;
@@ -2883,7 +3143,6 @@
     function alternarEspecializacao(el) {
       let level = parseInt(el.dataset.profLevel) || 0;
       level = (level + 1) % 3;
-
       el.dataset.profLevel = level;
       if (level === 0) {
         el.checked = false;
@@ -2899,6 +3158,345 @@
         el.style.boxShadow = "0 0 5px #d4af37";
       }
       calcular();
+    }
+    function atualizarRecursosClasse() {
+      const c = document.getElementById("class_name").value;
+      const lvl = parseInt(document.getElementById("level_val").value) || 1;
+      const container = document.getElementById("class-resources-tracker");
+      const box = document.getElementById("box-recursos-classe");
+      if (!recursosDB[c]) {
+        box.style.display = "none";
+        ultimoEstadoRecurso = "";
+        return;
+      }
+      const data = recursosDB[c];
+      let modAtual = 0;
+      if (data.useAttr) {
+        const score = parseInt(document.getElementById(data.useAttr + "_score").value) || 10;
+        modAtual = Math.floor((score - 10) / 2);
+      }
+      const estadoAtual = `${c}-${lvl}-${modAtual}`;
+      if (estadoAtual === ultimoEstadoRecurso) {
+        return;
+      }
+      ultimoEstadoRecurso = estadoAtual;
+      box.style.display = "block";
+      let qtd = 0;
+      let html = "";
+      if (data.perLevel) {
+        qtd = lvl >= 2 ? lvl : 0;
+      } else if (data.useAttr) {
+        qtd = Math.max(1, modAtual);
+      } else if (data.customFighter) {
+        const surto = lvl >= 17 ? 2 : (lvl >= 2 ? 1 : 0);
+        const indomavel = lvl >= 17 ? 3 : (lvl >= 13 ? 2 : (lvl >= 9 ? 1 : 0));
+        if (surto > 0) html += gerarResourceRow("Surto de Ação", surto);
+        if (indomavel > 0) html += gerarResourceRow("Indomável", indomavel);
+      } else {
+        qtd = data.progression[lvl - 1];
+      }
+      if (qtd > 0 && !data.customFighter) {
+        html = gerarResourceRow(data.label, qtd);
+      }
+      container.innerHTML = html || "<small style='color:gray'>Nenhum recurso neste nível.</small>";
+    }
+    function gerarResourceRow(label, qtd) {
+      if (qtd === 99) return `<div><label>${label}</label><span style="font-size:12px; color:var(--dnd-red)">∞ Uso Ilimitado</span></div>`;
+
+      let checks = "";
+      for (let i = 0; i < qtd; i++) {
+        checks += `<input type="checkbox" style="width:14px; height:14px; margin:0;">`;
+      }
+      return `
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:4px;">
+            <label style="margin:0; flex:1;">${label}</label>
+            <div class="circles" style="display:flex; gap:4px; flex-wrap:wrap; justify-content:flex-end; max-width:120px;">${checks}</div>
+        </div>`;
+    }
+    function rolarDado(faces, bonus, label) {
+      const result = Math.floor(randomCriptografico() * faces) + 1;
+      const total = result + bonus;
+      registrarNoLog(`1d${faces}`, result, bonus, total, label);
+    }
+    function vincularCliquesRolagem() {
+      document.querySelectorAll(".val-bonus").forEach(span => {
+        span.onclick = function () {
+          const label = this.parentElement.innerText.replace(/[▲▼+0-9-]/g, '').trim();
+          const bonus = parseInt(this.innerText) || 0;
+          rolarDado(20, bonus, label);
+        };
+      });
+      document.querySelectorAll(".mod").forEach(div => {
+        div.style.cursor = "pointer";
+        div.title = "Clique para rolar teste de Atributo";
+        div.onclick = function () {
+          const label = this.parentElement.querySelector("label").innerText;
+          const bonus = parseInt(this.innerText) || 0;
+          rolarDado(20, bonus, label);
+        };
+      });
+    }
+    function rolarManual(faces) {
+      let bonus = 0;
+      let qtd = 1;
+      let tipo = "n";
+      if (faces === 20) {
+        const bInput = prompt("Bônus para o d20 (ou 0):", "0");
+        bonus = parseInt(bInput) || 0;
+        const tInput = prompt("Tipo de rolagem: [N]ormal, [V]antagem, [D]esvantagem", "n");
+        tipo = tInput ? tInput.toLowerCase() : "n";
+        let r1 = Math.floor(randomCriptografico() * 20) + 1;
+        let r2 = Math.floor(randomCriptografico() * 20) + 1;
+        let finalDie = r1;
+        let extraInfo = "";
+        if (tipo === "v") {
+          finalDie = Math.max(r1, r2);
+          extraInfo = `(Vantagem: ${r1}, ${r2})`;
+        } else if (tipo === "d") {
+          finalDie = Math.min(r1, r2);
+          extraInfo = `(Desvantagem: ${r1}, ${r2})`;
+        }
+        const total = finalDie + bonus;
+        registrarNoLog(`1d20${extraInfo}`, finalDie, bonus, total, "Rolagem Manual");
+      } else if (faces === 100) {
+        const bInput = prompt("Bônus para o d100 (ou 0):", "0");
+        bonus = parseInt(bInput) || 0;
+        let result = Math.floor(randomCriptografico() * 100) + 1;
+        registrarNoLog(`1d100`, result, bonus, result + bonus, "Rolagem Manual");
+      } else {
+        const qInput = prompt(`Quantos d${faces} deseja rolar?`, "1");
+        qtd = parseInt(qInput) || 1;
+        const bInput = prompt(`Bônus total para a soma (ou 0):`, "0");
+        bonus = parseInt(bInput) || 0;
+        let somaDados = 0;
+        let resultadosIndividuais = [];
+        for (let i = 0; i < qtd; i++) {
+          let r = Math.floor(randomCriptografico() * faces) + 1;
+          somaDados += r;
+          resultadosIndividuais.push(r);
+        }
+        const total = somaDados + bonus;
+        const labelDados = `${qtd}d${faces} [${resultadosIndividuais.join(", ")}]`;
+        registrarNoLog(labelDados, somaDados, bonus, total, "Rolagem Manual");
+      }
+    }
+    function registrarNoLog(dadosInfo, somaDados, bonus, total, label) {
+      const container = document.getElementById("dice-log-content");
+      const entry = document.createElement("div");
+      entry.className = "roll-entry";
+
+      const corDestaque = (dadosInfo.includes("1d20")) ?
+        (somaDados === 20 ? "color:green; font-weight:bold;" : (somaDados === 1 ? "color:red; font-weight:bold;" : "font-weight:bold;"))
+        : "font-weight:bold;";
+      entry.innerHTML = `
+    <div style="font-size:9px; color:#666;">${label} (${dadosInfo})</div>
+    <div style="font-size:13px;">
+      <span style="${corDestaque}">${somaDados}</span> ${bonus >= 0 ? "+" : "-"} ${Math.abs(bonus)} = <strong>${total}</strong>
+    </div>
+  `;
+      container.prepend(entry);
+      if (container.children.length > 10) container.lastElementChild.remove();
+    }
+    function toggleDiceLog() {
+      const log = document.getElementById("dice-log-container");
+      const btnReabrir = document.getElementById("btn-reabrir-log");
+
+      if (log.style.display === "none") {
+        log.style.display = "flex";
+        btnReabrir.style.display = "none";
+      } else {
+        log.style.display = "none";
+        btnReabrir.style.display = "block";
+      }
+    }
+    function abrirModalAuth(tipo) {
+      const modal = document.getElementById("auth-modal");
+      const titulo = document.getElementById("modal-title");
+      const btn = document.getElementById("auth-submit-btn");
+
+      modal.style.display = "block";
+      if (tipo === 'login') {
+        titulo.innerText = "Entrar no Cofre";
+        btn.onclick = () => logar();
+      } else {
+        titulo.innerText = "Criar Nova Conta";
+        btn.onclick = () => cadastrar();
+      }
+    }
+    async function cadastrar() {
+      const email = document.getElementById("auth-email").value;
+      const pass = document.getElementById("auth-pass").value;
+      try {
+        await auth.createUserWithEmailAndPassword(email, pass);
+        alert("Conta criada! Agora você pode salvar suas fichas.");
+        document.getElementById("auth-modal").style.display = "none";
+      } catch (e) { alert("Erro: " + e.message); }
+    }
+    async function logar() {
+      const email = document.getElementById("auth-email").value;
+      const pass = document.getElementById("auth-pass").value;
+      try {
+        await auth.signInWithEmailAndPassword(email, pass);
+        document.getElementById("auth-modal").style.display = "none";
+      } catch (e) { alert("Erro: " + e.message); }
+    }
+    function deslogar() { auth.signOut(); }
+    const firebaseConfig = {
+      apiKey: "AIzaSyCdkD7w5cuCzRPg_sZnOnQ71a7r_en5dJU",
+      authDomain: "fichadnd5ed2014.firebaseapp.com",
+      projectId: "fichadnd5ed2014",
+      storageBucket: "fichadnd5ed2014.firebasestorage.app",
+      messagingSenderId: "833978799616",
+      appId: "1:833978799616:web:b02008fa1c8a3b0ec32ae5",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        document.getElementById("auth-status-guest").style.display = "none";
+        document.getElementById("auth-status-user").style.display = "flex";
+        document.getElementById("user-email-display").innerText = " " + user.email;
+      } else {
+        document.getElementById("auth-status-guest").style.display = "block";
+        document.getElementById("auth-status-user").style.display = "none";
+      }
+    });
+    async function salvarNaNuvem() {
+      const user = auth.currentUser;
+      if (!user) {
+        alert("Você precisa estar logado para salvar na nuvem!");
+        return;
+      }
+      const nomeChar = document.getElementById("char_name").value || "Heroi_Sem_Nome";
+      const dados = {
+        info: {
+          char_name: document.getElementById("char_name").value,
+          player_name: document.getElementById("player_name").value,
+          class_name: document.getElementById("class_name").value,
+          subclass_name: document.getElementById("subclass_name").value,
+          level_val: document.getElementById("level_val").value,
+          race_name: document.getElementById("race_name").value,
+          subrace_name: document.getElementById("subrace_name").value,
+          bg_name: document.getElementById("bg_name").value,
+          align: document.getElementById("align").value,
+        },
+        habilidades: attrs.reduce((acc, at) => {
+          acc[at.id] = document.getElementById(at.id + "_score").value;
+          return acc;
+        }, {}),
+        combate: {
+          hp_at: document.getElementById("hp_at").value,
+          hp_max: document.getElementById("hp_max").value,
+          ca_val: document.getElementById("ca_val").value,
+          insp_val: document.getElementById("insp_val").value,
+          speed_val: document.getElementById("speed_val").value,
+          hit_dice: document.getElementById("hit_dice").value
+        },
+        textos: {
+          t1: document.getElementById("t1").value,
+          t2: document.getElementById("t2").value,
+          t3: document.getElementById("t3").value,
+          t4: document.getElementById("t4").value,
+          equip: document.getElementById("equip_area").value,
+          notes: document.getElementById("notes_full_page").value
+        }
+      };
+      try {
+        await db.collection("users").doc(user.uid).collection("fichas").doc(nomeChar).set(dados);
+        alert("Ficha salva com sucesso!");
+      } catch (e) { alert("Erro ao salvar: " + e.message); }
+    }
+    async function abrirGaleriaNuvem() {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      try {
+        const snapshot = await db.collection("users").doc(user.uid).collection("fichas").get();
+        const select = document.getElementById("nuvem-select");
+        select.innerHTML = "";
+
+        if (snapshot.empty) {
+          alert("Nenhuma ficha encontrada na nuvem.");
+          return;
+        }
+
+        snapshot.forEach(doc => {
+          let opt = document.createElement("option");
+          opt.value = doc.id;
+          opt.innerText = doc.id;
+          select.appendChild(opt);
+        });
+
+        document.getElementById("gallery-modal").style.display = "block";
+      } catch (e) { alert("Erro ao listar fichas: " + e.message); }
+    }
+    async function confirmarCargaNuvem() {
+      const user = auth.currentUser;
+      const nomeFicha = document.getElementById("nuvem-select").value;
+      if (!nomeFicha) return;
+
+      try {
+        const doc = await db.collection("users").doc(user.uid).collection("fichas").doc(nomeFicha).get();
+        if (doc.exists) {
+          const d = doc.data();
+          document.getElementById("char_name").value = d.info.char_name || "";
+          document.getElementById("player_name").value = d.info.player_name || "";
+          document.getElementById("class_name").value = d.info.class_name || "";
+          document.getElementById("level_val").value = d.info.level_val || 1;
+          document.getElementById("race_name").value = d.info.race_name || "";
+          document.getElementById("bg_name").value = d.info.bg_name || "";
+          document.getElementById("align").value = d.info.align || "";
+          atualizarSubclasses();
+          document.getElementById("subclass_name").value = d.info.subclass_name || "";
+          atualizarSubracas();
+          document.getElementById("subrace_name").value = d.info.subrace_name || "";
+
+          for (let id in d.habilidades) {
+            if (document.getElementById(id + "_score")) document.getElementById(id + "_score").value = d.habilidades[id];
+          }
+          document.getElementById("hp_at").value = d.combate.hp_at || "";
+          document.getElementById("hp_max").value = d.combate.hp_max || "";
+          document.getElementById("ca_val").value = d.combate.ca_val || 10;
+          document.getElementById("insp_val").value = d.combate.insp_val || 0;
+          document.getElementById("speed_val").value = d.combate.speed_val || "9m";
+          document.getElementById("hit_dice").value = d.combate.hit_dice || "";
+          const t = d.textos;
+          document.getElementById("t1").value = t.t1 || "";
+          document.getElementById("t2").value = t.t2 || "";
+          document.getElementById("t3").value = t.t3 || "";
+          document.getElementById("t4").value = t.t4 || "";
+          document.getElementById("equip_area").value = t.equip || "";
+          if (document.getElementById("notes_full_page")) document.getElementById("notes_full_page").value = t.notes || "";
+          calcular();
+          atualizarGuia();
+          document.getElementById("gallery-modal").style.display = "none";
+          alert("Ficha '" + nomeFicha + "' carregada com sucesso!");
+        }
+      } catch (e) { alert("Erro ao carregar dados: " + e.message); }
+    }
+    async function deletarFichaNuvem() {
+      const user = auth.currentUser;
+      const nomeFicha = document.getElementById("nuvem-select").value;
+      if (!nomeFicha) {
+        alert("Selecione uma ficha para deletar.");
+        return;
+      }
+      const confirmacao = confirm(`⚠️ ATENÇÃO: Você tem certeza que deseja excluir permanentemente a ficha de "${nomeFicha}"? Esta ação não pode ser desfeita.`);
+      if (confirmacao) {
+        try {
+          await db.collection("users").doc(user.uid).collection("fichas").doc(nomeFicha).delete();
+          alert("Ficha deletada com sucesso!");
+          abrirGaleriaNuvem();
+        } catch (e) {
+          alert("Erro ao deletar: " + e.message);
+        }
+      }
+    }
+    function randomCriptografico() {
+      const array = new Uint32Array(1);
+      window.crypto.getRandomValues(array);
+      return array[0] / (0xFFFFFFFF + 1);
     }
     window.onload = () => {
       setup();
@@ -9959,6 +10557,40 @@
           bonusExpertise: 2
         }
       ]
+    };
+    const recursosDB = {
+      "Bárbaro (Barbarian)": {
+        label: "Fúrias",
+        progression: [2, 2, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 99] // 99 = Infinito
+      },
+      "Bardo (Bard)": {
+        label: "Inspiração Bárdica",
+        useAttr: "CAR" // Baseado no modificador de Carisma
+      },
+      "Clérigo (Cleric)": {
+        label: "Canalizar Divindade",
+        progression: [0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3]
+      },
+      "Druida (Druid)": {
+        label: "Forma Selvagem",
+        progression: [0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 99]
+      },
+      "Guerreiro (Fighter)": {
+        label: "Surto de Ação / Indomável",
+        customFighter: true // Lógica especial para múltiplos recursos
+      },
+      "Monge (Monk)": {
+        label: "Pontos de Ki",
+        perLevel: true // 1 por nível começando no nível 2
+      },
+      "Paladino (Paladin)": {
+        label: "Canalizar Divindade",
+        progression: [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+      },
+      "Feiticeiro (Sorcerer)": {
+        label: "Pontos de Feitiçaria",
+        perLevel: true // 1 por nível começando no nível 2
+      }
     };
   </script>
 </body>
