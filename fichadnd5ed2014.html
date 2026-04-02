@@ -2482,12 +2482,10 @@
       calcular();
     }
     const DEFAULT_AVATAR_SVG = "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'%3E%3C/path%3E%3C/svg%3E";
-
     function setup() {
       const attrCol = document.getElementById("attr-col");
       const saveList = document.getElementById("saves-list");
       const skillList = document.getElementById("skills-list");
-
       attrCol.innerHTML = `
         <div id="char-image-container" onclick="alterarImagemPersonagem()" title="Clique para alterar a imagem do personagem">
           <img id="char_img" src="${DEFAULT_AVATAR_SVG}" alt="Avatar">
@@ -2498,10 +2496,8 @@
           </div>
         </div>
       `;
-
       saveList.innerHTML = "";
       skillList.innerHTML = "";
-
       attrs.forEach((at) => {
         attrCol.innerHTML += `
               <div class="attr-box">
@@ -2516,7 +2512,6 @@
                       <button type="button" class="btn-step" onclick="modificarScore('${at.id}', 1)">+</button>
                   </div>
               </div>`;
-
         saveList.innerHTML += `
             <div class="row">
                 <input type="checkbox" class="save-prof" data-attr="${at.id}" onchange="calcular()">
@@ -2528,7 +2523,6 @@
                 <span>${at.n}</span>
             </div>`;
       });
-
       attrCol.innerHTML += `
           <div style="grid-column: span 1; padding: 5px; margin-top: 5px; border-top: 1px dashed #ccc;">
               <p style="font-size: 10px; color: #666; font-style: italic; line-height: 1.3; margin: 0;">
@@ -2541,7 +2535,6 @@
               </p>
           </div>
       `;
-
       skills.forEach((sk) => {
         const safeId = sk.n.replace(/\s+/g, "");
         skillList.innerHTML += `
@@ -2555,17 +2548,14 @@
                 <span>${sk.n} <small style="color:#888">(${sk.a})</small></span>
             </div>`;
       });
-
       adicionarTalento();
       adicionarMagia();
       atualizarSubclasses();
       calcular(true);
       atualizarGuia();
-
       ["t1", "t2", "t3", "t4"].forEach(id => {
         mostrarTextoCompleto(document.getElementById(id), id + "_display", id + "_custom");
       });
-
       adicionarIdioma();
       carregarCaracteristicasAntecedente();
       atualizarResumoPericias();
@@ -2575,63 +2565,63 @@
       i.value = Math.max(0, parseInt(i.value) + val);
     }
     function calcular(resetProficiencies = false) {
-      const lvl = parseInt(document.getElementById("level_val").value) || 1;
-      const prof = Math.floor((lvl - 1) / 4) + 2;
-      document.getElementById("prof_bonus").value = `+${prof}`;
-      const race = document.getElementById("race_name").value;
-      const subrace = document.getElementById("subrace_name").value;
-      const className = document.getElementById("class_name").value;
-      const subClassName = document.getElementById("subclass_name").value;
-      const backgroundRaw = document.getElementById("bg_name").value;
-      const background = backgroundRaw.split(" (")[0];
-      if (resetProficiencies) {
+    const lvl = parseInt(document.getElementById("level_val").value) || 1;
+    const prof = Math.floor((lvl - 1) / 4) + 2;
+    document.getElementById("prof_bonus").value = `+${prof}`;
+    const race = document.getElementById("race_name").value;
+    const subrace = document.getElementById("subrace_name").value;
+    const className = document.getElementById("class_name").value;
+    const subClassName = document.getElementById("subclass_name").value;
+    const backgroundRaw = document.getElementById("bg_name").value;
+    const background = backgroundRaw.split(" (")[0];
+    if (resetProficiencies) {
         document.querySelectorAll(".skill-prof, .save-prof").forEach((c) => {
-          if (c.dataset.auto === "true") {
-            c.checked = false;
-            c.dataset.auto = "false";
-            c.dataset.profLevel = "0";
-            c.style.outline = "none";
-            c.style.boxShadow = "none";
-          }
+            if (c.dataset.auto === "true") {
+                c.checked = false;
+                c.dataset.auto = "false";
+                c.dataset.profLevel = "0";
+                c.style.outline = "none";
+                c.style.boxShadow = "none";
+            }
         });
         const marcarAuto = (id) => {
-          let safeId = id.replace(/\s+/g, "");
-          let check = document.getElementById("check_" + safeId);
-          if (check) {
-            check.checked = true;
-            check.dataset.auto = "true";
-            check.dataset.profLevel = "1";
-            check.style.outline = "none";
-          }
+            let safeId = id.replace(/\s+/g, "");
+            let check = document.getElementById("check_" + safeId);
+            if (check) {
+                check.checked = true;
+                check.dataset.auto = "true";
+                check.dataset.profLevel = "1";
+                check.style.outline = "none";
+            }
         };
         if (race && proficienciasFixasDB.racas[race]) {
-          proficienciasFixasDB.racas[race].forEach(s => marcarAuto(s));
+            proficienciasFixasDB.racas[race].forEach(s => marcarAuto(s));
         }
         if (background && proficienciasFixasDB.backgrounds[background]) {
-          proficienciasFixasDB.backgrounds[background].forEach(s => marcarAuto(s));
+            proficienciasFixasDB.backgrounds[background].forEach(s => marcarAuto(s));
         }
         if (mecanicasPHB.classes[className]) {
-          mecanicasPHB.classes[className].saves.forEach(s => {
-            const cb = document.querySelector(`.save-prof[data-attr="${s}"]`);
-            if (cb) {
-              cb.checked = true;
-              cb.dataset.auto = "true";
-            }
-          });
+            mecanicasPHB.classes[className].saves.forEach(s => {
+                const cb = document.querySelector(`.save-prof[data-attr="${s}"]`);
+                if (cb) {
+                    cb.checked = true;
+                    cb.dataset.auto = "true";
+                }
+            });
         }
-      }
-      let bonusAtributos = { FOR: 0, DES: 0, CON: 0, INT: 0, SAB: 0, CAR: 0 };
-      if (mecanicasPHB.races[race]) {
+    }
+    let bonusAtributos = { FOR: 0, DES: 0, CON: 0, INT: 0, SAB: 0, CAR: 0 };
+    if (mecanicasPHB.races[race]) {
         const rData = mecanicasPHB.races[race];
         Object.keys(bonusAtributos).forEach(k => { if (rData[k]) bonusAtributos[k] += rData[k]; });
         if (rData.speed) document.getElementById("speed_val").value = rData.speed;
-      }
-      if (subrace && mecanicasPHB.subraces[subrace]) {
+    }
+    if (subrace && mecanicasPHB.subraces[subrace]) {
         const srData = mecanicasPHB.subraces[subrace];
         Object.keys(bonusAtributos).forEach(k => { if (srData[k]) bonusAtributos[k] += srData[k]; });
-      }
-      let mods = {};
-      attrs.forEach(at => {
+    }
+    let mods = {};
+    attrs.forEach(at => {
         const baseScore = parseInt(document.getElementById(`${at.id}_score`).value) || 10;
         const currentBonus = bonusAtributos[at.id] || 0;
         const m = Math.floor((baseScore + currentBonus - 10) / 2);
@@ -2644,15 +2634,15 @@
         const manualBonus = parseInt(sValSpan.dataset.manual) || 0;
         const sVal = m + (sCheck && sCheck.checked ? prof : 0) + manualBonus;
         sValSpan.innerText = (sVal >= 0 ? "+" : "") + sVal;
-      });
-      if (mecanicasPHB.classes[className]) {
+    });
+    if (mecanicasPHB.classes[className]) {
         const cData = mecanicasPHB.classes[className];
         const modCon = mods["CON"] || 0;
         const valorDado = parseInt(cData.hitDice.split('d')[1]) || 8;
         const mediaFixa = Math.floor(valorDado / 2) + 1;
         let totalHP = valorDado + modCon;
         if (lvl > 1) {
-          totalHP += (mediaFixa + modCon) * (lvl - 1);
+            totalHP += (mediaFixa + modCon) * (lvl - 1);
         }
         let hpExtraPorNivel = 0;
         if (subrace.includes("Anão da Colina") || subrace.includes("Hill Dwarf")) hpExtraPorNivel += 1;
@@ -2663,46 +2653,83 @@
         if (totalHP < lvl) totalHP = lvl;
         document.getElementById("hp_max").value = totalHP;
         document.getElementById("hit_dice").value = lvl + "d" + valorDado;
-      }
-      skills.forEach(sk => {
+    }
+    skills.forEach(sk => {
         const safeId = sk.n.replace(/\s+/g, "");
         const checkEl = document.getElementById(`check_${safeId}`);
         const valEl = document.getElementById(`sk_${safeId}`);
         if (checkEl && valEl) {
-          const profLevel = parseInt(checkEl.dataset.profLevel) || 0;
-          const manualBonus = parseInt(valEl.dataset.manual) || 0;
-          const total = mods[sk.a] + (prof * profLevel) + manualBonus;
-          valEl.innerText = (total >= 0 ? "+" : "") + total;
+            const profLevel = parseInt(checkEl.dataset.profLevel) || 0;
+            const manualBonus = parseInt(valEl.dataset.manual) || 0;
+            const total = mods[sk.a] + (prof * profLevel) + manualBonus;
+            valEl.innerText = (total >= 0 ? "+" : "") + total;
         }
-      });
-      document.getElementById("inic_val").value = (mods["DES"] >= 0 ? "+" : "") + mods["DES"];
-      const percCheck = document.getElementById("check_Percepção");
-      const percProfLvl = percCheck ? (parseInt(percCheck.dataset.profLevel) || 0) : 0;
-      document.getElementById("passive_perc").value = 10 + mods["SAB"] + (percProfLvl * prof);
-      const profVal = parseInt(document.getElementById("prof_bonus").value.replace("+", "")) || 2;
-      document.querySelectorAll(".weapon-entry-guia").forEach(entry => {
+    });
+    document.getElementById("inic_val").value = (mods["DES"] >= 0 ? "+" : "") + mods["DES"];
+    const percCheck = document.getElementById("check_Percepção");
+    const percProfLvl = percCheck ? (parseInt(percCheck.dataset.profLevel) || 0) : 0;
+    document.getElementById("passive_perc").value = 10 + mods["SAB"] + (percProfLvl * prof);
+    let baseCA = 10;
+    let modDex = mods["DES"] || 0;
+    let bonusEscudo = 0;
+    let temArmadura = false;
+    const armorEntries = document.querySelectorAll(".armor-entry-guia");
+    armorEntries.forEach(entry => {
+        const nome = entry.dataset.name;
+        const categoria = entry.dataset.category;
+        if (nome.includes("Escudo")) {
+            bonusEscudo = 2;
+        } else {
+            let armorData = null;
+            for (const cat in armadurasDB) {
+                if (armadurasDB[cat][nome]) armorData = armadurasDB[cat][nome];
+            }
+            if (armorData) {
+                temArmadura = true;
+                if (categoria === "Armadura Leve") {
+                    baseCA = armorData.ca + modDex;
+                } else if (categoria === "Armadura Média") {
+                    baseCA = armorData.ca + Math.min(modDex, 2);
+                } else if (categoria === "Armadura Pesada") {
+                    baseCA = armorData.ca;
+                }
+            }
+        }
+    });
+    if (!temArmadura) {
+        if (className === "Monge (Monk)") {
+            baseCA = 10 + modDex + (mods["SAB"] || 0);
+        } else if (className === "Bárbaro (Barbarian)") {
+            baseCA = 10 + modDex + (mods["CON"] || 0);
+        } else {
+            baseCA = 10 + modDex;
+        }
+    }
+    document.getElementById("ca_val").value = baseCA + bonusEscudo;
+    const profVal = parseInt(document.getElementById("prof_bonus").value.replace("+", "")) || 2;
+    document.querySelectorAll(".weapon-entry-guia").forEach(entry => {
         let modAtaque = 0;
         let baseDmg = "";
         let magicB = 0;
         if (entry.dataset.isCustom === "true") {
-          const attrUsado = entry.dataset.attr || "FOR";
-          modAtaque = mods[attrUsado] || 0;
-          baseDmg = entry.dataset.baseDmg || "1d4";
-          magicB = parseInt(entry.dataset.magicBonus) || 0;
+            const attrUsado = entry.dataset.attr || "FOR";
+            modAtaque = mods[attrUsado] || 0;
+            baseDmg = entry.dataset.baseDmg || "1d4";
+            magicB = parseInt(entry.dataset.magicBonus) || 0;
         } else {
-          const wName = entry.dataset.weaponName;
-          let wData = null;
-          for (const cat in armasDB) { if (armasDB[cat][wName]) wData = armasDB[cat][wName]; }
-          if (!wData) return;
-          baseDmg = wData.dano;
-          const prop = wData.prop.toLowerCase();
-          let attrUsado = "FOR";
-          if (prop.includes("distância") || (prop.includes("arremesso") && !prop.includes("acuidade"))) {
-            attrUsado = "DES";
-          } else if (prop.includes("acuidade")) {
-            attrUsado = mods["FOR"] > mods["DES"] ? "FOR" : "DES";
-          }
-          modAtaque = mods[attrUsado];
+            const wName = entry.dataset.weaponName;
+            let wData = null;
+            for (const cat in armasDB) { if (armasDB[cat][wName]) wData = armasDB[cat][wName]; }
+            if (!wData) return;
+            baseDmg = wData.dano;
+            const prop = wData.prop.toLowerCase();
+            let attrUsado = "FOR";
+            if (prop.includes("distância") || (prop.includes("arremesso") && !prop.includes("acuidade"))) {
+                attrUsado = "DES";
+            } else if (prop.includes("acuidade")) {
+                attrUsado = mods["FOR"] > mods["DES"] ? "FOR" : "DES";
+            }
+            modAtaque = mods[attrUsado];
         }
         const totalAtk = modAtaque + profVal + magicB;
         const totalDmgMod = modAtaque + magicB;
@@ -2710,14 +2737,14 @@
         const dmgEl = entry.querySelector(".dmg-val");
         if (atkEl) atkEl.innerText = (totalAtk >= 0 ? "+" : "") + totalAtk;
         if (dmgEl) dmgEl.innerText = baseDmg + (totalDmgMod >= 0 ? "+" : "") + totalDmgMod;
-      });
-      atualizarSubclasses();
-      atualizarSlotsMagia();
-      atualizarResumoPericias();
-      atualizarGuia();
-      atualizarRecursosClasse();
-      vincularCliquesRolagem();
-    }
+    });
+    atualizarSubclasses();
+    atualizarSlotsMagia();
+    atualizarResumoPericias();
+    atualizarGuia();
+    atualizarRecursosClasse();
+    vincularCliquesRolagem();
+}
     function ajustarCampo(id, delta) {
       const input = document.getElementById(id);
       let val = parseInt(input.value.replace("+", "")) || 0;
@@ -2929,7 +2956,13 @@
       const armName = document.getElementById("select_armadura_phb").value;
       if (!armName) return;
       let data = null;
-      for (const cat in armadurasDB) { if (armadurasDB[cat][armName]) data = armadurasDB[cat][armName]; }
+      let categoriaEncontrada = "";
+      for (const cat in armadurasDB) { 
+        if (armadurasDB[cat][armName]) {
+          data = armadurasDB[cat][armName]; 
+          categoriaEncontrada = cat;
+        }
+      }
       if (!data) return;
       const cardsContainer = document.getElementById("armor-cards-container");
       const card = document.createElement("div");
@@ -2940,22 +2973,23 @@
             <span class="weapon-card-title" style="font-size:12px;">${armName}</span>
             <button type="button" class="insp-btn" onclick="removerArmadura(this)" style="background:#666; width:16px; height:16px;">-</button>
         </div>
-    `;
+      `;
       cardsContainer.appendChild(card);
       const guideContainer = document.getElementById("desc-armors-guia");
       if (guideContainer.innerText === "---") guideContainer.innerHTML = "";
       const infoItem = document.createElement("div");
       infoItem.className = "armor-entry-guia";
       infoItem.dataset.name = armName;
+      infoItem.dataset.category = categoriaEncontrada; // SALVA A CATEGORIA
       infoItem.style.cssText = "font-size: 12px; border-bottom: 1px solid #eee; margin-bottom: 10px; padding-top: 3px; line-height: 1.2; color: #333;";
       infoItem.innerHTML = `
         <b style="text-transform:uppercase; color:#333;  border-bottom: 0px; ">${armName}:</b> 
         CA: ${data.ca}${data.dex !== 0 ? ' +Des' : ''} | 
         ${data.custo} | ${data.peso} | 
         Força: ${data.forca} | Furtividade: ${data.furtiv}
-    `;
+      `;
       guideContainer.appendChild(infoItem);
-      calcular();
+      calcular(); // Atualiza a CA imediatamente
       atualizarGuia();
     }
     function removerArmadura(btn) {
