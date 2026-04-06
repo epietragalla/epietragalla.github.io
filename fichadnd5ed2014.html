@@ -101,12 +101,34 @@
       cursor: pointer;
     }
 
-    .main-layout {
-      display: grid;
-      grid-template-columns: 120px 200px 1fr 240px;
-      gap: 20px;
-    }
+ .main-layout {
+display: grid;
+  grid-template-columns: 280px 1fr 280px;
+  gap: 15px;
+}
 
+.attr-group-box {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  margin-bottom: 15px;
+  padding: 10px;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+}
+
+.attr-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-bottom: 2px solid var(--dnd-red);
+  margin-bottom: 8px;
+  padding-bottom: 5px;
+}
+
+.attr-header label {
+  font-size: 11px;
+  color: var(--dnd-red);
+}
     .row {
       display: flex;
       align-items: center;
@@ -813,9 +835,7 @@
       }
 
       .main-layout {
-        display: grid !important;
-        grid-template-columns: 100px 180px 1fr 200px !important;
-        gap: 10px !important;
+        grid-template-columns: 220px 1fr 200px !important;
       }
 
       #char-image-container {
@@ -890,6 +910,25 @@
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
       }
+      
+     input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 12px !important;
+    height: 12px !important;
+    border: 1px solid #000 !important;
+    background: #fff !important;
+    position: relative;
+    display: inline-block;
+  }
+  input[type="checkbox"]:checked::after {
+    content: "✔" !important;
+    position: absolute;
+    top: -4px;
+    left: 1px;
+    font-size: 11px;
+    color: #000 !important;
+  }
     }
 
     #dice-log-container {
@@ -1001,7 +1040,7 @@
 
 
     #char-image-container {
-      width: 115px;
+      width: 100%;
       height: 200px;
       margin: 0 auto 15px auto;
       position: relative;
@@ -1187,7 +1226,7 @@
           </select>
         </div>
         <div>
-          <label>Nível</label><input type="number" id="level_val" oninput="calcular()" value="1" min="1" max="20"
+          <label>Nível</label><input type="number" id="level_val" value="1" min="1" max="20"
             oninput="atualizarSubclasses(); atualizarSlotsMagia(); atualizarGuia(); calcular();" />
         </div>
       </div>
@@ -1267,234 +1306,107 @@
         </div>
       </div>
     </div>
-    <div class="main-layout">
-      <section id="attr-col"></section>
-      <section>
-        <div style="
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
-            ">
-          <div class="box-list" style="
-              margin-bottom: 0;
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              justify-content: center;
-              height: 65px;
-              ">
-            <label style="margin-bottom: 5px">Inspiração</label>
-            <input type="number" id="insp_val" value="0" style="
-                width: 100%;
-                text-align: center;
-                border: none;
-                font-weight: bold;
-                font-size: 20px;
-                background: transparent;
-                " />
-          </div>
-          <div class="box-list" style="
-              margin-bottom: 0;
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              height: 65px;
-              ">
-            <label style="margin-bottom: 5px">Bônus de <br />
-              Proficiência</label>
-            <input type="text" id="prof_bonus" readonly style="
-                width: 100%;
-                font-weight: bold;
-                font-size: 20px;
-                text-align: center;
-                border: none;
-                color: var(--dnd-red);
-                background: transparent;
-                " />
-          </div>
+   <div class="main-layout">
+  <section id="coluna-atributos-pericias"></section>
+
+  <section id="coluna-combate-magia">
+
+    
+    <div class="combat-wrap">
+      <div class="stat-card">
+        <label>CA</label><input type="number" id="ca_val" value="10" />
+      </div>
+      <div class="stat-card">
+        <label>Iniciativa</label><input type="text" id="inic_val" readonly />
+      </div>
+      <div class="stat-card">
+        <label>Deslocamento</label><input type="text" id="speed_val" value="9m" />
+      </div>
+    </div>
+    <div class="box-list" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; margin-bottom: 10px;">
+      <label style="margin:0; font-size: 11px; font-weight: bold;">Percepção Passiva (SAB)</label>
+      <input type="text" id="passive_perc" readonly style="width: 40px; text-align: center; font-weight: bold; border: 1px solid #000; background: #fff;">
+    </div>
+
+    <div class="box-list" style="padding: 10px; margin-bottom: 10px;">
+      <label style="font-weight: bold; font-size: 11px; display: block; text-align: center; margin-bottom: 5px;">Salvaguardas contra Morte</label>
+      <div style="display: flex; justify-content: space-around;">
+        <div class="circles"><label style="font-size:8px;">Sucessos</label><input type="checkbox"><input type="checkbox"><input type="checkbox"></div>
+        <div class="circles"><label style="font-size:8px;">Falhas</label><input type="checkbox"><input type="checkbox"><input type="checkbox"></div>
+      </div>
+    </div>
+    <div class="box-list">
+      <label>Pontos de Vida</label>
+      <div style="display: flex; gap: 5px; align-items: center">
+        <input type="number" id="hp_at" placeholder="Atuais" style="font-size: 18px; text-align: center" />
+        <span style="font-weight: bold">/</span>
+        <input type="number" id="hp_max" placeholder="Máx" style="text-align: center" />
+      </div>
+    </div>
+
+    <div class="box-list">
+      <label>Armaduras & Escudos</label>
+      <div class="attr-control" style="margin-bottom: 10px;">
+        <select id="select_armadura_phb" style="font-size: 12px; flex: 1; background: #fafafa;">
+          <option value="">Selecione uma armadura</option>
+        </select>
+        <button type="button" class="insp-btn" onclick="adicionarArmaduraCard()">+</button>
+      </div>
+      <div id="armor-cards-container"></div>
+    </div>
+
+    <div class="box-list">
+      <label>Armas</label>
+      <div class="attr-control" style="margin-bottom: 10px;">
+        <select id="select_arma_phb" style="font-size: 12px; flex: 1; background: #fafafa;">
+          <option value="">Selecione uma arma</option>
+        </select>
+        <button type="button" class="insp-btn" onclick="adicionarArmaCard()">+</button>
+      </div>
+      <div id="weapon-cards-container"></div>
+    </div>
+
+    <div class="box-list">
+      <label>Tesouro & Moedas</label>
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 10px;">
+        <div style="text-align: center;">
+          <label style="color: #b87333; font-size: 9px;">PC</label>
+          <input type="number" id="coin_pc" value="0" style="text-align: center; font-size: 14px; border: 1px solid #ddd; border-radius: 4px;">
         </div>
-        <div class="box-list" style="
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 10px;
-            ">
-          <label style="
-              text-align: left;
-              font-size: 10px;
-              margin-bottom: 8px;
-              width: 100%;
-              ">Salvaguarda contra Morte</label>
-          <div style="display: flex; flex-direction: column; gap: 6px">
-            <div style="display: flex; align-items: center; gap: 10px">
-              <span style="
-                  font-size: 8px;
-                  font-weight: bold;
-                  text-transform: uppercase;
-                  width: 55px;
-                  text-align: right;
-                  ">Sucessos</span>
-              <div class="circles" style="display: flex; gap: 4px">
-                <input type="checkbox" style="
-                    width: 12px;
-                    height: 12px;
-                    margin: 0;
-                    cursor: pointer;
-                    " />
-                <input type="checkbox" style="
-                    width: 12px;
-                    height: 12px;
-                    margin: 0;
-                    cursor: pointer;
-                    " />
-                <input type="checkbox" style="
-                    width: 12px;
-                    height: 12px;
-                    margin: 0;
-                    cursor: pointer;
-                    " />
-              </div>
-            </div>
-            <div style="display: flex; align-items: center; gap: 10px">
-              <span style="
-                  font-size: 8px;
-                  font-weight: bold;
-                  text-transform: uppercase;
-                  width: 55px;
-                  text-align: right;
-                  ">Falhas</span>
-              <div class="circles" style="display: flex; gap: 4px">
-                <input type="checkbox" style="
-                    width: 12px;
-                    height: 12px;
-                    margin: 0;
-                    cursor: pointer;
-                    " />
-                <input type="checkbox" style="
-                    width: 12px;
-                    height: 12px;
-                    margin: 0;
-                    cursor: pointer;
-                    " />
-                <input type="checkbox" style="
-                    width: 12px;
-                    height: 12px;
-                    margin: 0;
-                    cursor: pointer;
-                    " />
-              </div>
-            </div>
-          </div>
+        <div style="text-align: center;">
+          <label style="color: #aaa; font-size: 9px;">PP</label>
+          <input type="number" id="coin_pp" value="0" style="text-align: center; font-size: 14px; border: 1px solid #ddd; border-radius: 4px;">
         </div>
-        <div class="box-list">
-          <label>Salvaguardas</label>
-          <div id="saves-list"></div>
+        <div style="text-align: center;">
+          <label style="color: #d4af37; font-size: 9px;">PO</label>
+          <input type="number" id="coin_po" value="0" style="text-align: center; font-size: 14px; border: 1px solid #ddd; border-radius: 4px;">
         </div>
-        <div class="box-list">
-          <label>Perícias</label>
-          <div id="skills-list"></div>
+        <div style="text-align: center;">
+          <label style="color: #e5e4e2; font-size: 9px;">PL</label>
+          <input type="number" id="coin_pl" value="0" style="text-align: center; font-size: 14px; border: 1px solid #ddd; border-radius: 4px;">
         </div>
-        <div class="box-list" style="
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            ">
-          <label style="margin: 0">Percepção Passiva (SAB)</label>
-          <input type="text" id="passive_perc" readonly style="
-              width: 40px;
-              font-weight: bold;
-              text-align: center;
-              border: 1px solid #000;
-              " />
-        </div>
-      </section>
-      <section>
-        <div class="combat-wrap">
-          <div class="stat-card">
-            <label>CA</label><input type="number" id="ca_val" value="10" />
-          </div>
-          <div class="stat-card">
-            <label>Iniciativa</label><input type="text" id="inic_val" readonly />
-          </div>
-          <div class="stat-card">
-            <label>Deslocamento</label><input type="text" id="speed_val" value="9m" />
-          </div>
-        </div>
-        <div class="box-list">
-          <label>Pontos de Vida</label>
-          <div style="display: flex; gap: 5px; align-items: center">
-            <input type="number" id="hp_at" placeholder="Atuais" style="font-size: 18px; text-align: center" />
-            <span style="font-weight: bold">/</span>
-            <input type="number" id="hp_max" placeholder="Máx" style="text-align: center" />
-          </div>
-        </div>
-        <div class="box-list">
-          <label>Armaduras & Escudos</label>
-          <div class="attr-control" style="margin-bottom: 10px;">
-            <select id="select_armadura_phb" style="font-size: 12px; flex: 1; background: #fafafa;">
-              <option value="">Selecione uma armadura</option>
-            </select>
-            <button type="button" class="insp-btn" onclick="adicionarArmaduraCard()">+</button>
-          </div>
-          <div id="armor-cards-container"></div>
-        </div>
-        <div class="box-list">
-          <label>Armas</label>
-          <div class="attr-control" style="margin-bottom: 10px;">
-            <select id="select_arma_phb" style="font-size: 12px; flex: 1; background: #fafafa;">
-              <option value="">Selecione uma arma</option>
-            </select>
-            <button type="button" class="insp-btn" onclick="adicionarArmaCard()">+</button>
-          </div>
-          <div id="weapon-cards-container"></div>
-        </div>
-        <div class="box-list">
-          <label>Tesouro & Moedas</label>
-          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 10px;">
-            <div style="text-align: center;">
-              <label style="color: #b87333; font-size: 9px;">PC (Cobre)</label>
-              <input type="number" id="coin_pc" value="0" placeholder="0"
-                style="text-align: center; font-size: 14px; border: 1px solid #ddd; border-radius: 4px;">
-            </div>
-            <div style="text-align: center;">
-              <label style="color: #aaa; font-size: 9px;">PP (Prata)</label>
-              <input type="number" id="coin_pp" value="0" placeholder="0"
-                style="text-align: center; font-size: 14px; border: 1px solid #ddd; border-radius: 4px;">
-            </div>
-            <div style="text-align: center;">
-              <label style="color: #d4af37; font-size: 9px;">PO (Ouro)</label>
-              <input type="number" id="coin_po" value="0" placeholder="0"
-                style="text-align: center; font-size: 14px; border: 1px solid #ddd; border-radius: 4px;">
-            </div>
-            <div style="text-align: center;">
-              <label style="color: #e5e4e2; font-size: 9px;">PL (Platina)</label>
-              <input type="number" id="coin_pl" value="0" placeholder="0"
-                style="text-align: center; font-size: 14px; border: 1px solid #ddd; border-radius: 4px;">
-            </div>
-          </div>
-          <button type="button" class="btn-gerar-nome" onclick="converterMoedas()"
-            style="width: 100%; background: #444; font-size: 10px;">
-            🔄 Converter para o maior valor
-          </button>
-        </div>
-        <div class="box-list">
-          <label>Equipamentos</label>
-          <div class="attr-control" style="margin-bottom: 10px;">
-            <select id="select_item_phb" style="font-size: 12px; flex: 1; background: #fafafa;">
-              <option value="">Selecione um item</option>
-            </select>
-            <button type="button" class="insp-btn" onclick="adicionarItemCard()">+</button>
-          </div>
-          <div id="item-cards-container"></div>
-        </div>
-        <div class="box-list">
-          <label>Equipamento</label><textarea id="equip_area" style="height: 100px"></textarea>
-        </div>
-        <div class="box-list">
-          <label>Condições e Status</label>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2px; font-size: 9px;">
+      </div>
+      <button type="button" class="btn-gerar-nome" onclick="converterMoedas()" style="width: 100%; background: #444; font-size: 10px;">🔄 Converter</button>
+    </div>
+
+    <div class="box-list">
+      <label>Equipamentos Especiais</label>
+      <div class="attr-control" style="margin-bottom: 10px;">
+        <select id="select_item_phb" style="font-size: 12px; flex: 1; background: #fafafa;">
+          <option value="">Selecione um item</option>
+        </select>
+        <button type="button" class="insp-btn" onclick="adicionarItemCard()">+</button>
+      </div>
+      <div id="item-cards-container"></div>
+    </div>
+
+    <div class="box-list">
+      <label>Inventário Geral</label><textarea id="equip_area" style="height: 80px"></textarea>
+    </div>
+
+    <div class="box-list">
+      <label>Condições e Status</label>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2px; font-size: 9px;">
             <label class="row" style="border:none; text-transform:none;"><input type="checkbox" class="condicao-check"
                 data-name="Amedrontado">Amedrontado</label>
             <label class="row" style="border:none; text-transform:none;"><input type="checkbox" class="condicao-check"
@@ -1527,276 +1439,102 @@
                 style="width: 30px; text-align: center; border: 1px solid #ccc; font-size: 12px;">
             </div>
           </div>
-        </div>
-
-        <div class="box-list">
-          <label>Log de Combate Rápido</label>
-          <textarea id="combat_log" style="height: 60px; font-size: 10px; background: #fdfdfd;"
-            placeholder="Ex: Benção ativa (10 rodadas), Fúria ligada..."></textarea>
-        </div>
-        <div class="box-list">
-          <label style="
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              margin-bottom: 8px;
-              ">
-            Talentos
-            <button type="button" class="insp-btn" onclick="adicionarTalento()" style="
-              width: 20px;
-              height: 20px;
-              font-size: 14px;
-              line-height: 1;
-              ">
-              +
-            </button>
-          </label>
-          <div id="talentos-container"></div>
-        </div>
-        <div style="
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
-            ">
-          <div class="box-list" style="
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              justify-content: center;
-              padding: 5px;
-              height: 75px;
-              margin-bottom: 0;
-              ">
-            <label style="font-size: 8px; text-align: center; line-height: 1">Atributo de <br />conjuração</label>
-            <div style="
-                display: flex;
-                align-items: center;
-                gap: 5px;
-                margin-top: 5px;
-                ">
-              <input type="text" id="spell_attr_val" value="+0" readonly style="
-                  width: 40px;
-                  text-align: center;
-                  font-weight: bold;
-                  border: none;
-                  font-size: 18px;
-                  background: transparent;
-                  " />
-            </div>
-          </div>
-          <div class="box-list" style="
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              justify-content: center;
-              padding: 5px;
-              height: 75px;
-              margin-bottom: 0;
-              ">
-            <label style="font-size: 8px; text-align: center; line-height: 1">CD para evitar <br />suas magias</label>
-            <div style="
-                display: flex;
-                align-items: center;
-                gap: 5px;
-                margin-top: 5px;
-                ">
-              <input type="number" id="spell_save_dc" value="8" style="
-                  width: 40px;
-                  text-align: center;
-                  font-weight: bold;
-                  border: none;
-                  font-size: 18px;
-                  background: transparent;
-                  " />
-            </div>
-          </div>
-          <div class="box-list" style="
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              justify-content: center;
-              padding: 5px;
-              height: 75px;
-              margin-bottom: 0;
-              ">
-            <label style="font-size: 8px; text-align: center; line-height: 1">Modificador de <br />ataque mágico</label>
-            <div style="
-                display: flex;
-                align-items: center;
-                gap: 5px;
-                margin-top: 5px;
-                ">
-              <input type="text" id="spell_atk_mod" value="+0" readonly style="
-                  width: 40px;
-                  text-align: center;
-                  font-weight: bold;
-                  border: none;
-                  font-size: 18px;
-                  background: transparent;
-                  " />
-            </div>
-          </div>
-        </div>
-        <div id="spell-slots-tracker" style="
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-            gap: 8px;
-            margin-bottom: 15px;
-            "></div>
-        <div class="box-list">
-          <label style="
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              margin-bottom: 8px;
-              ">
-            Truques e Magias (Níveis 0-9)
-            <button type="button" class="insp-btn" onclick="adicionarMagia()" style="
-              width: 20px;
-              height: 20px;
-              font-size: 14px;
-              line-height: 1;
-              ">
-              +
-            </button>
-          </label>
-          <div id="magias-container"></div>
-        </div>
-      </section>
-      <section>
-        <div class="box-list">
-          <label>Dados de Vida</label>
-          <input type="text" id="hit_dice" placeholder="1d10" style="text-align: center; font-size: 16px" />
-        </div>
-        <div class="box-list">
-          <label>Traços de Personalidade</label>
-          <select id="t1" onchange="mostrarTextoCompleto(this, 't1_display', 't1_custom')"
-            style="font-size: 11px; margin-bottom: 5px"></select>
-          <div id="t1_display" style="
-              font-size: 12px;
-              color: #333;
-              line-height: 1.4;
-              padding: 5px;
-              background: rgba(255, 255, 255, 0.5);
-              border-radius: 4px;
-              text-align: justify;
-              ">
-            ---
-          </div>
-          <textarea id="t1_custom" placeholder="Escreva seu traço aqui..." style="
-              display: none;
-              margin-top: 5px;
-              height: 60px;
-              font-size: 12px;
-              "></textarea>
-        </div>
-        <div class="box-list">
-          <label>Ideais</label>
-          <select id="t2" onchange="mostrarTextoCompleto(this, 't2_display', 't2_custom')"
-            style="font-size: 11px; margin-bottom: 5px"></select>
-          <div id="t2_display" style="
-              font-size: 12px;
-              color: #333;
-              line-height: 1.4;
-              padding: 5px;
-              background: rgba(255, 255, 255, 0.5);
-              border-radius: 4px;
-              text-align: justify;
-              ">
-            ---
-          </div>
-          <textarea id="t2_custom" placeholder="Escreva seu ideal aqui..." style="
-              display: none;
-              margin-top: 5px;
-              height: 60px;
-              font-size: 12px;
-              "></textarea>
-        </div>
-        <div class="box-list">
-          <label>Vínculos</label>
-          <select id="t3" onchange="mostrarTextoCompleto(this, 't3_display', 't3_custom')"
-            style="font-size: 11px; margin-bottom: 5px"></select>
-          <div id="t3_display" style="
-              font-size: 12px;
-              color: #333;
-              line-height: 1.4;
-              padding: 5px;
-              background: rgba(255, 255, 255, 0.5);
-              border-radius: 4px;
-              text-align: justify;
-              ">
-            ---
-          </div>
-          <textarea id="t3_custom" placeholder="Escreva seu vínculo aqui..." style="
-              display: none;
-              margin-top: 5px;
-              height: 60px;
-              font-size: 12px;
-              "></textarea>
-        </div>
-        <div class="box-list">
-          <label>Defeitos</label>
-          <select id="t4" onchange="mostrarTextoCompleto(this, 't4_display', 't4_custom')"
-            style="font-size: 11px; margin-bottom: 5px"></select>
-          <div id="t4_display" style="
-              font-size: 12px;
-              color: #333;
-              line-height: 1.4;
-              padding: 5px;
-              background: rgba(255, 255, 255, 0.5);
-              border-radius: 4px;
-              text-align: justify;
-              ">
-            ---
-          </div>
-          <textarea id="t4_custom" placeholder="Escreva sua fraqueza aqui..." style="
-              display: none;
-              margin-top: 5px;
-              height: 60px;
-              font-size: 12px;
-              "></textarea>
-        </div>
-        <div class="box-list">
-          <label style="
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              margin-bottom: 8px;
-              ">
-            Idiomas
-            <button type="button" class="insp-btn" onclick="adicionarIdioma()" style="
-              width: 20px;
-              height: 20px;
-              font-size: 14px;
-              line-height: 1;
-              ">
-              +
-            </button>
-          </label>
-          <div id="idiomas-container"></div>
-        </div>
-        <div class="box-list">
-          <label>Outras características</label><textarea id="t5" style="height: 140px"></textarea>
-        </div>
-        <div id="box-resumo-pericias" class="box-list" style="margin-top: 5px; background: #fff;">
-          <h3 id="titulo-resumo"
-            style="margin-bottom: 10px; margin-top:5px; font-size: 10px;  border-bottom: 1px solid #ddd; text-transform: uppercase; font-weight: bold; color:#666;">
-            Habilidades e Proficiências
-          </h3>
-          <div id="conteudo-resumo-pericias" style="font-size: 12px; line-height: 1.6; color: #333;">
-            Aguardando dados...
-          </div>
-        </div>
-        <div id="box-recursos-classe" class="box-list" style="margin-top: 5px; background: #fff; display: none;">
-          <h3
-            style="margin-bottom: 10px; margin-top:5px; font-size: 10px; border-bottom: 1px solid #ddd; text-transform: uppercase; font-weight: bold; color:#666;">
-            Recursos de Classe
-          </h3>
-          <div id="class-resources-tracker" style="display: flex; flex-direction: column; gap: 8px;"></div>
-        </div>
-      </section>
     </div>
+
+    <div class="box-list">
+      <label>Log de Combate</label>
+      <textarea id="combat_log" style="height: 50px; font-size: 10px;" placeholder="Efeitos ativos..."></textarea>
+    </div>
+
+    <div class="box-list">
+      <label style="display: flex; justify-content: space-between; align-items: center;">
+        Talentos <button type="button" class="insp-btn" onclick="adicionarTalento()">+</button>
+      </label>
+      <div id="talentos-container"></div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-bottom: 10px;">
+      <div class="box-list" style="text-align: center; padding: 5px;">
+        <label style="font-size: 7px;">Atributo <br>Conjuração</label>
+        <input type="text" id="spell_attr_val" value="+0" readonly style="width: 100%; text-align: center; font-weight: bold;">
+      </div>
+      <div class="box-list" style="text-align: center; padding: 5px;">
+        <label style="font-size: 7px;">CD <br>Magia</label>
+        <input type="number" id="spell_save_dc" value="8" style="width: 100%; text-align: center; font-weight: bold;">
+      </div>
+      <div class="box-list" style="text-align: center; padding: 5px;">
+        <label style="font-size: 7px;">Mod <br>Ataque</label>
+        <input type="text" id="spell_atk_mod" value="+0" readonly style="width: 100%; text-align: center; font-weight: bold;">
+      </div>
+    </div>
+
+    <div id="spell-slots-tracker" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 5px; margin-bottom: 10px;"></div>
+
+    <div class="box-list">
+      <label style="display: flex; justify-content: space-between; align-items: center;">
+        Truques e Magias <button type="button" class="insp-btn" onclick="adicionarMagia()">+</button>
+      </label>
+      <div id="magias-container"></div>
+    </div>
+  </section>
+
+  <section id="coluna-tracos-recursos">
+    <div class="box-list">
+      <label>Dados de Vida</label>
+      <input type="text" id="hit_dice" placeholder="1d10" style="text-align: center; font-size: 16px" />
+    </div>
+
+    <div class="box-list">
+      <label>Traços de Personalidade</label>
+      <select id="t1" onchange="mostrarTextoCompleto(this, 't1_display', 't1_custom')" style="font-size: 10px;"></select>
+      <div id="t1_display" style="font-size: 11px; padding: 5px; text-align: justify;">---</div>
+      <textarea id="t1_custom" style="display: none; height: 50px; font-size: 11px;"></textarea>
+    </div>
+
+    <div class="box-list">
+      <label>Ideais</label>
+      <select id="t2" onchange="mostrarTextoCompleto(this, 't2_display', 't2_custom')" style="font-size: 10px;"></select>
+      <div id="t2_display" style="font-size: 11px; padding: 5px; text-align: justify;">---</div>
+      <textarea id="t2_custom" style="display: none; height: 50px; font-size: 11px;"></textarea>
+    </div>
+
+    <div class="box-list">
+      <label>Vínculos</label>
+      <select id="t3" onchange="mostrarTextoCompleto(this, 't3_display', 't3_custom')" style="font-size: 10px;"></select>
+      <div id="t3_display" style="font-size: 11px; padding: 5px; text-align: justify;">---</div>
+      <textarea id="t3_custom" style="display: none; height: 50px; font-size: 11px;"></textarea>
+    </div>
+
+    <div class="box-list">
+      <label>Defeitos</label>
+      <select id="t4" onchange="mostrarTextoCompleto(this, 't4_display', 't4_custom')" style="font-size: 10px;"></select>
+      <div id="t4_display" style="font-size: 11px; padding: 5px; text-align: justify;">---</div>
+      <textarea id="t4_custom" style="display: none; height: 50px; font-size: 11px;"></textarea>
+    </div>
+
+    <div class="box-list">
+      <label style="display: flex; justify-content: space-between; align-items: center;">
+        Idiomas <button type="button" class="insp-btn" onclick="adicionarIdioma()">+</button>
+      </label>
+      <div id="idiomas-container"></div>
+    </div>
+
+    <div class="box-list">
+      <label>Outras Características</label>
+      <textarea id="t5" style="height: 100px"></textarea>
+    </div>
+
+    <div id="box-resumo-pericias" class="box-list">
+      <h3 style="font-size: 10px; border-bottom: 1px solid #ddd; margin-bottom: 8px;">HABILIDADES E PROFICIÊNCIAS</h3>
+      <div id="conteudo-resumo-pericias" style="font-size: 11px; line-height: 1.4;">Aguardando...</div>
+    </div>
+
+    <div id="box-recursos-classe" class="box-list" style="display: none;">
+      <h3 style="font-size: 10px; border-bottom: 1px solid #ddd; margin-bottom: 8px;">RECURSOS DE CLASSE</h3>
+      <div id="class-resources-tracker"></div>
+    </div>
+  </section>
+</div>
     <div class="guide-section">
       <h2>Guia de Referência Rápida</h2>
       <div class="guide-content">
@@ -1849,7 +1587,7 @@
     </div>
     <div
       style="margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd; text-align: right; font-size: 10px; color: #888; font-style: italic; letter-spacing: 1px;">
-      Ficha Automatizada de D&D 5Ed 2014 -VERSÃO 5.5
+      Ficha Automatizada de D&D 5Ed 2014 -VERSÃO 5.8
     </div>
   </div>
   <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
@@ -9656,83 +9394,110 @@
     }
     const DEFAULT_AVATAR_SVG = "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'%3E%3C/path%3E%3C/svg%3E";
     function setup() {
-      const attrCol = document.getElementById("attr-col");
-      const saveList = document.getElementById("saves-list");
-      const skillList = document.getElementById("skills-list");
-      attrCol.innerHTML = `
-        <div id="char-image-container" onclick="alterarImagemPersonagem()" title="Clique para alterar a imagem do personagem">
-          <img id="char_img" src="${DEFAULT_AVATAR_SVG}" alt="Avatar">
-          <div class="overlay-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="white">
-              <path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/>
-            </svg>
+  // Container principal que agora engloba Atributos + Saves + Perícias
+  const container = document.getElementById("coluna-atributos-pericias");
+  if (!container) return;
+
+  // 1. Início: Imagem do Personagem
+  let html = `
+    <div id="char-image-container" onclick="alterarImagemPersonagem()" title="Clique para alterar a imagem do personagem">
+      <img id="char_img" src="${DEFAULT_AVATAR_SVG}" alt="Avatar">
+      <div class="overlay-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="white">
+          <path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/>
+        </svg>
+      </div>
+    </div>
+  `;
+
+  // 2. Bônus de Proficiência e Inspiração (Lado a lado)
+  html += `
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+      <div class="attr-box" style="margin-bottom:0; height:70px;">
+        <label>Proficiência</label>
+        <input type="text" id="prof_bonus" readonly style="width:100%; font-weight:bold; font-size:24px; text-align:center; border:none; color:var(--dnd-red); background:transparent;">
+      </div>
+      <div class="attr-box" style="margin-bottom:0; height:70px;">
+        <label>Inspiração</label>
+        <input type="number" id="insp_val" value="0" style="width:100%; text-align:center; border:none; font-weight:bold; font-size:24px; background:transparent;">
+      </div>
+    </div>
+  `;
+
+  // 3. Loop Principal: Atributos com Saves e Skills agrupados
+  attrs.forEach((at) => {
+    html += `
+      <div class="attr-group-box" style="border: 1px solid #ccc; border-radius: 8px; padding: 10px; background: #fff; margin-bottom: 15px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05);">
+        <div style="text-align: center; border-bottom: 2px solid var(--dnd-red); margin-bottom: 10px; padding-bottom: 5px;">
+          <label style="display: block; font-weight: bold; text-transform: uppercase; font-size: 12px; color: var(--dnd-red);">${at.n}</label>
+          <div class="mod" id="${at.id}_mod" style="font-size: 32px; font-weight: bold; margin: 5px 0;">+0</div>
+          <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+            <button type="button" class="btn-step" onclick="modificarScore('${at.id}', -1)">-</button>
+            <div style="position: relative;">
+              <input type="number" class="score-input" id="${at.id}_score" value="10" oninput="calcular()" style="width: 40px; text-align: center; font-weight: bold; border: 1px solid #999; border-radius: 4px;">
+              <span id="${at.id}_bonus_display" style="position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-size: 10px; color: var(--dnd-red); font-weight: bold; white-space: nowrap;"></span>
+            </div>
+            <button type="button" class="btn-step" onclick="modificarScore('${at.id}', 1)">+</button>
           </div>
         </div>
-      `;
-      saveList.innerHTML = "";
-      skillList.innerHTML = "";
-      attrs.forEach((at) => {
-        attrCol.innerHTML += `
-              <div class="attr-box">
-                  <label>${at.n}</label>
-                  <div class="mod" id="${at.id}_mod">+0</div>
-                  <div class="attr-control">
-                      <button type="button" class="btn-step" onclick="modificarScore('${at.id}', -1)">-</button>
-                      <div class="input-score-container ">
-                          <input type="number" class="score-input" id="${at.id}_score" value="10" oninput="calcular()">
-                          <span id="${at.id}_bonus_display" style="font-size:10px; color:var(--dnd-red); font-weight:bold; height:12px; margin-top:-85px;"></span>
-                      </div>
-                      <button type="button" class="btn-step" onclick="modificarScore('${at.id}', 1)">+</button>
-                  </div>
-              </div>`;
-        saveList.innerHTML += `
-            <div class="row">
-                <input type="checkbox" class="save-prof" data-attr="${at.id}" onchange="calcular()">
-                <span class="val-bonus" id="save_${at.id}" data-manual="0" style="min-width: 30px; text-align: center;">+0</span>
-                <div style="display: flex; flex-direction: column; align-items: center; line-height: 0.5; margin: 0 6px;">
-                    <button type="button" style="background:none; border:none; cursor:pointer; font-size:9px; color:#888; padding:2px 0;" onclick="modificarManualSave('${at.id}', 1)">▲</button>
-                    <button type="button" style="background:none; border:none; cursor:pointer; font-size:9px; color:#888; padding:2px 0;" onclick="modificarManualSave('${at.id}', -1)">▼</button>
-                </div>
-                <span>${at.n}</span>
-            </div>`;
-      });
-      attrCol.innerHTML += `
-          <div style="grid-column: span 1; padding: 5px; margin-top: 5px; border-top: 1px dashed #ccc;">
-              <p style="font-size: 10px; color: #666; font-style: italic; line-height: 1.3; margin: 0;">
-                  <strong>Distribuição Inicial:</strong> Distribua os valores 15, 14, 13, 12, 10 e 8 entre as habilidades como preferir.
-              </p>
+
+        <div class="row" style="background: #f0f0f0; border-radius: 4px; padding: 4px 8px; margin-bottom: 8px;">
+          <input type="checkbox" class="save-prof" data-attr="${at.id}" onchange="calcular()">
+          <span class="val-bonus" id="save_${at.id}" data-manual="0" style="min-width: 30px; text-align: center; font-weight: bold;">+0</span>
+          <div style="display: flex; flex-direction: column; align-items: center; line-height: 0.5; margin: 0 8px;">
+            <button type="button" style="background:none; border:none; cursor:pointer; font-size:10px; color:#666; padding:1px 0;" onclick="modificarManualSave('${at.id}', 1)">▲</button>
+            <button type="button" style="background:none; border:none; cursor:pointer; font-size:10px; color:#666; padding:1px 0;" onclick="modificarManualSave('${at.id}', -1)">▼</button>
           </div>
-          <div style="grid-column: span 1; padding: 5px; margin-top: 5px; border-top: 1px dashed #ccc;">
-              <p style="font-size: 10px; color: #666; font-style: italic; line-height: 1.3; margin: 0;">
-                  <strong>PV Máximo:</strong> Média Fixa: 1 DV + (1/2 DV + 1 por nível) + Modificados de Constituição.
-              </p>
-          </div>
-      `;
-      skills.forEach((sk) => {
-        const safeId = sk.n.replace(/\s+/g, "");
-        skillList.innerHTML += `
-            <div class="row">
+          <span style="font-size: 11px; font-weight: bold; text-transform: uppercase;">Salvaguarda</span>
+        </div>
+
+        <div style="padding-left: 5px;">
+          ${skills.filter(sk => sk.a === at.id).map(sk => {
+            const safeId = sk.n.replace(/\s+/g, "");
+            return `
+              <div class="row" style="margin-bottom: 4px;">
                 <input type="checkbox" class="skill-prof" data-attr="${sk.a}" id="check_${safeId}" data-prof-level="0" onclick="alternarEspecializacao(this)">
                 <span class="val-bonus" id="sk_${safeId}" data-manual="0" style="min-width: 30px; text-align: center;">+0</span>
-                <div style="display: flex; flex-direction: column; align-items: center; line-height: 0.5; margin: 0 6px;">
-                    <button type="button" style="background:none; border:none; cursor:pointer; font-size:9px; color:#888; padding:2px 0;" onclick="modificarManualSkill('${safeId}', 1)">▲</button>
-                    <button type="button" style="background:none; border:none; cursor:pointer; font-size:9px; color:#888; padding:2px 0;" onclick="modificarManualSkill('${safeId}', -1)">▼</button>
+                <div style="display: flex; flex-direction: column; align-items: center; line-height: 0.5; margin: 0 8px;">
+                  <button type="button" style="background:none; border:none; cursor:pointer; font-size:9px; color:#888; padding:1px 0;" onclick="modificarManualSkill('${safeId}', 1)">▲</button>
+                  <button type="button" style="background:none; border:none; cursor:pointer; font-size:9px; color:#888; padding:1px 0;" onclick="modificarManualSkill('${safeId}', -1)">▼</button>
                 </div>
-                <span>${sk.n} <small style="color:#888">(${sk.a})</small></span>
-            </div>`;
-      });
-      adicionarTalento();
-      adicionarMagia();
-      atualizarSubclasses();
-      calcular(true);
-      atualizarGuia();
-      ["t1", "t2", "t3", "t4"].forEach(id => {
-        mostrarTextoCompleto(document.getElementById(id), id + "_display", id + "_custom");
-      });
-      adicionarIdioma();
-      carregarCaracteristicasAntecedente();
-      atualizarResumoPericias();
-    }
+                <span style="font-size: 12px;">${sk.n}</span>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  });
+  html += `
+    <div style="padding: 5px; border-top: 1px dashed #ccc;">
+      <p style="font-size: 10px; color: #666; font-style: italic; line-height: 1.3; margin: 0;">
+        <strong>Distribuição Inicial:</strong> 15, 14, 13, 12, 10 e 8.
+      </p>
+    </div>
+    <div style="padding: 5px; border-top: 1px dashed #ccc; margin-bottom: 20px;">
+      <p style="font-size: 10px; color: #666; font-style: italic; line-height: 1.3; margin: 0;">
+        <strong>PV Máximo:</strong> 1 DV + (1/2 DV + 1 p/ nível) + Mod. CON.
+      </p>
+    </div>
+  `;
+  container.innerHTML = html;
+  adicionarTalento();
+  adicionarMagia();
+  atualizarSubclasses();
+  calcular(true); 
+  atualizarGuia();
+ 
+  ["t1", "t2", "t3", "t4"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) mostrarTextoCompleto(el, id + "_display", id + "_custom");
+  });
+
+  adicionarIdioma();
+  carregarCaracteristicasAntecedente();
+  atualizarResumoPericias();
+}
     function altInsp(val) {
       let i = document.getElementById("insp_val");
       i.value = Math.max(0, parseInt(i.value) + val);
