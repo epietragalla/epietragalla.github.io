@@ -1133,7 +1133,7 @@
         style="display: none; width: 100%; max-width: 950px; justify-content: space-between; align-items: center;">
         <span id="user-email-display" style="font-weight: bold; color: #ccc;">Aventureiro: ...</span>
         <div style="display: inline-flex; gap: 10px;">
-          <button onclick="salvarNaNuvem()" class="quick-roll-btn"
+          <button onclick="salvarFichaNuvem()" class="quick-roll-btn"
             style="background: green; color: white; border:none;">☁️ Salvar na Nuvem</button>
           <button onclick="abrirGaleriaNuvem()" class="quick-roll-btn">📂 Minhas Fichas</button>
           <button onclick="deslogar()" class="quick-roll-btn"
@@ -10578,57 +10578,7 @@
         document.getElementById("auth-status-user").style.display = "none";
       }
     });
-    async function salvarNaNuvem() {
-      const user = auth.currentUser;
-      if (!user) {
-        alert("Você precisa estar logado para salvar na nuvem!");
-        return;
-      }
-      const nomeChar = document.getElementById("char_name").value || "Heroi_Sem_Nome";
-      const dados = {
-        info: {
-          char_name: document.getElementById("char_name").value,
-          player_name: document.getElementById("player_name").value,
-          class_name: document.getElementById("class_name").value,
-          subclass_name: document.getElementById("subclass_name").value,
-          level_val: document.getElementById("level_val").value,
-          race_name: document.getElementById("race_name").value,
-          subrace_name: document.getElementById("subrace_name").value,
-          bg_name: document.getElementById("bg_name").value,
-          align: document.getElementById("align").value,
-        },
-        moedas: {
-          pc: document.getElementById("coin_pc").value,
-          pp: document.getElementById("coin_pp").value,
-          po: document.getElementById("coin_po").value,
-          pl: document.getElementById("coin_pl").value
-        },
-        habilidades: attrs.reduce((acc, at) => {
-          acc[at.id] = document.getElementById(at.id + "_score").value;
-          return acc;
-        }, {}),
-        combate: {
-          hp_at: document.getElementById("hp_at").value,
-          hp_max: document.getElementById("hp_max").value,
-          ca_val: document.getElementById("ca_val").value,
-          insp_val: document.getElementById("insp_val").value,
-          speed_val: document.getElementById("speed_val").value,
-          hit_dice: document.getElementById("hit_dice").value
-        },
-        textos: {
-          t1: document.getElementById("t1").value,
-          t2: document.getElementById("t2").value,
-          t3: document.getElementById("t3").value,
-          t4: document.getElementById("t4").value,
-          equip: document.getElementById("equip_area").value,
-          notes: document.getElementById("notes_full_page").value
-        }
-      };
-      try {
-        await db.collection("users").doc(user.uid).collection("fichas").doc(nomeChar).set(dados);
-        alert("Ficha salva com sucesso!");
-      } catch (e) { alert("Erro ao salvar: " + e.message); }
-    }
+   
     async function abrirGaleriaNuvem() {
       const user = auth.currentUser;
       if (!user) return;
@@ -10652,70 +10602,37 @@
       } catch (e) { alert("Erro ao listar fichas: " + e.message); }
     }
     async function confirmarCargaNuvem() {
-      const user = auth.currentUser;
-      const nomeFicha = document.getElementById("nuvem-select").value;
-      if (!nomeFicha) return;
-      try {
-        const doc = await db.collection("users").doc(user.uid).collection("fichas").doc(nomeFicha).get();
-        if (doc.exists) {
-          const d = doc.data();
-          document.getElementById("char_name").value = d.info.char_name || "";
-          if (d.info.char_image_url) {
-            document.getElementById("char_img").src = d.info.char_image_url;
-          } else {
-            document.getElementById("char_img").src = DEFAULT_AVATAR_SVG;
-          }
-          document.getElementById("player_name").value = d.info.player_name || "";
-          document.getElementById("class_name").value = d.info.class_name || "";
-          document.getElementById("level_val").value = d.info.level_val || 1;
-          document.getElementById("race_name").value = d.info.race_name || "";
-          document.getElementById("bg_name").value = d.info.bg_name || "";
-          document.getElementById("align").value = d.info.align || "";
-          atualizarSubclasses();
-          document.getElementById("subclass_name").value = d.info.subclass_name || "";
-          atualizarSubracas();
-          document.getElementById("subrace_name").value = d.info.subrace_name || "";
-          if (d.moedas) {
-            document.getElementById("coin_pc").value = d.moedas.pc || 0;
-            document.getElementById("coin_pp").value = d.moedas.pp || 0;
-            document.getElementById("coin_po").value = d.moedas.po || 0;
-            document.getElementById("coin_pl").value = d.moedas.pl || 0;
-          }
-          for (let id in d.habilidades) {
-            if (document.getElementById(id + "_score")) document.getElementById(id + "_score").value = d.habilidades[id];
-          }
-          document.getElementById("hp_at").value = d.combate.hp_at || "";
-          document.getElementById("hp_max").value = d.combate.hp_max || "";
-          document.getElementById("ca_val").value = d.combate.ca_val || 10;
-          document.getElementById("insp_val").value = d.combate.insp_val || 0;
-          document.getElementById("speed_val").value = d.combate.speed_val || "9m";
-          document.getElementById("hit_dice").value = d.combate.hit_dice || "";
-          const t = d.textos;
-          document.getElementById("t1").value = t.t1 || "";
-          document.getElementById("t2").value = t.t2 || "";
-          document.getElementById("t3").value = t.t3 || "";
-          document.getElementById("t4").value = t.t4 || "";
-          document.getElementById("equip_area").value = t.equip || "";
-          if (document.getElementById("notes_full_page")) document.getElementById("notes_full_page").value = t.notes || "";
-          calcular();
-          atualizarGuia();
-          document.getElementById("gallery-modal").style.display = "none";
-          alert("Ficha '" + nomeFicha + "' carregada com sucesso!");
-        }
-      } catch (e) { alert("Erro ao carregar dados: " + e.message); }
+  const user = auth.currentUser;
+  const nomeFicha = document.getElementById("nuvem-select").value;
+  if (!nomeFicha || !user) return;
+  try {
+    const doc = await db.collection("users").doc(user.uid).collection("fichas").doc(nomeFicha).get();
+    if (doc.exists) {
+      const d = doc.data();
+      carregarDadosNaFicha(d);
+      document.getElementById("gallery-modal").style.display = "none";
+      alert("Ficha '" + nomeFicha + "' carregada da nuvem!");
     }
+  } catch (e) {
+    alert("Erro ao carregar dados: " + e.message);
+  }
+}
     async function salvarFichaNuvem() {
-      const fichaData = JSON.parse(exportarFichaJSON());
-      const nomeChar = document.getElementById("char_name").value || "Sem Nome";
-
-      try {
-        const docRef = doc(db, "fichas", nomeChar);
-        await setDoc(docRef, fichaData, { merge: true }); // O merge é a chave aqui!
-        alert("Ficha atualizada com sucesso na nuvem!");
-      } catch (e) {
-        console.error("Erro ao salvar: ", e);
-      }
-    }
+  const user = auth.currentUser;
+  if (!user) {
+    alert("Você precisa estar logado para salvar na nuvem!");
+    return;
+  }
+  const fichaData = JSON.parse(exportarFichaJSON());
+  const nomeChar = document.getElementById("char_name").value || "Herói_Sem_Nome";
+  try {
+    await db.collection("users").doc(user.uid).collection("fichas").doc(nomeChar).set(fichaData);
+    alert("Ficha de '" + nomeChar + "' salva com sucesso na nuvem!");
+  } catch (e) {
+    console.error("Erro ao salvar: ", e);
+    alert("Erro ao salvar: " + e.message);
+  }
+}
     async function deletarFichaNuvem() {
       const user = auth.currentUser;
       const nomeFicha = document.getElementById("nuvem-select").value;
@@ -10734,6 +10651,58 @@
         }
       }
     }
+    function carregarDadosNaFicha(d) {
+  document.getElementById("magias-container").innerHTML = "";
+  document.getElementById("talentos-container").innerHTML = "";
+  document.getElementById("idiomas-container").innerHTML = "";
+  document.getElementById("weapon-cards-container").innerHTML = "";
+  document.getElementById("armor-cards-container").innerHTML = "";
+  document.getElementById("item-cards-container").innerHTML = "";
+  document.getElementById("desc-weapons-guia").innerHTML = "";
+  document.getElementById("desc-armors-guia").innerHTML = "";
+  document.getElementById("desc-items-guia").innerHTML = "";
+  document.getElementById("char_name").value = d.info.char_name || "";
+  document.getElementById("player_name").value = d.info.player_name || "";
+  document.getElementById("class_name").value = d.info.class_name || "";
+  document.getElementById("level_val").value = d.info.level_val || 1;
+  document.getElementById("race_name").value = d.info.race_name || "";
+  document.getElementById("bg_name").value = d.info.bg_name || "";
+  document.getElementById("align").value = d.info.align || "";
+  if (d.info.char_image_url) document.getElementById("char_img").src = d.info.char_image_url;
+  for (let id in d.habilidades) {
+    const el = document.getElementById(id + "_score");
+    if (el) el.value = d.habilidades[id];
+  }
+  if (d.pericias) {
+    for (let safeId in d.pericias) {
+      const item = d.pericias[safeId];
+      const cb = document.getElementById(`check_${safeId}`);
+      if (cb) {
+        cb.dataset.profLevel = item.profLevel || "0";
+        cb.checked = (item.profLevel !== "0");
+        cb.style.outline = (item.profLevel === "2") ? "2px solid #d4af37" : "none";
+      }
+    }
+  }
+  if (d.saves) {
+    for (let id in d.saves) {
+      const cb = document.querySelector(`.save-prof[data-attr="${id}"]`);
+      if (cb) cb.checked = d.saves[id].prof;
+    }
+  }
+  if (d.moedas) {
+    document.getElementById("coin_po").value = d.moedas.po || 0;
+  }
+  document.getElementById("hp_at").value = d.combate.hp_at || "";
+  document.getElementById("hp_max").value = d.combate.hp_max || "";
+  document.getElementById("ca_val").value = d.combate.ca_val || 10;
+  if (d.listas && d.listas.armas) {
+  }
+  atualizarSubclasses();
+  atualizarSubracas();
+  calcular();
+  atualizarGuia();
+}
     function randomCriptografico() {
       const array = new Uint32Array(1);
       window.crypto.getRandomValues(array);
