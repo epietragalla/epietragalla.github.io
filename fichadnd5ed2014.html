@@ -9394,11 +9394,8 @@ display: grid;
     }
     const DEFAULT_AVATAR_SVG = "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'%3E%3C/path%3E%3C/svg%3E";
     function setup() {
-  // Container principal que agora engloba Atributos + Saves + Perícias
   const container = document.getElementById("coluna-atributos-pericias");
   if (!container) return;
-
-  // 1. Início: Imagem do Personagem
   let html = `
     <div id="char-image-container" onclick="alterarImagemPersonagem()" title="Clique para alterar a imagem do personagem">
       <img id="char_img" src="${DEFAULT_AVATAR_SVG}" alt="Avatar">
@@ -9409,8 +9406,6 @@ display: grid;
       </div>
     </div>
   `;
-
-  // 2. Bônus de Proficiência e Inspiração (Lado a lado)
   html += `
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
       <div class="attr-box" style="margin-bottom:0; height:70px;">
@@ -9423,8 +9418,6 @@ display: grid;
       </div>
     </div>
   `;
-
-  // 3. Loop Principal: Atributos com Saves e Skills agrupados
   attrs.forEach((at) => {
     html += `
       <div class="attr-group-box" style="border: 1px solid #ccc; border-radius: 8px; padding: 10px; background: #fff; margin-bottom: 15px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05);">
@@ -10006,245 +9999,292 @@ display: grid;
       });
     }
     function exportarFichaJSON() {
-      const dados = {
-        version: "5.0",
-        info: {
-          char_name: document.getElementById("char_name").value,
-          player_name: document.getElementById("player_name").value,
-          class_name: document.getElementById("class_name").value,
-          subclass_name: document.getElementById("subclass_name").value,
-          level_val: document.getElementById("level_val").value,
-          race_name: document.getElementById("race_name").value,
-          subrace_name: document.getElementById("subrace_name").value,
-          bg_name: document.getElementById("bg_name").value,
-          align: document.getElementById("align").value,
-          char_image_url: document.getElementById("char_img").src,
-        },
-        habilidades: attrs.reduce((acc, at) => {
-          acc[at.id] = document.getElementById(at.id + "_score").value;
-          return acc;
-        }, {}),
-        moedas: {
-          pc: document.getElementById("coin_pc").value,
-          pp: document.getElementById("coin_pp").value,
-          po: document.getElementById("coin_po").value,
-          pl: document.getElementById("coin_pl").value
-        },
-        saves: attrs.reduce((acc, at) => {
-          const cb = document.querySelector(`.save-prof[data-attr="${at.id}"]`);
-          const span = document.getElementById(`save_${at.id}`);
-          acc[at.id] = {
-            prof: cb ? cb.checked : false,
-            manual: span ? span.dataset.manual : "0"
-          };
-          return acc;
-        }, {}),
-        pericias: skills.reduce((acc, sk) => {
-          const safeId = sk.n.replace(/\s+/g, "");
+  const dados = {
+    version: "5.5", // Versão atualizada com correções de layout
+    info: {
+      char_name: document.getElementById("char_name").value,
+      player_name: document.getElementById("player_name").value,
+      class_name: document.getElementById("class_name").value,
+      subclass_name: document.getElementById("subclass_name").value,
+      level_val: document.getElementById("level_val").value,
+      race_name: document.getElementById("race_name").value,
+      subrace_name: document.getElementById("subrace_name").value,
+      bg_name: document.getElementById("bg_name").value,
+      align: document.getElementById("align").value,
+      char_image_url: document.getElementById("char_img").src,
+    },
+    habilidades: attrs.reduce((acc, at) => {
+      acc[at.id] = document.getElementById(at.id + "_score").value;
+      return acc;
+    }, {}),
+    moedas: {
+      pc: document.getElementById("coin_pc").value,
+      pp: document.getElementById("coin_pp").value,
+      po: document.getElementById("coin_po").value,
+      pl: document.getElementById("coin_pl").value
+    },
+    saves: attrs.reduce((acc, at) => {
+      const cb = document.querySelector(`.save-prof[data-attr="${at.id}"]`);
+      const span = document.getElementById(`save_${at.id}`);
+      acc[at.id] = {
+        prof: cb ? cb.checked : false,
+        manual: span ? span.dataset.manual : "0"
+      };
+      return acc;
+    }, {}),
+    pericias: skills.reduce((acc, sk) => {
+      const safeId = sk.n.replace(/\s+/g, "");
+      const cb = document.getElementById(`check_${safeId}`);
+      const span = document.getElementById(`sk_${safeId}`);
+      acc[safeId] = {
+        profLevel: cb ? cb.dataset.profLevel : "0",
+        manual: span ? span.dataset.manual : "0"
+      };
+      return acc;
+    }, {}),
+    combate: {
+      hp_at: document.getElementById("hp_at").value,
+      hp_max: document.getElementById("hp_max").value,
+      ca_val: document.getElementById("ca_val").value,
+      insp_val: document.getElementById("insp_val").value,
+      speed_val: document.getElementById("speed_val").value,
+      hit_dice: document.getElementById("hit_dice").value,
+      // Salva os 6 checkboxes de testes contra morte (3 sucessos, 3 falhas)
+      death_saves: Array.from(document.querySelectorAll('.circles input[type="checkbox"]')).slice(0, 6).map(cb => cb.checked)
+    },
+    magia: {
+      // Salva o estado de todos os checkboxes de slots gerados
+      slots_gastos: Array.from(document.querySelectorAll("#spell-slots-tracker input[type='checkbox']")).map(cb => cb.checked),
+      lista: Array.from(document.querySelectorAll(".magia-row select")).map(sel => sel.value)
+    },
+    listas: {
+      talentos: Array.from(document.querySelectorAll(".talento-row select")).map(sel => sel.value),
+      idiomas: Array.from(document.querySelectorAll(".idioma-row select")).map(sel => sel.value),
+      armas: Array.from(document.querySelectorAll(".weapon-entry-guia")).map(el => ({
+        name: el.dataset.weaponName,
+        isCustom: el.dataset.isCustom,
+        attr: el.dataset.attr,
+        baseDmg: el.dataset.baseDmg,
+        magicBonus: el.dataset.magicBonus,
+        html: el.innerHTML 
+      })),
+      armaduras: Array.from(document.querySelectorAll(".armor-entry-guia")).map(el => ({
+        name: el.dataset.name,
+        html: el.innerHTML
+      })),
+      itens: Array.from(document.querySelectorAll(".item-entry-guia")).map(el => ({
+        name: el.dataset.name,
+        html: el.innerHTML
+      }))
+    },
+    textos: {
+      t1: document.getElementById("t1").value,
+      t1_c: document.getElementById("t1_custom").value,
+      t2: document.getElementById("t2").value,
+      t2_c: document.getElementById("t2_custom").value,
+      t3: document.getElementById("t3").value,
+      t3_c: document.getElementById("t3_custom").value,
+      t4: document.getElementById("t4").value,
+      t4_c: document.getElementById("t4_custom").value,
+      t5: document.getElementById("t5").value,
+      equip: document.getElementById("equip_area").value,
+      notes: document.getElementById("notes_full_page") ? document.getElementById("notes_full_page").value : ""
+    },
+    recursos_gastos: Array.from(document.querySelectorAll("#class-resources-tracker input[type='checkbox']")).map(cb => cb.checked),
+    combate_status: {
+      condicoes: Array.from(document.querySelectorAll(".condicao-check")).map(cb => cb.checked),
+      exaustao: document.getElementById("exaustao_val").value,
+      log: document.getElementById("combat_log").value
+    }
+  };
+
+  const blob = new Blob([JSON.stringify(dados, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = (dados.info.char_name || "Ficha_DnD") + ".json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importarFichaJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    try {
+      const d = JSON.parse(e.target.result);
+
+      // 1. Limpar Containers
+      document.getElementById("magias-container").innerHTML = "";
+      document.getElementById("talentos-container").innerHTML = "";
+      document.getElementById("idiomas-container").innerHTML = "";
+      document.getElementById("weapon-cards-container").innerHTML = "";
+      document.getElementById("armor-cards-container").innerHTML = "";
+      document.getElementById("item-cards-container").innerHTML = "";
+      document.getElementById("desc-weapons-guia").innerHTML = "";
+      document.getElementById("desc-armors-guia").innerHTML = "";
+      document.getElementById("desc-items-guia").innerHTML = "";
+
+      // 2. Informações Básicas
+      const info = d.info;
+      document.getElementById("char_name").value = info.char_name || "";
+      document.getElementById("player_name").value = info.player_name || "";
+      document.getElementById("class_name").value = info.class_name || "";
+      document.getElementById("level_val").value = info.level_val || 1;
+      document.getElementById("race_name").value = info.race_name || "";
+      document.getElementById("bg_name").value = info.bg_name || "";
+      document.getElementById("align").value = info.align || "";
+      if (info.char_image_url) document.getElementById("char_img").src = info.char_image_url;
+
+      // 3. Atualizar Dependências de Seleção
+      atualizarSubclasses();
+      document.getElementById("subclass_name").value = info.subclass_name || "";
+      atualizarSubracas();
+      document.getElementById("subrace_name").value = info.subrace_name || "";
+      carregarCaracteristicasAntecedente();
+
+      // 4. Habilidades (Atributos)
+      for (let id in d.habilidades) {
+        const el = document.getElementById(id + "_score");
+        if (el) el.value = d.habilidades[id];
+      }
+
+      // 5. Moedas
+      if (d.moedas) {
+        document.getElementById("coin_pc").value = d.moedas.pc || 0;
+        document.getElementById("coin_pp").value = d.moedas.pp || 0;
+        document.getElementById("coin_po").value = d.moedas.po || 0;
+        document.getElementById("coin_pl").value = d.moedas.pl || 0;
+      }
+
+      // 6. Perícias e Especialização
+      if (d.pericias) {
+        for (let safeId in d.pericias) {
+          const item = d.pericias[safeId];
           const cb = document.getElementById(`check_${safeId}`);
           const span = document.getElementById(`sk_${safeId}`);
-          acc[safeId] = {
-            profLevel: cb ? cb.dataset.profLevel : "0",
-            manual: span ? span.dataset.manual : "0"
-          };
-          return acc;
-        }, {}),
-        combate: {
-          hp_at: document.getElementById("hp_at").value,
-          hp_max: document.getElementById("hp_max").value,
-          ca_val: document.getElementById("ca_val").value,
-          insp_val: document.getElementById("insp_val").value,
-          speed_val: document.getElementById("speed_val").value,
-          hit_dice: document.getElementById("hit_dice").value,
-          death_saves: Array.from(document.querySelectorAll('.circles input[type="checkbox"]')).map(cb => cb.checked)
-        },
-        magia: {
-          slots_gastos: Array.from(document.querySelectorAll("#spell-slots-tracker input[type='checkbox']")).map(cb => cb.checked),
-          lista: Array.from(document.querySelectorAll(".magia-select")).map(sel => sel.value)
-        },
-        // MUDANÇA AQUI: Agora salvamos o objeto completo do Guia para itens customizados
-        listas: {
-          talentos: Array.from(document.querySelectorAll(".talento-select")).map(sel => sel.value),
-          idiomas: Array.from(document.querySelectorAll(".idioma-select")).map(sel => sel.value),
-          armas: Array.from(document.querySelectorAll(".weapon-entry-guia")).map(el => ({
-            name: el.dataset.weaponName,
-            isCustom: el.dataset.isCustom,
-            attr: el.dataset.attr,
-            baseDmg: el.dataset.baseDmg,
-            magicBonus: el.dataset.magicBonus,
-            html: el.innerHTML // Salva o visual para garantir a carga fiel
-          })),
-          armaduras: Array.from(document.querySelectorAll(".armor-entry-guia")).map(el => ({
-            name: el.dataset.name,
-            html: el.innerHTML
-          })),
-          itens: Array.from(document.querySelectorAll(".item-entry-guia")).map(el => ({
-            name: el.dataset.name,
-            html: el.innerHTML
-          }))
-        },
-        textos: {
-          t1: document.getElementById("t1").value,
-          t1_c: document.getElementById("t1_custom").value,
-          t2: document.getElementById("t2").value,
-          t2_c: document.getElementById("t2_custom").value,
-          t3: document.getElementById("t3").value,
-          t3_c: document.getElementById("t3_custom").value,
-          t4: document.getElementById("t4").value,
-          t4_c: document.getElementById("t4_custom").value,
-          t5: document.getElementById("t5").value,
-          equip: document.getElementById("equip_area").value,
-          notes: document.getElementById("notes_full_page") ? document.getElementById("notes_full_page").value : ""
-        },
-        recursos_gastos: Array.from(document.querySelectorAll("#class-resources-tracker input[type='checkbox']")).map(cb => cb.checked),
-        combate_status: {
-          condicoes: Array.from(document.querySelectorAll(".condicao-check")).map(cb => cb.checked),
-          exaustao: document.getElementById("exaustao_val").value,
-          log: document.getElementById("combat_log").value
+          if (cb) {
+            cb.dataset.profLevel = item.profLevel || "0";
+            cb.checked = (item.profLevel !== "0");
+            // Resetar visual e aplicar se for nível 2 (Especialização)
+            cb.style.outline = (item.profLevel === "2") ? "2px solid #d4af37" : "none";
+            cb.style.boxShadow = (item.profLevel === "2") ? "0 0 5px #d4af37" : "none";
+          }
+          if (span) span.dataset.manual = item.manual || "0";
         }
-      };
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dados, null, 2));
-      const a = document.createElement('a');
-      a.setAttribute("href", dataStr);
-      a.setAttribute("download", (dados.info.char_name || "Ficha_DnD") + ".json");
-      a.click();
-    }
-    function importarFichaJSON(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        try {
-          const d = JSON.parse(e.target.result);
-          document.getElementById("magias-container").innerHTML = "";
-          document.getElementById("talentos-container").innerHTML = "";
-          document.getElementById("idiomas-container").innerHTML = "";
-          document.getElementById("weapon-cards-container").innerHTML = "";
-          document.getElementById("armor-cards-container").innerHTML = "";
-          document.getElementById("item-cards-container").innerHTML = "";
-          document.getElementById("desc-weapons-guia").innerHTML = "";
-          document.getElementById("desc-armors-guia").innerHTML = "";
-          document.getElementById("desc-items-guia").innerHTML = "";
-          const info = d.info;
-          document.getElementById("char_name").value = info.char_name || "";
-          document.getElementById("player_name").value = info.player_name || "";
-          document.getElementById("class_name").value = info.class_name || "";
-          document.getElementById("level_val").value = info.level_val || 1;
-          document.getElementById("race_name").value = info.race_name || "";
-          document.getElementById("bg_name").value = info.bg_name || "";
-          document.getElementById("align").value = info.align || "";
-          if (info.char_image_url) document.getElementById("char_img").src = info.char_image_url;
-          atualizarSubclasses();
-          document.getElementById("subclass_name").value = info.subclass_name || "";
-          atualizarSubracas();
-          document.getElementById("subrace_name").value = info.subrace_name || "";
-          carregarCaracteristicasAntecedente();
-          for (let id in d.habilidades) {
-            const el = document.getElementById(id + "_score");
-            if (el) el.value = d.habilidades[id];
-          }
-          if (d.moedas) {
-            document.getElementById("coin_pc").value = d.moedas.pc || 0;
-            document.getElementById("coin_pp").value = d.moedas.pp || 0;
-            document.getElementById("coin_po").value = d.moedas.po || 0;
-            document.getElementById("coin_pl").value = d.moedas.pl || 0;
-          }
-          if (d.pericias) {
-            for (let safeId in d.pericias) {
-              const item = d.pericias[safeId];
-              const cb = document.getElementById(`check_${safeId}`);
-              const span = document.getElementById(`sk_${safeId}`);
-              if (cb) {
-                cb.dataset.profLevel = item.profLevel || "0";
-                cb.checked = (item.profLevel !== "0");
-                // Restaura o visual da Especialização
-                if (item.profLevel === "2") {
-                  cb.style.outline = "2px solid #d4af37";
-                  cb.style.boxShadow = "0 0 5px #d4af37";
-                }
-              }
-              if (span) span.dataset.manual = item.manual || "0";
-            }
-          }
-          if (d.saves) {
-            for (let id in d.saves) {
-              const item = d.saves[id];
-              const cb = document.querySelector(`.save-prof[data-attr="${id}"]`);
-              const span = document.getElementById(`save_${id}`); // CORREÇÃO AQUI
-              if (cb) cb.checked = item.prof;
-              if (span) span.dataset.manual = item.manual || "0";
-            }
-          }
-          if (d.listas.idiomas) d.listas.idiomas.forEach(v => {
-            adicionarIdioma();
-            document.querySelector("#idiomas-container .idioma-row:last-child select").value = v;
-          });
-          if (d.listas.talentos) d.listas.talentos.forEach(v => {
-            adicionarTalento();
-            document.querySelector("#talentos-container .talento-row:last-child select").value = v;
-          });
-          if (d.magia.lista) d.magia.lista.forEach(v => {
-            adicionarMagia();
-            document.querySelector("#magias-container .magia-row:last-child select").value = v;
-          });
-          const restaurarItensGuia = (lista, containerGuiaId, cardContainerId, type) => {
-            const containerGuia = document.getElementById(containerGuiaId);
-            const containerCards = document.getElementById(cardContainerId);
-            lista.forEach(item => {
-              // Recria a entrada no Guia
-              const entry = document.createElement("div");
-              entry.className = type + "-entry-guia";
-              if (item.isCustom) {
-                entry.dataset.isCustom = "true";
-                entry.dataset.attr = item.attr;
-                entry.dataset.baseDmg = item.baseDmg;
-                entry.dataset.magicBonus = item.magicBonus;
-              }
-              entry.dataset.weaponName = item.name; entry.dataset.name = item.name;
-              entry.innerHTML = item.html;
-              containerGuia.appendChild(entry);
-              const card = document.createElement("div");
-              card.className = "weapon-card";
-              card.innerHTML = `<div class="weapon-card-header"><span class="weapon-card-title" style="font-size:12px;">${item.name}</span><button type="button" class="insp-btn" onclick="this.closest('.weapon-card').remove();" style="background:#666; width:16px; height:16px;">-</button></div>`;
-              containerCards.appendChild(card);
-            });
-          };
-          restaurarItensGuia(d.listas.armas, "desc-weapons-guia", "weapon-cards-container", "weapon");
-          restaurarItensGuia(d.listas.armaduras, "desc-armors-guia", "armor-cards-container", "armor");
-          restaurarItensGuia(d.listas.itens, "desc-items-guia", "item-cards-container", "item");
-          document.getElementById("hp_at").value = d.combate.hp_at || "";
-          document.getElementById("hp_max").value = d.combate.hp_max || "";
-          document.getElementById("insp_val").value = d.combate.insp_val || 0;
-          document.getElementById("ca_val").value = d.combate.ca_val || 10;
-          document.getElementById("speed_val").value = d.combate.speed_val || "9m";
-          document.getElementById("hit_dice").value = d.combate.hit_dice || "";
-          const condChecks = document.querySelectorAll(".condicao-check");
-          if (d.combate_status.condicoes) d.combate_status.condicoes.forEach((val, i) => { if (condChecks[i]) condChecks[i].checked = val; });
-          document.getElementById("exaustao_val").value = d.combate_status.exaustao || 0;
-          document.getElementById("combat_log").value = d.combate_status.log || "";
-          const t = d.textos;
-          document.getElementById("t1").value = t.t1 || "";
-          document.getElementById("t1_custom").value = t.t1_c || "";
-          document.getElementById("t2").value = t.t2 || "";
-          document.getElementById("t2_custom").value = t.t2_c || "";
-          document.getElementById("t3").value = t.t3 || "";
-          document.getElementById("t3_custom").value = t.t3_c || "";
-          document.getElementById("t4").value = t.t4 || "";
-          document.getElementById("t4_custom").value = t.t4_c || "";
-          document.getElementById("t5").value = t.t5 || "";
-          document.getElementById("equip_area").value = t.equip || "";
-          if (document.getElementById("notes_full_page")) document.getElementById("notes_full_page").value = t.notes || "";
-          calcular();
-          atualizarGuia();
-          alert("Ficha de " + (info.char_name || "Herói") + " carregada com sucesso!");
-        } catch (err) {
-          console.error(err);
-          alert("Erro ao ler o arquivo JSON. Verifique se o arquivo está correto.");
+      }
+
+      // 7. Salvaguardas (Saves)
+      if (d.saves) {
+        for (let id in d.saves) {
+          const item = d.saves[id];
+          const cb = document.querySelector(`.save-prof[data-attr="${id}"]`);
+          const span = document.getElementById(`save_${id}`);
+          if (cb) cb.checked = item.prof;
+          if (span) span.dataset.manual = item.manual || "0";
         }
+      }
+
+      // 8. Listas Repetitivas (Idiomas, Talentos, Magias)
+      if (d.listas.idiomas) d.listas.idiomas.forEach(v => {
+        adicionarIdioma();
+        document.querySelector("#idiomas-container .idioma-row:last-child select").value = v;
+      });
+      if (d.listas.talentos) d.listas.talentos.forEach(v => {
+        adicionarTalento();
+        document.querySelector("#talentos-container .talento-row:last-child select").value = v;
+      });
+      if (d.magia.lista) d.magia.lista.forEach(v => {
+        adicionarMagia();
+        document.querySelector("#magias-container .magia-row:last-child select").value = v;
+      });
+
+      // 9. Restaurar Guia de Referência e Cards
+      const restaurarItens = (lista, containerGuiaId, cardContainerId, type) => {
+        const containerGuia = document.getElementById(containerGuiaId);
+        const containerCards = document.getElementById(cardContainerId);
+        lista.forEach(item => {
+          const entry = document.createElement("div");
+          entry.className = type + "-entry-guia";
+          entry.dataset.isCustom = item.isCustom || "false";
+          if (type === "weapon") {
+             entry.dataset.weaponName = item.name;
+             entry.dataset.attr = item.attr;
+             entry.dataset.baseDmg = item.baseDmg;
+             entry.dataset.magicBonus = item.magicBonus;
+          } else {
+             entry.dataset.name = item.name;
+          }
+          entry.innerHTML = item.html;
+          containerGuia.appendChild(entry);
+
+          // Criar o card visual correspondente
+          const card = document.createElement("div");
+          card.className = type + "-card"; 
+          card.innerHTML = `<div class="${type}-card-header"><span class="${type}-card-title" style="font-size:12px;">${item.name}</span><button type="button" class="insp-btn" onclick="this.closest('.${type}-card').remove();" style="background:#666; width:16px; height:16px;">-</button></div>`;
+          containerCards.appendChild(card);
+        });
       };
-      reader.readAsText(file);
-      event.target.value = "";
+      restaurarItens(d.listas.armas, "desc-weapons-guia", "weapon-cards-container", "weapon");
+      restaurarItens(d.listas.armaduras, "desc-armors-guia", "armor-cards-container", "armor");
+      restaurarItens(d.listas.itens, "desc-items-guia", "item-cards-container", "item");
+
+      // 10. Combate e Checkboxes (Morte, Magia, Recursos)
+      document.getElementById("hp_at").value = d.combate.hp_at || "";
+      document.getElementById("hp_max").value = d.combate.hp_max || "";
+      document.getElementById("insp_val").value = d.combate.insp_val || 0;
+      document.getElementById("ca_val").value = d.combate.ca_val || 10;
+      document.getElementById("speed_val").value = d.combate.speed_val || "9m";
+      document.getElementById("hit_dice").value = d.combate.hit_dice || "";
+
+      // Restaurar Testes contra Morte
+      const deathChecks = document.querySelectorAll('.circles input[type="checkbox"]');
+      if (d.combate.death_saves) d.combate.death_saves.forEach((val, i) => { if (deathChecks[i]) deathChecks[i].checked = val; });
+
+      // Restaurar Condições
+      const condChecks = document.querySelectorAll(".condicao-check");
+      if (d.combate_status.condicoes) d.combate_status.condicoes.forEach((val, i) => { if (condChecks[i]) condChecks[i].checked = val; });
+
+      document.getElementById("exaustao_val").value = d.combate_status.exaustao || 0;
+      document.getElementById("combat_log").value = d.combate_status.log || "";
+
+      // 11. Restaurar Slots de Magia e Recursos (Após calcular)
+      calcular(); 
+      atualizarSlotsMagia(); // Regenera os checkboxes
+      
+      const spellChecks = document.querySelectorAll("#spell-slots-tracker input[type='checkbox']");
+      if (d.magia.slots_gastos) d.magia.slots_gastos.forEach((val, i) => { if (spellChecks[i]) spellChecks[i].checked = val; });
+
+      const resourceChecks = document.querySelectorAll("#class-resources-tracker input[type='checkbox']");
+      if (d.recursos_gastos) d.recursos_gastos.forEach((val, i) => { if (resourceChecks[i]) resourceChecks[i].checked = val; });
+
+      // 12. Textos
+      const t = d.textos;
+      document.getElementById("t1").value = t.t1 || "";
+      document.getElementById("t1_custom").value = t.t1_c || "";
+      document.getElementById("t2").value = t.t2 || "";
+      document.getElementById("t2_custom").value = t.t2_c || "";
+      document.getElementById("t3").value = t.t3 || "";
+      document.getElementById("t3_custom").value = t.t3_c || "";
+      document.getElementById("t4").value = t.t4 || "";
+      document.getElementById("t4_custom").value = t.t4_c || "";
+      document.getElementById("t5").value = t.t5 || "";
+      document.getElementById("equip_area").value = t.equip || "";
+      if (document.getElementById("notes_full_page")) document.getElementById("notes_full_page").value = t.notes || "";
+
+      atualizarGuia();
+      alert("Ficha de " + (info.char_name || "Herói") + " carregada com sucesso!");
+
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao ler o arquivo JSON.");
     }
+  };
+  reader.readAsText(file);
+  event.target.value = "";
+}
     function modificarManualSkill(safeId, delta) {
       const el = document.getElementById('sk_' + safeId);
       if (!el) return;
@@ -10682,6 +10722,18 @@ display: grid;
         }
       } catch (e) { alert("Erro ao carregar dados: " + e.message); }
     }
+    async function salvarFichaNuvem() {
+    const fichaData = JSON.parse(exportarFichaJSON());
+    const nomeChar = document.getElementById("char_name").value || "Sem Nome";
+    
+    try {
+        const docRef = doc(db, "fichas", nomeChar); 
+        await setDoc(docRef, fichaData, { merge: true }); // O merge é a chave aqui!
+        alert("Ficha atualizada com sucesso na nuvem!");
+    } catch (e) {
+        console.error("Erro ao salvar: ", e);
+    }
+}
     async function deletarFichaNuvem() {
       const user = auth.currentUser;
       const nomeFicha = document.getElementById("nuvem-select").value;
