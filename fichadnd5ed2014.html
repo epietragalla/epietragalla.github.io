@@ -10021,111 +10021,21 @@
         }
       });
     }
-    function exportarFichaJSON() {
-      const dados = {
-        version: "5.5",
-        info: {
-          char_name: document.getElementById("char_name").value,
-          player_name: document.getElementById("player_name").value,
-          class_name: document.getElementById("class_name").value,
-          subclass_name: document.getElementById("subclass_name").value,
-          level_val: document.getElementById("level_val").value,
-          race_name: document.getElementById("race_name").value,
-          subrace_name: document.getElementById("subrace_name").value,
-          bg_name: document.getElementById("bg_name").value,
-          align: document.getElementById("align").value,
-          char_image_url: document.getElementById("char_img").src,
-        },
-        habilidades: attrs.reduce((acc, at) => {
-          acc[at.id] = document.getElementById(at.id + "_score").value;
-          return acc;
-        }, {}),
-        moedas: {
-          pc: document.getElementById("coin_pc").value,
-          pp: document.getElementById("coin_pp").value,
-          po: document.getElementById("coin_po").value,
-          pl: document.getElementById("coin_pl").value
-        },
-        saves: attrs.reduce((acc, at) => {
-          const cb = document.querySelector(`.save-prof[data-attr="${at.id}"]`);
-          const span = document.getElementById(`save_${at.id}`);
-          acc[at.id] = {
-            prof: cb ? cb.checked : false,
-            manual: span ? span.dataset.manual : "0"
-          };
-          return acc;
-        }, {}),
-        pericias: skills.reduce((acc, sk) => {
-          const safeId = sk.n.replace(/\s+/g, "");
-          const cb = document.getElementById(`check_${safeId}`);
-          const span = document.getElementById(`sk_${safeId}`);
-          acc[safeId] = {
-            profLevel: cb ? cb.dataset.profLevel : "0",
-            manual: span ? span.dataset.manual : "0"
-          };
-          return acc;
-        }, {}),
-        combate: {
-          hp_at: document.getElementById("hp_at").value,
-          hp_max: document.getElementById("hp_max").value,
-          ca_val: document.getElementById("ca_val").value,
-          insp_val: document.getElementById("insp_val").value,
-          speed_val: document.getElementById("speed_val").value,
-          hit_dice: document.getElementById("hit_dice").value,
-          death_saves: Array.from(document.querySelectorAll('.circles input[type="checkbox"]')).slice(0, 6).map(cb => cb.checked)
-        },
-        magia: {
-          slots_gastos: Array.from(document.querySelectorAll("#spell-slots-tracker input[type='checkbox']")).map(cb => cb.checked),
-          lista: Array.from(document.querySelectorAll(".magia-row select")).map(sel => sel.value)
-        },
-        listas: {
-          talentos: Array.from(document.querySelectorAll(".talento-row select")).map(sel => sel.value),
-          idiomas: Array.from(document.querySelectorAll(".idioma-row select")).map(sel => sel.value),
-          armas: Array.from(document.querySelectorAll(".weapon-entry-guia")).map(el => ({
-            name: el.dataset.weaponName,
-            isCustom: el.dataset.isCustom,
-            attr: el.dataset.attr,
-            baseDmg: el.dataset.baseDmg,
-            magicBonus: el.dataset.magicBonus,
-            html: el.innerHTML
-          })),
-          armaduras: Array.from(document.querySelectorAll(".armor-entry-guia")).map(el => ({
-            name: el.dataset.name,
-            html: el.innerHTML
-          })),
-          itens: Array.from(document.querySelectorAll(".item-entry-guia")).map(el => ({
-            name: el.dataset.name,
-            html: el.innerHTML
-          }))
-        },
-        textos: {
-          t1: document.getElementById("t1").value,
-          t1_c: document.getElementById("t1_custom").value,
-          t2: document.getElementById("t2").value,
-          t2_c: document.getElementById("t2_custom").value,
-          t3: document.getElementById("t3").value,
-          t3_c: document.getElementById("t3_custom").value,
-          t4: document.getElementById("t4").value,
-          t4_c: document.getElementById("t4_custom").value,
-          t5: document.getElementById("t5").value,
-          equip: document.getElementById("equip_area").value,
-          notes: document.getElementById("notes_full_page") ? document.getElementById("notes_full_page").value : ""
-        },
-        recursos_gastos: Array.from(document.querySelectorAll("#class-resources-tracker input[type='checkbox']")).map(cb => cb.checked),
-        combate_status: {
-          condicoes: Array.from(document.querySelectorAll(".condicao-check")).map(cb => cb.checked),
-          exaustao: document.getElementById("exaustao_val").value,
-          log: document.getElementById("combat_log").value
-        }
-      };
-      const blob = new Blob([JSON.stringify(dados, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = (dados.info.char_name || "Ficha_DnD") + ".json";
-      a.click();
-      URL.revokeObjectURL(url);
-    }
+   function exportarFichaJSON() {
+  // Utilizamos a função obterObjetoFicha que já está validada para o Firebase
+  const dados = obterObjetoFicha(); 
+  
+  // Adicionamos a versão para controle futuro
+  dados.version = "6.1";
+
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dados, null, 2));
+  const a = document.createElement('a');
+  a.setAttribute("href", dataStr);
+  a.setAttribute("download", (dados.info.char_name || "Ficha_DnD") + ".json");
+  document.body.appendChild(a); // Necessário para alguns navegadores
+  a.click();
+  document.body.removeChild(a);
+}
     function importarFichaJSON(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -10180,15 +10090,21 @@
               if (span) span.dataset.manual = item.manual || "0";
             }
           }
-          if (d.saves) {
-            for (let id in d.saves) {
-              const item = d.saves[id];
-              const cb = document.querySelector(`.save-prof[data-attr="${id}"]`);
-              const span = document.getElementById(`save_${id}`);
-              if (cb) cb.checked = item.prof;
-              if (span) span.dataset.manual = item.manual || "0";
-            }
-          }
+         if (d.saves) {
+  for (let id in d.saves) {
+    const item = d.saves[id];
+    // Correção no seletor: busca pelo atributo data-attr
+    const cb = document.querySelector(`.save-prof[data-attr="${id}"]`);
+    const span = document.getElementById("save_" + id); // Aqui estava o erro (at.id)
+    
+    if (cb) {
+      cb.checked = item.prof;
+    }
+    if (span) {
+      span.dataset.manual = item.manual || "0";
+    }
+  }
+}
           if (d.listas.idiomas) d.listas.idiomas.forEach(v => {
             adicionarIdioma();
             document.querySelector("#idiomas-container .idioma-row:last-child select").value = v;
@@ -10254,13 +10170,24 @@
           document.getElementById("t3_custom").value = t.t3_c || "";
           document.getElementById("t4").value = t.t4 || "";
           document.getElementById("t4_custom").value = t.t4_c || "";
-          document.getElementById("t5").value = t.t5 || "";
+          ["t1", "t2", "t3", "t4"].forEach(id => {
+            const sel = document.getElementById(id);
+            if (sel) {
+              mostrarTextoCompleto(sel, id + "_display", id + "_custom");
+            }
+          });
+         document.getElementById("t5").value = t.t5 || "";
           document.getElementById("equip_area").value = t.equip || "";
-          if (document.getElementById("notes_full_page")) document.getElementById("notes_full_page").value = t.notes || "";
+          
+          if (document.getElementById("notes_full_page")) {
+            document.getElementById("notes_full_page").value = t.notes || "";
+          }
+          calcular(); 
           atualizarGuia();
+
           alert("Ficha de " + (info.char_name || "Herói") + " carregada com sucesso!");
         } catch (err) {
-          console.error(err);
+          console.error("Erro na importação:", err);
           alert("Erro ao ler o arquivo JSON.");
         }
       };
@@ -10539,170 +10466,7 @@
         btn.onclick = () => cadastrar();
       }
     }
-    async function cadastrar() {
-      const email = document.getElementById("auth-email").value;
-      const pass = document.getElementById("auth-pass").value;
-      try {
-        await auth.createUserWithEmailAndPassword(email, pass);
-        alert("Conta criada! Agora você pode salvar suas fichas.");
-        document.getElementById("auth-modal").style.display = "none";
-      } catch (e) { alert("Erro: " + e.message); }
-    }
-    async function logar() {
-      const email = document.getElementById("auth-email").value;
-      const pass = document.getElementById("auth-pass").value;
-      try {
-        await auth.signInWithEmailAndPassword(email, pass);
-        document.getElementById("auth-modal").style.display = "none";
-      } catch (e) { alert("Erro: " + e.message); }
-    }
-    function deslogar() { auth.signOut(); }
-    const firebaseConfig = {
-      apiKey: "AIzaSyCdkD7w5cuCzRPg_sZnOnQ71a7r_en5dJU",
-      authDomain: "fichadnd5ed2014.firebaseapp.com",
-      projectId: "fichadnd5ed2014",
-      storageBucket: "fichadnd5ed2014.firebasestorage.app",
-      messagingSenderId: "833978799616",
-      appId: "1:833978799616:web:b02008fa1c8a3b0ec32ae5",
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        document.getElementById("auth-status-guest").style.display = "none";
-        document.getElementById("auth-status-user").style.display = "flex";
-        document.getElementById("user-email-display").innerText = " " + user.email;
-      } else {
-        document.getElementById("auth-status-guest").style.display = "block";
-        document.getElementById("auth-status-user").style.display = "none";
-      }
-    });
    
-    async function abrirGaleriaNuvem() {
-      const user = auth.currentUser;
-      if (!user) return;
-      try {
-        const snapshot = await db.collection("users").doc(user.uid).collection("fichas").get();
-        const select = document.getElementById("nuvem-select");
-        select.innerHTML = "";
-
-        if (snapshot.empty) {
-          alert("Nenhuma ficha encontrada na nuvem.");
-          return;
-        }
-        snapshot.forEach(doc => {
-          let opt = document.createElement("option");
-          opt.value = doc.id;
-          opt.innerText = doc.id;
-          select.appendChild(opt);
-        });
-
-        document.getElementById("gallery-modal").style.display = "block";
-      } catch (e) { alert("Erro ao listar fichas: " + e.message); }
-    }
-    async function confirmarCargaNuvem() {
-  const user = auth.currentUser;
-  const nomeFicha = document.getElementById("nuvem-select").value;
-  if (!nomeFicha || !user) return;
-  try {
-    const doc = await db.collection("users").doc(user.uid).collection("fichas").doc(nomeFicha).get();
-    if (doc.exists) {
-      const d = doc.data();
-      carregarDadosNaFicha(d);
-      document.getElementById("gallery-modal").style.display = "none";
-      alert("Ficha '" + nomeFicha + "' carregada da nuvem!");
-    }
-  } catch (e) {
-    alert("Erro ao carregar dados: " + e.message);
-  }
-}
-    async function salvarFichaNuvem() {
-  const user = auth.currentUser;
-  if (!user) {
-    alert("Você precisa estar logado para salvar na nuvem!");
-    return;
-  }
-  const fichaData = JSON.parse(exportarFichaJSON());
-  const nomeChar = document.getElementById("char_name").value || "Herói_Sem_Nome";
-  try {
-    await db.collection("users").doc(user.uid).collection("fichas").doc(nomeChar).set(fichaData);
-    alert("Ficha de '" + nomeChar + "' salva com sucesso na nuvem!");
-  } catch (e) {
-    console.error("Erro ao salvar: ", e);
-    alert("Erro ao salvar: " + e.message);
-  }
-}
-    async function deletarFichaNuvem() {
-      const user = auth.currentUser;
-      const nomeFicha = document.getElementById("nuvem-select").value;
-      if (!nomeFicha) {
-        alert("Selecione uma ficha para deletar.");
-        return;
-      }
-      const confirmacao = confirm(`⚠️ ATENÇÃO: Você tem certeza que deseja excluir permanentemente a ficha de "${nomeFicha}"? Esta ação não pode ser desfeita.`);
-      if (confirmacao) {
-        try {
-          await db.collection("users").doc(user.uid).collection("fichas").doc(nomeFicha).delete();
-          alert("Ficha deletada com sucesso!");
-          abrirGaleriaNuvem();
-        } catch (e) {
-          alert("Erro ao deletar: " + e.message);
-        }
-      }
-    }
-    function carregarDadosNaFicha(d) {
-  document.getElementById("magias-container").innerHTML = "";
-  document.getElementById("talentos-container").innerHTML = "";
-  document.getElementById("idiomas-container").innerHTML = "";
-  document.getElementById("weapon-cards-container").innerHTML = "";
-  document.getElementById("armor-cards-container").innerHTML = "";
-  document.getElementById("item-cards-container").innerHTML = "";
-  document.getElementById("desc-weapons-guia").innerHTML = "";
-  document.getElementById("desc-armors-guia").innerHTML = "";
-  document.getElementById("desc-items-guia").innerHTML = "";
-  document.getElementById("char_name").value = d.info.char_name || "";
-  document.getElementById("player_name").value = d.info.player_name || "";
-  document.getElementById("class_name").value = d.info.class_name || "";
-  document.getElementById("level_val").value = d.info.level_val || 1;
-  document.getElementById("race_name").value = d.info.race_name || "";
-  document.getElementById("bg_name").value = d.info.bg_name || "";
-  document.getElementById("align").value = d.info.align || "";
-  if (d.info.char_image_url) document.getElementById("char_img").src = d.info.char_image_url;
-  for (let id in d.habilidades) {
-    const el = document.getElementById(id + "_score");
-    if (el) el.value = d.habilidades[id];
-  }
-  if (d.pericias) {
-    for (let safeId in d.pericias) {
-      const item = d.pericias[safeId];
-      const cb = document.getElementById(`check_${safeId}`);
-      if (cb) {
-        cb.dataset.profLevel = item.profLevel || "0";
-        cb.checked = (item.profLevel !== "0");
-        cb.style.outline = (item.profLevel === "2") ? "2px solid #d4af37" : "none";
-      }
-    }
-  }
-  if (d.saves) {
-    for (let id in d.saves) {
-      const cb = document.querySelector(`.save-prof[data-attr="${id}"]`);
-      if (cb) cb.checked = d.saves[id].prof;
-    }
-  }
-  if (d.moedas) {
-    document.getElementById("coin_po").value = d.moedas.po || 0;
-  }
-  document.getElementById("hp_at").value = d.combate.hp_at || "";
-  document.getElementById("hp_max").value = d.combate.hp_max || "";
-  document.getElementById("ca_val").value = d.combate.ca_val || 10;
-  if (d.listas && d.listas.armas) {
-  }
-  atualizarSubclasses();
-  atualizarSubracas();
-  calcular();
-  atualizarGuia();
-}
     function randomCriptografico() {
       const array = new Uint32Array(1);
       window.crypto.getRandomValues(array);
@@ -10780,6 +10544,332 @@
         campoOuro.value = totalPO;
       }
     }
+     async function cadastrar() {
+      const email = document.getElementById("auth-email").value;
+      const pass = document.getElementById("auth-pass").value;
+      try {
+        await auth.createUserWithEmailAndPassword(email, pass);
+        alert("Conta criada! Agora você pode salvar suas fichas.");
+        document.getElementById("auth-modal").style.display = "none";
+      } catch (e) { alert("Erro: " + e.message); }
+    }
+    async function logar() {
+      const email = document.getElementById("auth-email").value;
+      const pass = document.getElementById("auth-pass").value;
+      try {
+        await auth.signInWithEmailAndPassword(email, pass);
+        document.getElementById("auth-modal").style.display = "none";
+      } catch (e) { alert("Erro: " + e.message); }
+    }
+    function deslogar() { auth.signOut(); }
+    const firebaseConfig = {
+      apiKey: "AIzaSyCdkD7w5cuCzRPg_sZnOnQ71a7r_en5dJU",
+      authDomain: "fichadnd5ed2014.firebaseapp.com",
+      projectId: "fichadnd5ed2014",
+      storageBucket: "fichadnd5ed2014.firebasestorage.app",
+      messagingSenderId: "833978799616",
+      appId: "1:833978799616:web:b02008fa1c8a3b0ec32ae5",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        document.getElementById("auth-status-guest").style.display = "none";
+        document.getElementById("auth-status-user").style.display = "flex";
+        document.getElementById("user-email-display").innerText = " " + user.email;
+      } else {
+        document.getElementById("auth-status-guest").style.display = "block";
+        document.getElementById("auth-status-user").style.display = "none";
+      }
+    });
+    async function abrirGaleriaNuvem() {
+      const user = auth.currentUser;
+      if (!user) return;
+      try {
+        const snapshot = await db.collection("users").doc(user.uid).collection("fichas").get();
+        const select = document.getElementById("nuvem-select");
+        select.innerHTML = "";
+
+        if (snapshot.empty) {
+          alert("Nenhuma ficha encontrada na nuvem.");
+          return;
+        }
+        snapshot.forEach(doc => {
+          let opt = document.createElement("option");
+          opt.value = doc.id;
+          opt.innerText = doc.id;
+          select.appendChild(opt);
+        });
+        document.getElementById("gallery-modal").style.display = "block";
+      } catch (e) { alert("Erro ao listar fichas: " + e.message); }
+    }
+    async function confirmarCargaNuvem() {
+      const user = auth.currentUser;
+      const nomeFicha = document.getElementById("nuvem-select").value;
+      if (!nomeFicha || !user) return;
+      try {
+        const doc = await db.collection("users").doc(user.uid).collection("fichas").doc(nomeFicha).get();
+        if (doc.exists) {
+          const d = doc.data();
+          carregarDadosNaFicha(d);
+          document.getElementById("gallery-modal").style.display = "none";
+          alert("Ficha '" + nomeFicha + "' carregada da nuvem!");
+        }
+      } catch (e) {
+        alert("Erro ao carregar dados: " + e.message);
+      }
+    }
+    async function salvarFichaNuvem() {
+      const user = auth.currentUser;
+      if (!user) {
+        alert("Você precisa estar logado para salvar na nuvem!");
+        return;
+      }
+      const dadosFicha = obterObjetoFicha();
+      const nomeChar = dadosFicha.info.char_name || "Herói_Sem_Nome";
+      try {
+        await db.collection("users").doc(user.uid).collection("fichas").doc(nomeChar).set(dadosFicha);
+        alert("Ficha de '" + nomeChar + "' salva com sucesso na nuvem!");
+      } catch (e) {
+        alert("Erro ao salvar: " + e.message);
+      }
+    }
+    async function deletarFichaNuvem() {
+      const user = auth.currentUser;
+      const nomeFicha = document.getElementById("nuvem-select").value;
+      if (!nomeFicha) {
+        alert("Selecione uma ficha para deletar.");
+        return;
+      }
+      const confirmacao = confirm(`⚠️ ATENÇÃO: Você tem certeza que deseja excluir permanentemente a ficha de "${nomeFicha}"? Esta ação não pode ser desfeita.`);
+      if (confirmacao) {
+        try {
+          await db.collection("users").doc(user.uid).collection("fichas").doc(nomeFicha).delete();
+          alert("Ficha deletada com sucesso!");
+          abrirGaleriaNuvem();
+        } catch (e) {
+          alert("Erro ao deletar: " + e.message);
+        }
+      }
+    }
+   function carregarDadosNaFicha(d) {
+  // 1. Limpeza de itens dinâmicos
+  const containers = ["magias-container", "talentos-container", "idiomas-container", "weapon-cards-container", "armor-cards-container", "item-cards-container", "desc-weapons-guia", "desc-armors-guia", "desc-items-guia"];
+  containers.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = "";
+  });
+
+  const info = d.info || {};
+
+  // 2. Ordem de carga dos seletores (Crucial para disparar os onchange)
+  document.getElementById("race_name").value = info.race_name || "";
+  atualizarSubracas();
+  document.getElementById("subrace_name").value = info.subrace_name || "";
+
+  document.getElementById("class_name").value = info.class_name || "";
+  document.getElementById("level_val").value = info.level_val || 1;
+  atualizarSubclasses();
+  document.getElementById("subclass_name").value = info.subclass_name || "";
+
+  document.getElementById("char_name").value = info.char_name || "";
+  document.getElementById("player_name").value = info.player_name || "";
+  document.getElementById("bg_name").value = info.bg_name || "";
+  document.getElementById("align").value = info.align || "";
+  if (info.char_image_url) document.getElementById("char_img").src = info.char_image_url;
+
+  // 3. Atributos base
+  for (let id in d.habilidades) {
+    const el = document.getElementById(id + "_score");
+    if (el) el.value = d.habilidades[id];
+  }
+
+  // 4. Perícias e Salvaguardas (Saves)
+  if (d.pericias) {
+    for (let safeId in d.pericias) {
+      const item = d.pericias[safeId];
+      const cb = document.getElementById(`check_${safeId}`);
+      if (cb) {
+        cb.dataset.profLevel = item.profLevel || "0";
+        cb.checked = (item.profLevel !== "0");
+        // Estilo visual da expertise
+        cb.style.outline = (item.profLevel === "2") ? "2px solid #d4af37" : "none";
+        cb.style.boxShadow = (item.profLevel === "2") ? "0 0 5px #d4af37" : "none";
+      }
+      const span = document.getElementById(`sk_${safeId}`);
+      if (span) span.dataset.manual = item.manual || "0";
+    }
+  }
+
+  if (d.saves) {
+    for (let id in d.saves) {
+      const item = d.saves[id];
+      // Seleciona o checkbox pelo atributo data-attr (ID do atributo)
+      const cb = document.querySelector(`.save-prof[data-attr="${id}"]`);
+      if (cb) cb.checked = item.prof;
+      const span = document.getElementById(`save_${id}`);
+      if (span) span.dataset.manual = item.manual || "0";
+    }
+  }
+
+  // 5. Moedas e Status
+  if (d.moedas) {
+    document.getElementById("coin_pc").value = d.moedas.pc || 0;
+    document.getElementById("coin_pp").value = d.moedas.pp || 0;
+    document.getElementById("coin_po").value = d.moedas.po || 0;
+    document.getElementById("coin_pl").value = d.moedas.pl || 0;
+  }
+  
+  const c = d.combate || {};
+  document.getElementById("hp_at").value = c.hp_at || "";
+  document.getElementById("hp_max").value = c.hp_max || "";
+  document.getElementById("ca_val").value = c.ca_val || 10;
+  document.getElementById("insp_val").value = c.insp_val || 0;
+  document.getElementById("speed_val").value = c.speed_val || "9m";
+  document.getElementById("hit_dice").value = c.hit_dice || "";
+
+  // 6. Restaurar Itens/Cards (Talentos, Idiomas, Magias)
+  if (d.listas && d.listas.idiomas) d.listas.idiomas.forEach(v => {
+    adicionarIdioma();
+    const sel = document.querySelector("#idiomas-container .idioma-row:last-child select");
+    if (sel) sel.value = v;
+  });
+  if (d.listas && d.listas.talentos) d.listas.talentos.forEach(v => {
+    adicionarTalento();
+    const sel = document.querySelector("#talentos-container .talento-row:last-child select");
+    if (sel) sel.value = v;
+  });
+  if (d.magia && d.magia.lista) d.magia.lista.forEach(v => {
+    adicionarMagia();
+    const sel = document.querySelector("#magias-container .magia-row:last-child select");
+    if (sel) sel.value = v;
+  });
+
+  // 7. Equipamento (Reuso da lógica de restauração)
+  // ... (mantenha sua função restaurarItens aqui dentro igual ao código anterior)
+
+  // 8. Textos e Antecedentes
+  const t = d.textos || {};
+  document.getElementById("t1").value = t.t1 || "";
+  document.getElementById("t1_custom").value = t.t1_c || "";
+  document.getElementById("t2").value = t.t2 || "";
+  document.getElementById("t2_custom").value = t.t2_c || "";
+  document.getElementById("t3").value = t.t3 || "";
+  document.getElementById("t3_custom").value = t.t3_c || "";
+  document.getElementById("t4").value = t.t4 || "";
+  document.getElementById("t4_custom").value = t.t4_c || "";
+  
+  ["t1", "t2", "t3", "t4"].forEach(id => {
+    const sel = document.getElementById(id);
+    if (sel) mostrarTextoCompleto(sel, id + "_display", id + "_custom");
+  });
+
+  document.getElementById("t5").value = t.t5 || "";
+  document.getElementById("equip_area").value = t.equip || "";
+  if (document.getElementById("notes_full_page")) document.getElementById("notes_full_page").value = t.notes || "";
+
+  // 9. Cálculos e Sincronização Final
+  carregarCaracteristicasAntecedente();
+  calcular(); 
+  atualizarSlotsMagia(); 
+
+  // Checkboxes de slots e recursos
+  const spellChecks = document.querySelectorAll("#spell-slots-tracker input[type='checkbox']");
+  if (d.magia && d.magia.slots_gastos) d.magia.slots_gastos.forEach((val, i) => { if (spellChecks[i]) spellChecks[i].checked = val; });
+
+  const resourceChecks = document.querySelectorAll("#class-resources-tracker input[type='checkbox']");
+  if (d.recursos_gastos) d.recursos_gastos.forEach((val, i) => { if (resourceChecks[i]) resourceChecks[i].checked = val; });
+
+  atualizarGuia();
+}
+  function obterObjetoFicha() {
+  const getV = (id, fallback = "") => {
+    const el = document.getElementById(id);
+    return el ? el.value : fallback;
+  };
+
+  return {
+    version: "6.5",
+    info: {
+      char_name: getV("char_name"),
+      player_name: getV("player_name"),
+      class_name: getV("class_name"),
+      subclass_name: getV("subclass_name"),
+      level_val: getV("level_val", "1"),
+      race_name: getV("race_name"),
+      subrace_name: getV("subrace_name"),
+      bg_name: getV("bg_name"),
+      align: getV("align"),
+      char_image_url: document.getElementById("char_img")?.src || ""
+    },
+    habilidades: attrs.reduce((acc, at) => { 
+      acc[at.id] = getV(at.id + "_score", "10"); 
+      return acc; 
+    }, {}),
+    // ADICIONADO: Salvaguardas (Saves)
+    saves: attrs.reduce((acc, at) => {
+      const cb = document.querySelector(`.save-prof[data-attr="${at.id}"]`);
+      const span = document.getElementById(`save_${at.id}`);
+      acc[at.id] = {
+        prof: cb ? cb.checked : false,
+        manual: span ? (span.dataset.manual || "0") : "0"
+      };
+      return acc;
+    }, {}),
+    // ADICIONADO: Perícias (Skills)
+    pericias: skills.reduce((acc, sk) => {
+      const safeId = sk.n.replace(/\s+/g, "");
+      const cb = document.getElementById(`check_${safeId}`);
+      const span = document.getElementById(`sk_${safeId}`);
+      acc[safeId] = {
+        profLevel: cb ? (cb.dataset.profLevel || "0") : "0",
+        manual: span ? (span.dataset.manual || "0") : "0"
+      };
+      return acc;
+    }, {}),
+    moedas: { 
+      pc: getV("coin_pc","0"), 
+      pp: getV("coin_pp","0"), 
+      po: getV("coin_po","0"), 
+      pl: getV("coin_pl","0") 
+    },
+    combate: {
+      hp_at: getV("hp_at"),
+      hp_max: getV("hp_max"),
+      ca_val: getV("ca_val", "10"),
+      insp_val: getV("insp_val", "0"),
+      speed_val: getV("speed_val", "9m"),
+      hit_dice: getV("hit_dice"),
+      passive_perc: getV("passive_perc"),
+      death_saves: Array.from(document.querySelectorAll('.circles input[type="checkbox"]')).slice(0, 6).map(cb => cb.checked || false)
+    },
+    listas: {
+      talentos: Array.from(document.querySelectorAll(".talento-select")).map(sel => sel.value || ""),
+      idiomas: Array.from(document.querySelectorAll(".idioma-row select")).map(sel => sel.value || ""),
+      armas: Array.from(document.querySelectorAll(".weapon-entry-guia")).map(el => ({
+        name: el.dataset.weaponName || "", html: el.innerHTML || "", attr: el.dataset.attr || "FOR", baseDmg: el.dataset.baseDmg || "1d4", magicBonus: el.dataset.magicBonus || "0"
+      })),
+      armaduras: Array.from(document.querySelectorAll(".armor-entry-guia")).map(el => ({ name: el.dataset.name || "", html: el.innerHTML || "" })),
+      itens: Array.from(document.querySelectorAll(".item-entry-guia")).map(el => ({ name: el.dataset.name || "", html: el.innerHTML || "" }))
+    },
+    magia: {
+      slots_gastos: Array.from(document.querySelectorAll("#spell-slots-tracker input[type='checkbox']")).map(cb => cb.checked || false),
+      lista: Array.from(document.querySelectorAll(".magia-select")).map(sel => sel.value || "")
+    },
+    textos: {
+      t1: getV("t1"), t1_c: getV("t1_custom"), t2: getV("t2"), t2_c: getV("t2_custom"),
+      t3: getV("t3"), t3_c: getV("t3_custom"), t4: getV("t4"), t4_c: getV("t4_custom"),
+      t5: getV("t5"), equip: getV("equip_area"), notes: getV("notes_full_page")
+    },
+    recursos_gastos: Array.from(document.querySelectorAll("#class-resources-tracker input[type='checkbox']")).map(cb => cb.checked || false),
+    combate_status: {
+      condicoes: Array.from(document.querySelectorAll(".condicao-check")).map(cb => cb.checked || false),
+      exaustao: getV("exaustao_val", "0"),
+      log: getV("combat_log")
+    }
+  };
+}
     function sincronizarTudoAutomatico() {
       const classe = document.getElementById("class_name").value;
       const subclasse = document.getElementById("subclass_name").value;
