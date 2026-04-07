@@ -1340,13 +1340,22 @@
           </div>
         </div>
         <div class="box-list">
-          <label>Pontos de Vida</label>
-          <div style="display: flex; gap: 5px; align-items: center">
-            <input type="number" id="hp_at" placeholder="Atuais" style="font-size: 18px; text-align: center" />
-            <span style="font-weight: bold">/</span>
-            <input type="number" id="hp_max" placeholder="Máx" style="text-align: center" />
-          </div>
-        </div>
+  <label>Pontos de Vida</label>
+  <div style="display: flex; gap: 5px; align-items: center">
+    <input type="number" id="hp_at" placeholder="Atuais" style="font-size: 18px; text-align: center" />
+    <span style="font-weight: bold">/</span>
+    
+    <input type="number" id="hp_max" placeholder="Máx" 
+           style="text-align: center" 
+           oninput="this.dataset.manual='true'" 
+           data-manual="false" />
+
+    <button type="button" onclick="document.getElementById('hp_max').dataset.manual='false'; calcular();" 
+            style="background:none; border:none; cursor:pointer; font-size:10px;" title="Resetar para cálculo automático">🔄</button>
+  </div>
+</div>
+
+        
         <div class="box-list">
           <label>Armaduras & Escudos</label>
           <div class="attr-control" style="margin-bottom: 10px;">
@@ -9583,6 +9592,10 @@
         if (temRobusto) hpExtraPorNivel += 2;
         totalHP += (hpExtraPorNivel * lvl);
         if (totalHP < lvl) totalHP = lvl;
+        const hpMaxInput = document.getElementById("hp_max");
+    if (hpMaxInput.dataset.manual !== "true") {
+        hpMaxInput.value = totalHP;
+    }
         document.getElementById("hp_max").value = totalHP;
         document.getElementById("hit_dice").value = lvl + "d" + valorDado;
       }
@@ -10561,7 +10574,11 @@
 
     const c = d.combate || {};
     document.getElementById("hp_at").value = c.hp_at || "";
-    document.getElementById("hp_max").value = c.hp_max || "";
+    const hpMaxEl = document.getElementById("hp_max");
+if (hpMaxEl) {
+    hpMaxEl.value = c.hp_max || ""; 
+    hpMaxEl.dataset.manual = c.hp_max_manual || "false"; 
+}
     document.getElementById("ca_val").value = c.ca_val || 10;
     document.getElementById("insp_val").value = c.insp_val || 0;
     document.getElementById("speed_val").value = c.speed_val || "9m";
@@ -10687,8 +10704,11 @@
           return acc;
         }, {}),
         moedas: { pc: getV("coin_pc", "0"), pp: getV("coin_pp", "0"), po: getV("coin_po", "0"), pl: getV("coin_pl", "0") },
-        combate: {
-          hp_at: getV("hp_at"), hp_max: getV("hp_max"), ca_val: getV("ca_val", "10"),
+       combate: {
+  hp_at: getV("hp_at"),
+  hp_max: getV("hp_max"),
+  hp_max_manual: document.getElementById("hp_max")?.dataset.manual || "false", // SALVA A TRAVA
+  ca_val: getV("ca_val", "10"),
           insp_val: getV("insp_val", "0"), speed_val: getV("speed_val", "9m"), hit_dice: getV("hit_dice"),
           passive_perc: getV("passive_perc"),
           death_saves: Array.from(document.querySelectorAll('.circles input[type="checkbox"]')).slice(0, 6).map(cb => cb.checked || false)
