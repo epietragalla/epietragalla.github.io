@@ -10629,8 +10629,27 @@
       if (d.magia && d.magia.slots_gastos) d.magia.slots_gastos.forEach((val, i) => { if (spellChecks[i]) spellChecks[i].checked = val; });
       const deathChecks = document.querySelectorAll('.circles input[type="checkbox"]');
       if (d.combate && d.combate.death_saves) d.combate.death_saves.forEach((val, i) => { if (deathChecks[i]) deathChecks[i].checked = val; });
+      const status = d.combate_status || {};
+      const condChecks = document.querySelectorAll(".condicao-check");
+
+      if (status.condicoes && Array.isArray(status.condicoes)) {
+        status.condicoes.forEach((marcado, i) => {
+          if (condChecks[i]) {
+            condChecks[i].checked = marcado;
+          }
+        });
+      }
+      const exInput = document.getElementById("exaustao_val");
+      if (exInput) {
+        exInput.value = status.exaustao || 0;
+      }
+      const logInput = document.getElementById("combat_log");
+      if (logInput) {
+        logInput.value = status.log || "";
+      }
       calcular();
       atualizarSlotsMagia();
+      atualizarRecursosClasse();
       atualizarGuia();
     }
     function obterObjetoFicha() {
