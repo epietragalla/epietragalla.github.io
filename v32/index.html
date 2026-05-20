@@ -8,1009 +8,9 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Cascadia+Code:wght@400;600;700&family=Hanken+Grotesk:wght@400;600;700;800&display=swap"
         rel="stylesheet">
-    <style>
-        :root {
-            /* Cores Dark Mode (Padrão) */
-            --bg-color: #0D0D0D;
-            --text-primary: #eee9df;
-            --text-secondary: #AAAAAA;
-            --accent-color: #FF007F;
-            /* Rosa Choque */
-            --accent-hover: #E60072;
-            --card-bg: #0d0d0d00;
-            --timeline-line: #333;
-            --tag-bg: rgba(255, 0, 127, 0.1);
-            --header-bg: rgba(13, 13, 13, 0.9);
-            /* Ligeiramente mais transparente */
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="script.js">
 
-            /* Variáveis de Animação */
-            --transition-main: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            --transition-smooth: all 0.2s ease-in-out;
-        }
-
-        .light-mode {
-            /* Cores Light Mode */
-            --bg-color: #eee9df;
-            --text-primary: #212529;
-            --text-secondary: #555555;
-            --accent-color: #694400;
-            /* Rosa um pouco mais saturado para legibilidade */
-            --accent-hover: #503400;
-            --card-bg: #eee9df00;
-            --timeline-line: #DDD;
-            --tag-bg: rgba(214, 0, 108, 0.1);
-            --header-bg: rgba(248, 249, 250, 0.9);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-        }
-
-        html {
-            scroll-behavior: smooth;
-            /* Rolagem suave nativa */
-        }
-
-        body {
-            font-family: "Hanken Grotesk", system-ui, sans-serif;
-            /* Define Cascadia Code como padrão para textos normais, parágrafos e botões */
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        a {
-            text-decoration: none;
-            color: inherit;
-            transition: var(--transition-smooth);
-        }
-
-        ul {
-            list-style: none;
-        }
-
-        h1,
-        h2,
-        h3,
-        h4 {
-            font-weight: 800;
-            margin-bottom: 1rem;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Tipografia Personalizada */
-        .display-large {
-            font-size: 7rem;
-            line-height: 0.9;
-        }
-
-        .text-pink {
-            color: var(--accent-color);
-        }
-
-        .text-impact {
-            font-size: 2.5rem;
-            line-height: 1.2;
-            text-transform: uppercase;
-        }
-
-        .section-title {
-            font-size: 1.2rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 2rem;
-        }
-
-        .big-number {
-            font-size: 3.5rem;
-            font-weight: 800;
-            color: var(--accent-color);
-        }
-
-        .small-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-        }
-
-        .small-desc {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            max-width: 250px;
-        }
-
-        /* Botões */
-        .btn {
-            display: inline-block;
-            padding: 12px 24px;
-            background-color: var(--accent-color);
-            color: white;
-            font-weight: 600;
-            border-radius: 4px;
-            cursor: pointer;
-            border: none;
-            transition: var(--transition-main);
-        }
-
-        .btn:hover {
-            background-color: var(--accent-hover);
-            transform: scale(1.05);
-            /* Microinteração: leve escala */
-            box-shadow: 0 5px 15px rgba(255, 0, 127, 0.3);
-        }
-
-        /* Tags */
-        .tag-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .tag {
-            background-color: var(--tag-bg);
-            color: var(--accent-color);
-            padding: 5px 12px;
-            border-radius: 50px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            transition: var(--transition-smooth);
-        }
-
-        .tag:hover {
-            background-color: var(--accent-color);
-            color: white;
-            transform: translateY(-2px);
-            /* Microinteração: sobe um pouco */
-        }
-
-        /* Navbar */
-        header {
-            position: sticky;
-            top: 0;
-            width: 100%;
-            background-color: var(--header-bg);
-            z-index: 100;
-            border-bottom: 1px solid transparent;
-            transition: var(--transition-main);
-            backdrop-filter: blur(10px);
-            /* Efeito de desfoque */
-        }
-
-        /* Estado da navbar após o scroll */
-        header.scrolled {
-            border-bottom: 1px solid var(--timeline-line);
-            padding: 5px 0;
-        }
-
-        header.scrolled nav {
-            height: 60px;
-        }
-
-        nav {
-            display: flex;
-            justify-content: center;
-            /* Centraliza todo o bloco de links perfeitamente no meio do monitor */
-            align-items: center;
-            height: 70px;
-            transition: var(--transition-main);
-            padding: 0 5%;
-            position: relative;
-            /* Permite que o logo se posicione de forma independente */
-        }
-
-        .logo {
-            position: absolute;
-            left: 5%;
-            /* Mantém o logo fixado no canto esquerdo, alinhado com o recuo da página */
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--accent-color);
-            transition: var(--transition-smooth);
-        }
-
-        .logo:hover {
-            transform: scale(1.1);
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 30px;
-            align-items: center;
-        }
-
-        .nav-links a {
-            color: var(--text-secondary);
-            font-weight: 600;
-            position: relative;
-        }
-
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -5px;
-            left: 0;
-            background-color: var(--accent-color);
-            transition: var(--transition-smooth);
-        }
-
-        .nav-links a:hover {
-            color: var(--text-primary);
-        }
-
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-
-        .nav-btn {
-            border: 1px solid var(--accent-color);
-            color: var(--accent-color);
-            padding: 8px 16px;
-            border-radius: 50px;
-        }
-
-        .nav-btn:hover {
-            background-color: var(--accent-color);
-            color: white;
-        }
-
-        .theme-toggle {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            width: 24px;
-            /* Define uma área quadrada perfeita para o ícone */
-            height: 24px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
-            margin-right: 20px;
-            /* Margem ajustada para espaçar do botão "Vamos conversar" */
-            transition: var(--transition-smooth);
-        }
-
-        .theme-toggle:hover {
-            color: var(--text-primary);
-            transform: rotate(30deg);
-            /* Mantém sua microinteração charmosa de rotação */
-        }
-
-        /* Configuração do vetor interno do ícone */
-        .theme-toggle svg {
-            width: 20px;
-            height: 20px;
-            fill: none;
-            /* Deixa o interior transparente */
-            stroke: currentColor;
-            /* 👈 MÁGICA: Puxa a cor do texto padrão do tema atual */
-            stroke-width: 2;
-            /* Espessura da linha do ícone */
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        /* Hero Section */
-        /* Hero Section */
-        /* Hero Section */
-        .hero {
-            padding: 0;
-            position: relative;
-            height: calc(100vh - 70px);
-            /* Ocupa exatamente a tela inteira descontando os 70px do menu */
-            display: flex;
-            align-items: center;
-        }
-
-        .hero-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            padding: 0 5%;
-            height: 100%;
-            /* Ocupa exatamente a altura disponível do Hero pai */
-        }
-
-        .hero-content {
-            flex: 1;
-            max-width: 60%;
-            z-index: 2;
-            /* Garante que o conteúdo fique acima das formas de fundo */
-        }
-
-        .hero-name {
-            margin-bottom: 1rem;
-        }
-
-        .hero-summary {
-            color: var(--text-secondary);
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-        }
-
-        .hero-role-tag {
-            font-family: 'Cascadia Code', monospace;
-            /* O estilo monospace combina perfeitamente com digitação */
-            font-size: 1.1rem;
-            color: var(--accent-color);
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-
-        .cursor {
-            color: var(--accent-color);
-            font-weight: 100;
-            animation: blink 0.7s infinite;
-            /* Faz a barra vertical piscar continuamente */
-        }
-
-        @keyframes blink {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0;
-            }
-        }
-
-        .hero-image {
-            flex: none;
-            height: 95%;
-            /* Alterado para 95% do espaço do Hero: nunca mais vai estourar a tela */
-            aspect-ratio: 3.90/ 4;
-            max-width: 50%;
-            align-self: flex-end;
-
-
-            border-bottom: none;
-            /* Inclui o gradiente rosa sutil da esquerda para a direita sobreposto à sua foto */
-            background-image: url('imagens/portrait-estefano-light.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            z-index: 2;
-            transition: var(--transition-main);
-        }
-
-        .hero-image:hover {
-            transform: scale(1.02);
-            /* Reduzido o efeito de escala para não descolar tanto da base */
-            opacity: 0.5;
-            /* Torna a imagem levemente opaca (20% transparente) ao passar o mouse */
-
-        }
-
-        /* Fundo Geométrico com Paralaxe */
-        .parallax-shapes-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -2;
-            /* Atrás de tudo */
-            overflow: hidden;
-            pointer-events: none;
-            /* Não interfere nos cliques */
-        }
-
-        /* Estilo base para cada forma geométrica */
-        .p-shape {
-            position: absolute;
-            /* Gradiente sutil do rosa choque para uma opacidade baixa, criando volume */
-            background: linear-gradient(135deg, var(--accent-color) 0%, rgba(255, 0, 127, 0.15) 100%);
-            will-change: transform;
-            transition: background 0.3s;
-        }
-
-        .p-shape.square {
-            /* Quadrado regular (usa o background do pai) */
-        }
-
-        /* Atualizado para clip-path para poder receber o gradiente perfeitamente */
-        .p-shape.triangle {
-            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-        }
-
-        .p-shape.hexagon {
-            clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
-        }
-
-        /* Ajuste do gradiente para o light mode */
-        .light-mode .p-shape {
-            background: linear-gradient(135deg, var(--accent-color) 0%, rgba(214, 0, 108, 0.1) 100%);
-        }
-
-        /* Seção Sobre */
-        .sobre {
-            padding: 100px 0;
-            background-color: var(--card-bg);
-            position: relative;
-        }
-
-        .sobre-content {
-            display: flex;
-            gap: 60px;
-        }
-
-        .sobre-left {
-            flex: 1;
-        }
-
-        .sobre-right {
-            flex: 1;
-        }
-
-        .sobre-bio {
-            color: var(--text-secondary);
-            margin-bottom: 30px;
-        }
-
-        .metrics-grid {
-            display: flex;
-            gap: 40px;
-            margin-top: 50px;
-        }
-
-        .metric-item {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            transition: var(--transition-main);
-        }
-
-        .metric-item:hover {
-            transform: translateY(-5px);
-            /* Microinteração */
-        }
-
-        /* Seção Minha Carreira */
-        .carreira {
-            padding: 100px 0;
-        }
-
-        /* Carrossel de Logos - Simulado */
-        .logo-carousel {
-            overflow: hidden;
-            width: 100%;
-            margin-bottom: 80px;
-            position: relative;
-            mask-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 1) 80%, rgba(0, 0, 0, 0));
-            -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 1) 80%, rgba(0, 0, 0, 0));
-            padding: 15px 0; /* Espaço para o hover/zoom não cortar a imagem */
-        }
-
-        .logo-carousel-track {
-            display: flex;
-            /* REMOVIDO o gap daqui para corrigir o erro de cálculo do navegador */
-            animation: scrollLogos 20s linear infinite;
-            width: max-content;
-
-        }
-
-        .logo-item {
-            height: 70px;
-            width: auto;
-            object-fit: contain;
-            opacity: 0.6;
-            filter: invert(1) grayscale(100%);
-            margin-right: 80px;
-            transition: var(--transition-smooth);
-        }
-
-        .logo-item:hover {
-            opacity: 1;
-            filter: none;
-            transform: scale(1.08);
-        }
-@keyframes scrollLogos {
-            0% {
-                transform: translateX(0);
-            }
-            100% {
-                transform: translateX(-50%);
-            }
-        }
-        /* =========================================================================
-           SOBREPOSIÇÃO PARA O MODO CLARO (LIGHT MODE)
-           ========================================================================= */
-        .light-mode .logo-item {
-            opacity: 0.6;
-            /* No modo claro, precisamos desligar o 'invert' para as logos não sumirem no fundo branco,
-               mantendo apenas o seu efeito grayscale tradicional de antes. */
-            filter: grayscale(100%);
-        }
-
-        .light-mode .logo-item:hover {
-            opacity: 1;
-            filter: none;
-            /* Revela a cor original também no modo claro */
-        }
-
-        @keyframes scrollLogos {
-            0% {
-                transform: translateX(0);
-            }
-
-            100% {
-                transform: translateX(-50%);
-            }
-
-            /* Rola até a metade para o efeito infinito */
-        }
-
-        /* Timeline Vertical */
-        .timeline {
-            position: relative;
-            padding-left: 30px;
-        }
-
-        .timeline-line {
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 2px;
-            background-color: var(--timeline-line);
-            transform-origin: top;
-            /* Animação começa do topo */
-            transform: scaleY(0);
-            transition: transform 1s ease-out;
-        }
-
-        .timeline-item {
-            display: flex;
-            gap: 60px;
-            margin-bottom: 60px;
-            position: relative;
-        }
-
-        .timeline-marker {
-            position: absolute;
-            left: -38px;
-            top: 0;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background-color: var(--accent-color);
-            border: 4px solid var(--bg-color);
-            transform: scale(0);
-            transition: var(--transition-main);
-            transition-delay: 0.2s;
-            /* Atraso para alinhar com a animação da linha */
-        }
-
-        .timeline-left {
-            width: 25%;
-            transition: var(--transition-main);
-        }
-
-        .year-range {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--text-secondary);
-        }
-
-        .timeline-right {
-            flex: 1;
-            transition: var(--transition-main);
-        }
-
-        .company-name {
-            font-size: 1.8rem;
-            margin-bottom: 0.2rem;
-        }
-
-        .job-title {
-            color: var(--accent-color);
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-        }
-
-        .job-bio {
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-        }
-
-        .job-metrics {
-            display: flex;
-            gap: 30px;
-        }
-
-        .job-metric {
-            flex: 1;
-            transition: var(--transition-main);
-        }
-
-        .job-metric:hover {
-            transform: scale(1.05);
-            /* Microinteração */
-        }
-
-        /* Seção Cases */
-        .cases {
-            padding: 100px 0;
-            background-color: var(--card-bg);
-        }
-
-        .cases-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            /* Altera o grid para uma única coluna cheia */
-            gap: 45px;
-            /* Aumentamos um pouco o espaçamento vertical entre os cases */
-        }
-
-        .case-card {
-            border-radius: 8px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            cursor: pointer;
-            transition: var(--transition-main);
-            background-color: var(--bg-color);
-            /* Fundo do card */
-            transform: translateY(0);
-        }
-
-        .case-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            /* Microinteração mais perceptível */
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .case-image {
-            width: 100%;
-            aspect-ratio: 16/9;
-            background-color: #333;
-            background-size: cover;
-            background-position: center;
-            transition: var(--transition-main);
-        }
-
-        .case-card:hover .case-image {
-            transform: scale(1.05);
-            /* Efeito de zoom na imagem */
-        }
-
-        .case-text {
-            padding: 20px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .case-meta {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-bottom: 5px;
-        }
-
-        .case-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-            transition: var(--transition-smooth);
-        }
-
-        .case-card:hover .case-title {
-            color: var(--accent-color);
-        }
-
-        /* Seção O que faço */
-        .o-que-faco {
-            padding: 100px 0;
-        }
-
-        .o-que-faco-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            /* Define as 3 colunas para o desktop */
-            gap: 30px;
-        }
-
-        /* Seção O que acredito */
-        .acredito {
-            padding: 100px 0;
-        }
-
-        .acredito-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            /* Força o layout em exatamente 2 colunas no desktop */
-            gap: 30px;
-        }
-
-        .belief-box {
-            padding: 30px;
-            border: 2px solid var(--timeline-line);
-            border-radius: 8px;
-            transition: var(--transition-main);
-            transform: scale(1);
-        }
-
-        .belief-box:hover {
-            border-color: var(--accent-color);
-            background-color: rgba(255, 0, 127, 0.02);
-            /* Leve fundo no hover */
-            transform: scale(1.03);
-            /* Microinteração */
-            box-shadow: 0 10px 25px rgba(255, 0, 127, 0.1);
-        }
-
-        .belief-title {
-            font-size: 1.3rem;
-            color: var(--text-primary);
-            margin-bottom: 10px;
-            transition: var(--transition-smooth);
-        }
-
-        .belief-box:hover .belief-title {
-            color: var(--accent-color);
-        }
-
-        .belief-desc {
-            color: var(--text-secondary);
-            font-size: 1rem;
-        }
-
-        /* Seção Contato */
-        .contato {
-            padding: 100px 0;
-            background-color: var(--card-bg);
-            position: relative;
-        }
-
-        .contato-content {
-            display: flex;
-            gap: 60px;
-        }
-
-        .contato-left {
-            flex: 1;
-        }
-
-        .contato-title {
-            font-size: 6rem;
-            line-height: 5rem;
-        }
-
-        .contato-right {
-            flex: 1;
-        }
-
-        .contact-list {
-            margin-top: 20px;
-        }
-
-        .contact-item {
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: var(--transition-smooth);
-        }
-
-        .contact-item a {
-            color: var(--text-primary);
-            position: relative;
-        }
-
-        .contact-item a::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 1px;
-            bottom: -2px;
-            left: 0;
-            background-color: var(--accent-color);
-            transition: var(--transition-smooth);
-        }
-
-        .contact-item a:hover {
-            color: var(--accent-color);
-        }
-
-        .contact-item a:hover::after {
-            width: 100%;
-        }
-
-        /* Footer */
-        footer {
-            padding: 40px 0;
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            border-top: 1px solid var(--timeline-line);
-        }
-
-        /* === Animações de Scroll-into-View === */
-
-        /* Classe base para elementos ocultos que serão animados */
-        .animate-on-scroll {
-            opacity: 0;
-            transition: var(--transition-main);
-            will-change: transform, opacity;
-            /* Otimização de performance */
-        }
-
-        /* Fade Up */
-        .fade-up {
-            transform: translateY(30px);
-        }
-
-        /* Fade Left (para colunas da direita) */
-        .fade-left {
-            transform: translateX(30px);
-        }
-
-        /* Fade Right (para colunas da esquerda) */
-        .fade-right {
-            transform: translateX(-30px);
-        }
-
-        /* Classe ativa que aciona a animação (adicionada via JS) */
-        .is-visible {
-            opacity: 1;
-            transform: translate(0, 0);
-        }
-
-        /* Atrasos em grids e listas para efeito cascata */
-        .grid-cascade .is-visible:nth-child(1) {
-            transition-delay: 0.0s;
-        }
-
-        .grid-cascade .is-visible:nth-child(2) {
-            transition-delay: 0.1s;
-        }
-
-        .grid-cascade .is-visible:nth-child(3) {
-            transition-delay: 0.2s;
-        }
-
-        .grid-cascade .is-visible:nth-child(4) {
-            transition-delay: 0.3s;
-        }
-
-        .grid-cascade .is-visible:nth-child(5) {
-            transition-delay: 0.4s;
-        }
-
-        /* Estados ativos para timeline */
-        .timeline-active .timeline-line {
-            transform: scaleY(1);
-        }
-
-        .timeline-active .timeline-marker {
-            transform: scale(1);
-        }
-
-        /* Responsividade (Mobile-First) */
-        @media (max-width: 991px) {
-            .display-large {
-                font-size: 3rem;
-            }
-
-            .hero-container {
-                flex-direction: column-reverse;
-                text-align: center;
-                gap: 40px;
-            }
-
-            .hero-content {
-                max-width: 100%;
-            }
-
-            .hero-image {
-                max-width: 60%;
-            }
-
-            .sobre-content {
-                flex-direction: column;
-                gap: 40px;
-            }
-
-            .metrics-grid {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-
-            .timeline-item {
-                flex-direction: column;
-                gap: 20px;
-            }
-
-            .timeline-left {
-                width: 100%;
-                margin-bottom: 20px;
-            }
-
-            .job-metrics {
-                flex-direction: column;
-                gap: 20px;
-            }
-
-            .contato-content {
-                flex-direction: column;
-                gap: 40px;
-                text-align: center;
-            }
-
-            .nav-links {
-                display: none;
-                /* Simplicidade para mobile em arquivo único */
-            }
-
-            /* Desativa efeitos de paralaxe pesados em mobile */
-            .bg-shapes {
-                transform: none;
-            }
-
-            .acredito-grid {
-                grid-template-columns: 1fr;
-                /* Faz os blocos empilharem em 1 coluna única em celulares e tablets */
-            }
-
-            .o-que-faco-grid {
-                grid-template-columns: 1fr;
-                /* Faz os 3 blocos empilharem verticalmente em telas menores */
-            }
-        }
-
-        .nav-actions {
-            position: absolute;
-            right: 5%;
-            /* Fixa o bloco a 5% da borda direita do monitor */
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            /* Espaçamento ideal entre o botão e o ícone de tema */
-        }
-
-        /* Configuração da nova seta minimalista */
-        .contact-arrow {
-            width: 18px;
-            height: 18px;
-            fill: none;
-            stroke: var(--accent-color);
-            /* 👈 Puxa dinamicamente a cor de destaque de cada tema */
-            stroke-width: 2.5;
-            /* Espessura do traço da seta */
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            flex-shrink: 0;
-            /* Impede a seta de amassar em telas menores */
-            transition: var(--transition-smooth);
-        }
-
-        /* Microinteração: Quando o usuário passa o mouse no item, a seta desliza levemente para a direita */
-        .contact-item:hover .contact-arrow {
-            transform: translateX(5px);
-        }
-    </style>
 </head>
 
 <body id="body">
@@ -1019,11 +19,11 @@
         <nav>
             <a href="#" class="logo">epietragalla</a>
             <div class="nav-links">
-                <a href="#sobre">Sobre</a>
-                <a href="#o-que-faco">O que faço</a>
-                <a href="#carreira">Carreira</a>
-                <a href="#cases">Cases</a>
-                <a href="#acredito">O que acredito</a>
+                <a href="#sobre">sobre</a>
+                <a href="#o-que-faco">o que faço</a>
+                <a href="#carreira">minha jornada</a>
+                <a href="#cases">projetos</a>
+                <a href="#acredito">o que acredito</a>
             </div>
             <div class="nav-actions">
                 <button id="theme-toggle" class="theme-toggle">🌓</button>
@@ -1039,8 +39,7 @@
                 <div class="hero-content animate-on-scroll fade-up">
                     <p class="hero-role-tag"><span id="typing-text"></span><span class="cursor">|</span></p>
                     <h1 class="display-large hero-name">Estéfano Pietragalla</h1>
-                    <p class="hero-summary">Product Designer & UX Researcher focado em criar experiências que
-                        impulsionam resultados de negócio.</p>
+                    <p class="hero-summary">Construo soluções digitais baseadas em pesquisa com usuário aliando embasamento científico, estratégia e métricas de impacto. Já liderei frentes complexas de design e pesquisa em instituições como <strong class="text-pink">Banco do Brasil</strong>, <strong class="text-pink"> CNP Seguros Holding Brasil</strong> e <strong class="text-pink">Tribunal de Contas da União</strong>. Acredito que a maturidade de produto nasce de processos estruturados, alinhamentos claros e tomadas de decisão guiadas por dados realistas.</p>
 
                 </div>
                 <div class="hero-image animate-on-scroll fade-left"></div>
@@ -1048,71 +47,83 @@
         </section>
 
         <section id="sobre" class="sobre">
+            
             <div class="container sobre-content">
+                
                 <div class="sobre-left animate-on-scroll fade-right">
-                    <h2 class="text-pink text-impact">Impulsionando resultados através do design centrado no usuário.
+                    
+                    <h2 class="text-impact">Impulsionando resultados de negócio por meio de <strong class="text-pink">pesquisa aprofundada</strong> e <strong class="text-pink">métricas</strong>  baseadas no <strong class="text-pink">design centrado no usuário</strong>.
                     </h2>
                 </div>
                 <div class="sobre-right animate-on-scroll fade-left">
-                    <p class="sobre-bio">Com 6 anos de experiência, atuo na intersecção entre necessidades do usuário e
-                        objetivos de negócio. Especialista em UX Research e Product Design.</p>
-                    <p class="sobre-bio">Acredito na pesquisa baseada em dados e na prototipagem rápida para validar
-                        hipóteses e entregar valor.</p>
+                    <p class="sobre-bio">São mais de 8 anos construindo produtos digitais em ecossistemas de alta complexidade, em uma jornada que se consolidou na estruturação de processos de design e DesignOps no TCU, passou pelo mapeamento de jornadas na CNP Seguros e, hoje, se aprofunda em estratégias muito bem definidas em UX Research em frentes de experiência do usuário na Caixa Econômica Federal.</p>
+                    <p class="sobre-bio">Como especialista e líder em frentes de UX, guio processos de design estruturados e metodologias de pesquisa que conectam tecnologia, produto e negócio através de métricas de impacto reais. Utilizando minha bagagem em docência e mentoria, lidero o ciclo completo de experiência do usuário (End-to-End) para alinhar expectativas com lideranças e stakeholders, garantindo que o respeito rigoroso a cada etapa do processo, do Discovery à entrega, resulte em documentações e handoffs de alta precisão que elevam a maturidade  dos times e tornam o valor do design visível e mensurável para o negócio.</p>
 
-                    <h3 class="section-title" style="margin-top: 40px;">Minhas Competências</h3>
+                    <!-- <h3 class="section-title" style="margin-top: 40px;">Minhas Competências</h3> -->
                     <div class="tag-list grid-cascade">
+                         <span class="tag animate-on-scroll fade-up">Liderança</span>
+                        <span class="tag animate-on-scroll fade-up">Product Discovery</span>
                         <span class="tag animate-on-scroll fade-up">UX Research</span>
-                        <span class="tag animate-on-scroll fade-up">Product Design</span>
-                        <span class="tag animate-on-scroll fade-up">User Testing</span>
-                        <span class="tag animate-on-scroll fade-up">Interaction Design</span>
-                        <span class="tag animate-on-scroll fade-up">Visual Design</span>
-                        <span class="tag animate-on-scroll fade-up">Protoyping</span>
-                        <span class="tag animate-on-scroll fade-up">Design Systems</span>
-                        <span class="tag animate-on-scroll fade-up">Data-Driven Design</span>
-                        <span class="tag animate-on-scroll fade-up">Facilitation</span>
-                        <span class="tag animate-on-scroll fade-up">Leadership</span>
+                        
+                         <span class="tag animate-on-scroll fade-up">Design Centrado no Usuário</span>
+                        <span class="tag animate-on-scroll fade-up">Métricas de Sucesso & KPIs</span>
+                        
+                        <span class="tag animate-on-scroll fade-up">UX End-to-End</span>
+                        <span class="tag animate-on-scroll fade-up">Facilitação</span>
+                       
+                        <span class="tag animate-on-scroll fade-up">Design Baseado em Evidências</span>
                     </div>
 
-                    <div class="metrics-grid grid-cascade">
-                        <div class="metric-item animate-on-scroll fade-up">
-                            <span class="big-number">+200</span>
-                            <span class="small-title">Pesquisas</span>
-                            <span class="small-desc">Conduzidas com usuários e stakeholders.</span>
-                        </div>
-                        <div class="metric-item animate-on-scroll fade-up">
-                            <span class="big-number">+40</span>
-                            <span class="small-title">Projetos</span>
-                            <span class="small-desc">Lançados para produção.</span>
-                        </div>
-                        <div class="metric-item animate-on-scroll fade-up">
-                            <span class="big-number">6</span>
-                            <span class="small-title">Anos</span>
-                            <span class="small-desc">De experiência no mercado.</span>
-                        </div>
+                    
                     </div>
                 </div>
             </div>
         </section>
+<section class="metrics-section">
+    <div class="container"> <div class="metrics-grid grid-cascade">
+            
+            <div class="metric-item animate-on-scroll fade-up">
+                <span class="big-number">+150</span>
+                <span class="small-title text-pink">Pesquisas</span>
+                <span class="small-desc">conduzidas em todos esses anos</span>
+            </div>
+            
+            <div class="metric-item animate-on-scroll fade-up">
+                <span class="big-number ">+70</span>
+                <span class="small-title text-pink">Projetos</span>
+                <span class="small-desc">entregues ao longo da carreira*</span>
+            </div>
+            
+            <div class="metric-item animate-on-scroll fade-up">
+                <span class="big-number">+8</span>
+                <span class="small-title text-pink">Anos</span>
+                <span class="small-desc">liderando processos de pesquisa</span>
+            </div>
+
+        </div>
+    </div>
+</section>
+
         <section id="o-que-faco" class="o-que-faco container">
-            <h2 class="section-title animate-on-scroll fade-up">O que faço</h2>
+            <h2 class="section-title animate-on-scroll fade-up"><span class="text-pink">02 —</span> o que faço</h2>
             <div class="o-que-faco-grid grid-cascade">
 
                 <div class="belief-box animate-on-scroll fade-up">
-                    <h3 class="belief-title">Product Design</h3>
-                    <p class="belief-desc">Desenho de interfaces ponta a ponta, unindo usabilidade, estética e
-                        viabilidade técnica para solucionar problemas complexos e atingir objetivos de negócio.</p>
-                </div>
-
-                <div class="belief-box animate-on-scroll fade-up">
                     <h3 class="belief-title">UX Research</h3>
-                    <p class="belief-desc">Planejamento e condução de pesquisas qualitativas e quantitativas, testes de
-                        usabilidade e mapeamento de jornadas para embasar decisões em dados reais.</p>
+                    <p class="belief-desc">Analiso os comportamentos e necessidades dos usuários para gerar insights que orientem as decisões
+                  estratégicas de design e produto.</p>
                 </div>
 
                 <div class="belief-box animate-on-scroll fade-up">
-                    <h3 class="belief-title">Design Systems</h3>
-                    <p class="belief-desc">Construção e manutenção de bibliotecas de componentes escaláveis e
-                        consistentes, otimizando a passagem de bastão e o alinhamento com o time de engenharia.</p>
+                    <h3 class="belief-title">Product Design</h3>
+                    <p class="belief-desc">Crio soluções digitais centradas no usuário, combinando pesquisa, usabilidade e negócios para
+                  entregar produtos eficientes e relevantes</p>
+                </div>
+
+                <div class="belief-box animate-on-scroll fade-up">
+                    <h3 class="belief-title">DesignOps</h3>
+                    <p class="belief-desc">Organizo processos, padrões e ferramentas que otimizam operações de design, garantindo consistência e
+                  escalabilidade dos produtos.</p>
                 </div>
 
             </div>
@@ -1120,27 +131,50 @@
 
         <section id="carreira" class="carreira">
             <div class="container">
-                <h2 class="section-title animate-on-scroll fade-up">Minha Carreira</h2>
+                <h2 class="section-title animate-on-scroll fade-up"><span class="text-pink">03 —</span> minha jornada</h2>
+                <div class="titulo-metade-container animate-on-scroll fade-right">
+    <h2 class="titulo-metade">
+       Uma trajetória entre <br><span class="text-pink" style="font-style: italic;">startups, governo, seguros <br>e grandes bancos</span>.
+    </h2>
+</div>
             </div>
+            
 
             <div class="logo-carousel animate-on-scroll fade-up">
                 <div class="logo-carousel-track">
-                    <img src="imagens/logo-cdt.png" alt="Grupo Boticário" class="logo-item">
-                    <img src="imagens/logo-unb.png" alt="Area Débito" class="logo-item">
+                    <img src="imagens/logo-cdt.png" alt="CDT" class="logo-item">
+                    <img src="imagens/logo-unb.png" alt="UnB" class="logo-item">
                     <img src="imagens/logo-senac.png" alt="Wine.com.br" class="logo-item">
-                    <img src="imagens/logo-tcu.png" alt="Todo Mundo" class="logo-item">
-                    <img src="imagens/logo-capgemini.png" alt="Todo Mundo" class="logo-item">
-                    <img src="imagens/logo-mec.png" alt="Wine.com.br" class="logo-item">
-                    <img src="imagens/logo-unesco.png" alt="Wine.com.br" class="logo-item">
-                    <img src="imagens/logo-fnde.png" alt="Wine.com.br" class="logo-item">
-                    <img src="imagens/logo-cnp.png" alt="Grupo Boticário" class="logo-item">
-                    <img src="imagens/logo-senai.png" alt="Grupo Boticário" class="logo-item">
-                    <img src="imagens/logo-uxpa.png" alt="Grupo Boticário" class="logo-item">
-                    <img src="imagens/logo-cast.png" alt="Area Débito" class="logo-item">
-                    <img src="imagens/logo-bb.png" alt="Area Débito" class="logo-item">
-                    <img src="imagens/logo-rbcip.png" alt="Todo Mundo" class="logo-item">
-                    <img src="imagens/logo-ceub.png" alt="Todo Mundo" class="logo-item">
-                    <img src="imagens/logo-caixa.png" alt="Todo Mundo" class="logo-item">
+                    <img src="imagens/logo-tcu.png" alt="TCU" class="logo-item">
+                    <img src="imagens/logo-capgemini.png" alt="Capgemini" class="logo-item">
+                    <img src="imagens/logo-mec.png" alt="MEC" class="logo-item">
+                    <img src="imagens/logo-unesco.png" alt="Unesco" class="logo-item">
+                    <img src="imagens/logo-fnde.png" alt="FNDE" class="logo-item">
+                    <img src="imagens/logo-cnp.png" alt="CNP Seguros" class="logo-item">
+                    <img src="imagens/logo-senai.png" alt="Senai" class="logo-item">
+                    <img src="imagens/logo-uxpa.png" alt="UXPA" class="logo-item">
+                    <img src="imagens/logo-cast.png" alt="Cast Group" class="logo-item">
+                    <img src="imagens/logo-bb.png" alt="Banco do Brasil" class="logo-item">
+                    <img src="imagens/logo-rbcip.png" alt="RBCIP" class="logo-item">
+                    <img src="imagens/logo-ceub.png" alt="CEUB" class="logo-item">
+                    <img src="imagens/logo-caixa.png" alt="Caixa Econômica Federal" class="logo-item">
+
+                    <img src="imagens/logo-cdt.png" alt="CDT" class="logo-item">
+                    <img src="imagens/logo-unb.png" alt="UnB" class="logo-item">
+                    <img src="imagens/logo-senac.png" alt="Wine.com.br" class="logo-item">
+                    <img src="imagens/logo-tcu.png" alt="TCU" class="logo-item">
+                    <img src="imagens/logo-capgemini.png" alt="Capgemini" class="logo-item">
+                    <img src="imagens/logo-mec.png" alt="MEC" class="logo-item">
+                    <img src="imagens/logo-unesco.png" alt="Unesco" class="logo-item">
+                    <img src="imagens/logo-fnde.png" alt="FNDE" class="logo-item">
+                    <img src="imagens/logo-cnp.png" alt="CNP Seguros" class="logo-item">
+                    <img src="imagens/logo-senai.png" alt="Senai" class="logo-item">
+                    <img src="imagens/logo-uxpa.png" alt="UXPA" class="logo-item">
+                    <img src="imagens/logo-cast.png" alt="Cast Group" class="logo-item">
+                    <img src="imagens/logo-bb.png" alt="Banco do Brasil" class="logo-item">
+                    <img src="imagens/logo-rbcip.png" alt="RBCIP" class="logo-item">
+                    <img src="imagens/logo-ceub.png" alt="CEUB" class="logo-item">
+                    <img src="imagens/logo-caixa.png" alt="Caixa Econômica Federal" class="logo-item">
                 </div>
             </div>
 
@@ -1212,7 +246,12 @@
 
         <section id="cases" class="cases">
             <div class="container">
-                <h2 class="section-title animate-on-scroll fade-up">Cases Selecionados</h2>
+                <h2 class="section-title animate-on-scroll fade-up"><span class="text-pink">04 —</span>projetos</h2>
+                <div class="titulo-metade-container animate-on-scroll fade-right">
+    <h2 class="titulo-metade">
+       Decisões <br><span class="text-pink" style="font-style: italic;">que movem</span> o negócio.
+    </h2>
+</div>
                 <div class="cases-grid grid-cascade">
 
                     <a href="#" class="case-card animate-on-scroll fade-up">
@@ -1271,31 +310,35 @@
         </section>
 
         <section id="acredito" class="acredito container">
-            <h2 class="section-title animate-on-scroll fade-up">O que acredito</h2>
+            <h2 class="section-title animate-on-scroll fade-up"><span class="text-pink">05 — </span>o que acredito</h2>
+
+            <div class="contato-left animate-on-scroll fade-right">
+              
+            <div class="titulo-metade-container animate-on-scroll fade-right">
+    <h2 class="titulo-metade">
+       Manifesto — <br><span class="text-pink" style="font-style: italic;"> quatro pricípios</span> inegociáveis.
+    </h2>
+</div>
             <div class="acredito-grid grid-cascade">
 
                 <div class="belief-box animate-on-scroll fade-up">
-                    <h3 class="belief-title">Design Centrado no Usuário</h3>
-                    <p class="belief-desc">Ouvir e entender o usuário é a base de qualquer bom design. Empatia é nossa
-                        ferramenta mais poderosa.</p>
+                    <h3 class="belief-title">Design baseado em evidências e literatura</h3>
+                    <p class="belief-desc">Acredito que decisões técnicas seguras não nascem do subjetivismo, mas do poder do estudo e da literatura especializada. Utilizo o rigor acadêmico, consolidado em meu mestrado e docência, para embasar escolhas de UX, garantindo que cada solução tenha fundamento teórico e prático antes mesmo da execução.</p>
                 </div>
 
                 <div class="belief-box animate-on-scroll fade-up">
-                    <h3 class="belief-title">Decisões Baseadas em Dados</h3>
-                    <p class="belief-desc">A pesquisa e os dados quantitativos devem validar e guiar as decisões de
-                        design, não apenas a intuição.</p>
+                    <h3 class="belief-title">Decisões baseadas em dados</h3>
+                    <p class="belief-desc">Sem dados, o design torna-se apenas uma opinião subjetiva. Utilizo métricas de UX e análises quantitativas de comportamento para validar hipóteses e mensurar o impacto real de cada entrega no produto. Monitorar e interpretar esses indicadores é o que conecta o trabalho técnico do time diretamente aos KPIs e objetivos estratégicos do negócio, transformando esforço criativo em retorno financeiro e eficiência operacional mensurável.</p>
                 </div>
 
                 <div class="belief-box animate-on-scroll fade-up">
-                    <h3 class="belief-title">Iteração Rápida</h3>
-                    <p class="belief-desc">Falhar cedo para aprender cedo. Protótipos rápidos e feedback constante são
-                        cruciais.</p>
+                    <h3 class="belief-title">O poder da articulação e das conversas</h3>
+                    <p class="belief-desc">Nenhum produto sobrevive ao isolamento; acredito na construção de pontas através de conversas contínuas e alinhamentos organizados com lideranças, times técnicos e stakeholders. Manter todas as áreas falando a mesma língua e com expectativas combinadas é o que transforma ruído em clareza estratégica para o roadmap.</p>
                 </div>
 
                 <div class="belief-box animate-on-scroll fade-up">
-                    <h3 class="belief-title">Simplicidade e Clareza</h3>
-                    <p class="belief-desc">A complexidade deve ser gerenciada pelo design para entregar clareza e
-                        facilidade de uso para o usuário final.</p>
+                    <h3 class="belief-title">Processo de Design</h3>
+                    <p class="belief-desc">Acredito que o sucesso de um produto é o resultado direto do respeito ao processo de UX em todas as suas etapas: do Discovery à entrega. Quando respeitamos o tempo e a metodologia de cada fase, pesquisa, ideação, prototipação e testes de usabilidade, a tendência é a criação de soluções que resolvem problemas reais de forma sustentável.</p>
                 </div>
 
             </div>
@@ -1510,7 +553,7 @@
         }
         // === Efeito de Digitação (Typewriter Effect) ===
         // Sinta-se livre para alterar, adicionar ou remover cargos nesta lista abaixo:
-        const roles = ["Product Designer", "UX Researcher", "UX Lead", "Product Manager"];
+        const roles = ["UX Research Leader", "Product Designer Specialist",  "DesignOps Strategist", "Google UX Design Certified", "Master in Design"];
         let roleIndex = 0;
         let charIndex = 0;
         let isDeleting = false;
