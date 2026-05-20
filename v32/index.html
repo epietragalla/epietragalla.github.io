@@ -1,1 +1,1422 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estéfano Pietragalla - Product Design Portfolio</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cascadia+Code:wght@400;600;700&family=Hanken+Grotesk:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            /* Cores Dark Mode (Padrão) */
+            --bg-color: #0D0D0D;
+            --text-primary: #eee9df;
+            --text-secondary: #AAAAAA;
+            --accent-color: #FF007F;
+            /* Rosa Choque */
+            --accent-hover: #E60072;
+            --card-bg: #0d0d0d00;
+            --timeline-line: #333;
+            --tag-bg: rgba(255, 0, 127, 0.1);
+            --header-bg: rgba(13, 13, 13, 0.9);
+            /* Ligeiramente mais transparente */
+
+            /* Variáveis de Animação */
+            --transition-main: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            --transition-smooth: all 0.2s ease-in-out;
+        }
+
+        .light-mode {
+            /* Cores Light Mode */
+            --bg-color: #eee9df;
+            --text-primary: #212529;
+            --text-secondary: #555555;
+            --accent-color: #D6006C;
+            /* Rosa um pouco mais saturado para legibilidade */
+            --accent-hover: #BF0060;
+            --card-bg: #eee9df00;
+            --timeline-line: #DDD;
+            --tag-bg: rgba(214, 0, 108, 0.1);
+            --header-bg: rgba(248, 249, 250, 0.9);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            /* Rolagem suave nativa */
+        }
+
+        body {
+            font-family: "Hanken Grotesk", system-ui, sans-serif;
+            /* Define Cascadia Code como padrão para textos normais, parágrafos e botões */
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition-smooth);
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Tipografia Personalizada */
+        .display-large {
+            font-size: 7rem;
+            line-height: 0.9;
+        }
+
+        .text-pink {
+            color: var(--accent-color);
+        }
+
+        .text-impact {
+            font-size: 2.5rem;
+            line-height: 1.2;
+            text-transform: uppercase;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+        }
+
+        .big-number {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--accent-color);
+        }
+
+        .small-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .small-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            max-width: 250px;
+        }
+
+        /* Botões */
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: var(--accent-color);
+            color: white;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition-main);
+        }
+
+        .btn:hover {
+            background-color: var(--accent-hover);
+            transform: scale(1.05);
+            /* Microinteração: leve escala */
+            box-shadow: 0 5px 15px rgba(255, 0, 127, 0.3);
+        }
+
+        /* Tags */
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .tag {
+            background-color: var(--tag-bg);
+            color: var(--accent-color);
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            transition: var(--transition-smooth);
+        }
+
+        .tag:hover {
+            background-color: var(--accent-color);
+            color: white;
+            transform: translateY(-2px);
+            /* Microinteração: sobe um pouco */
+        }
+
+        /* Navbar */
+        header {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            background-color: var(--header-bg);
+            z-index: 100;
+            border-bottom: 1px solid transparent;
+            transition: var(--transition-main);
+            backdrop-filter: blur(10px);
+            /* Efeito de desfoque */
+        }
+
+        /* Estado da navbar após o scroll */
+        header.scrolled {
+            border-bottom: 1px solid var(--timeline-line);
+            padding: 5px 0;
+        }
+
+        header.scrolled nav {
+            height: 60px;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            /* Centraliza todo o bloco de links perfeitamente no meio do monitor */
+            align-items: center;
+            height: 70px;
+            transition: var(--transition-main);
+            padding: 0 5%;
+            position: relative;
+            /* Permite que o logo se posicione de forma independente */
+        }
+
+        .logo {
+            position: absolute;
+            left: 5%;
+            /* Mantém o logo fixado no canto esquerdo, alinhado com o recuo da página */
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--accent-color);
+            transition: var(--transition-smooth);
+        }
+
+        .logo:hover {
+            transform: scale(1.1);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            font-weight: 600;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: var(--accent-color);
+            transition: var(--transition-smooth);
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-btn {
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 8px 16px;
+            border-radius: 50px;
+        }
+
+        .nav-btn:hover {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.2rem;
+            margin-left: 20px;
+            transition: var(--transition-smooth);
+        }
+
+        .theme-toggle:hover {
+            color: var(--text-primary);
+            transform: rotate(30deg);
+            /* Microinteração: gira levemente */
+        }
+
+        /* Hero Section */
+        /* Hero Section */
+        /* Hero Section */
+        .hero {
+            padding: 0;
+            position: relative;
+            height: calc(100vh - 70px);
+            /* Ocupa exatamente a tela inteira descontando os 70px do menu */
+            display: flex;
+            align-items: center;
+        }
+
+        .hero-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 0 5%;
+            height: 100%;
+            /* Ocupa exatamente a altura disponível do Hero pai */
+        }
+
+        .hero-content {
+            flex: 1;
+            max-width: 60%;
+            z-index: 2;
+            /* Garante que o conteúdo fique acima das formas de fundo */
+        }
+
+        .hero-name {
+            margin-bottom: 1rem;
+        }
+
+        .hero-summary {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+.hero-role-tag {
+            font-family: 'Cascadia Code', monospace; /* O estilo monospace combina perfeitamente com digitação */
+            font-size: 1.1rem;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .cursor {
+            color: var(--accent-color);
+            font-weight: 100;
+            animation: blink 0.7s infinite; /* Faz a barra vertical piscar continuamente */
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .hero-image {
+            flex: none;
+            height: 95%;
+            /* Alterado para 95% do espaço do Hero: nunca mais vai estourar a tela */
+            aspect-ratio: 3.90/ 4;
+            max-width: 50%;
+            align-self: flex-end;
+
+
+            border-bottom: none;
+            /* Inclui o gradiente rosa sutil da esquerda para a direita sobreposto à sua foto */
+            background-image: url('imagens/portrait-estefano-light.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: 2;
+            transition: var(--transition-main);
+        }
+
+        .hero-image:hover {
+            transform: scale(1.02);
+            /* Reduzido o efeito de escala para não descolar tanto da base */
+            opacity: 0.5;
+            /* Torna a imagem levemente opaca (20% transparente) ao passar o mouse */
+
+        }
+
+        /* Fundo Geométrico com Paralaxe */
+        .parallax-shapes-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            /* Atrás de tudo */
+            overflow: hidden;
+            pointer-events: none;
+            /* Não interfere nos cliques */
+        }
+
+        /* Estilo base para cada forma geométrica */
+        .p-shape {
+            position: absolute;
+            /* Gradiente sutil do rosa choque para uma opacidade baixa, criando volume */
+            background: linear-gradient(135deg, var(--accent-color) 0%, rgba(255, 0, 127, 0.15) 100%);
+            will-change: transform;
+            transition: background 0.3s;
+        }
+
+        .p-shape.square {
+            /* Quadrado regular (usa o background do pai) */
+        }
+
+        /* Atualizado para clip-path para poder receber o gradiente perfeitamente */
+        .p-shape.triangle {
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+
+        .p-shape.hexagon {
+            clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+        }
+
+        /* Ajuste do gradiente para o light mode */
+        .light-mode .p-shape {
+            background: linear-gradient(135deg, var(--accent-color) 0%, rgba(214, 0, 108, 0.1) 100%);
+        }
+
+        /* Seção Sobre */
+        .sobre {
+            padding: 100px 0;
+            background-color: var(--card-bg);
+            position: relative;
+        }
+
+        .sobre-content {
+            display: flex;
+            gap: 60px;
+        }
+
+        .sobre-left {
+            flex: 1;
+        }
+
+        .sobre-right {
+            flex: 1;
+        }
+
+        .sobre-bio {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        .metrics-grid {
+            display: flex;
+            gap: 40px;
+            margin-top: 50px;
+        }
+
+        .metric-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            transition: var(--transition-main);
+        }
+
+        .metric-item:hover {
+            transform: translateY(-5px);
+            /* Microinteração */
+        }
+
+        /* Seção Minha Carreira */
+        .carreira {
+            padding: 100px 0;
+        }
+
+        /* Carrossel de Logos - Simulado */
+       .logo-carousel {
+            overflow: hidden;
+            width: 100%;
+            margin-bottom: 80px;
+            position: relative;
+            mask-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 1) 80%, rgba(0, 0, 0, 0));
+            padding: 15px 0; /* 👈 ADICIONADO: 15px de área de respiro para o efeito de zoom não cortar a imagem */
+        }
+
+       .logo-carousel-track {
+            display: flex;
+            /* REMOVIDO o gap daqui para corrigir o erro de cálculo do navegador */
+            animation: scrollLogos 20s linear infinite;
+            width: max-content;
+        }
+
+        .logo-item {
+            height: 70px; 
+            width: auto; 
+            object-fit: contain; 
+            opacity: 0.6; 
+            filter: grayscale(100%); 
+            margin-right: 80px; /* 👈 ADICIONADO: Substitui o gap. Agora a matemática do -50% fica perfeita e o loop infinito fica invisível! */
+            transition: var(--transition-smooth);
+        }
+
+        .logo-item:hover {
+            
+            opacity: 1; /* Recupera a opacidade total no hover */
+            filter: grayscale(0%); /* Devolve as cores originais da logo da empresa ao passar o mouse */
+            transform: scale(1.08); /* Microinteração: leve aproximação */
+        }
+
+        @keyframes scrollLogos {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+
+            /* Rola até a metade para o efeito infinito */
+        }
+
+        /* Timeline Vertical */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 2px;
+            background-color: var(--timeline-line);
+            transform-origin: top;
+            /* Animação começa do topo */
+            transform: scaleY(0);
+            transition: transform 1s ease-out;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 60px;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: -38px;
+            top: 0;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            border: 4px solid var(--bg-color);
+            transform: scale(0);
+            transition: var(--transition-main);
+            transition-delay: 0.2s;
+            /* Atraso para alinhar com a animação da linha */
+        }
+
+        .timeline-left {
+            width: 25%;
+            transition: var(--transition-main);
+        }
+
+        .year-range {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+
+        .timeline-right {
+            flex: 1;
+            transition: var(--transition-main);
+        }
+
+        .company-name {
+            font-size: 1.8rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .job-title {
+            color: var(--accent-color);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .job-bio {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .job-metrics {
+            display: flex;
+            gap: 30px;
+        }
+
+        .job-metric {
+            flex: 1;
+            transition: var(--transition-main);
+        }
+
+        .job-metric:hover {
+            transform: scale(1.05);
+            /* Microinteração */
+        }
+
+        /* Seção Cases */
+        .cases {
+            padding: 100px 0;
+            background-color: var(--card-bg);
+        }
+
+        .cases-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            /* Altera o grid para uma única coluna cheia */
+            gap: 45px;
+            /* Aumentamos um pouco o espaçamento vertical entre os cases */
+        }
+
+        .case-card {
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            transition: var(--transition-main);
+            background-color: var(--bg-color);
+            /* Fundo do card */
+            transform: translateY(0);
+        }
+
+        .case-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            /* Microinteração mais perceptível */
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .case-image {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background-color: #333;
+            background-size: cover;
+            background-position: center;
+            transition: var(--transition-main);
+        }
+
+        .case-card:hover .case-image {
+            transform: scale(1.05);
+            /* Efeito de zoom na imagem */
+        }
+
+        .case-text {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .case-meta {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .case-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            transition: var(--transition-smooth);
+        }
+
+        .case-card:hover .case-title {
+            color: var(--accent-color);
+        }
+/* Seção O que faço */
+        .o-que-faco {
+            padding: 100px 0;
+        }
+
+        .o-que-faco-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* Define as 3 colunas para o desktop */
+            gap: 30px;
+        }
+        /* Seção O que acredito */
+        .acredito {
+            padding: 100px 0;
+        }
+
+        .acredito-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            /* Força o layout em exatamente 2 colunas no desktop */
+            gap: 30px;
+        }
+
+        .belief-box {
+            padding: 30px;
+            border: 2px solid var(--timeline-line);
+            border-radius: 8px;
+            transition: var(--transition-main);
+            transform: scale(1);
+        }
+
+        .belief-box:hover {
+            border-color: var(--accent-color);
+            background-color: rgba(255, 0, 127, 0.02);
+            /* Leve fundo no hover */
+            transform: scale(1.03);
+            /* Microinteração */
+            box-shadow: 0 10px 25px rgba(255, 0, 127, 0.1);
+        }
+
+        .belief-title {
+            font-size: 1.3rem;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            transition: var(--transition-smooth);
+        }
+
+        .belief-box:hover .belief-title {
+            color: var(--accent-color);
+        }
+
+        .belief-desc {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        /* Seção Contato */
+        .contato {
+            padding: 100px 0;
+            background-color: var(--card-bg);
+            position: relative;
+        }
+
+        .contato-content {
+            display: flex;
+            gap: 60px;
+        }
+
+        .contato-left {
+            flex: 1;
+        }
+
+        .contato-title {
+            font-size: 3rem;
+        }
+
+        .contato-right {
+            flex: 1;
+        }
+
+        .contact-list {
+            margin-top: 20px;
+        }
+
+        .contact-item {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition-smooth);
+        }
+
+        .contact-item a {
+            color: var(--text-primary);
+            position: relative;
+        }
+
+        .contact-item a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 1px;
+            bottom: -2px;
+            left: 0;
+            background-color: var(--accent-color);
+            transition: var(--transition-smooth);
+        }
+
+        .contact-item a:hover {
+            color: var(--accent-color);
+        }
+
+        .contact-item a:hover::after {
+            width: 100%;
+        }
+
+        /* Footer */
+        footer {
+            padding: 40px 0;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--timeline-line);
+        }
+
+        /* === Animações de Scroll-into-View === */
+
+        /* Classe base para elementos ocultos que serão animados */
+        .animate-on-scroll {
+            opacity: 0;
+            transition: var(--transition-main);
+            will-change: transform, opacity;
+            /* Otimização de performance */
+        }
+
+        /* Fade Up */
+        .fade-up {
+            transform: translateY(30px);
+        }
+
+        /* Fade Left (para colunas da direita) */
+        .fade-left {
+            transform: translateX(30px);
+        }
+
+        /* Fade Right (para colunas da esquerda) */
+        .fade-right {
+            transform: translateX(-30px);
+        }
+
+        /* Classe ativa que aciona a animação (adicionada via JS) */
+        .is-visible {
+            opacity: 1;
+            transform: translate(0, 0);
+        }
+
+        /* Atrasos em grids e listas para efeito cascata */
+        .grid-cascade .is-visible:nth-child(1) {
+            transition-delay: 0.0s;
+        }
+
+        .grid-cascade .is-visible:nth-child(2) {
+            transition-delay: 0.1s;
+        }
+
+        .grid-cascade .is-visible:nth-child(3) {
+            transition-delay: 0.2s;
+        }
+
+        .grid-cascade .is-visible:nth-child(4) {
+            transition-delay: 0.3s;
+        }
+
+        .grid-cascade .is-visible:nth-child(5) {
+            transition-delay: 0.4s;
+        }
+
+        /* Estados ativos para timeline */
+        .timeline-active .timeline-line {
+            transform: scaleY(1);
+        }
+
+        .timeline-active .timeline-marker {
+            transform: scale(1);
+        }
+
+        /* Responsividade (Mobile-First) */
+        @media (max-width: 991px) {
+            .display-large {
+                font-size: 3rem;
+            }
+
+            .hero-container {
+                flex-direction: column-reverse;
+                text-align: center;
+                gap: 40px;
+            }
+
+            .hero-content {
+                max-width: 100%;
+            }
+
+            .hero-image {
+                max-width: 60%;
+            }
+
+            .sobre-content {
+                flex-direction: column;
+                gap: 40px;
+            }
+
+            .metrics-grid {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .timeline-item {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .timeline-left {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+
+            .job-metrics {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .contato-content {
+                flex-direction: column;
+                gap: 40px;
+                text-align: center;
+            }
+
+            .nav-links {
+                display: none;
+                /* Simplicidade para mobile em arquivo único */
+            }
+
+            /* Desativa efeitos de paralaxe pesados em mobile */
+            .bg-shapes {
+                transform: none;
+            }
+
+            .acredito-grid {
+                grid-template-columns: 1fr;
+                /* Faz os blocos empilharem em 1 coluna única em celulares e tablets */
+            }
+            .o-que-faco-grid {
+                grid-template-columns: 1fr; /* Faz os 3 blocos empilharem verticalmente em telas menores */
+            }
+        }
+
+        .nav-actions {
+            position: absolute;
+            right: 5%;
+            /* Fixa o bloco a 5% da borda direita do monitor */
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            /* Espaçamento ideal entre o botão e o ícone de tema */
+        }
+    </style>
+</head>
+
+<body id="body">
+
+    <header id="main-header">
+        <nav>
+            <a href="#" class="logo">epietragalla</a>
+            <div class="nav-links">
+                <a href="#sobre">Sobre</a>
+                <a href="#o-que-faco">O que faço</a>
+                <a href="#carreira">Carreira</a>
+                <a href="#cases">Cases</a>
+                <a href="#acredito">O que acredito</a>
+            </div>
+            <div class="nav-actions">
+                <button id="theme-toggle" class="theme-toggle">🌓</button>
+                 <a href="#contato" class="nav-btn">Vamos conversar</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero" class="hero">
+            <div id="parallax-shapes-container" class="parallax-shapes-container"></div>
+            <div class="hero-container">
+               <div class="hero-content animate-on-scroll fade-up">
+                    <p class="hero-role-tag"><span id="typing-text"></span><span class="cursor">|</span></p>
+                    <h1 class="display-large hero-name">Estéfano Pietragalla</h1>
+                    <p class="hero-summary">Product Designer & UX Researcher focado em criar experiências que
+                        impulsionam resultados de negócio.</p>
+                    
+                </div>
+                <div class="hero-image animate-on-scroll fade-left"></div>
+            </div>
+        </section>
+
+        <section id="sobre" class="sobre">
+            <div class="container sobre-content">
+                <div class="sobre-left animate-on-scroll fade-right">
+                    <h2 class="text-pink text-impact">Impulsionando resultados através do design centrado no usuário.
+                    </h2>
+                </div>
+                <div class="sobre-right animate-on-scroll fade-left">
+                    <p class="sobre-bio">Com 6 anos de experiência, atuo na intersecção entre necessidades do usuário e
+                        objetivos de negócio. Especialista em UX Research e Product Design.</p>
+                    <p class="sobre-bio">Acredito na pesquisa baseada em dados e na prototipagem rápida para validar
+                        hipóteses e entregar valor.</p>
+
+                    <h3 class="section-title" style="margin-top: 40px;">Minhas Competências</h3>
+                    <div class="tag-list grid-cascade">
+                        <span class="tag animate-on-scroll fade-up">UX Research</span>
+                        <span class="tag animate-on-scroll fade-up">Product Design</span>
+                        <span class="tag animate-on-scroll fade-up">User Testing</span>
+                        <span class="tag animate-on-scroll fade-up">Interaction Design</span>
+                        <span class="tag animate-on-scroll fade-up">Visual Design</span>
+                        <span class="tag animate-on-scroll fade-up">Protoyping</span>
+                        <span class="tag animate-on-scroll fade-up">Design Systems</span>
+                        <span class="tag animate-on-scroll fade-up">Data-Driven Design</span>
+                        <span class="tag animate-on-scroll fade-up">Facilitation</span>
+                        <span class="tag animate-on-scroll fade-up">Leadership</span>
+                    </div>
+
+                    <div class="metrics-grid grid-cascade">
+                        <div class="metric-item animate-on-scroll fade-up">
+                            <span class="big-number">+200</span>
+                            <span class="small-title">Pesquisas</span>
+                            <span class="small-desc">Conduzidas com usuários e stakeholders.</span>
+                        </div>
+                        <div class="metric-item animate-on-scroll fade-up">
+                            <span class="big-number">+40</span>
+                            <span class="small-title">Projetos</span>
+                            <span class="small-desc">Lançados para produção.</span>
+                        </div>
+                        <div class="metric-item animate-on-scroll fade-up">
+                            <span class="big-number">6</span>
+                            <span class="small-title">Anos</span>
+                            <span class="small-desc">De experiência no mercado.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="o-que-faco" class="o-que-faco container">
+            <h2 class="section-title animate-on-scroll fade-up">O que faço</h2>
+            <div class="o-que-faco-grid grid-cascade">
+
+                <div class="belief-box animate-on-scroll fade-up">
+                    <h3 class="belief-title">Product Design</h3>
+                    <p class="belief-desc">Desenho de interfaces ponta a ponta, unindo usabilidade, estética e viabilidade técnica para solucionar problemas complexos e atingir objetivos de negócio.</p>
+                </div>
+
+                <div class="belief-box animate-on-scroll fade-up">
+                    <h3 class="belief-title">UX Research</h3>
+                    <p class="belief-desc">Planejamento e condução de pesquisas qualitativas e quantitativas, testes de usabilidade e mapeamento de jornadas para embasar decisões em dados reais.</p>
+                </div>
+
+                <div class="belief-box animate-on-scroll fade-up">
+                    <h3 class="belief-title">Design Systems</h3>
+                    <p class="belief-desc">Construção e manutenção de bibliotecas de componentes escaláveis e consistentes, otimizando a passagem de bastão e o alinhamento com o time de engenharia.</p>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="carreira" class="carreira">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll fade-up">Minha Carreira</h2>
+            </div>
+
+           <div class="logo-carousel animate-on-scroll fade-up">
+                <div class="logo-carousel-track">
+                    <img src="imagens/logo-cdt.png" alt="Grupo Boticário" class="logo-item">
+                    <img src="imagens/logo-unb.png" alt="Area Débito" class="logo-item">
+                    <img src="imagens/logo-senac.png" alt="Wine.com.br" class="logo-item">
+                    <img src="imagens/logo-tcu.png" alt="Todo Mundo" class="logo-item">
+                    
+                    <img src="imagens/logo-cnp.png" alt="Grupo Boticário" class="logo-item">
+                    <img src="imagens/logo-bb.png" alt="Area Débito" class="logo-item">
+                    <img src="imagens/logo-fnde.png" alt="Wine.com.br" class="logo-item">
+                    <img src="imagens/logo-rbcip.png" alt="Todo Mundo" class="logo-item">
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="timeline" id="timeline-container">
+                    <div class="timeline-line"></div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-left animate-on-scroll fade-right">
+                            <span class="year-range">2021 — 2026</span>
+                            <div class="tag-list">
+                                <span class="tag">A/B Testing</span>
+                                <span class="tag">Design System</span>
+                                <span class="tag">Product Analytics</span>
+                            </div>
+                        </div>
+                        <div class="timeline-right animate-on-scroll fade-left">
+                            <h3 class="company-name">Grupo Boticário</h3>
+                            <p class="job-title">Senior Product Designer</p>
+                            <p class="job-bio">Liderei a equipe de design no desenvolvimento de novos fluxos de
+                                checkout, resultando em um aumento de conversão de 15%. Responsável pela manutenção do
+                                design system.</p>
+                            <p class="job-bio">Colaborei diretamente com PMs e engenheiros para definir a estratégia do
+                                produto e as prioridades do roadmap.</p>
+                            <div class="job-metrics">
+                                <div class="job-metric animate-on-scroll fade-up">
+                                    <span class="big-number">+15%</span>
+                                    <span class="small-title">Conversão</span>
+                                    <span class="small-desc">Aumento no checkout.</span>
+                                </div>
+                                <div class="job-metric animate-on-scroll fade-up">
+                                    <span class="big-number">+20%</span>
+                                    <span class="small-title">Retenção</span>
+                                    <span class="small-desc">De usuários recorrentes.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-left animate-on-scroll fade-right">
+                            <span class="year-range">2019 — 2021</span>
+                            <div class="tag-list">
+                                <span class="tag">User Interviews</span>
+                                <span class="tag">Figma</span>
+                                <span class="tag">Interaction Design</span>
+                            </div>
+                        </div>
+                        <div class="timeline-right animate-on-scroll fade-left">
+                            <h3 class="company-name">Wine.com.br</h3>
+                            <p class="job-title">Mid-level Product Designer</p>
+                            <p class="job-bio">Responsável pela redefinição do fluxo de assinatura do clube de vinhos,
+                                simplificando a jornada do usuário e reduzindo o atrito.</p>
+                            <div class="job-metrics">
+                                <div class="job-metric animate-on-scroll fade-up">
+                                    <span class="big-number">-30%</span>
+                                    <span class="small-title">Drop-off Rate</span>
+                                    <span class="small-desc">Na página de pagamento.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section id="cases" class="cases">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll fade-up">Cases Selecionados</h2>
+                <div class="cases-grid grid-cascade">
+
+                    <a href="#" class="case-card animate-on-scroll fade-up">
+                        <div class="case-image"
+                            style="background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22400%22%20height%3D%22225%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23222%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-size%3D%2230%22%20text-anchor%3D%22middle%22%20fill%3D%22%23555%22%3ECase%201%3C%2Ftext%3E%3C%2Fsvg%3E');">
+                        </div>
+                        <div class="case-text">
+                            <div>
+                                <span class="case-meta">Dez 2023 · Product Designer</span>
+                                <h3 class="case-title">Redesenho do Checkout E-commerce</h3>
+                            </div>
+                            <div class="tag-list" style="margin-top: 10px;">
+                                <span class="tag">UX Research</span>
+                                <span class="tag">Conversion Rate</span>
+                                <span class="tag">UI</span>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="#" class="case-card animate-on-scroll fade-up">
+                        <div class="case-image"
+                            style="background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22400%22%20height%3D%22225%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23222%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-size%3D%2230%22%20text-anchor%3D%22middle%22%20fill%3D%22%23555%22%3ECase%202%3C%2Ftext%3E%3C%2Fsvg%3E');">
+                        </div>
+                        <div class="case-text">
+                            <div>
+                                <span class="case-meta">Jun 2023 · UX Lead</span>
+                                <h3 class="case-title">Plataforma de BI para Stakeholders</h3>
+                            </div>
+                            <div class="tag-list" style="margin-top: 10px;">
+                                <span class="tag">User Interviews</span>
+                                <span class="tag">Wireframing</span>
+                                <span class="tag">Data Viz</span>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="#" class="case-card animate-on-scroll fade-up">
+                        <div class="case-image"
+                            style="background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22400%22%20height%3D%22225%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23222%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-size%3D%2230%22%20text-anchor%3D%22middle%22%20fill%3D%22%23555%22%3ECase%203%3C%2Ftext%3E%3C%2Fsvg%3E');">
+                        </div>
+                        <div class="case-text">
+                            <div>
+                                <span class="case-meta">Mar 2022 · UX Researcher</span>
+                                <h3 class="case-title">User Testing para App Mobile</h3>
+                            </div>
+                            <div class="tag-list" style="margin-top: 10px;">
+                                <span class="tag">User Testing</span>
+                                <span class="tag">Moderated</span>
+                                <span class="tag">Prototypes</span>
+                            </div>
+                        </div>
+                    </a>
+
+                </div>
+            </div>
+        </section>
+
+        <section id="acredito" class="acredito container">
+            <h2 class="section-title animate-on-scroll fade-up">O que acredito</h2>
+            <div class="acredito-grid grid-cascade">
+
+                <div class="belief-box animate-on-scroll fade-up">
+                    <h3 class="belief-title">Design Centrado no Usuário</h3>
+                    <p class="belief-desc">Ouvir e entender o usuário é a base de qualquer bom design. Empatia é nossa
+                        ferramenta mais poderosa.</p>
+                </div>
+
+                <div class="belief-box animate-on-scroll fade-up">
+                    <h3 class="belief-title">Decisões Baseadas em Dados</h3>
+                    <p class="belief-desc">A pesquisa e os dados quantitativos devem validar e guiar as decisões de
+                        design, não apenas a intuição.</p>
+                </div>
+
+                <div class="belief-box animate-on-scroll fade-up">
+                    <h3 class="belief-title">Iteração Rápida</h3>
+                    <p class="belief-desc">Falhar cedo para aprender cedo. Protótipos rápidos e feedback constante são
+                        cruciais.</p>
+                </div>
+
+                <div class="belief-box animate-on-scroll fade-up">
+                    <h3 class="belief-title">Simplicidade e Clareza</h3>
+                    <p class="belief-desc">A complexidade deve ser gerenciada pelo design para entregar clareza e
+                        facilidade de uso para o usuário final.</p>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="contato" class="contato">
+            <div class="container contato-content">
+                <div class="contato-left animate-on-scroll fade-right">
+                    <h2 class="text-pink contato-title">Vamos conversar.</h2>
+                </div>
+                <div class="contato-right animate-on-scroll fade-left">
+                    <p class="small-title">Contato</p>
+                    <ul class="contact-list">
+                        <li class="contact-item animate-on-scroll fade-up">📧 <a
+                                href="mailto:contato@estefano.com">contato@estefano.com</a></li>
+                        <li class="contact-item animate-on-scroll fade-up">📞 <a href="tel:+5561999999999">(61)
+                                99999-9999</a></li>
+                        <li class="contact-item animate-on-scroll fade-up">🔗 <a href="#" target="_blank">LinkedIn</a>
+                        </li>
+                        <li class="contact-item animate-on-scroll fade-up">✍️ <a href="#" target="_blank">Medium</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="container animate-on-scroll fade-up">
+        <p>© 2026 Estéfano Pietragalla · Brasília, DF — Brasil</p>
+    </footer>
+
+    <script>
+        // === Alternância de Tema ===
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.getElementById('body');
+
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            body.classList.add(savedTheme);
+            updateToggleButton(savedTheme);
+        } else {
+            body.classList.add('dark-mode'); // Padrão
+            updateToggleButton('dark-mode');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            if (body.classList.contains('light-mode')) {
+                body.classList.remove('light-mode');
+                body.classList.add('dark-mode');
+                localStorage.setItem('theme', 'dark-mode');
+                updateToggleButton('dark-mode');
+            } else {
+                body.classList.remove('dark-mode');
+                body.classList.add('light-mode');
+                localStorage.setItem('theme', 'light-mode');
+                updateToggleButton('light-mode');
+            }
+        });
+
+        function updateToggleButton(theme) {
+            themeToggle.innerHTML = (theme === 'dark-mode') ? '☀️' : '🌙';
+        }
+
+        // === Efeito de Scroll no Header ===
+        const header = document.getElementById('main-header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // === Novas Formas Geométricas (Efeito Paralaxe Otimizado) ===
+        const shapeConfig = {
+            containerId: 'parallax-shapes-container',
+            count: 50,        // Mais formas
+            minSize: 30,      // Formas maiores
+            maxSize: 190,
+            minOpacity: 0.2,
+            maxOpacity: 0.12,
+            minSpeed: 0.05,
+            maxSpeed: 0.25,
+            types: ['square', 'triangle', 'hexagon'] // Apenas as solicitadas
+        };
+
+        const shapeContainer = document.getElementById(shapeConfig.containerId);
+        const shapes = [];
+        const random = (min, max) => Math.random() * (max - min) + min;
+
+        const initGeometricShapes = () => {
+            shapeContainer.innerHTML = '';
+            shapes.length = 0;
+
+            for (let i = 0; i < shapeConfig.count; i++) {
+                const type = shapeConfig.types[Math.floor(Math.random() * shapeConfig.types.length)];
+                const size = random(shapeConfig.minSize, shapeConfig.maxSize);
+                const opacity = random(shapeConfig.minOpacity, shapeConfig.maxOpacity);
+                const speed = random(shapeConfig.minSpeed, shapeConfig.maxSpeed);
+                const left = random(0, 95);
+                const initialTop = Math.random() < 0.65 ? random(0, 120) : random(120, 400);
+
+                const shapeEl = document.createElement('div');
+                shapeEl.className = `p-shape ${type}`;
+
+                // AGORA É IGUAL PARA TODOS: Define apenas largura e altura padrão
+                shapeEl.style.width = `${size}px`;
+                shapeEl.style.height = `${size}px`;
+
+                const randomRotation = Math.floor(random(0, 360));
+                shapeEl.style.opacity = opacity;
+                shapeEl.style.left = `${left}%`;
+                shapeEl.style.top = `${initialTop}%`;
+                shapeEl.style.transform = `rotate(${randomRotation}deg)`;
+
+                shapeContainer.appendChild(shapeEl);
+
+                shapes.push({
+                    el: shapeEl,
+                    speed: speed,
+                    initialTop: initialTop,
+                    rotation: randomRotation
+                });
+            }
+        };
+
+        const updateParallaxShapes = () => {
+            const scrollY = window.scrollY;
+            shapes.forEach(shape => {
+                const yOffset = scrollY * shape.speed;
+                shape.el.style.transform = `translate3d(0, ${-yOffset}px, 0) rotate(${shape.rotation}deg)`;
+            });
+        };
+
+        initGeometricShapes();
+        window.addEventListener('scroll', updateParallaxShapes);
+        window.addEventListener('resize', initGeometricShapes);
+
+        // === Animações de Scroll (Intersection Observer) ===
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.15
+        };
+
+        const observerCallback = (entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+
+                    if (entry.target.id === 'timeline-container') {
+                        entry.target.classList.add('timeline-active');
+                    }
+                }
+            });
+        };
+
+        const observer = new IntersectionObserver(observerCallback, observerOptions);
+        const elementsToAnimate = document.querySelectorAll('.animate-on-scroll');
+        const timelineContainer = document.getElementById('timeline-container');
+
+        elementsToAnimate.forEach(el => observer.observe(el));
+        if (timelineContainer) observer.observe(timelineContainer);
+
+        // === Configuração do Carrossel ===
+        const track = document.querySelector('.logo-carousel-track');
+        if (track && track.children.length < 10) {
+            track.innerHTML += track.innerHTML;
+        }
+// === Efeito de Digitação (Typewriter Effect) ===
+        // Sinta-se livre para alterar, adicionar ou remover cargos nesta lista abaixo:
+        const roles = ["Product Designer", "UX Researcher", "UX Lead", "Product Manager"];
+        let roleIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        const typingTextEl = document.getElementById("typing-text");
+
+        function typeEffect() {
+            const currentRole = roles[roleIndex];
+            
+            if (isDeleting) {
+                // Remove uma letra
+                typingTextEl.textContent = currentRole.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                // Adiciona uma letra
+                typingTextEl.textContent = currentRole.substring(0, charIndex + 1);
+                charIndex++;
+            }
+
+            // Define velocidades diferentes para digitar (mais lento) e deletar (mais rápido)
+            let typeSpeed = isDeleting ? 40 : 80;
+
+            // Se terminou de digitar a palavra inteira
+            if (!isDeleting && charIndex === currentRole.length) {
+                typeSpeed = 2000; // Fica parado exibindo o cargo por 2 segundos
+                isDeleting = true;
+            } 
+            // Se terminou de deletar a palavra inteira
+            else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                roleIndex = (roleIndex + 1) % roles.length; // Passa de forma infinita para o próximo cargo
+                typeSpeed = 400; // Pequena pausa antes de começar a digitar a nova palavra
+            }
+
+            setTimeout(typeEffect, typeSpeed);
+        }
+
+        // Inicia a função assim que a página termina de carregar
+        initGeometricShapes(); // (Apenas mantendo o gatilho das formas que já existia)
+        setTimeout(typeEffect, 800);
+    </script>
+</body>
+
+</html>
