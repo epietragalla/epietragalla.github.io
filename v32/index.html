@@ -33,9 +33,9 @@
             --bg-color: #eee9df;
             --text-primary: #212529;
             --text-secondary: #555555;
-            --accent-color: #D6006C;
+            --accent-color: #694400;
             /* Rosa um pouco mais saturado para legibilidade */
-            --accent-hover: #BF0060;
+            --accent-hover: #503400;
             --card-bg: #eee9df00;
             --timeline-line: #DDD;
             --tag-bg: rgba(214, 0, 108, 0.1);
@@ -272,15 +272,36 @@
             border: none;
             color: var(--text-secondary);
             cursor: pointer;
-            font-size: 1.2rem;
-            margin-left: 20px;
+            width: 24px;
+            /* Define uma área quadrada perfeita para o ícone */
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            margin-right: 20px;
+            /* Margem ajustada para espaçar do botão "Vamos conversar" */
             transition: var(--transition-smooth);
         }
 
         .theme-toggle:hover {
             color: var(--text-primary);
             transform: rotate(30deg);
-            /* Microinteração: gira levemente */
+            /* Mantém sua microinteração charmosa de rotação */
+        }
+
+        /* Configuração do vetor interno do ícone */
+        .theme-toggle svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            /* Deixa o interior transparente */
+            stroke: currentColor;
+            /* 👈 MÁGICA: Puxa a cor do texto padrão do tema atual */
+            stroke-width: 2;
+            /* Espessura da linha do ícone */
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
 
         /* Hero Section */
@@ -322,8 +343,9 @@
             margin-bottom: 2rem;
         }
 
-.hero-role-tag {
-            font-family: 'Cascadia Code', monospace; /* O estilo monospace combina perfeitamente com digitação */
+        .hero-role-tag {
+            font-family: 'Cascadia Code', monospace;
+            /* O estilo monospace combina perfeitamente com digitação */
             font-size: 1.1rem;
             color: var(--accent-color);
             text-transform: uppercase;
@@ -335,12 +357,20 @@
         .cursor {
             color: var(--accent-color);
             font-weight: 100;
-            animation: blink 0.7s infinite; /* Faz a barra vertical piscar continuamente */
+            animation: blink 0.7s infinite;
+            /* Faz a barra vertical piscar continuamente */
         }
 
         @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
         }
 
         .hero-image {
@@ -460,37 +490,61 @@
         }
 
         /* Carrossel de Logos - Simulado */
-       .logo-carousel {
+        .logo-carousel {
             overflow: hidden;
             width: 100%;
             margin-bottom: 80px;
             position: relative;
             mask-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 1) 80%, rgba(0, 0, 0, 0));
-            padding: 15px 0; /* 👈 ADICIONADO: 15px de área de respiro para o efeito de zoom não cortar a imagem */
+            padding: 15px 0;
+            /* 👈 ADICIONADO: 15px de área de respiro para o efeito de zoom não cortar a imagem */
         }
 
-       .logo-carousel-track {
+        .logo-carousel-track {
             display: flex;
             /* REMOVIDO o gap daqui para corrigir o erro de cálculo do navegador */
             animation: scrollLogos 20s linear infinite;
             width: max-content;
+
         }
 
         .logo-item {
-            height: 70px; 
-            width: auto; 
-            object-fit: contain; 
-            opacity: 0.6; 
-            filter: grayscale(100%); 
-            margin-right: 80px; /* 👈 ADICIONADO: Substitui o gap. Agora a matemática do -50% fica perfeita e o loop infinito fica invisível! */
+            height: 70px;
+            width: auto;
+            object-fit: contain;
+            opacity: 0.6;
+            /* A opacidade ajuda a suavizar os tons de cinza no fundo escuro */
+
+            /* AJUSTADO: Removemos o brightness(0). 
+               O invert(1) traz os tons escuros para o claro, e o grayscale(100%) remove as cores,
+               preservando todas as nuances, sombras e gradientes originais da marca. */
+            filter: invert(1) grayscale(100%);
+
+            margin-right: 80px;
             transition: var(--transition-smooth);
         }
 
         .logo-item:hover {
-            
-            opacity: 1; /* Recupera a opacidade total no hover */
-            filter: grayscale(0%); /* Devolve as cores originais da logo da empresa ao passar o mouse */
-            transform: scale(1.08); /* Microinteração: leve aproximação */
+            opacity: 1;
+            filter: none;
+            /* No hover, remove os filtros e revela a logo colorida e original */
+            transform: scale(1.08);
+        }
+
+        /* =========================================================================
+           SOBREPOSIÇÃO PARA O MODO CLARO (LIGHT MODE)
+           ========================================================================= */
+        .light-mode .logo-item {
+            opacity: 0.6;
+            /* No modo claro, precisamos desligar o 'invert' para as logos não sumirem no fundo branco,
+               mantendo apenas o seu efeito grayscale tradicional de antes. */
+            filter: grayscale(100%);
+        }
+
+        .light-mode .logo-item:hover {
+            opacity: 1;
+            filter: none;
+            /* Revela a cor original também no modo claro */
         }
 
         @keyframes scrollLogos {
@@ -664,16 +718,19 @@
         .case-card:hover .case-title {
             color: var(--accent-color);
         }
-/* Seção O que faço */
+
+        /* Seção O que faço */
         .o-que-faco {
             padding: 100px 0;
         }
 
         .o-que-faco-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* Define as 3 colunas para o desktop */
+            grid-template-columns: repeat(3, 1fr);
+            /* Define as 3 colunas para o desktop */
             gap: 30px;
         }
+
         /* Seção O que acredito */
         .acredito {
             padding: 100px 0;
@@ -736,7 +793,8 @@
         }
 
         .contato-title {
-            font-size: 3rem;
+            font-size: 6rem;
+            line-height: 5rem;
         }
 
         .contato-right {
@@ -915,8 +973,10 @@
                 grid-template-columns: 1fr;
                 /* Faz os blocos empilharem em 1 coluna única em celulares e tablets */
             }
+
             .o-que-faco-grid {
-                grid-template-columns: 1fr; /* Faz os 3 blocos empilharem verticalmente em telas menores */
+                grid-template-columns: 1fr;
+                /* Faz os 3 blocos empilharem verticalmente em telas menores */
             }
         }
 
@@ -928,6 +988,23 @@
             align-items: center;
             gap: 10px;
             /* Espaçamento ideal entre o botão e o ícone de tema */
+        }
+        /* Configuração da nova seta minimalista */
+        .contact-arrow {
+            width: 18px;
+            height: 18px;
+            fill: none;
+            stroke: var(--accent-color); /* 👈 Puxa dinamicamente a cor de destaque de cada tema */
+            stroke-width: 2.5; /* Espessura do traço da seta */
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            flex-shrink: 0; /* Impede a seta de amassar em telas menores */
+            transition: var(--transition-smooth);
+        }
+
+        /* Microinteração: Quando o usuário passa o mouse no item, a seta desliza levemente para a direita */
+        .contact-item:hover .contact-arrow {
+            transform: translateX(5px);
         }
     </style>
 </head>
@@ -946,7 +1023,7 @@
             </div>
             <div class="nav-actions">
                 <button id="theme-toggle" class="theme-toggle">🌓</button>
-                 <a href="#contato" class="nav-btn">Vamos conversar</a>
+                <a href="#contato" class="nav-btn">Vamos conversar</a>
             </div>
         </nav>
     </header>
@@ -955,12 +1032,12 @@
         <section id="hero" class="hero">
             <div id="parallax-shapes-container" class="parallax-shapes-container"></div>
             <div class="hero-container">
-               <div class="hero-content animate-on-scroll fade-up">
+                <div class="hero-content animate-on-scroll fade-up">
                     <p class="hero-role-tag"><span id="typing-text"></span><span class="cursor">|</span></p>
                     <h1 class="display-large hero-name">Estéfano Pietragalla</h1>
                     <p class="hero-summary">Product Designer & UX Researcher focado em criar experiências que
                         impulsionam resultados de negócio.</p>
-                    
+
                 </div>
                 <div class="hero-image animate-on-scroll fade-left"></div>
             </div>
@@ -1018,17 +1095,20 @@
 
                 <div class="belief-box animate-on-scroll fade-up">
                     <h3 class="belief-title">Product Design</h3>
-                    <p class="belief-desc">Desenho de interfaces ponta a ponta, unindo usabilidade, estética e viabilidade técnica para solucionar problemas complexos e atingir objetivos de negócio.</p>
+                    <p class="belief-desc">Desenho de interfaces ponta a ponta, unindo usabilidade, estética e
+                        viabilidade técnica para solucionar problemas complexos e atingir objetivos de negócio.</p>
                 </div>
 
                 <div class="belief-box animate-on-scroll fade-up">
                     <h3 class="belief-title">UX Research</h3>
-                    <p class="belief-desc">Planejamento e condução de pesquisas qualitativas e quantitativas, testes de usabilidade e mapeamento de jornadas para embasar decisões em dados reais.</p>
+                    <p class="belief-desc">Planejamento e condução de pesquisas qualitativas e quantitativas, testes de
+                        usabilidade e mapeamento de jornadas para embasar decisões em dados reais.</p>
                 </div>
 
                 <div class="belief-box animate-on-scroll fade-up">
                     <h3 class="belief-title">Design Systems</h3>
-                    <p class="belief-desc">Construção e manutenção de bibliotecas de componentes escaláveis e consistentes, otimizando a passagem de bastão e o alinhamento com o time de engenharia.</p>
+                    <p class="belief-desc">Construção e manutenção de bibliotecas de componentes escaláveis e
+                        consistentes, otimizando a passagem de bastão e o alinhamento com o time de engenharia.</p>
                 </div>
 
             </div>
@@ -1039,13 +1119,13 @@
                 <h2 class="section-title animate-on-scroll fade-up">Minha Carreira</h2>
             </div>
 
-           <div class="logo-carousel animate-on-scroll fade-up">
+            <div class="logo-carousel animate-on-scroll fade-up">
                 <div class="logo-carousel-track">
                     <img src="imagens/logo-cdt.png" alt="Grupo Boticário" class="logo-item">
                     <img src="imagens/logo-unb.png" alt="Area Débito" class="logo-item">
                     <img src="imagens/logo-senac.png" alt="Wine.com.br" class="logo-item">
                     <img src="imagens/logo-tcu.png" alt="Todo Mundo" class="logo-item">
-                    
+
                     <img src="imagens/logo-cnp.png" alt="Grupo Boticário" class="logo-item">
                     <img src="imagens/logo-bb.png" alt="Area Débito" class="logo-item">
                     <img src="imagens/logo-fnde.png" alt="Wine.com.br" class="logo-item">
@@ -1077,12 +1157,12 @@
                                 produto e as prioridades do roadmap.</p>
                             <div class="job-metrics">
                                 <div class="job-metric animate-on-scroll fade-up">
-                                    <span class="big-number">+15%</span>
+                                    <span class="big-number">+15%</span><br>
                                     <span class="small-title">Conversão</span>
                                     <span class="small-desc">Aumento no checkout.</span>
                                 </div>
                                 <div class="job-metric animate-on-scroll fade-up">
-                                    <span class="big-number">+20%</span>
+                                    <span class="big-number">+20%</span><br>
                                     <span class="small-title">Retenção</span>
                                     <span class="small-desc">De usuários recorrentes.</span>
                                 </div>
@@ -1107,7 +1187,7 @@
                                 simplificando a jornada do usuário e reduzindo o atrito.</p>
                             <div class="job-metrics">
                                 <div class="job-metric animate-on-scroll fade-up">
-                                    <span class="big-number">-30%</span>
+                                    <span class="big-number">-30%</span><br>
                                     <span class="small-title">Drop-off Rate</span>
                                     <span class="small-desc">Na página de pagamento.</span>
                                 </div>
@@ -1218,19 +1298,28 @@
                 <div class="contato-right animate-on-scroll fade-left">
                     <p class="small-title">Contato</p>
                     <ul class="contact-list">
-                        <li class="contact-item animate-on-scroll fade-up">📧 <a
-                                href="mailto:contato@estefano.com">contato@estefano.com</a></li>
-                        <li class="contact-item animate-on-scroll fade-up">📞 <a href="tel:+5561999999999">(61)
-                                99999-9999</a></li>
-                        <li class="contact-item animate-on-scroll fade-up">🔗 <a href="#" target="_blank">LinkedIn</a>
+                        <li class="contact-item animate-on-scroll fade-up">
+                            <svg class="contact-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                            <a href="mailto:epietragalla@gmail.com">epietragalla@gmail.com</a>
                         </li>
-                        <li class="contact-item animate-on-scroll fade-up">✍️ <a href="#" target="_blank">Medium</a>
+                        <li class="contact-item animate-on-scroll fade-up">
+                            <svg class="contact-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                            <a href="https://wa.me/5561981794586" target="_blank">(61) 98179-4586</a>
                         </li>
-                    </ul>
+                        <li class="contact-item animate-on-scroll fade-up">
+                            <svg class="contact-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                            <a href="https://www.linkedin.com/in/epietragalla/" target="_blank">LinkedIn</a>
+                        </li>
+                        <li class="contact-item animate-on-scroll fade-up">
+                            <svg class="contact-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                            <a href="https://epietragalla.medium.com/" target="_blank">Medium</a>
+                        </li>
                 </div>
             </div>
         </section>
     </main>
+
+
 
     <footer class="container animate-on-scroll fade-up">
         <p>© 2026 Estéfano Pietragalla · Brasília, DF — Brasil</p>
@@ -1265,7 +1354,29 @@
         });
 
         function updateToggleButton(theme) {
-            themeToggle.innerHTML = (theme === 'dark-mode') ? '☀️' : '🌙';
+            if (theme === 'dark-mode') {
+                // Se o tema atual for escuro, exibe o ícone de SOL (traço P&B) para mudar para o claro
+                themeToggle.innerHTML = `
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.22" x2="5.64" y2="17.78"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                `;
+            } else {
+                // Se o tema atual for claro, exibe o ícone de LUA (traço P&B) para mudar para o escuro
+                themeToggle.innerHTML = `
+                    <svg viewBox="0 0 24 24">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                `;
+            }
         }
 
         // === Efeito de Scroll no Header ===
@@ -1374,7 +1485,7 @@
         if (track && track.children.length < 10) {
             track.innerHTML += track.innerHTML;
         }
-// === Efeito de Digitação (Typewriter Effect) ===
+        // === Efeito de Digitação (Typewriter Effect) ===
         // Sinta-se livre para alterar, adicionar ou remover cargos nesta lista abaixo:
         const roles = ["Product Designer", "UX Researcher", "UX Lead", "Product Manager"];
         let roleIndex = 0;
@@ -1384,7 +1495,7 @@
 
         function typeEffect() {
             const currentRole = roles[roleIndex];
-            
+
             if (isDeleting) {
                 // Remove uma letra
                 typingTextEl.textContent = currentRole.substring(0, charIndex - 1);
@@ -1402,7 +1513,7 @@
             if (!isDeleting && charIndex === currentRole.length) {
                 typeSpeed = 2000; // Fica parado exibindo o cargo por 2 segundos
                 isDeleting = true;
-            } 
+            }
             // Se terminou de deletar a palavra inteira
             else if (isDeleting && charIndex === 0) {
                 isDeleting = false;
@@ -1412,6 +1523,7 @@
 
             setTimeout(typeEffect, typeSpeed);
         }
+        
 
         // Inicia a função assim que a página termina de carregar
         initGeometricShapes(); // (Apenas mantendo o gatilho das formas que já existia)
