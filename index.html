@@ -506,7 +506,7 @@
                 </div>
                 <div class="cases-grid grid-cascade">
                     <a href="portfolio-designopstcu.html" class="case-card animate-on-scroll fade-up">
-                        <div class="case-image" style="background-image: url('imagens/cover_designopstcu.jpg');">
+                        <div class="case-image" style="background-image: url('imagens/cover_designopstcu.webp');">
                         </div>
                         <div class="case-text">
                             <div>
@@ -521,7 +521,7 @@
                         </div>
                     </a>
                     <a href="portfolio-odonto.html" class="case-card animate-on-scroll fade-up">
-                        <div class="case-image" style="background-image: url('imagens/cover_odonto.jpg');">
+                        <div class="case-image" style="background-image: url('imagens/cover_odonto.webp');">
                         </div>
                         <div class="case-text">
                             <div>
@@ -536,7 +536,7 @@
                         </div>
                     </a>
                     <a href="portfolio-conectatcu.html" class="case-card animate-on-scroll fade-up">
-                        <div class="case-image" style="background-image: url('imagens/cover_conecta.jpg');">
+                        <div class="case-image" style="background-image: url('imagens/cover_conecta.webp');">
                         </div>
                         <div class="case-text">
                             <div>
@@ -655,60 +655,30 @@
             updateToggleButton('dark-mode');
         }
 
-      // === ATUALIZAÇÃO: INTERAÇÃO OUSADA DE TRANSIÇÃO DE TEMA ===
-        themeToggle.addEventListener('click', (e) => {
-            const isCurrentlyLight = body.classList.contains('light-mode');
-            const nextTheme = isCurrentlyLight ? 'dark-mode' : 'light-mode';
-            
-            // Pega as cores exatas do seu CSS para o fundo da esfera expansiva
-            const rippleBg = nextTheme === 'light-mode' ? '#eee9df' : '#0D0D0D';
+   themeToggle.addEventListener('click', () => {
+    // 1. Aplica o borrão na tela
+    body.classList.add('theme-blur');
 
-            // Cria o elemento da onda injetado dinamicamente
-            const ripple = document.createElement('div');
-            ripple.className = 'theme-ripple';
-            ripple.style.backgroundColor = rippleBg;
-            
-            // Captura a posição exata do clique do mouse
-            // Se o usuário usar o teclado, assume o centro do botão como fallback
-            const x = e.clientX || themeToggle.getBoundingClientRect().left + 12;
-            const y = e.clientY || themeToggle.getBoundingClientRect().top + 12;
-            
-            ripple.style.left = `${x}px`;
-            ripple.style.top = `${y}px`;
+    // 2. No ápice do borrão (250ms), faz a troca seca e instantânea de cores
+    setTimeout(() => {
+        if (body.classList.contains('light-mode')) {
+            body.classList.remove('light-mode');
+            body.classList.add('dark-mode');
+            localStorage.setItem('theme', 'dark-mode');
+            updateToggleButton('dark-mode');
+        } else {
+            body.classList.remove('dark-mode');
+            body.classList.add('light-mode');
+            localStorage.setItem('theme', 'light-mode');
+            updateToggleButton('light-mode');
+        }
+    }, 250);
 
-            // Calcula a escala diagonal necessária com base na resolução atual do monitor
-            const maxDim = Math.max(window.innerWidth, window.innerHeight) * 2.5;
-            ripple.style.setProperty('--ripple-scale', maxDim);
-
-            body.appendChild(ripple);
-
-            // Força o navegador a computar o estado inicial antes de disparar a animação
-            ripple.offsetWidth;
-
-            // Dispara a expansão geométrica
-            ripple.classList.add('active');
-
-            // Exatamente na metade da expansão (quando a tela estiver 100% coberta pela cor),
-            // trocamos a classe do body em background de forma imperceptível
-            setTimeout(() => {
-                if (isCurrentlyLight) {
-                    body.classList.remove('light-mode');
-                    body.classList.add('dark-mode');
-                    localStorage.setItem('theme', 'dark-mode');
-                    updateToggleButton('dark-mode');
-                } else {
-                    body.classList.remove('dark-mode');
-                    body.classList.add('light-mode');
-                    localStorage.setItem('theme', 'light-mode');
-                    updateToggleButton('light-mode');
-                }
-            }, 300); 
-
-            // Remove o elemento do HTML após o término completo da transição
-            setTimeout(() => {
-                ripple.remove();
-            }, 650);
-        });
+    // 3. Remove o borrão suavemente após a troca estar feita
+    setTimeout(() => {
+        body.classList.remove('theme-blur');
+    }, 500);
+});
 
         function updateToggleButton(theme) {
             if (theme === 'dark-mode') {
