@@ -247,7 +247,7 @@
                 </h2>
                 <div class="titulo-metade-container animate-on-scroll fade-right">
                     <h2 class="titulo-metade">
-                        Uma trajetória entre <br><span class="text-pink italic" >startups, governo,
+                        Uma trajetória entre <br><span class="text-pink italic">startups, governo,
                             seguros <br>e grandes bancos</span><span class="dot2">.</span>
                     </h2>
                 </div>
@@ -502,7 +502,8 @@
                 <h2 class="section-title animate-on-scroll fade-up"><span class="text-pink">04 —</span>projetos</h2>
                 <div class="titulo-metade-container animate-on-scroll fade-right">
                     <h2 class="titulo-metade">
-                        Decisões <br><span class="text-pink" class="italic">que movem</span> o negócio<span class="dot1">.</span>
+                        Decisões <br><span class="text-pink" class="italic">que movem</span> o negócio<span
+                            class="dot1">.</span>
                     </h2>
                 </div>
                 <div class="cases-grid grid-cascade">
@@ -725,9 +726,9 @@
 
         const shapeConfig = {
             containerId: 'parallax-shapes-container',
-            count: 50,
+            count: 30,
             minSize: 30,
-            maxSize: 190,
+            maxSize: 240,
             minOpacity: 0.2,
             maxOpacity: 0.12,
             minSpeed: 0.05,
@@ -738,42 +739,6 @@
         const shapeContainer = document.getElementById(shapeConfig.containerId);
         const shapes = [];
         const random = (min, max) => Math.random() * (max - min) + min;
-
-        const portfolioGatekeeper = {
-            // Defina aqui os IDs dos projetos, as senhas e as páginas reais ocultas
-            'caixa': {
-                password: '*=caixa26',
-                url: 'portfolio-caixa.html'
-            },
-
-        };
-
-        document.querySelectorAll('.case-card').forEach(card => {
-            card.addEventListener('click', (e) => {
-                const isProtected = card.getAttribute('data-protected') === 'true';
-
-                // Se o projeto for protegido, interceptamos o clique antes de abrir
-                if (isProtected) {
-                    e.preventDefault(); // Impede o link '#' de quebrar o scroll da página
-
-                    const caseId = card.getAttribute('data-id');
-                    const caseData = portfolioGatekeeper[caseId];
-
-                    if (!caseData) return;
-
-                    // Abre a janela nativa para inserção de senha
-                    const promptSenha = prompt("🔒 Este projeto contém dados confidenciais de negócio.\nPor favor, insira a senha de acesso:");
-
-                    // Validação simples
-                    if (promptSenha === caseData.password) {
-                        window.location.href = caseData.url; // Redireciona para o projeto oculto
-                    } else if (promptSenha !== null) {
-                        alert("❌ Senha incorreta. Caso precise avaliar este case, entre em contato solicitando a chave.");
-                    }
-                }
-                // Se data-protected="false", o navegador segue o href normal sem fazer nada!
-            });
-        });
 
         const initGeometricShapes = () => {
             shapeContainer.innerHTML = '';
@@ -809,6 +774,34 @@
                 });
             }
         };
+
+        const portfolioGatekeeper = {
+            'caixa': {
+                password: '*=caixa26',
+                url: 'portfolio-caixa.html'
+            },
+
+        };
+
+        document.querySelectorAll('.case-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                const isProtected = card.getAttribute('data-protected') === 'true';
+                if (isProtected) {
+                    e.preventDefault(); 
+                    const caseId = card.getAttribute('data-id');
+                    const caseData = portfolioGatekeeper[caseId];
+                    if (!caseData) return;
+                    const promptSenha = prompt("🔒 Este projeto contém dados confidenciais de negócio.\nPor favor, insira a senha de acesso:");
+                    if (promptSenha === caseData.password) {
+                        window.location.href = caseData.url; 
+                    } else if (promptSenha !== null) {
+                        alert("❌ Senha incorreta. Caso precise avaliar este case, entre em contato solicitando a chave.");
+                    }
+                }
+            });
+        });
+
+
 
         const updateParallaxShapes = () => {
             const scrollY = window.scrollY;
