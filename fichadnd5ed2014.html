@@ -1050,6 +1050,8 @@
       filter: blur(5px) grayscale(100%);
       opacity: 0.5;
     }
+    #guide_section_box .spell-detail-box { display: none !important; }
+  #grimoire_section_box .spell-detail-box { display: block !important; }
   </style>
 </head>
 
@@ -1505,8 +1507,7 @@
         </div>
       </section>
     </div>
-    <div class="guide-section">
-      <h2>Guia de Referência Rápida</h2>
+<div class="guide-section" id="guide_section_box" style="display: none;">      <h2>Guia de Referência Rápida</h2>
       <div class="guide-content">
         <div class="guide-item">
           <b id="title-race">Raça</b><span id="desc-race"></span>
@@ -1550,15 +1551,23 @@
         </div>
       </div>
     </div>
-    <div class="notes-section">
-      <h2>Anotações do Aventureiro</h2>
-      <textarea id="notes_full_page"
-        placeholder="Escreva aqui seu diário de campanha, detalhes de NPCs, locais visitados ou lembretes importantes..."></textarea>
-    </div>
-    <div
-      style="margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd; text-align: right; font-size: 10px; color: #888; font-style: italic; letter-spacing: 1px;">
-      Ficha Automatizada de D&D 5Ed 2014 -VERSÃO 6
-    </div>
+<div class="notes-section" id="notes_section_box" style="display: none;">
+  <h2>Anotações do Aventureiro</h2>
+  <textarea id="notes_full_page" placeholder="Escreva aqui seu diário de campanha, detalhes de NPCs, locais visitados ou lembretes importantes..."></textarea>
+</div>
+<div class="notes-section" id="grimoire_section_box" style="display: none;">
+  <h2>Grimório Detalhado</h2>
+  <div id="grimoire_content"></div>
+</div>
+<div style="display: flex !important; justify-content: center !important; gap: 10px !important; margin: 30px auto 20px auto !important; width: 100% !important; clear: both !important;">
+  <button type="button" id="btn_toggle_guide" onclick="toggleGuiaReferencia()" style="background: var(--dnd-red) !important; color: white !important; border: 1px solid #333 !important; padding: 10px 20px !important; border-radius: 4px !important; cursor: pointer !important; font-weight: bold !important; font-size: 12px !important; text-transform: uppercase !important;">Guia de Referencia</button>
+   <button type="button" id="btn_toggle_grimoire" onclick="toggleGrimorio()" style="background: var(--dnd-red) !important; color: white !important; border: 1px solid #333 !important; padding: 10px 20px !important; border-radius: 4px !important; cursor: pointer !important; font-weight: bold !important; font-size: 12px !important; text-transform: uppercase !important;">Grimório Detalhado</button>
+  <button type="button" id="btn_toggle_notes" onclick="toggleAnotacoes()" style="background: var(--dnd-red) !important; color: white !important; border: 1px solid #333 !important; padding: 10px 20px !important; border-radius: 4px !important; cursor: pointer !important; font-weight: bold !important; font-size: 12px !important; text-transform: uppercase !important;">Anotações</button>
+ 
+</div>
+<div style="margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd; text-align: right; font-size: 10px; color: #888; font-style: italic; letter-spacing: 1px;">
+  Ficha Automatizada de D&D 5Ed 2014 -VERSÃO 6
+</div>
   </div>
   <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
@@ -9022,11 +9031,9 @@
             }
           }
         });
-        if (magiasTextoHTML) {
-          progressionContainer.innerHTML += `
-            <hr style="border: 0; border-top: 3px solid var(--dnd-red); margin: 40px 0 20px 0;">
-            <h2 style="color: var(--dnd-red); text-transform: uppercase; margin-bottom: 20px; font-size: 18px; border-bottom: 1px solid var(--dnd-red);">Grimório Detalhado</h2>
-            ${magiasTextoHTML}`;
+        const grimoireContent = document.getElementById("grimoire_content");
+        if (grimoireContent) {
+          grimoireContent.innerHTML = magiasTextoHTML;
         }
       }
       atualizarTalentosEIdiomasNoGuia();
@@ -10719,6 +10726,101 @@
         }
       });
     }
+  function toggleGuiaReferencia() {
+  const mLayout = document.querySelector(".main-layout");
+  const hContainer = document.querySelector(".header-container");
+  const nSection = document.getElementById("notes_section_box");
+  const gSection = document.getElementById("guide_section_box");
+  const rSection = document.getElementById("grimoire_section_box");
+  const btnGuide = document.getElementById("btn_toggle_guide");
+  const btnNotes = document.getElementById("btn_toggle_notes");
+  const btnGrimoire = document.getElementById("btn_toggle_grimoire");
+
+  if (gSection.style.display === "none") {
+    gSection.style.display = "block";
+    mLayout.style.display = "none";
+    hContainer.style.display = "none";
+    nSection.style.display = "none";
+    rSection.style.display = "none";
+    btnGuide.innerText = "Ficha";
+    btnNotes.innerText = "Anotações";
+    btnGrimoire.innerText = "Grimório Detalhado";
+    btnGuide.style.display = "inline-block";
+    btnNotes.style.display = "inline-block";
+    btnGrimoire.style.display = "inline-block";
+  } else {
+    gSection.style.display = "none";
+    mLayout.style.display = "grid";
+    hContainer.style.display = "flex";
+    btnGuide.innerText = "Guia de Referencia";
+    btnNotes.innerText = "Anotações";
+    btnGrimoire.innerText = "Grimório Detalhado";
+  }
+}
+
+function toggleAnotacoes() {
+  const mLayout = document.querySelector(".main-layout");
+  const hContainer = document.querySelector(".header-container");
+  const nSection = document.getElementById("notes_section_box");
+  const gSection = document.getElementById("guide_section_box");
+  const rSection = document.getElementById("grimoire_section_box");
+  const btnGuide = document.getElementById("btn_toggle_guide");
+  const btnNotes = document.getElementById("btn_toggle_notes");
+  const btnGrimoire = document.getElementById("btn_toggle_grimoire");
+
+  if (nSection.style.display === "none") {
+    nSection.style.display = "block";
+    mLayout.style.display = "none";
+    hContainer.style.display = "none";
+    gSection.style.display = "none";
+    rSection.style.display = "none";
+    btnGuide.innerText = "Guia de Referencia";
+    btnNotes.innerText = "Ficha";
+    btnGrimoire.innerText = "Grimório Detalhado";
+    btnGuide.style.display = "inline-block";
+    btnNotes.style.display = "inline-block";
+    btnGrimoire.style.display = "inline-block";
+  } else {
+    nSection.style.display = "none";
+    mLayout.style.display = "grid";
+    hContainer.style.display = "flex";
+    btnGuide.innerText = "Guia de Referencia";
+    btnNotes.innerText = "Anotações";
+    btnGrimoire.innerText = "Grimório Detalhado";
+  }
+}
+
+function toggleGrimorio() {
+  const mLayout = document.querySelector(".main-layout");
+  const hContainer = document.querySelector(".header-container");
+  const nSection = document.getElementById("notes_section_box");
+  const gSection = document.getElementById("guide_section_box");
+  const rSection = document.getElementById("grimoire_section_box");
+  const btnGuide = document.getElementById("btn_toggle_guide");
+  const btnNotes = document.getElementById("btn_toggle_notes");
+  const btnGrimoire = document.getElementById("btn_toggle_grimoire");
+
+  if (rSection.style.display === "none") {
+    rSection.style.display = "block";
+    mLayout.style.display = "none";
+    hContainer.style.display = "none";
+    gSection.style.display = "none";
+    nSection.style.display = "none";
+    btnGuide.innerText = "Guia de Referencia";
+    btnNotes.innerText = "Anotações";
+    btnGrimoire.innerText = "Ficha";
+    btnGuide.style.display = "inline-block";
+    btnNotes.style.display = "inline-block";
+    btnGrimoire.style.display = "inline-block";
+  } else {
+    rSection.style.display = "none";
+    mLayout.style.display = "grid";
+    hContainer.style.display = "flex";
+    btnGuide.innerText = "Guia de Referencia";
+    btnNotes.innerText = "Anotações";
+    btnGrimoire.innerText = "Grimório Detalhado";
+  }
+}
     window.onload = () => {
       setup();
       carregarSeletorArmas();
