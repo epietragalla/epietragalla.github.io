@@ -1569,7 +1569,7 @@
  
 </div>
 <div style="margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd; text-align: right; font-size: 10px; color: #888; font-style: italic; letter-spacing: 1px;">
-  Ficha Automatizada de D&D 5Ed 2014 -VERSÃO 6.5
+  Ficha Automatizada de D&D 5Ed 2014 -VERSÃO 6.8
 </div>
   </div>
   <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
@@ -10374,8 +10374,56 @@
         document.getElementById("auth-modal").style.display = "none";
       } catch (e) { alert("Erro: " + e.message); }
     }
-    function deslogar() { auth.signOut(); }
-    const firebaseConfig = {
+async function deslogar() {
+      if (!confirm("Tem certeza que deseja sair de sua conta? A tela e a ficha atual serão limpas.")) {
+        return;
+      }
+      try {
+        await auth.signOut();
+        
+        const idsParaResetar = [
+          "char_name", "player_name", "level_val", "race_name", "subrace_name",
+          "class_name", "subclass_name", "bg_name", "align", "hp_at", "hp_max",
+          "insp_val", "ca_val", "speed_val", "hit_dice", "spell_save_dc"
+        ];
+        idsParaResetar.forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) {
+            if (id === "level_val") el.value = 1;
+            else if (id === "ca_val") el.value = 10;
+            else if (id === "spell_save_dc") el.value = 8;
+            else if (id === "insp_val") el.value = 0;
+            else el.value = "";
+          }
+        });
+        document.querySelectorAll("textarea").forEach((t) => (t.value = ""));
+        document.querySelectorAll('input[type="checkbox"]').forEach((c) => {
+          c.checked = false;
+          c.dataset.auto = "false";
+        });
+        document.getElementById("magias-container").innerHTML = "";
+        document.getElementById("talentos-container").innerHTML = "";
+        document.getElementById("idiomas-container").innerHTML = "";
+        document.getElementById("armor-cards-container").innerHTML = "";
+        document.getElementById("weapon-cards-container").innerHTML = "";
+        document.getElementById("item-cards-container").innerHTML = "";
+        document.getElementById("desc-weapons-guia").innerText = "---";
+        document.getElementById("desc-armors-guia").innerText = "---";
+        document.getElementById("desc-items-guia").innerText = "---";
+        if (document.getElementById("select_armadura_phb")) document.getElementById("select_armadura_phb").selectedIndex = 0;
+        if (document.getElementById("select_arma_phb")) document.getElementById("select_arma_phb").selectedIndex = 0;
+        if (document.getElementById("select_item_phb")) document.getElementById("select_item_phb").selectedIndex = 0;
+        document.querySelectorAll(".val-bonus").forEach((span) => (span.innerText = "+0"));
+        document.querySelectorAll(".mod").forEach((div) => (div.innerText = "+0"));
+        document.querySelectorAll(".condicao-check").forEach(c => c.checked = false);
+        document.getElementById("exaustao_val").value = 0;
+        document.getElementById("combat_log").value = "";
+        setup();
+        atualizarGuia();
+      } catch (e) {
+        alert("Erro ao sair: " + e.message);
+      }
+    }    const firebaseConfig = {
       apiKey: "AIzaSyCdkD7w5cuCzRPg_sZnOnQ71a7r_en5dJU",
       authDomain: "fichadnd5ed2014.firebaseapp.com",
       projectId: "fichadnd5ed2014",
@@ -10433,7 +10481,7 @@
         alert("Erro ao carregar dados: " + e.message);
       }
     }
-    async function salvarFichaNuvem(silencioso = false) {
+   async function salvarFichaNuvem(silencioso = false) {
       const user = auth.currentUser;
       if (!user) {
         if (!silencioso) alert("Você precisa estar logado para salvar na nuvem!");
