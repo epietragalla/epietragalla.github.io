@@ -834,7 +834,7 @@
 @media print {
   @page {
     size: A4;
-    margin: 10mm; /* Margem física da impressora */
+    margin: 20px; /* Define o limite máximo que a impressora/PDF pode avançar nas bordas */
   }
 
   /* 1. Limpeza de Interface */
@@ -842,7 +842,7 @@
   #dice-log-container, #btn-reabrir-log, .btn-save, 
   input[type="file"], .btn-container, .auth-container, 
   .overlay-icon, #dice-quick-rolls, .btn-container-inner,
-  #gallery-modal, .auth-modal, .arrow-btn {
+  #gallery-modal, .auth-modal, .arrow-btn, #menu-hamburguer-btn, #auto-save-badge {
     display: none !important;
   }
 
@@ -856,14 +856,14 @@
     max-width: none !important;
     width: auto !important;
     margin: 0 !important;
-    padding: 0 !important;
+    padding: 20px !important; /* Garante um respiro interno de 20px em todos os cantos do PDF */
     border: none !important;
     box-shadow: none !important;
     background: white !important;
     display: block !important;
   }
 
-  /* 2. Layout Principal (3 colunas no topo) */
+  /* 2. Layout Principal da Ficha (Página 1) */
   .main-layout {
     display: grid !important;
     grid-template-columns: 240px 1fr 240px !important;
@@ -872,16 +872,25 @@
     break-after: auto !important;
   }
 
-  /* 3. TRANSFORMAÇÃO EM CAIXAS (Boxes) */
-  
-  /* Box para cada item do Guia (Raça, Classe, Antecedente, Alinhamento, etc) */
+  /* 3. Força a exibição de TODAS as seções ocultas e joga cada uma para uma nova página */
+  #guide_section_box, 
+  #notes_section_box, 
+  #grimoire_section_box {
+    display: block !important; /* Ignora o display:none da tela */
+    break-before: page !important; /* Força início em nova página no PDF */
+    page-break-before: always !important; /* Suporte para navegadores antigos */
+    margin-top: 0 !important;
+    padding-top: 10px !important;
+  }
+
+  /* 4. Controle de Quebras Internas (Evita que caixas quebrem ao meio entre páginas) */
   .guide-item,
   .weapon-entry-guia, 
   .armor-entry-guia, 
   .item-entry-guia, 
   .spell-detail-box,
   #desc-progression > div {
-    break-inside: avoid !important; /* IMPEDE QUEBRA ENTRE PÁGINAS */
+    break-inside: avoid !important; 
     page-break-inside: avoid !important;
     border: 1px solid #000 !important;
     padding: 10px !important;
@@ -891,38 +900,36 @@
     display: block !important;
   }
 
-  /* Tratamento Especial para Idiomas e Talentos */
+  /* Tratamento de sub-divisões */
   #desc-languages > div,
   #desc-talentos-guia > div {
     break-inside: avoid !important;
+    page-break-inside: avoid !important;
     border: 1px solid #666 !important;
     padding: 8px !important;
     margin-bottom: 5px !important;
     border-radius: 3px !important;
   }
 
-  /* 4. Ajuste de Fluxo para aproveitar espaço */
-  /* O container do guia de referência pode usar colunas se houver muito espaço */
   .reference-container {
     display: block !important;
     width: 100% !important;
   }
 
-  /* 5. Estilo de Conteúdo */
   h2 {
     color: var(--dnd-red) !important;
     border-bottom: 2px solid var(--dnd-red) !important;
     margin-top: 20px !important;
     break-after: avoid !important;
+    page-break-after: avoid !important;
   }
 
-  /* Garante que o texto de atributos e cards de armas não quebrem */
   .attr-group-box, .box-list, .weapon-card {
     break-inside: avoid !important;
     page-break-inside: avoid !important;
   }
 
-  /* Expande as áreas de texto para mostrar tudo */
+  /* Expande as caixas de texto e diários automaticamente para mostrar todo o texto escrito */
   textarea {
     overflow: visible !important;
     height: auto !important;
@@ -936,7 +943,7 @@
     color: #000 !important;
   }
 
-  /* Força a impressão de cores e fundos */
+  /* Força a fidelidade de cores e fundos no motor de renderização do PDF */
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
