@@ -1618,7 +1618,7 @@
  
 </div>
 <div style="margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd; text-align: right; font-size: 10px; color: #888; font-style: italic; letter-spacing: 1px;">
-  Ficha Automatizada de D&D 5Ed 2014 -VERSÃO 7.1
+  Ficha Automatizada de D&D 5Ed 2014 -VERSÃO 7.2
 </div>
   </div>
   <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
@@ -10543,7 +10543,11 @@ async function deslogar() {
       if (silencioso && (!nomeChar || nomeChar === "Herói_Sem_Nome")) return;
       try {
         await db.collection("users").doc(user.uid).collection("fichas").doc(nomeChar).set(dadosFicha);
-        if (!silencioso) alert("Ficha de '" + nomeChar + "' salva com sucesso na nuvem!");
+        if (!silencioso) {
+          alert("Ficha de '" + nomeChar + "' salva com sucesso na nuvem!");
+        } else {
+          mostrarBadgeAutoSave();
+        }
       } catch (e) {
         if (!silencioso) alert("Erro ao salvar: " + e.message);
       }
@@ -10937,6 +10941,21 @@ function agendarAutoSave() {
   timeoutAutoSave = setTimeout(function() {
     salvarFichaNuvem(true);
   }, 2000);
+}
+function mostrarBadgeAutoSave() {
+  let badge = document.getElementById("auto-save-badge");
+  if (!badge) {
+    badge = document.createElement("div");
+    badge.id = "auto-save-badge";
+    badge.style.cssText = "position: fixed; top: 90px; left: 50%; transform: translateX(-50%); background: #2e7d32 !important; color: white !important; padding: 8px 16px; border-radius: 4px; z-index: 11000; font-weight: bold; font-size: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); transition: opacity 0.3s ease; opacity: 0; pointer-events: none; text-transform: uppercase; letter-spacing: 1px;";
+    badge.innerText = "☁️ Alterações salvas automaticamente";
+    document.body.appendChild(badge);
+  }
+  badge.style.opacity = "1";
+  clearTimeout(window.timeoutBadgeOcultar);
+  window.timeoutBadgeOcultar = setTimeout(() => {
+    badge.style.opacity = "0";
+  }, 3000);
 }
     window.onload = () => {
       setup();
