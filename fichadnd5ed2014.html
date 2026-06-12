@@ -10433,19 +10433,20 @@
         alert("Erro ao carregar dados: " + e.message);
       }
     }
-    async function salvarFichaNuvem() {
+    async function salvarFichaNuvem(silencioso = false) {
       const user = auth.currentUser;
       if (!user) {
-        alert("Você precisa estar logado para salvar na nuvem!");
+        if (!silencioso) alert("Você precisa estar logado para salvar na nuvem!");
         return;
       }
       const dadosFicha = obterObjetoFicha();
       const nomeChar = dadosFicha.info.char_name || "Herói_Sem_Nome";
+      if (silencioso && (!nomeChar || nomeChar === "Herói_Sem_Nome")) return;
       try {
         await db.collection("users").doc(user.uid).collection("fichas").doc(nomeChar).set(dadosFicha);
-        alert("Ficha de '" + nomeChar + "' salva com sucesso na nuvem!");
+        if (!silencioso) alert("Ficha de '" + nomeChar + "' salva com sucesso na nuvem!");
       } catch (e) {
-        alert("Erro ao salvar: " + e.message);
+        if (!silencioso) alert("Erro ao salvar: " + e.message);
       }
     }
     async function deletarFichaNuvem() {
@@ -10830,11 +10831,24 @@ function toggleGrimorio() {
     btnGrimoire.innerText = "Grimório Detalhado";
   }
 }
+var timeoutAutoSave;
+function agendarAutoSave() {
+  clearTimeout(timeoutAutoSave);
+  timeoutAutoSave = setTimeout(function() {
+    salvarFichaNuvem(true);
+  }, 2000);
+}
     window.onload = () => {
       setup();
       carregarSeletorArmas();
       carregarSeletorItens();
       carregarSeletorArmaduras();
+      
+      var alvoFicha = document.querySelector(".sheet");
+      if (alvoFicha) {
+        alvoFicha.addEventListener("input", agendarAutoSave);
+        alvoFicha.addEventListener("change", agendarAutoSave);
+      }
     };
   </script>
 </body>
