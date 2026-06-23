@@ -1865,7 +1865,7 @@
     </div>
     <div
       style="margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd; text-align: right; font-size: 10px; color: #888; font-style: italic; letter-spacing: 1px;">
-      Ficha Automatizada de D&D 5Ed 2014 -VERSÃO 7.7
+      Ficha Automatizada de D&D 5Ed 2014 -VERSÃO 8
     </div>
   </div>
   <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
@@ -2007,6 +2007,73 @@
         [4, 3, 3, 3, 2, 0, 0, 0, 0], // Nível 20
       ]
     };
+    const armadurasPHB_Lista = [
+      { valor: "[PHB] Acolchoada", texto: "Acolchoada (Leve) - CA 11", tipo: "leve" },
+      { valor: "[PHB] Couro", texto: "Couro (Leve) - CA 11", tipo: "leve" },
+      { valor: "[PHB] Couro Batido", texto: "Couro Batido (Leve) - CA 12", tipo: "leve" },
+      { valor: "[PHB] Gibão de Peles", texto: "Gibão de Peles (Média) - CA 12", tipo: "media" },
+      { valor: "[PHB] Camisão de Malha", texto: "Camisão de Malha (Média) - CA 13", tipo: "media" },
+      { valor: "[PHB] Brunea", texto: "Brunea (Média) - CA 14", tipo: "media" },
+      { valor: "[PHB] Peitoral", texto: "Peitoral (Média) - CA 14", tipo: "media" },
+      { valor: "[PHB] Meia-Armadura", texto: "Meia-Armadura (Média) - CA 15", tipo: "media" },
+      { valor: "[PHB] Cota de anéis", texto: "Cota de Anéis (Pesada) - CA 14", tipo: "pesada" },
+      { valor: "[PHB] Cota de malha", texto: "Cota de Malha (Pesada) - CA 16", tipo: "pesada" },
+      { valor: "[PHB] Cota de talas", texto: "Cota de Talas (Pesada) - CA 17", tipo: "pesada" },
+      { valor: "[PHB] Placas", texto: "Placas (Pesada) - CA 18", tipo: "pesada" },
+      { valor: "[PHB] Escudo", texto: "Escudo - CA +2", tipo: "escudo" }
+    ];
+    const proficienciasArmaduraDB = {
+      "Artífice (Artificer)": ["leve", "media", "escudo"],
+      "Bárbaro (Barbarian)": ["leve", "media", "escudo"],
+      "Bardo (Bard)": ["leve"],
+      "Bruxo (Warlock)": ["leve"],
+      "Clérigo (Cleric)": ["leve", "media", "escudo"],
+      "Druida (Druid)": ["leve", "media", "escudo"],
+      "Guerreiro (Fighter)": ["leve", "media", "pesada", "escudo"],
+      "Ladino (Rogue)": ["leve"],
+      "Monge (Monk)": [],
+      "Paladino (Paladin)": ["leve", "media", "pesada", "escudo"],
+      "Patrulheiro (Ranger)": ["leve", "media", "escudo"],
+      "Feiticeiro (Sorcerer)": [],
+      "Mago (Wizard)": []
+    };
+    function atualizarOpcoesArmadura() {
+      const classeSelecionada = document.getElementById("class_name").value;
+      const selectArmadura = document.getElementById("select_armadura_phb");
+      if (!selectArmadura) return;
+      const valorPreDefinido = selectArmadura.value;
+      selectArmadura.innerHTML = '<option value="">Selecione uma armadura</option>';
+      if (!classeSelecionada) {
+        armadurasPHB_Lista.forEach(arm => {
+          let opt = document.createElement("option");
+          opt.value = arm.valor;
+          opt.innerText = arm.texto;
+          selectArmadura.appendChild(opt);
+        });
+        selectArmadura.value = valorPreDefinido;
+        return;
+      }
+      const tiposPermitidos = proficienciasArmaduraDB[classeSelecionada] || [];
+
+      armadurasPHB_Lista.forEach(arm => {
+        if (tiposPermitidos.includes(arm.tipo)) {
+          let opt = document.createElement("option");
+          opt.value = arm.valor;
+          opt.innerText = arm.texto;
+          selectArmadura.appendChild(opt);
+        }
+      });
+
+      if (tiposPermitidos.length === 0) {
+        let opt = document.createElement("option");
+        opt.value = "";
+        opt.innerText = "Nenhuma proficiência de armadura por classe";
+        opt.disabled = true;
+        selectArmadura.appendChild(opt);
+      } else {
+        selectArmadura.value = valorPreDefinido;
+      }
+    }
     const magiasDB = {
       "Truques (Nível 0)": {
         Amigos: {
@@ -9864,7 +9931,7 @@
       const containerRoleplay = document.getElementById("coluna-roleplay-recursos");
       if (!containerAtributos) return;
       const avatarHTML = `
-    <div id="char-image-container" onclick="alterarImagemPersonagem()" title="Clique para alterar a imagem do personagem" style="margin-bottom: 20px;">
+    <div id="char-image-container" onclick="alterarImagemPersonagem()" title="Clique para alterar o endereço da imagem" style="margin-bottom: 15px;">
       <img id="char_img" src="${DEFAULT_AVATAR_SVG}" alt="Avatar">
       <div class="overlay-icon">
         <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="white">
@@ -10161,6 +10228,7 @@
       atualizarRecursosClasse();
       vincularCliquesRolagem();
       atualizarBlocoConjuracao();
+      atualizarOpcoesArmadura();
     }
     function ajustarCampo(id, delta) {
       const input = document.getElementById(id);
@@ -10173,34 +10241,27 @@
       }
     }
     function baixarFicha() {
-      const inputs = document.querySelectorAll('input:not([type="file"]):not([type="checkbox"]):not([type="radio"])');
-      inputs.forEach(input => {
-        input.setAttribute('value', input.value);
-      });
-      const checkboxes = document.querySelectorAll('input[type="checkbox"], input[type="radio"]');
-      checkboxes.forEach(cb => {
-        if (cb.checked) {
-          cb.setAttribute('checked', 'checked');
-        } else {
-          cb.removeAttribute('checked');
-        }
-      });
-      const selects = document.querySelectorAll('select');
-      selects.forEach(select => {
-        const options = select.querySelectorAll('option');
-        options.forEach(opt => {
-          if (opt.value === select.value) {
-            opt.setAttribute('selected', 'selected');
-          } else {
-            opt.removeAttribute('selected');
+      const antigoScript = document.getElementById("script-restauracao-html");
+      if (antigoScript) antigoScript.remove();
+      const dadosFicha = obterObjetoFicha();
+      const scriptRestauracao = `
+    <script id="script-restauracao-html">
+      window.addEventListener('load', () => {
+        // Aguarda 150ms para que o motor original de fábrica da ficha termine o setup inicial
+        setTimeout(() => {
+          const dadosSalvos = ${JSON.stringify(dadosFicha)};
+          
+          // Usa a sua própria função nativa para reconstruir dinamicamente a ficha inteira
+          if (typeof carregarDadosNaFicha === 'function') {
+            carregarDadosNaFicha(dadosSalvos);
           }
-        });
+        }, 150);
       });
-      const textareas = document.querySelectorAll('textarea');
-      textareas.forEach(ta => {
-        ta.textContent = ta.value;
-      });
+    <\/script>
+      `;
+      document.body.insertAdjacentHTML('beforeend', scriptRestauracao);
       const htmlCompleto = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+      document.getElementById("script-restauracao-html")?.remove();
       const nomePersonagem = document.getElementById("char_name")?.value.trim() || "Ficha_Personagem";
       const nomeArquivoLimpo = `${nomePersonagem.replace(/[^a-zA-Z0-9]/g, "_")}_fichadnd5e.html`;
       const blob = new Blob([htmlCompleto], { type: "text/html;charset=utf-8" });
@@ -10843,211 +10904,21 @@
       alert("Moedas convertidas com sucesso!");
     }
     function alterarImagemPersonagem() {
-      const img = document.getElementById("char_img");
-      const raca = document.getElementById("race_name").value;
-      const classe = document.getElementById("class_name").value;
-      let urlAtual = img.src.startsWith("data:image/svg+xml") ? "" : img.src;
-      const escolha = prompt(
-        "Escolha uma opção de Avatar:\n\n" +
-        "[1] Inserir URL manual de uma imagem na internet\n" +
-        "[2] Gerar Imagem Automática baseada na Raça + Classe\n\n" +
-        "Digite o número da sua opção:", "1"
-      );
-      if (escolha === null) return;
-      if (escolha.trim() === "1") {
-        const novaUrl = prompt("Insira a URL da imagem do seu personagem (ou deixe em branco para remover):", urlAtual);
-        if (novaUrl === null) return;
-        const limpa = novaUrl.trim();
-        img.src = limpa === "" ? DEFAULT_AVATAR_SVG : limpa;
-        if (typeof agendarAutoSave === "function") agendarAutoSave();
-      }
-      else if (escolha.trim() === "2") {
-        if (!raca || !classe) {
-          alert("Ei, aventureiro! Escolha a RAÇA e a CLASSE no topo da ficha primeiro para eu saber qual arte combina com seu personagem!");
-          return;
-        }
-        const chaveCombinada = `${raca}_${classe}`;
-        const repositorioAvatares = {
-          // ==========================================
-          // 1. ARTÍFICE (ARTIFICER)
-          // ==========================================
-          "Anão (Dwarf)_Artífice (Artificer)": "COLE_O_LINK_AQUI",
-          "Elfo (Elf)_Artífice (Artificer)": "COLE_O_LINK_AQUI",
-          "Genasi_Artífice (Artificer)": "COLE_O_LINK_AQUI",
-          "Halfling (Halfling)_Artífice (Artificer)": "COLE_O_LINK_AQUI",
-          "Humano (Human)_Artífice (Artificer)": "COLE_O_LINK_AQUI",
-          "Draconato (Dragonborn)_Artífice (Artificer)": "COLE_O_LINK_AQUI",
-          "Gnomo (Gnome)_Artífice (Artificer)": "COLE_O_LINK_AQUI",
-          "Meio-Elfo (Half-Elf)_Artífice (Artificer)": "COLE_O_LINK_AQUI",
-          "Meio-Orc (Half-Orc)_Artífice (Artificer)": "COLE_O_LINK_AQUI",
-          "Tiefling (Tiefling)_Artífice (Artificer)": "COLE_O_LINK_AQUI",
-          // ==========================================
-          // 2. BÁRBARO (BARBARIAN)
-          // ==========================================
-          "Anão (Dwarf)_Bárbaro (Barbarian)": "COLE_O_LINK_AQUI",
-          "Elfo (Elf)_Bárbaro (Barbarian)": "COLE_O_LINK_AQUI",
-          "Genasi_Bárbaro (Barbarian)": "COLE_O_LINK_AQUI",
-          "Halfling (Halfling)_Bárbaro (Barbarian)": "COLE_O_LINK_AQUI",
-          "Humano (Human)_Bárbaro (Barbarian)": "COLE_O_LINK_AQUI",
-          "Draconato (Dragonborn)_Bárbaro (Barbarian)": "COLE_O_LINK_AQUI",
-          "Gnomo (Gnome)_Bárbaro (Barbarian)": "COLE_O_LINK_AQUI",
-          "Meio-Elfo (Half-Elf)_Bárbaro (Barbarian)": "COLE_O_LINK_AQUI",
-          "Meio-Orc (Half-Orc)_Bárbaro (Barbarian)": "COLE_O_LINK_AQUI",
-          "Tiefling (Tiefling)_Bárbaro (Barbarian)": "COLE_O_LINK_AQUI",
-          // ==========================================
-          // 3. BARDO (BARD)
-          // ==========================================
-          "Anão (Dwarf)_Bardo (Bard)": "COLE_O_LINK_AQUI",
-          "Elfo (Elf)_Bardo (Bard)": "COLE_O_LINK_AQUI",
-          "Genasi_Bardo (Bard)": "COLE_O_LINK_AQUI",
-          "Halfling (Halfling)_Bardo (Bard)": "COLE_O_LINK_AQUI",
-          "Humano (Human)_Bardo (Bard)": "COLE_O_LINK_AQUI",
-          "Draconato (Dragonborn)_Bardo (Bard)": "COLE_O_LINK_AQUI",
-          "Gnomo (Gnome)_Bardo (Bard)": "COLE_O_LINK_AQUI",
-          "Meio-Elfo (Half-Elf)_Bardo (Bard)": "COLE_O_LINK_AQUI",
-          "Meio-Orc (Half-Orc)_Bardo (Bard)": "COLE_O_LINK_AQUI",
-          "Tiefling (Tiefling)_Bardo (Bard)": "COLE_O_LINK_AQUI",
-          // ==========================================
-          // 4. BRUXO (WARLOCK)
-          // ==========================================
-          "Anão (Dwarf)_Bruxo (Warlock)": "COLE_O_LINK_AQUI",
-          "Elfo (Elf)_Bruxo (Warlock)": "COLE_O_LINK_AQUI",
-          "Genasi_Bruxo (Warlock)": "COLE_O_LINK_AQUI",
-          "Halfling (Halfling)_Bruxo (Warlock)": "COLE_O_LINK_AQUI",
-          "Humano (Human)_Bruxo (Warlock)": "COLE_O_LINK_AQUI",
-          "Draconato (Dragonborn)_Bruxo (Warlock)": "COLE_O_LINK_AQUI",
-          "Gnomo (Gnome)_Bruxo (Warlock)": "COLE_O_LINK_AQUI",
-          "Meio-Elfo (Half-Elf)_Bruxo (Warlock)": "COLE_O_LINK_AQUI",
-          "Meio-Orc (Half-Orc)_Bruxo (Warlock)": "COLE_O_LINK_AQUI",
-          "Tiefling (Tiefling)_Bruxo (Warlock)": "COLE_O_LINK_AQUI",
-          // ==========================================
-          // 5. CLÉRIGO (CLERIC)
-          // ==========================================
-          "Anão (Dwarf)_Clérigo (Cleric)": "COLE_O_LINK_AQUI",
-          "Elfo (Elf)_Clérigo (Cleric)": "COLE_O_LINK_AQUI",
-          "Genasi_Clérigo (Cleric)": "COLE_O_LINK_AQUI",
-          "Halfling (Halfling)_Clérigo (Cleric)": "COLE_O_LINK_AQUI",
-          "Humano (Human)_Clérigo (Cleric)": "COLE_O_LINK_AQUI",
-          "Draconato (Dragonborn)_Clérigo (Cleric)": "COLE_O_LINK_AQUI",
-          "Gnomo (Gnome)_Clérigo (Cleric)": "COLE_O_LINK_AQUI",
-          "Meio-Elfo (Half-Elf)_Clérigo (Cleric)": "COLE_O_LINK_AQUI",
-          "Meio-Orc (Half-Orc)_Clérigo (Cleric)": "COLE_O_LINK_AQUI",
-          "Tiefling (Tiefling)_Clérigo (Cleric)": "COLE_O_LINK_AQUI",
-          // ==========================================
-          // 6. DRUIDA (DRUID)
-          // ==========================================
-          "Anão (Dwarf)_Druida (Druid)": "COLE_O_LINK_AQUI",
-          "Elfo (Elf)_Druida (Druid)": "COLE_O_LINK_AQUI",
-          "Genasi_Druida (Druid)": "COLE_O_LINK_AQUI",
-          "Halfling (Halfling)_Druida (Druid)": "COLE_O_LINK_AQUI",
-          "Humano (Human)_Druida (Druid)": "COLE_O_LINK_AQUI",
-          "Draconato (Dragonborn)_Druida (Druid)": "COLE_O_LINK_AQUI",
-          "Gnomo (Gnome)_Druida (Druid)": "COLE_O_LINK_AQUI",
-          "Meio-Elfo (Half-Elf)_Druida (Druid)": "COLE_O_LINK_AQUI",
-          "Meio-Orc (Half-Orc)_Druida (Druid)": "COLE_O_LINK_AQUI",
-          "Tiefling (Tiefling)_Druida (Druid)": "COLE_O_LINK_AQUI",
-          // ==========================================
-          // 7. FEITICEIRO (SORCERER)
-          // ==========================================
-          "Anão (Dwarf)_Feiticeiro (Sorcerer)": "COLE_O_LINK_AQUI",
-          "Elfo (Elf)_Feiticeiro (Sorcerer)": "COLE_O_LINK_AQUI",
-          "Genasi_Feiticeiro (Sorcerer)": "COLE_O_LINK_AQUI",
-          "Halfling (Halfling)_Feiticeiro (Sorcerer)": "COLE_O_LINK_AQUI",
-          "Humano (Human)_Feiticeiro (Sorcerer)": "COLE_O_LINK_AQUI",
-          "Draconato (Dragonborn)_Feiticeiro (Sorcerer)": "COLE_O_LINK_AQUI",
-          "Gnomo (Gnome)_Feiticeiro (Sorcerer)": "COLE_O_LINK_AQUI",
-          "Meio-Elfo (Half-Elf)_Feiticeiro (Sorcerer)": "COLE_O_LINK_AQUI",
-          "Meio-Orc (Half-Orc)_Feiticeiro (Sorcerer)": "COLE_O_LINK_AQUI",
-          "Tiefling (Tiefling)_Feiticeiro (Sorcerer)": "COLE_O_LINK_AQUI",
-          // ==========================================
-          // 8. GUERREIRO (FIGHTER)
-          // ==========================================
-          "Anão (Dwarf)_Guerreiro (Fighter)": "COLE_O_LINK_AQUI",
-          "Elfo (Elf)_Guerreiro (Fighter)": "COLE_O_LINK_AQUI",
-          "Genasi_Guerreiro (Fighter)": "COLE_O_LINK_AQUI",
-          "Halfling (Halfling)_Guerreiro (Fighter)": "COLE_O_LINK_AQUI",
-          "Humano (Human)_Guerreiro (Fighter)": "COLE_O_LINK_AQUI",
-          "Draconato (Dragonborn)_Guerreiro (Fighter)": "COLE_O_LINK_AQUI",
-          "Gnomo (Gnome)_Guerreiro (Fighter)": "COLE_O_LINK_AQUI",
-          "Meio-Elfo (Half-Elf)_Guerreiro (Fighter)": "COLE_O_LINK_AQUI",
-          "Meio-Orc (Half-Orc)_Guerreiro (Fighter)": "COLE_O_LINK_AQUI",
-          "Tiefling (Tiefling)_Guerreiro (Fighter)": "COLE_O_LINK_AQUI",
-          // ==========================================
-          // 9. LADINO (ROGUE)
-          // ==========================================
-          "Anão (Dwarf)_Ladino (Rogue)": "COLE_O_LINK_AQUI",
-          "Elfo (Elf)_Ladino (Rogue)": "COLE_O_LINK_AQUI",
-          "Genasi_Ladino (Rogue)": "COLE_O_LINK_AQUI",
-          "Halfling (Halfling)_Ladino (Rogue)": "COLE_O_LINK_AQUI",
-          "Humano (Human)_Ladino (Rogue)": "COLE_O_LINK_AQUI",
-          "Draconato (Dragonborn)_Ladino (Rogue)": "COLE_O_LINK_AQUI",
-          "Gnomo (Gnome)_Ladino (Rogue)": "COLE_O_LINK_AQUI",
-          "Meio-Elfo (Half-Elf)_Ladino (Rogue)": "COLE_O_LINK_AQUI",
-          "Meio-Orc (Half-Orc)_Ladino (Rogue)": "COLE_O_LINK_AQUI",
-          "Tiefling (Tiefling)_Ladino (Rogue)": "COLE_O_LINK_AQUI",
-          // ==========================================
-          // 10. MONGE (MONK)
-          // ==========================================
-          "Anão (Dwarf)_Monge (Monk)": "COLE_O_LINK_AQUI",
-          "Elfo (Elf)_Monge (Monk)": "COLE_O_LINK_AQUI",
-          "Genasi_Monge (Monk)": "COLE_O_LINK_AQUI",
-          "Halfling (Halfling)_Monge (Monk)": "COLE_O_LINK_AQUI",
-          "Humano (Human)_Monge (Monk)": "COLE_O_LINK_AQUI",
-          "Draconato (Dragonborn)_Monge (Monk)": "COLE_O_LINK_AQUI",
-          "Gnomo (Gnome)_Monge (Monk)": "COLE_O_LINK_AQUI",
-          "Meio-Elfo (Half-Elf)_Monge (Monk)": "COLE_O_LINK_AQUI",
-          "Meio-Orc (Half-Orc)_Monge (Monk)": "COLE_O_LINK_AQUI",
-          "Tiefling (Tiefling)_Monge (Monk)": "COLE_O_LINK_AQUI",
-          // ==========================================
-          // 11. PALADINO (PALADIN)
-          // ==========================================
-          "Anão (Dwarf)_Paladino (Paladin)": "COLE_O_LINK_AQUI",
-          "Elfo (Elf)_Paladino (Paladin)": "COLE_O_LINK_AQUI",
-          "Genasi_Paladino (Paladin)": "COLE_O_LINK_AQUI",
-          "Halfling (Halfling)_Paladino (Paladin)": "COLE_O_LINK_AQUI",
-          "Humano (Human)_Paladino (Paladin)": "COLE_O_LINK_AQUI",
-          "Draconato (Dragonborn)_Paladino (Paladin)": "COLE_O_LINK_AQUI",
-          "Gnomo (Gnome)_Paladino (Paladin)": "COLE_O_LINK_AQUI",
-          "Meio-Elfo (Half-Elf)_Paladino (Paladin)": "COLE_O_LINK_AQUI",
-          "Meio-Orc (Half-Orc)_Paladino (Paladin)": "COLE_O_LINK_AQUI",
-          "Tiefling (Tiefling)_Paladino (Paladin)": "COLE_O_LINK_AQUI",
-          // ==========================================
-          // 12. PATRULHEIRO (RANGER)
-          // ==========================================
-          "Anão (Dwarf)_Patrulheiro (Ranger)": "COLE_O_LINK_AQUI",
-          "Elfo (Elf)_Patrulheiro (Ranger)": "COLE_O_LINK_AQUI",
-          "Genasi_Patrulheiro (Ranger)": "COLE_O_LINK_AQUI",
-          "Halfling (Halfling)_Patrulheiro (Ranger)": "COLE_O_LINK_AQUI",
-          "Humano (Human)_Patrulheiro (Ranger)": "COLE_O_LINK_AQUI",
-          "Draconato (Dragonborn)_Patrulheiro (Ranger)": "COLE_O_LINK_AQUI",
-          "Gnomo (Gnome)_Patrulheiro (Ranger)": "COLE_O_LINK_AQUI",
-          "Meio-Elfo (Half-Elf)_Patrulheiro (Ranger)": "COLE_O_LINK_AQUI",
-          "Meio-Orc (Half-Orc)_Patrulheiro (Ranger)": "COLE_O_LINK_AQUI",
-          "Tiefling (Tiefling)_Patrulheiro (Ranger)": "COLE_O_LINK_AQUI",
-          // ==========================================
-          // 13. MAGO (WIZARD)
-          // ==========================================
-          "Anão (Dwarf)_Mago (Wizard)": "COLE_O_LINK_AQUI",
-          "Elfo (Elf)_Mago (Wizard)": "COLE_O_LINK_AQUI",
-          "Genasi_Mago (Wizard)": "COLE_O_LINK_AQUI",
-          "Halfling (Halfling)_Mago (Wizard)": "COLE_O_LINK_AQUI",
-          "Humano (Human)_Mago (Wizard)": "COLE_O_LINK_AQUI",
-          "Draconato (Dragonborn)_Mago (Wizard)": "COLE_O_LINK_AQUI",
-          "Gnomo (Gnome)_Mago (Wizard)": "COLE_O_LINK_AQUI",
-          "Meio-Elfo (Half-Elf)_Mago (Wizard)": "COLE_O_LINK_AQUI",
-          "Meio-Orc (Half-Orc)_Mago (Wizard)": "COLE_O_LINK_AQUI",
-          "Tiefling (Tiefling)_Mago (Wizard)": "COLE_O_LINK_AQUI"
-        };
-        const imagemSorteada = repositorioAvatares[chaveCombinada];
-        if (imagemSorteada && imagemSorteada !== "COLE_O_LINK_AQUI") {
-          img.src = imagemSorteada;
-          alert(`Avatar gerado para a combinação: ${chaveCombinada}!`);
-          if (typeof agendarAutoSave === "function") agendarAutoSave();
-        } else {
-          alert(`Ainda não há um link cadastrado para a combinação:\n"${chaveCombinada}"\n\nPor favor, use a opção [1] para inserir manualmente por enquanto.`);
-        }
-      } else {
-        alert("Opção inválida! Digite apenas 1 ou 2.");
+      const imgEl = document.getElementById("char_img");
+      if (!imgEl) return;
+
+      // Verifica a URL atual. Se for o SVG padrão cinza, deixa o campo do prompt em branco
+      const urlAtual = imgEl.src;
+      const sugestao = urlAtual.startsWith("data:image/svg+xml") ? "" : urlAtual;
+
+      // Abre a caixa de diálogo para o jogador colar o link da internet
+      const novaUrl = prompt("Cole aqui o endereço (URL) da imagem do personagem:", sugestao);
+
+      // Se o usuário não cancelou a caixa de diálogo
+      if (novaUrl !== null) {
+        const urlLimpa = novaUrl.trim();
+        // Se ele apagar o texto e der OK, a ficha volta a exibir o avatar padrão
+        imgEl.src = urlLimpa === "" ? DEFAULT_AVATAR_SVG : urlLimpa;
       }
     }
     function adicionarItemAutomatico(nome, tipo) {
@@ -11414,7 +11285,7 @@
                 </div>
                 ${tipo === 'weapon' ? `
                 <div style="font-size: 11px; color: #555; display: flex; gap: 12px; margin-top: 3px; padding-top: 3px; border-top: 1px dashed #eee;">
-                    <span><b>Atk:</b> <span class="card-atk-val">--</span></span>
+                    <span><b>Ataque:</b> <span class="card-atk-val">--</span></span>
                     <span><b>Dano:</b> <span class="card-dmg-val">--</span></span>
                 </div>` : ''}
           `;
@@ -11439,8 +11310,6 @@
       if (document.getElementById("notes_full_page")) {
         document.getElementById("notes_full_page").value = t.notes || "";
       }
-      const spellChecks = document.querySelectorAll("#spell-slots-tracker input[type='checkbox']");
-      if (d.magia && d.magia.slots_gastos) d.magia.slots_gastos.forEach((val, i) => { if (spellChecks[i]) spellChecks[i].checked = val; });
       const deathChecks = document.querySelectorAll('.circles input[type="checkbox"]');
       if (d.combate && d.combate.death_saves) d.combate.death_saves.forEach((val, i) => { if (deathChecks[i]) deathChecks[i].checked = val; });
       const status = d.combate_status || {};
@@ -11463,6 +11332,10 @@
       calcular();
       atualizarSlotsMagia();
       atualizarRecursosClasse();
+      if (d.magia && d.magia.slots_gastos) {
+        const spellChecks = document.querySelectorAll("#spell-slots-tracker input[type='checkbox']");
+        d.magia.slots_gastos.forEach((val, i) => { if (spellChecks[i]) spellChecks[i].checked = val; });
+      }
       if (d.recursos_gastos) {
         const resourceChecks = document.querySelectorAll("#class-resources-tracker input[type='checkbox']");
         d.recursos_gastos.forEach((val, i) => { if (resourceChecks[i]) resourceChecks[i].checked = val; });
