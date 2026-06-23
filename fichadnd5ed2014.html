@@ -10166,6 +10166,7 @@
       atualizarGuia();
       atualizarRecursosClasse();
       vincularCliquesRolagem();
+      atualizarBlocoConjuracao();
     }
     function ajustarCampo(id, delta) {
       const input = document.getElementById(id);
@@ -10881,6 +10882,61 @@
         seletor.value = nome;
         funcaoAdd();
         marcarUltimoComoAutomatico(tipo);
+      }
+    }
+    function atualizarBlocoConjuracao() {
+      const classe = document.getElementById("class_name").value;
+      const subclasse = document.getElementById("subclass_name").value;
+      const lvl = parseInt(document.getElementById("level_val").value) || 1;
+      
+      // Calcula o Bônus de Proficiência oficial por nível
+      const profBonus = Math.floor((lvl - 1) / 4) + 2;
+
+      let atributoChave = ""; // Pode ser "INT", "SAB" ou "CAR"
+      
+      // Mapeamento oficial de Atributos de Conjuração (D&D 5e 2014)
+      const classesInt = ["Mago (Wizard)", "Artífice (Artificer)"];
+      const classesSab = ["Clérigo (Cleric)", "Druida (Druid)", "Patrulheiro (Ranger)"];
+      const classesCar = ["Bardo (Bard)", "Bruxo (Warlock)", "Feiticeiro (Sorcerer)", "Paladino (Paladin)"];
+      
+      // Subclasses Conjuradoras de outras classes (Guerreiro e Ladino)
+      const subclassesInt = ["Trapaceiro Arcano (Arcane Trickster)", "Cavaleiro Arcano (Eldritch Knight)"];
+
+      // Identifica qual atributo a classe/subclasse utiliza
+      if (classesInt.includes(classe) || subclassesInt.includes(subclasse)) {
+        atributoChave = "INT";
+      } else if (classesSab.includes(classe)) {
+        atributoChave = "SAB";
+      } else if (classesCar.includes(classe)) {
+        atributoChave = "CAR";
+      }
+
+      let modValor = 0;
+      let textoAtributo = "+0";
+
+      // Se a classe for conjuradora, busca o valor do atributo na ficha para extrair o modificador
+      if (atributoChave !== "") {
+        const inputAttr = document.getElementById(`${atributoChave}_score`) || document.getElementById(`${atributoChave.toLowerCase()}_score`);
+        const score = inputAttr ? (parseInt(inputAttr.value) || 10) : 10;
+        modValor = Math.floor((score - 10) / 2);
+        textoAtributo = (modValor >= 0 ? "+" : "") + modValor;
+      }
+
+      // Captura os inputs corretos do bloco de conjuração na tela
+      const inputSpellAttr = document.getElementById("spell_attr_val");
+      const inputSpellDC = document.getElementById("spell_save_dc");
+      const inputSpellAtk = document.getElementById("spell_atk_mod");
+
+      // Injeta os valores calculados automaticamente nos campos
+      if (inputSpellAttr) {
+        inputSpellAttr.value = textoAtributo;
+      }
+      if (inputSpellDC) {
+        inputSpellDC.value = atributoChave !== "" ? (8 + profBonus + modValor) : 8;
+      }
+      if (inputSpellAtk) {
+        const totalAtk = profBonus + modValor;
+        inputSpellAtk.value = (totalAtk >= 0 ? "+" : "") + totalAtk;
       }
     }
     function atualizarMoedasIniciais() {
