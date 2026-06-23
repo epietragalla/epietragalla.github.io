@@ -1962,7 +1962,7 @@
         [4, 3, 3, 1, 0, 0, 0, 0, 0], // Nível 20
       ],
       // Pacto de Magia do Bruxo
-     warlock: [
+      warlock: [
         [1, 0, 0, 0, 0, 0, 0, 0, 0], // Nível 1: 1 slot de 1º
         [2, 0, 0, 0, 0, 0, 0, 0, 0], // Nível 2: 2 slots de 1º
         [0, 2, 0, 0, 0, 0, 0, 0, 0], // Nível 3: 2 slots de 2º
@@ -9146,7 +9146,7 @@
         slotsDisponiveis = slotsDB.artificer[lvl - 1] || [0, 0, 0, 0, 0, 0, 0, 0, 0];
       } else if (halfCasters.includes(c)) {
         slotsDisponiveis = slotsDB.half[lvl - 1] || [0, 0, 0, 0, 0, 0, 0, 0, 0];
-     } else if (thirdCasters.includes(sc)) {
+      } else if (thirdCasters.includes(sc)) {
         slotsDisponiveis = slotsDB.third[lvl - 1] || [0, 0, 0, 0, 0, 0, 0, 0, 0];
       } else if (isWarlock) {
         // Agora o Bruxo lê a linha inteira da matriz de forma limpa e padronizada
@@ -9162,8 +9162,8 @@
           let slotBox = document.createElement("div");
           slotBox.className = "box-list";
           slotBox.style.cssText = "padding: 5px; text-align: center; margin-bottom: 5px; background: #fff; border: 1px solid #ddd; min-width: 70px; flex: 1;";
-          let label = isWarlock 
-            ? (index < 5 ? `Pacto (${index + 1}º)` : `Arcanum (${index + 1}º)`) 
+          let label = isWarlock
+            ? (index < 5 ? `Pacto (${index + 1}º)` : `Arcanum (${index + 1}º)`)
             : `${index + 1}º Nível`;
           slotBox.innerHTML = `<label style="font-size: 8px; margin-bottom: 3px;">${label}</label>`;
           let circlesWrap = document.createElement("div");
@@ -10173,34 +10173,43 @@
       }
     }
     function baixarFicha() {
-      document.querySelectorAll("input").forEach((i) => {
-        if (i.type === "checkbox")
-          i.checked
-            ? i.setAttribute("checked", "")
-            : i.removeAttribute("checked");
-        else i.setAttribute("value", i.value);
+      const inputs = document.querySelectorAll('input:not([type="file"]):not([type="checkbox"]):not([type="radio"])');
+      inputs.forEach(input => {
+        input.setAttribute('value', input.value);
       });
-      document.querySelectorAll("select").forEach((s) => {
-        Array.from(s.options).forEach((opt) => {
-          if (opt.value === s.value) opt.setAttribute("selected", "selected");
-          else opt.removeAttribute("selected");
+      const checkboxes = document.querySelectorAll('input[type="checkbox"], input[type="radio"]');
+      checkboxes.forEach(cb => {
+        if (cb.checked) {
+          cb.setAttribute('checked', 'checked');
+        } else {
+          cb.removeAttribute('checked');
+        }
+      });
+      const selects = document.querySelectorAll('select');
+      selects.forEach(select => {
+        const options = select.querySelectorAll('option');
+        options.forEach(opt => {
+          if (opt.value === select.value) {
+            opt.setAttribute('selected', 'selected');
+          } else {
+            opt.removeAttribute('selected');
+          }
         });
       });
-      document
-        .querySelectorAll("textarea")
-        .forEach((t) => (t.innerText = t.value));
-      const charName =
-        document.getElementById("char_name").value || "Personagem";
-      const charClass =
-        document.getElementById("class_name").value || "SemClasse";
-      const blob = new Blob(
-        ["<!DOCTYPE html>\n" + document.documentElement.outerHTML],
-        { type: "text/html" },
-      );
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `${charName}_${charClass}.html`;
-      a.click();
+      const textareas = document.querySelectorAll('textarea');
+      textareas.forEach(ta => {
+        ta.textContent = ta.value;
+      });
+      const htmlCompleto = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+      const nomePersonagem = document.getElementById("char_name")?.value.trim() || "Ficha_Personagem";
+      const nomeArquivoLimpo = `${nomePersonagem.replace(/[^a-zA-Z0-9]/g, "_")}_fichadnd5e.html`;
+      const blob = new Blob([htmlCompleto], { type: "text/html;charset=utf-8" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = nomeArquivoLimpo;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
     function imprimirPDF() {
       window.print();
