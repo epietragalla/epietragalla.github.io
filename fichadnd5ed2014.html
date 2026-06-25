@@ -9083,11 +9083,11 @@
     const recursosDB = {
       "Bárbaro (Barbarian)": {
         label: "Fúrias",
-        progression: [2, 2, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 99] // 99 = Infinito
+        progression: [2, 2, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 99]
       },
       "Bardo (Bard)": {
         label: "Inspiração Bárdica",
-        useAttr: "CAR" // Baseado no modificador de Carisma
+        useAttr: "CAR"
       },
       "Clérigo (Cleric)": {
         label: "Canalizar Divindade",
@@ -9099,11 +9099,11 @@
       },
       "Guerreiro (Fighter)": {
         label: "Surto de Ação / Indomável",
-        customFighter: true // Lógica especial para múltiplos recursos
+        customFighter: true
       },
       "Monge (Monk)": {
         label: "Pontos de Ki",
-        perLevel: true // 1 por nível começando no nível 2
+        perLevel: true
       },
       "Paladino (Paladin)": {
         label: "Canalizar Divindade",
@@ -9111,7 +9111,7 @@
       },
       "Feiticeiro (Sorcerer)": {
         label: "Pontos de Feitiçaria",
-        perLevel: true // 1 por nível começando no nível 2
+        perLevel: true
       }
     };
     const goldByBackgroundDB = {
@@ -9154,7 +9154,6 @@
       } else if (thirdCasters.includes(sc)) {
         slotsDisponiveis = slotsDB.third[lvl - 1] || [0, 0, 0, 0, 0, 0, 0, 0, 0];
       } else if (isWarlock) {
-        // Agora o Bruxo lê a linha inteira da matriz de forma limpa e padronizada
         slotsDisponiveis = slotsDB.warlock[lvl - 1] || [0, 0, 0, 0, 0, 0, 0, 0, 0];
       }
       const temSlots = slotsDisponiveis.some(qtd => qtd > 0);
@@ -9343,12 +9342,10 @@
       if (c && progressoClasses[c]) {
         let labelBase = labelsSubclasses[c] || "Subclasse";
         let labelCompleta = sc ? `${labelBase}: ${sc}` : labelBase;
-
         for (let i = 1; i <= lvl; i++) {
           let hBase = progressoClasses[c][i];
           let subKey = c + "_" + sc;
           let hSub = (sc && progressoClasses[subKey]) ? progressoClasses[subKey][i] : null;
-
           if (hBase || hSub) {
             progressoHTML += `<div style="margin-bottom: 20px;">`;
             progressoHTML += `<span class="lvl-tag">Nível ${i}</span>`;
@@ -9369,6 +9366,70 @@
       if (progressionContainer) {
         progressionContainer.innerHTML = progressoHTML || "Selecione uma classe e nível.";
         let magiasTextoHTML = "";
+        const guiasSubclasseDB = {
+          "Devoção": { tipo: "Juramento", 3: ["Proteção Contra Bem e Mal", "Santuário"], 5: ["Zona da Verdade", "Restauração Menor"], 9: ["Sinal de Esperança", "Dissipar Magia"], 13: ["Movimentação Livre", "Guardião da Fé"], 17: ["Comunhão", "Coluna de Chamas"] },
+          "Anciões": { tipo: "Juramento", 3: ["Auxílio de Enredar", "Falar com Animais"], 5: ["Passo Nebuloso", "Raio Lunar"], 9: ["Ampliar Plantas", "Proteção Contra Elementos"], 13: ["Tempestade de Gelo", "Pele Rochosa"], 17: ["Comunhão com a Natureza", "Onda Destrutiva"] },
+          "Vingança": { tipo: "Juramento", 3: ["Marca do Caçador", "Perdição"], 5: ["Imobilizar Pessoa", "Passo Nebuloso"], 9: ["Velocidade", "Proteção Contra Elementos"], 13: ["Banimento", "Porta Dimensional"], 17: ["Imobilizar Monstro", "Observação"] },
+          "Glória": { tipo: "Juramento", 3: ["Raio Guiador", "Heroísmo"], 5: ["Aprimorar Habilidade", "Restauração Menor"], 9: ["Velocidade", "Proteção Contra Elementos"], 13: ["Compulsão", "Movimentação Livre"], 17: ["Comunhão", "Onda Destrutiva"] },
+          "Vigilantes": { tipo: "Juramento", 3: ["Alarme", "Detectar Magia"], 5: ["Ver o Invisível", "Zona da Verdade"], 9: ["Contramágica", "Indetectável"], 13: ["Banimento"], 17: ["Imobilizar Monstro", "Observação"] },
+          "Conhecimento": { tipo: "Domínio", 1: ["Comando", "Identificação"], 3: ["Augúrio", "Sugestão"], 5: ["Falar com os Mortos", "Indetectável"], 7: ["Olho Arcano", "Confusão"], 9: ["Lendas e Histórias", "Observação"] },
+          "Enganação": { tipo: "Domínio", 1: ["Disfarçar-se", "Riso Histérico de Tasha"], 3: ["Imitação", "Passo Sem Pegadas"], 5: ["Piscar", "Dissipar Magia"], 7: ["Porta Dimensional", "Metamorfose"], 9: ["Dominar Pessoa", "Modificar Memória"] },
+          "Guerra": { tipo: "Domínio", 1: ["Auxílio Divino", "Escudo de Fé"], 3: ["Arma Mágica", "Sinal de Esperança"], 5: ["Manto do Cruzado", "Guardiões Espirituais"], 7: ["Movimentação Livre", "Pele Rochosa"], 9: ["Coluna de Chamas", "Imobilizar Monstro"] },
+          "Luz": { tipo: "Domínio", 1: ["Mãos Flamejantes", "Fogo das Fadas"], 3: ["Esfera Flamejante", "Raio Ardente"], 5: ["Luz do Dia", "Bola de Fogo"], 7: ["Guardião da Fé", "Muralha de Fogo"], 9: ["Coluna de Chamas", "Observação"] },
+          "Natureza": { tipo: "Domínio", 1: ["Falar com Animais", "Amizade Animal"], 3: ["Pele de Árvore", "Crescer Espinhos"], 5: ["Ampliar Plantas", "Muralha de Vento"], 7: ["Dominar Besta", "Vinha Sufocante"], 9: ["Comunhão com a Natureza", "Praga de Insetos"] },
+          "Tempestade": { tipo: "Domínio", 1: ["Névoa Obscurecente", "Onda Trovejante"], 3: ["Lufada de Vento", "Despedaçar"], 5: ["Chamar Relâmpagos", "Nevasca"], 7: ["Controlar a Água", "Tempestade de Gelo"], 9: ["Onda Destrutiva", "Praga de Insetos"] },
+          "Vida": { tipo: "Domínio", 1: ["Bênção", "Curar Ferimentos"], 3: ["Ajuda", "Restauração Menor"], 5: ["Sinal de Esperança", "Reviver"], 7: ["Banimento", "Movimentação Livre"], 9: ["Curar Ferimentos em Massa", "Reviver os Mortos"] },
+          "Ordem": { tipo: "Domínio", 1: ["Comando", "Heroísmo"], 3: ["Imobilizar Pessoa", "Zona da Verdade"], 5: ["Palavra de Cura em Massa", "Despedaçar"], 7: ["Compulsão", "Localizar Criatura"], 9: ["Comunhão", "Dominar Pessoa"] },
+          "Paz": { tipo: "Domínio", 1: ["Heroísmo", "Santuário"], 3: ["Ajuda", "Aprimorar Habilidade"], 5: ["Farol de Esperança", "Enviar Mensagem"], 7: ["Aura de Vitalidade", "Esfera Resiliente de Otiluke"], 9: ["Restauração Maior", "Telecinésia"] },
+          "Crepúsculo": { tipo: "Domínio", 1: ["Fogo das Fadas", "Sono"], 3: ["Invisibilidade", "Passo Nebuloso"], 5: ["Aura de Vitalidade", "Luz do Dia"], 7: ["Aura de Vitalidade", "Invisibilidade Maior"], 9: ["Círculo de Teleporte", "Explosão Solar"] }
+        };
+        let dSub = null;
+        if (sc) {
+          for (const palavraChave in guiasSubclasseDB) {
+            if (sc.toLowerCase().includes(palavraChave.toLowerCase())) {
+              dSub = guiasSubclasseDB[palavraChave];
+              break;
+            }
+          }
+        }
+        if (dSub) {
+          let automaticas = [];
+          Object.keys(dSub).forEach(lReq => {
+            if (lReq !== "tipo" && lvl >= parseInt(lReq)) {
+              automaticas = automaticas.concat(dSub[lReq]);
+            }
+          });
+          automaticas.forEach(mNome => {
+            let mData = null;
+            for (const nKey in magiasDB) {
+              if (magiasDB[nKey][mNome]) { mData = magiasDB[nKey][mNome]; break; }
+              const matchAprox = Object.keys(magiasDB[nKey]).find(k => k.startsWith(mNome) || mNome.startsWith(k));
+              if (matchAprox) { mData = magiasDB[nKey][matchAprox]; mNome = matchAprox; break; }
+            }
+            if (mData) {
+              magiasTextoHTML += `
+              <div class="spell-detail-box" style="margin-bottom: 25px; padding: 12px; border-left: 4px solid #1e88e5; background: #e3f2fd; box-shadow: 1px 1px 3px rgba(0,0,0,0.1); text-align: left;">
+                  <b style="color: #1e88e5; font-size: 15px; display: block; border-bottom: 1px solid #bbdefb; padding-bottom: 4px;">🌟 ${mNome} (${mData.en}) [${dSub.tipo}]</b>
+                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(185px, 185px)); gap: 8px; font-size: 12px; padding-top: 8px; color: #444;">
+                      <div><b>Tipo de magia:</b> ${mData.level_school}</div>
+                      <div><b>Fonte:</b> ${mData.source}</div>
+                      <div><b>Classes:</b> ${mData.casters}</div>
+                      <div><b>Tempo de Conjuração:</b> ${mData.time}</div>
+                  </div>
+                  <br>
+                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(185px, 185px)); gap: 8px; font-size: 12px; color: #444;">                    
+                      <div><b>Alcance/Área:</b> ${mData.range}</div>
+                      <div><b>Duração:</b> ${mData.dur}</div>
+                      <div><b>Componentes:</b> ${mData.comp}</div>
+                  </div>
+                  <br>
+                  <p style="font-size: 12.5px; line-height: 1.4; text-align: justify; color: #222; margin: 10px 0;">
+                    ${limparTexto(mData.desc)}
+                  </p>                 
+              </div>`;
+            }
+          });
+        }
         document.querySelectorAll(".magia-select").forEach((sel) => {
           const mNome = sel.value;
           if (mNome) {
@@ -9378,13 +9439,13 @@
             }
             if (mData) {
               magiasTextoHTML += `
-              <div class="spell-detail-box" style="margin-bottom: 25px; padding: 12px; border-left: 4px solid var(--dnd-red); background: #fdfaf3; box-shadow: 1px 1px 3px rgba(0,0,0,0.1);">
+              <div class="spell-detail-box" style="margin-bottom: 25px; padding: 12px; border-left: 4px solid var(--dnd-red); background: #fdfaf3; box-shadow: 1px 1px 3px rgba(0,0,0,0.1); text-align: left;">
                   <b style="color: var(--dnd-red); font-size: 15px; display: block; border-bottom: 1px solid #ddd; padding-bottom: 4px;">${mNome} (${mData.en})</b>
                   <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(185px, 185px)); gap: 8px; font-size: 12px; padding-top: 8px; color: #444;">
                       <div><b>Tipo de magia:</b> ${mData.level_school}</div>
                       <div><b>Fonte:</b> ${mData.source}</div>
                       <div><b>Classes:</b> ${mData.casters}</div>
-                        <div><b>Tempo de Conjuração: </b> ${mData.time}</div>
+                      <div><b>Tempo de Conjuração: </b> ${mData.time}</div>
                   </div>
                <br>
                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(185px, 185px)); gap: 8px; font-size: 12px; padding-top: 8px; color: #444;">                    
@@ -9408,7 +9469,6 @@
       atualizarTalentosEIdiomasNoGuia();
       atualizarResumoPericias();
       if (typeof agendarAutoSave === "function") agendarAutoSave();
-
     }
     function atualizarTalentosEIdiomasNoGuia() {
       let talentosHTML = "";
@@ -9585,16 +9645,13 @@
     function adicionarIdioma(valorPredefinido = "") {
       const container = document.getElementById("idiomas-container");
       if (!container) return;
-
       const newRow = document.createElement("div");
       newRow.className = "idioma-row";
       newRow.style.cssText = "display: flex; gap: 5px; align-items: center; margin-bottom: 5px;";
-
       let options = idiomasDB.sort().map((i) => {
         let selected = (i === valorPredefinido) ? "selected" : "";
         return `<option value="${i}" ${selected}>${i}</option>`;
       }).join("");
-
       newRow.innerHTML = `
         <select class="idioma-select" style="flex: 1; background: #fafafa; font-size: 12px; border-bottom: 1px solid #ccc;" onchange="atualizarGuia()">
             <option value="">Selecione um idioma</option>
@@ -9611,10 +9668,8 @@
       const antec = document.getElementById("bg_name").value;
       const container = document.getElementById("idiomas-container");
       if (!container) return;
-
       container.innerHTML = "";
       let listaIdiomas = [];
-
       const regrasIdiomas = {
         races: {
           "Anão (Dwarf)": ["Comum (Common)", "Anão (Dwarvish)"],
@@ -10190,7 +10245,6 @@
         // Aguarda 150ms para que o motor original de fábrica da ficha termine o setup inicial
         setTimeout(() => {
           const dadosSalvos = ${JSON.stringify(dadosFicha)};
-          
           // Usa a sua própria função nativa para reconstruir dinamicamente a ficha inteira
           if (typeof carregarDadosNaFicha === 'function') {
             carregarDadosNaFicha(dadosSalvos);
@@ -10576,55 +10630,121 @@
         detalhesHTML += `<li><b>Classe:</b> ${expExibir} Especializações</li>`;
       }
       detalhesHTML += `</ul>`;
+      const magiasSubclasseDB = {
+        "Devoção": { tipo: "Juramento", 3: ["Proteção Contra Bem e Mal", "Santuário"], 5: ["Zona da Verdade", "Restauração Menor"], 9: ["Sinal de Esperança", "Dissipar Magia"], 13: ["Movimentação Livre", "Guardião da Fé"], 17: ["Comunhão", "Coluna de Chamas"] },
+        "Anciões": { tipo: "Juramento", 3: ["Auxílio de Enredar", "Falar com Animais"], 5: ["Passo Nebuloso", "Raio Lunar"], 9: ["Ampliar Plantas", "Proteção Contra Elementos"], 13: ["Tempestade de Gelo", "Pele Rochosa"], 17: ["Comunhão com a Natureza", "Onda Destrutiva"] },
+        "Vingança": { tipo: "Juramento", 3: ["Marca do Caçador", "Perdição"], 5: ["Imobilizar Pessoa", "Passo Nebuloso"], 9: ["Velocidade", "Proteção Contra Elementos"], 13: ["Banimento", "Porta Dimensional"], 17: ["Imobilizar Monstro", "Observação"] },
+        "Glória": { tipo: "Juramento", 3: ["Raio Guiador", "Heroísmo"], 5: ["Aprimorar Habilidade", "Restauração Menor"], 9: ["Velocidade", "Proteção Contra Elementos"], 13: ["Compulsão", "Movimentação Livre"], 17: ["Comunhão", "Onda Destrutiva"] },
+        "Vigilantes": { tipo: "Juramento", 3: ["Alarme", "Detectar Magia"], 5: ["Ver o Invisível", "Zona da Verdade"], 9: ["Contramágica", "Indetectável"], 13: ["Banimento"], 17: ["Imobilizar Monstro", "Observação"] },
+        "Conhecimento": { tipo: "Domínio", 1: ["Comando", "Identificação"], 3: ["Augúrio", "Sugestão"], 5: ["Falar com os Mortos", "Indetectável"], 7: ["Confusão", "Olho Arcano"], 9: ["Lendas e Histórias", "Observação"] },
+        "Enganação": { tipo: "Domínio", 1: ["Disfarçar-se", "Riso Histérico de Tasha"], 3: ["Imitação", "Passo Sem Pegadas"], 5: ["Piscar", "Dissipar Magia"], 7: ["Porta Dimensional", "Metamorfose"], 9: ["Dominar Pessoa", "Modificar Memória"] },
+        "Guerra": { tipo: "Domínio", 1: ["Auxílio Divino", "Escudo de Fé"], 3: ["Arma Mágica", "Sinal de Esperança"], 5: ["Manto do Cruzado", "Guardiões Espirituais"], 7: ["Movimentação Livre", "Pele Rochosa"], 9: ["Coluna de Chamas", "Imobilizar Monstro"] },
+        "Luz": { tipo: "Domínio", 1: ["Mãos Flamejantes", "Fogo das Fadas"], 3: ["Esfera Flamejante", "Raio Ardente"], 5: ["Luz do Dia", "Bola de Fogo"], 7: ["Guardião da Fé", "Muralha de Fogo"], 9: ["Coluna de Chamas", "Observação"] },
+        "Natureza": { tipo: "Domínio", 1: ["Falar com Animais", "Amizade Animal"], 3: ["Pele de Árvore", "Crescer Espinhos"], 5: ["Ampliar Plantas", "Muralha de Vento"], 7: ["Dominar Besta", "Vinha Sufocante"], 9: ["Comunhão com a Natureza", "Praga de Insetos"] },
+        "Tempestade": { tipo: "Domínio", 1: ["Névoa Obscurecente", "Onda Trovejante"], 3: ["Lufada de Vento", "Despedaçar"], 5: ["Chamar Relâmpagos", "Nevasca"], 7: ["Controlar a Água", "Tempestade de Gelo"], 9: ["Onda Destrutiva", "Praga de Insetos"] },
+        "Vida": { tipo: "Domínio", 1: ["Bênção", "Curar Ferimentos"], 3: ["Ajuda", "Restauração Menor"], 5: ["Sinal de Esperança", "Reviver"], 7: ["Banimento", "Movimentação Livre"], 9: ["Curar Ferimentos em Massa", "Reviver os Mortos"] },
+        "Ordem": { tipo: "Domínio", 1: ["Comando", "Heroísmo"], 3: ["Imobilizar Pessoa", "Zona da Verdade"], 5: ["Palavra de Cura em Massa", "Despedaçar"], 7: ["Compulsão", "Localizar Criatura"], 9: ["Comunhão", "Dominar Pessoa"] },
+        "Paz": { tipo: "Domínio", 1: ["Heroísmo", "Santuário"], 3: ["Ajuda", "Aprimorar Habilidade"], 5: ["Farol de Esperança", "Enviar Mensagem"], 7: ["Aura de Vitalidade", "Esfera Resiliente de Otiluke"], 9: ["Restauração Maior", "Telecinésia"] },
+        "Crepúsculo": { tipo: "Domínio", 1: ["Fogo das Fadas", "Sono"], 3: ["Invisibilidade", "Passo Nebuloso"], 5: ["Aura de Vitalidade", "Luz do Dia"], 7: ["Aura de Vitalidade", "Invisibilidade Maior"], 9: ["Círculo de Teleporte", "Explosão Solar"] }
+      };
       let truquesMax = 0;
       let magiasMax = 0;
       let tipoMagiaLabel = "Magias Conhecidas";
+      let notaClasseHTML = "";
       const intMod = Math.floor(((parseInt(document.getElementById("INT_score")?.value) || 10) - 10) / 2);
       const sabMod = Math.floor(((parseInt(document.getElementById("SAB_score")?.value) || 10) - 10) / 2);
       const carMod = Math.floor(((parseInt(document.getElementById("CAR_score")?.value) || 10) - 10) / 2);
-
       if (classe === "Mago (Wizard)") {
         tipoMagiaLabel = "Magias Preparadas";
         truquesMax = nivel >= 10 ? 5 : (nivel >= 4 ? 4 : 3);
         magiasMax = Math.max(1, nivel + intMod);
-      } else if (classe === "Clérigo (Cleric)" || classe === "Druida (Druid)") {
+        notaClasseHTML = `Aprende 6 magias de 1º nível no Nível 1. Ganha 2 novas magias por nível de Mago livremente para o Grimório. Pode copiar magias extras encontradas gastando tempo e ouro. Prepara um total de Inteligência + Nível diariamente.`;
+      } else if (classe === "Clérigo (Cleric)") {
         tipoMagiaLabel = "Magias Preparadas";
         truquesMax = nivel >= 10 ? 5 : (nivel >= 4 ? 4 : 3);
         magiasMax = Math.max(1, nivel + sabMod);
+        notaClasseHTML = `Conhece toda a lista de Clérigo automaticamente. Prepara diariamente um total de Sabedoria + Nível. Magias de Domínio são preparadas automaticamente e NÃO contam neste limite de ${magiasMax}.`;
+      } else if (classe === "Druida (Druid)") {
+        tipoMagiaLabel = "Magias Preparadas";
+        truquesMax = nivel >= 10 ? 5 : (nivel >= 4 ? 4 : 3);
+        magiasMax = Math.max(1, nivel + sabMod);
+        notaClasseHTML = `Conhece toda a lista de Druida automaticamente. Prepara diariamente um total de Sabedoria + Nível. Magias de Círculo Terrestre (se possuir) estão sempre preparadas e NÃO contam neste limite de ${magiasMax}.`;
       } else if (classe === "Paladino (Paladin)") {
         tipoMagiaLabel = "Magias Preparadas";
         truquesMax = 0;
         magiasMax = Math.max(1, Math.floor(nivel / 2) + carMod);
+        notaClasseHTML = `Apenas a partir do Nível 2. Conhece toda a lista de Paladino. Prepara diariamente um total de Carisma + Metade do Nível (arredondado para baixo). Magias de Juramento são automáticas e NÃO contam neste limite de ${magiasMax}.`;
       } else if (classe === "Artífice (Artificer)") {
         tipoMagiaLabel = "Magias Preparadas";
         truquesMax = nivel >= 10 ? 4 : (nivel >= 5 ? 3 : 2);
         magiasMax = Math.max(1, Math.floor(nivel / 2) + intMod);
+        notaClasseHTML = `Conhece toda a lista de Artífice. Prepara diariamente um total de Inteligência + Metade do Nível (arredondado para baixo). Magias de Especialista são automáticas e NÃO contam neste limite de ${magiasMax}.`;
       } else if (classe === "Bardo (Bard)") {
         tipoMagiaLabel = "Magias Conhecidas";
         truquesMax = nivel >= 10 ? 4 : (nivel >= 4 ? 3 : 2);
         const bardoSpells = [4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 15, 16, 18, 19, 19, 20, 22, 22, 22];
         magiasMax = bardoSpells[nivel - 1] || 0;
+        let segredosQtd = 0;
+        if (subclasse === "Colégio do Conhecimento (Lore)" && nivel >= 6) segredosQtd += 2;
+        if (nivel >= 10) segredosQtd += 2;
+        if (nivel >= 14) segredosQtd += 2;
+        if (nivel >= 18) segredosQtd += 2;
+        notaClasseHTML = `Magias fixas da lista de Bardo. Ao subir de nível, pode trocar uma magia antiga por outra. `;
+        if (segredosQtd > 0) {
+          notaClasseHTML += `Inclui <b>${segredosQtd} Segredos Mágicos</b> (magias de QUALQUER outra classe) que já contam dentro do total de ${magiasMax}.`;
+        }
       } else if (classe === "Feiticeiro (Sorcerer)") {
         tipoMagiaLabel = "Magias Conhecidas";
         truquesMax = nivel >= 10 ? 6 : (nivel >= 4 ? 5 : 4);
         const sorcSpells = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 12, 13, 13, 14, 14, 15, 15, 15, 15];
         magiasMax = sorcSpells[nivel - 1] || 0;
+        notaClasseHTML = `Magias fixas da lista de Feiticeiro. Distribuição livre por círculos disponíveis. Ao subir de nível, pode substituir uma magia conhecida por outra de nível adequado da lista da classe.`;
       } else if (classe === "Bruxo (Warlock)") {
         tipoMagiaLabel = "Magias Conhecidas";
         truquesMax = nivel >= 10 ? 4 : (nivel >= 4 ? 3 : 2);
         const warSpells = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 12, 12, 14, 14, 16, 16, 18, 18, 18, 18];
         magiasMax = warSpells[nivel - 1] || 0;
+        let arcanumHTML = "";
+        if (nivel >= 11) arcanumHTML += " 11º(6º círculo)";
+        if (nivel >= 13) arcanumHTML += ", 13º(7º círculo)";
+        if (nivel >= 15) arcanumHTML += ", 15º(8º círculo)";
+        if (nivel >= 17) arcanumHTML += ", 17º(9º círculo)";
+
+        notaClasseHTML = `Magias conhecidas limitadas do 1º ao 5º nível (lançadas sempre no nível máximo dos seus pactos). `;
+        if (arcanumHTML) {
+          notaClasseHTML += `<br><b>Arpões Arcanos (Mystic Arcanum):</b> Ganha 1 magia fixa de círculo superior nos níveis:${arcanumHTML}. Elas são conjuradas uma vez por descanso longo sem gastar slots.`;
+        }
       } else if (classe === "Patrulheiro (Ranger)") {
         tipoMagiaLabel = "Magias Conhecidas";
         truquesMax = 0;
         const rangerSpells = [0, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11];
         magiasMax = rangerSpells[nivel - 1] || 0;
-      } else if (subclasse === "Trapaceiro Arcano (Arcane Trickster)" || subclasse === "Cavaleiro Arcano (Eldritch Knight)") {
+        notaClasseHTML = `Apenas a partir do Nível 2. Magias fixas da lista de Patrulheiro. Distribuição livre entre os círculos liberados pelo nível do personagem.`;
+      } else if (subclasse === "Trapaceiro Arcano (Arcane Trickster)") {
         tipoMagiaLabel = "Magias Conhecidas";
         if (nivel >= 3) {
           truquesMax = nivel >= 10 ? 3 : 2;
           const thirdSpells = [0, 0, 3, 4, 4, 4, 5, 6, 6, 7, 8, 8, 9, 10, 10, 10, 11, 11, 12, 13];
           magiasMax = thirdSpells[nivel - 1] || 0;
+          let livres = 1;
+          if (nivel >= 8) livres = 2;
+          if (nivel >= 14) livres = 3;
+          if (nivel >= 20) livres = 4;
+          let restritas = magiasMax - livres;
+          notaClasseHTML = `As magias devem ser da lista de Mago. Obrigatoriamente <b>${restritas} magias</b> devem ser das escolas de <b>Encantamento</b> ou <b>Ilusão</b>. As outras <b>${livres} magias</b> podem ser de qualquer escola de magia.`;
+        }
+      } else if (subclasse === "Cavaleiro Arcano (Eldritch Knight)") {
+        tipoMagiaLabel = "Magias Conhecidas";
+        if (nivel >= 3) {
+          truquesMax = nivel >= 10 ? 3 : 2;
+          const thirdSpells = [0, 0, 3, 4, 4, 4, 5, 6, 6, 7, 8, 8, 9, 10, 10, 10, 11, 11, 12, 13];
+          magiasMax = thirdSpells[nivel - 1] || 0;
+          let livres = 1;
+          if (nivel >= 8) livres = 2;
+          if (nivel >= 14) livres = 3;
+          if (nivel >= 20) livres = 4;
+          let restritas = magiasMax - livres;
+          notaClasseHTML = `As magias devem ser da lista de Mago. Obrigatoriamente <b>${restritas} magias</b> devem ser das escolas de <b>Abjuração</b> ou <b>Evocação</b>. As outras <b>${livres} magias</b> podem ser de qualquer escola de magia.`;
         }
       }
       let truquesAtuais = 0;
@@ -10685,11 +10805,44 @@
             </div>`;
         }
       });
+
       if (magiasMax > 0) {
         magiasHTML += `
           <div style="margin-bottom:4px; margin-top: 4px; border-top: 1px dotted #ccc; padding-top: 4px;">
               <b>Total de ${tipoMagiaLabel}:</b> <span style="color:${getCor(totalMagiasAtuais, magiasMax)}">${totalMagiasAtuais} / ${magiasMax}</span>
           </div>`;
+        let dadosSub = null;
+        if (subclasse) {
+          for (const palavraChave in magiasSubclasseDB) {
+            if (subclasse.toLowerCase().includes(palavraChave.toLowerCase())) {
+              dadosSub = magiasSubclasseDB[palavraChave];
+              break;
+            }
+          }
+        }
+
+        if (dadosSub) {
+          let listaMagiasGanhadas = [];
+          Object.keys(dadosSub).forEach(lvlReq => {
+            if (lvlReq !== "tipo" && nivel >= parseInt(lvlReq)) {
+              listaMagiasGanhadas = listaMagiasGanhadas.concat(dadosSub[lvlReq]);
+            }
+          });
+          if (listaMagiasGanhadas.length > 0) {
+            magiasHTML += `
+              <div style="margin-top: 6px; padding: 6px; background-color: #e3f2fd; border-left: 3px solid #1e88e5; font-size: 10px; color: #222; line-height: 1.4; text-align: left;">
+                  <b>Magias de ${dadosSub.tipo} (${subclasse.split(" (")[0]}):</b><br>
+                  <span style="color:#555; font-weight: 500;">${listaMagiasGanhadas.join(", ")}</span>
+                  <div style="font-size:8.5px; color:#666; margin-top:2px; font-style:italic;">* Estão sempre preparadas gratuitamente e não contam no seu limite diário.</div>
+              </div>`;
+          }
+        }
+        if (notaClasseHTML) {
+          magiasHTML += `
+            <div style="margin-top: 6px; padding: 6px; background-color: #f5f0e1; border-left: 3px solid #b8860b; font-size: 10px; color: #444; line-height: 1.3; text-align: left;">
+                <b>Regras de Aprendizado:</b> ${notaClasseHTML}
+            </div>`;
+        }
       }
       const boxConteudo = document.getElementById("conteudo-resumo-pericias");
       if (boxConteudo) {
