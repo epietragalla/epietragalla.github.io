@@ -789,7 +789,7 @@
       display: none;
     }
 
-   /* Para TABLETS (Telas médias de até 900px) */
+    /* Para TABLETS (Telas médias de até 900px) */
     @media (max-width: 900px) {
       .main-layout {
         grid-template-columns: 1fr 1fr;
@@ -899,6 +899,7 @@
 
     /* Para CELULARES (Telas pequenas de até 600px) */
     @media (max-width: 600px) {
+
       html,
       body {
         overflow-x: hidden !important;
@@ -1217,6 +1218,7 @@
         opacity: 0;
         transform: translateY(10px);
       }
+
       to {
         opacity: 1;
         transform: translateY(0);
@@ -1641,7 +1643,8 @@
           <input type="text" id="hit_dice" placeholder="1d10" style="text-align: center; font-size: 16px" />
         </div>
         <div id="box-resumo-pericias" class="box-list">
-          <h3 style="font-size: 10px; border-bottom: 1px solid #ddd; margin-bottom: 8px;">HABILIDADES E PROFICIÊNCIAS
+          <h3 style="font-size: 10px; border-bottom: 1px solid #ddd; margin-bottom: 8px;">HABILIDADES, PROFICIÊNCIAS e
+            MAGIAS
           </h3>
           <div id="conteudo-resumo-pericias" style="font-size: 11px; line-height: 1.4;">Aguardando...</div>
         </div>
@@ -9403,7 +9406,9 @@
         }
       }
       atualizarTalentosEIdiomasNoGuia();
+      atualizarResumoPericias();
       if (typeof agendarAutoSave === "function") agendarAutoSave();
+
     }
     function atualizarTalentosEIdiomasNoGuia() {
       let talentosHTML = "";
@@ -9865,7 +9870,7 @@
       const containerAtributos = document.getElementById("coluna-atributos-pericias");
       const containerRoleplay = document.getElementById("coluna-roleplay-recursos");
       if (!containerAtributos) return;
-  const avatarHTML = `
+      const avatarHTML = `
     <div id="char-image-container" onclick="alterarImagemPersonagem()" title="Clique para alterar o endereço da imagem" style="width: 100%; height: 350px; margin: 0 auto 15px auto; position: relative; cursor: pointer; border-radius: 10px; overflow: hidden; background-color: #fff; border: 1px solid var(--border); box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); box-sizing: border-box;">
       <img id="char_img" src="${DEFAULT_AVATAR_SVG}" alt="Avatar" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; margin: 0; padding: 0; box-sizing: border-box; display: block;">
       <div class="overlay-icon" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; box-sizing: border-box; margin: 0; padding: 0;">
@@ -10507,6 +10512,7 @@
       calcular();
     }
     function atualizarResumoPericias() {
+      const getCor = (atual, limite) => atual > limite ? "red" : (atual === limite ? "green" : "#b8860b");
       const classe = document.getElementById("class_name").value;
       const raca = document.getElementById("race_name").value;
       const subclasse = document.getElementById("subclass_name").value;
@@ -10544,7 +10550,6 @@
       if (raca === "Genasi") {
         detalhesHTML += `<li><b>Melhorias de Genasi:</b> +2pts em uma habilidade e +1pt em outra habilidade ou +1pt em três habilidades</li>`;
       }
-
       if (totalASIPermitida > 0) {
         detalhesHTML += `<li><b>Melhorias:</b> ${totalASIPermitida} (+2pts em uma habilidade ou +1pt em duas habilidades ou 1 talento, por melhoria)</li>`;
       }
@@ -10557,7 +10562,6 @@
       if (antec) {
         detalhesHTML += `<li><b>Antecedente:</b> +2 Proficiências</li>`;
       }
-
       let expExibir = totalExpPermitida;
       regrasPericiasDND.especiais.forEach(regra => {
         if (regra.check(classe, subclasse, nivel)) {
@@ -10572,7 +10576,121 @@
         detalhesHTML += `<li><b>Classe:</b> ${expExibir} Especializações</li>`;
       }
       detalhesHTML += `</ul>`;
-      const getCor = (atual, limite) => atual > limite ? "red" : (atual === limite ? "green" : "#b8860b");
+      let truquesMax = 0;
+      let magiasMax = 0;
+      let tipoMagiaLabel = "Magias Conhecidas";
+      const intMod = Math.floor(((parseInt(document.getElementById("INT_score")?.value) || 10) - 10) / 2);
+      const sabMod = Math.floor(((parseInt(document.getElementById("SAB_score")?.value) || 10) - 10) / 2);
+      const carMod = Math.floor(((parseInt(document.getElementById("CAR_score")?.value) || 10) - 10) / 2);
+
+      if (classe === "Mago (Wizard)") {
+        tipoMagiaLabel = "Magias Preparadas";
+        truquesMax = nivel >= 10 ? 5 : (nivel >= 4 ? 4 : 3);
+        magiasMax = Math.max(1, nivel + intMod);
+      } else if (classe === "Clérigo (Cleric)" || classe === "Druida (Druid)") {
+        tipoMagiaLabel = "Magias Preparadas";
+        truquesMax = nivel >= 10 ? 5 : (nivel >= 4 ? 4 : 3);
+        magiasMax = Math.max(1, nivel + sabMod);
+      } else if (classe === "Paladino (Paladin)") {
+        tipoMagiaLabel = "Magias Preparadas";
+        truquesMax = 0;
+        magiasMax = Math.max(1, Math.floor(nivel / 2) + carMod);
+      } else if (classe === "Artífice (Artificer)") {
+        tipoMagiaLabel = "Magias Preparadas";
+        truquesMax = nivel >= 10 ? 4 : (nivel >= 5 ? 3 : 2);
+        magiasMax = Math.max(1, Math.floor(nivel / 2) + intMod);
+      } else if (classe === "Bardo (Bard)") {
+        tipoMagiaLabel = "Magias Conhecidas";
+        truquesMax = nivel >= 10 ? 4 : (nivel >= 4 ? 3 : 2);
+        const bardoSpells = [4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 15, 16, 18, 19, 19, 20, 22, 22, 22];
+        magiasMax = bardoSpells[nivel - 1] || 0;
+      } else if (classe === "Feiticeiro (Sorcerer)") {
+        tipoMagiaLabel = "Magias Conhecidas";
+        truquesMax = nivel >= 10 ? 6 : (nivel >= 4 ? 5 : 4);
+        const sorcSpells = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 12, 13, 13, 14, 14, 15, 15, 15, 15];
+        magiasMax = sorcSpells[nivel - 1] || 0;
+      } else if (classe === "Bruxo (Warlock)") {
+        tipoMagiaLabel = "Magias Conhecidas";
+        truquesMax = nivel >= 10 ? 4 : (nivel >= 4 ? 3 : 2);
+        const warSpells = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 12, 12, 14, 14, 16, 16, 18, 18, 18, 18];
+        magiasMax = warSpells[nivel - 1] || 0;
+      } else if (classe === "Patrulheiro (Ranger)") {
+        tipoMagiaLabel = "Magias Conhecidas";
+        truquesMax = 0;
+        const rangerSpells = [0, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11];
+        magiasMax = rangerSpells[nivel - 1] || 0;
+      } else if (subclasse === "Trapaceiro Arcano (Arcane Trickster)" || subclasse === "Cavaleiro Arcano (Eldritch Knight)") {
+        tipoMagiaLabel = "Magias Conhecidas";
+        if (nivel >= 3) {
+          truquesMax = nivel >= 10 ? 3 : 2;
+          const thirdSpells = [0, 0, 3, 4, 4, 4, 5, 6, 6, 7, 8, 8, 9, 10, 10, 10, 11, 11, 12, 13];
+          magiasMax = thirdSpells[nivel - 1] || 0;
+        }
+      }
+      let truquesAtuais = 0;
+      let magiasPorNivel = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0 };
+      let totalMagiasAtuais = 0;
+      document.querySelectorAll(".magia-select").forEach(sel => {
+        let val = sel.value;
+        if (val) {
+          let lvlSpell = getSpellLevel(val);
+          if (lvlSpell === 0) {
+            truquesAtuais++;
+          } else if (lvlSpell >= 1 && lvlSpell <= 9) {
+            magiasPorNivel[lvlSpell]++;
+            totalMagiasAtuais++;
+          }
+        }
+      });
+      const conjuradoresCompletos = ["Mago (Wizard)", "Clérigo (Cleric)", "Bardo (Bard)", "Druida (Druid)", "Feiticeiro (Sorcerer)", "Bruxo (Warlock)"];
+      const conjuradoresMeios = ["Paladino (Paladin)", "Patrulheiro (Ranger)"];
+      const conjuradoresTerco = ["Trapaceiro Arcano (Arcane Trickster)", "Cavaleiro Arcano (Eldritch Knight)"];
+      let slotsDisponiveis = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+      if (conjuradoresCompletos.includes(classe)) {
+        slotsDisponiveis = slotsDB.full[nivel - 1] || [0, 0, 0, 0, 0, 0, 0, 0, 0];
+      } else if (classe === "Artífice (Artificer)") {
+        slotsDisponiveis = slotsDB.artificer[nivel - 1] || [0, 0, 0, 0, 0, 0, 0, 0, 0];
+      } else if (conjuradoresMeios.includes(classe)) {
+        slotsDisponiveis = slotsDB.half[nivel - 1] || [0, 0, 0, 0, 0, 0, 0, 0, 0];
+      } else if (conjuradoresTerco.includes(subclasse)) {
+        slotsDisponiveis = slotsDB.third[nivel - 1] || [0, 0, 0, 0, 0, 0, 0, 0, 0];
+      }
+      let magiasHTML = "";
+      if (truquesMax > 0) {
+        magiasHTML += `
+          <div style="margin-bottom:4px;">
+              <b>Truques Escolhidos:</b> <span style="color:${getCor(truquesAtuais, truquesMax)}">${truquesAtuais} / ${truquesMax}</span>
+          </div>`;
+      }
+      if (magiasMax > 0) {
+        magiasHTML += `
+          <div style="margin-bottom:2px; margin-top:4px;">
+              <b>Magias escolhidas:</b>
+          </div>`;
+      }
+      slotsDisponiveis.forEach((slots, idx) => {
+        let spellLvl = idx + 1;
+        if (slots > 0) {
+          let sufixoLimite = "";
+          if (tipoMagiaLabel === "Magias Preparadas" && classe === "Mago (Wizard)") {
+            let limNatural = 0;
+            if (spellLvl === 1) limNatural = nivel >= 2 ? 8 : 6;
+            else if (spellLvl >= 2 && spellLvl <= 8) limNatural = nivel >= (spellLvl * 2) ? 4 : 2;
+            else if (spellLvl === 9) limNatural = nivel >= 20 ? 8 : (nivel === 19 ? 6 : (nivel === 18 ? 4 : 2));
+            sufixoLimite = ` / ${limNatural}`;
+          }
+          magiasHTML += `
+            <div style="margin-bottom:4px; padding-left: 12px; font-size: 10.5px; color: #666;">
+                • ${spellLvl}º Nível: <span style="font-weight:bold; color:#333;">${magiasPorNivel[spellLvl]} escolhida(s)${sufixoLimite}</span>
+            </div>`;
+        }
+      });
+      if (magiasMax > 0) {
+        magiasHTML += `
+          <div style="margin-bottom:4px; margin-top: 4px; border-top: 1px dotted #ccc; padding-top: 4px;">
+              <b>Total de ${tipoMagiaLabel}:</b> <span style="color:${getCor(totalMagiasAtuais, magiasMax)}">${totalMagiasAtuais} / ${magiasMax}</span>
+          </div>`;
+      }
       const boxConteudo = document.getElementById("conteudo-resumo-pericias");
       if (boxConteudo) {
         let genasiRowHTML = "";
@@ -10592,9 +10710,10 @@
                 <div style="margin-bottom:4px;">
                     <b>Proficiências:</b> <span style="color:${getCor(totalProfMarcada, totalProfPermitida)}">${totalProfMarcada} / ${totalProfPermitida}</span>
                 </div>
-                <div>
+                <div style="margin-bottom:4px;">
                     <b>Especializações:</b> <span style="color:${getCor(totalExpMarcada, totalExpPermitida)}">${totalExpMarcada} / ${totalExpPermitida}</span>
                 </div>
+                ${magiasHTML}
             </div>
         `;
       }
