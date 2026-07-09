@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel de Triagem Arcano Definitivo: Mago (D&D 5E)</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f0ea;
+            color: #1a1105;
+        }
+        .page {
+            width: 29.7cm;
+            height: 21cm;
+            background-color: #ffffff;
+            padding: 1.2cm;
+            margin: 1cm auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            position: relative;
+            page-break-after: always;
+        }
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex-grow: 1;
+        }
+        .flow-row {
+            display: flex;
+            gap: 15px;
+            align-items: stretch;
+        }
+        .flow-block {
+            flex: 1;
+            border-radius: 8px;
+            padding: 14px;
+            font-size: 10.5px;
+            line-height: 1.45;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .columns-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 1cm;
+            flex-grow: 1;
+        }
+        .columns-3 {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr 1fr;
+            grid-gap: 0.6cm;
+            flex-grow: 1;
+        }
+        .sub-column {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        h1 {
+            font-size: 20px;
+            color: #7a2021;
+            border-bottom: 3px double #7a2021;
+            margin: 0 0 5px 0;
+            padding-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: center;
+        }
+        .block-title {
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 11px;
+            margin-bottom: 5px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            padding-bottom: 3px;
+            letter-spacing: 0.3px;
+        }
+        /* Estilização Semântica dos Cards didáticos */
+        .step-neutral {
+            background-color: #fdfaf4;
+            border: 2px solid #dcd1b4;
+        }
+        .step-decision {
+            background-color: #1a1105;
+            color: #fdfaf4;
+            border: 2px solid #4a3319;
+        }
+        .step-success {
+            background-color: #ebf5fb;
+            border: 2px solid #27ae60;
+        }
+        .step-fail {
+            background-color: #f9ebea;
+            border: 2px solid #c0392b;
+        }
+        .badge-container {
+            display: flex;
+            gap: 8px;
+            margin-top: 6px;
+        }
+        .badge {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 8.5px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .badge-yes { background-color: #27ae60; color: white; }
+        .badge-no { background-color: #c0392b; color: white; }
+        
+        .lexicon-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 10px;
+            background-color: #fdfaf4;
+            border: 1px solid #dcd1b4;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 5px;
+        }
+        .lexicon-item { font-size: 9px; line-height: 1.35; }
+        .lexicon-item strong { color: #a04000; text-transform: uppercase; font-size: 8.5px; }
+        
+        ul { margin: 0; padding-left: 15px; }
+        li { margin-bottom: 2px; }
+        .footer {
+            position: absolute;
+            bottom: 0.4cm;
+            right: 1.2cm;
+            font-size: 8.5px;
+            color: #999;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        @media print {
+            body { background-color: #f4f0ea !important; }
+            .page { 
+                margin: 0; 
+                box-shadow: none; 
+                page-break-after: always; 
+                background-color: #ffffff !important;
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact;
+            }
+            .step-neutral { background-color: #fdfaf4 !important; border: 2px solid #dcd1b4 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .step-decision { background-color: #1a1105 !important; color: #fdfaf4 !important; border: 2px solid #4a3319 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .step-success { background-color: #ebf5fb !important; border: 2px solid #27ae60 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .step-fail { background-color: #f9ebea !important; border: 2px solid #c0392b !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .badge-yes { background-color: #27ae60 !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .badge-no { background-color: #c0392b !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .lexicon-grid { background-color: #fdfaf4 !important; border: 1px solid #dcd1b4 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            @page { size: A4 landscape; margin: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PÁGINA 1: TRIAGEM DE CONJURAÇÃO PADRÃO (NÍVEIS 1-17) -->
+    <div class="page">
+        <h1>Painel de Triagem Arcano: Conjurando Magias (Níveis 1-17)</h1>
+        
+        <div class="lexicon-grid">
+            <div class="lexicon-item"><strong>Livro de Magias [PHB 114]:</strong> Sua coleção pessoal de fórmulas arcanas.</div>
+            <div class="lexicon-item"><strong>Magias Preparadas [PHB 114]:</strong> Selecionadas após o descanso longo para o dia.</div>
+            <div class="lexicon-item"><strong>Espaços de Magia [PHB 113]:</strong> Recurso diário consumido a cada conjuração.</div>
+            <div class="lexicon-item"><strong>Concentração [PHB 203]:</strong> Sustento ativo; passível de quebra por dano.</div>
+            <div class="lexicon-item"><strong>Ritual [PHB 201]:</strong> Execução sem gastar espaço; adiciona 10min.</div>
+            <div class="lexicon-item"><strong>Recuperação [PHB 115]:</strong> Recarrega espaços (até 5º nível) no descanso curto.</div>
+        </div>
+
+        <div class="flow-container">
+            <!-- LINHA 1: TRIAGEM FÍSICA INICIAL -->
+            <div class="flow-row">
+                <div class="flow-block step-neutral">
+                    <div class="block-title" style="color:#7a2021;">Filtro Inicial 1: Restrições de Componentes do Cenário [PHB 203]</div>
+                    Consulte a descrição da magia. Você cumpre as condições físicas para fornecer os componentes? [PHB 203]
+                    <ul>
+                        <li><strong>Verbal (V):</strong> Consegue falar livremente? (Impedido por mordaças ou áreas sob a magia *silêncio*).</li>
+                        <li><strong>Somático (S):</strong> Possui pelo menos uma das mãos livre para executar gestos místicos?</li>
+                        <li><strong>Material (M):</strong> Tem os itens listados, uma bolsa de componentes ou foco arcano? (Itens consumidos com custo em po não podem ser substituídos).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- LINHA 2: CAIXA DE DECISÃO DO TRUQUE -->
+            <div class="flow-row">
+                <div class="flow-block step-decision" style="flex: 1.2;">
+                    <div class="block-title" style="color:#dcd1b4;">Decisão A: A magia pretendida pertence à sua lista de Truques conhecidos? [PHB 201]</div>
+                    Truques representam magias menores e corriqueiras fixadas permanentemente no seu repertório.
+                    <div class="badge-container">
+                        <span class="badge badge-yes">Se Sim ➔ Olhe para a Direita</span>
+                        <span class="badge badge-no">Se Não ➔ Prossiga para a Próxima Linha</span>
+                    </div>
+                </div>
+                <div class="flow-block step-success">
+                    <div class="block-title" style="color:#27ae60;">✔ Resolução A: Conjurar Truque de Nível 0 [PHB 201]</div>
+                    A magia é executada com sucesso.
+                    <ul>
+                        <li>Nenhum espaço de magia (*Spell Slot*) é consumido.</li>
+                        <li>O componente material só é gasto se a descrição indicar consumo.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- LINHA 3: CONHECIMENTO & LIVRO -->
+            <div class="flow-row">
+                <div class="flow-block step-decision">
+                    <div class="block-title" style="color:#dcd1b4;">Decisão B: A magia está devidamente transcrita no seu Livro de Magias? [PHB 114]</div>
+                    <div class="badge-container">
+                        <span class="badge badge-yes">Sim ➔ Seguir Fluxo</span>
+                        <span class="badge badge-no">Não ➔ Bloqueio B</span>
+                    </div>
+                </div>
+                <div class="flow-block step-fail">
+                    <div class="block-title" style="color:#c0392b;">Bloqueio B: Conhecimento Ausente</div>
+                    Você não pode conjurá-la. Você deve localizá-la no mundo (pergaminhos/grimórios) e gastar tempo e ouro para transcrevê-la.
+                </div>
+            </div>
+
+            <!-- LINHA 4: RITUAIS VS PREPARAÇÃO DIÁRIA -->
+            <div class="flow-row">
+                <div class="flow-block step-neutral" style="font-size: 9.5px;">
+                    <strong>Rota Alternativa: Conjuração como Ritual [PHB 201]</strong><br>
+                    A magia possui a propriedade de ritual? Se sim, você pode optar por executá-la **sem gastar espaço e sem tê-la preparada**, somando 10 minutos ao tempo base de execução. Gasta concentração.
+                </div>
+                <div class="flow-block step-decision">
+                    <div class="block-title" style="color:#dcd1b4;">Decisão C: Para conjuração normal, ela está Preparada para hoje? [PHB 114]</div>
+                    <div class="badge-container">
+                        <span class="badge badge-yes">Sim ➔ Checar Slots</span>
+                        <span class="badge badge-no">Não ➔ Bloqueio C</span>
+                    </div>
+                </div>
+                <div class="flow-block step-fail">
+                    <div class="block-title" style="color:#c0392b;">Bloqueio C: Magia Adormecida</div>
+                    Você não pode conjurar. Conclua um **Descanso Longo** para organizar sua lista de magias preparadas mentalmente.
+                </div>
+            </div>
+
+            <!-- LINHA 5: FILTRO FINAL DE RECURSOS -->
+            <div class="flow-row">
+                <div class="flow-block step-decision" style="flex: 0.8;">
+                    <div class="block-title" style="color:#dcd1b4;">Decisão D: Possui Espaços livres?</div>
+                    Você tem espaços disponíveis no nível base dela ou maior? [PHB 113]
+                    <div class="badge-container"><span class="badge badge-no">Não ➔ Vá para a Pág. 2</span></div>
+                </div>
+                <div class="flow-block step-success" style="flex: 1.2;">
+                    <div class="block-title" style="color:#27ae60;">✔ Resolução D: Conjuração Concluída [PHB 201]</div>
+                    A magia manifesta-se no mundo. O espaço de magia do nível escolhido é consumido. Se usar um espaço de nível superior, aplique os bônus de amplificação descritos na magia.
+                </div>
+            </div>
+        </div>
+        <div class="footer">D&D 5E • Painel do Mestre • Página 1</div>
+    </div>
+
+    <!-- PÁGINA 2: GESTÃO DE ESCASSEZ VS ALTA PROGRESSÃO (NÍVEIS 18-20) -->
+    <div class="page">
+        <h1>Mapeamento Avançado de Recursos e Alta Progressão (18-20)</h1>
+        
+        <div class="columns-2">
+            <!-- COLUNA ESQUERDA: GESTÃO DE ESCASSEZ (NÍVEIS 1-17) -->
+            <div class="sub-column">
+                <h2 style="border-color:#c0392b; text-transform: uppercase; font-size: 12px; color: #a04000; font-weight: bold; border-bottom: 1px solid #dcd1b4; padding-bottom: 2px; margin: 0;">Seção I: Esgotamento de Espaços (1-17)</h2>
+                
+                <div class="flow-block step-decision" style="justify-content: flex-start;">
+                    <div class="block-title" style="color:#dcd1b4;">Verificação de Recarga</div>
+                    Você já ativou a sua habilidade de Recuperação Arcana desde o seu último descanso longo? [PHB 115]
+                    <div class="badge-container">
+                        <span class="badge badge-yes">Sim ➔ Esgotamento Absoluto</span>
+                        <span class="badge badge-no">Não ➔ Ativar Descanso</span>
+                    </div>
+                </div>
+
+                <div class="flow-block step-fail">
+                    <div class="block-title" style="color:#c0392b;">Bloqueio de Recarga: Canalização Esgotada</div>
+                    Sua mente está exausta. Você **não pode conjurar**. É obrigado concluir um **Descanso Longo (8 horas)** para restabelecer seus espaços e vigor místico.
+                </div>
+
+                <div class="flow-block step-neutral">
+                    <div class="block-title" style="color:#7a2021;">Rota de Alívio: Recuperação Arcana [PHB 115]</div>
+                    Se o espaço necessário for de **5º nível ou inferior**, realize um descanso curto (1 hora). Você pode restaurar espaços cujos níveis combinados somem até metade do seu nível de mago (arredondado para cima).
+                </div>
+
+                <div class="lexicon-box" style="background-color:#fffdf7;">
+                    <div class="block-title" style="color:#333;">Modificadores Circunstanciais de Ataque [PHB 205]</div>
+                    • <strong>Ataque de Magia:</strong> d20 + Mod. INT + Bônus de Proficiência. Sofre **desvantagem** se houver inimigos conscientes a até 1,5m vigiando você.<br>
+                    • <strong>CD de Salvaguarda:</strong> 8 + Bônus de Proficiência + Mod. INT.
+                </div>
+            </div>
+
+            <!-- COLUNA DIREITA: ALTA PROGRESSÃO LENDÁRIA (NÍVEIS 18-20) -->
+            <div class="sub-column">
+                <h2 style="border-color:#a04000; text-transform: uppercase; font-size: 12px; color: #a04000; font-weight: bold; border-bottom: 1px solid #dcd1b4; padding-bottom: 2px; margin: 0;">Seção II: Quebra de Limites Lendários (18-20)</h2>
+                
+                <div class="flow-block step-neutral" style="justify-content: flex-start;">
+                    <div class="block-title" style="color:#a04000;">Níveis 18-19: Mestria em Magias [PHB 115]</div>
+                    A magia escolhida é uma das suas duas magias selecionadas de 1º ou 2º nível para a característica Mestria em Magias? [PHB 115]
+                    <div class="badge-container">
+                        <span class="badge badge-yes" style="background-color:#a04000;">Sim ➔ Livre de Espaços</span>
+                    </div>
+                    <p style="margin: 5px 0 0 0; font-size:9px;">• <strong>Se SIM:</strong> Você pode conjurá-la em seu nível básico **sem gastar espaços de magia**, contanto que a tenha preparada.<br>• <strong>Se NÃO:</strong> Siga as regras normais de restrição de espaços (Coluna Esquerda).</p>
+                </div>
+
+                <div class="flow-block step-decision">
+                    <div class="block-title" style="color:#dcd1b4;">Nível 20: Verificação de Magias Assinadas [PHB 115]</div>
+                    A magia de 3º nível faz parte de suas duas Magias Assinadas escolhidas no ápice de classe? [PHB 115]
+                    <div class="badge-container">
+                        <span class="badge badge-yes">Sim ➔ Validar Uso Diário</span>
+                        <span class="badge badge-no">Não ➔ Exige Slots Normais</span>
+                    </div>
+                </div>
+
+                <div class="flow-block step-success">
+                    <div class="block-title" style="color:#27ae60;">✔ Resolução Lendária: Magia Assinada Ativa</div>
+                    Se você ainda não usou a gratuidade desta magia assinada específica desde o seu último descanso, **conjure-a diretamente no 3º nível sem gastar espaços**. Ela conta como sempre preparada.
+                </div>
+
+                <div class="flow-block step-fail" style="border-color:#e67e22; background-color:#fef5e7;">
+                    <div class="block-title" style="color:#e67e22;">Gatilho de Sobrecarga: Slots Substitutos</div>
+                    Se a gratuidade diária da Magia Assinada já foi gasta, você ainda pode conjurar o feitiço, mas será **obrigado a queimar um espaço de magia normal** de 3º nível ou superior para sustentá-lo.
+                </div>
+            </div>
+        </div>
+        <div class="footer">D&D 5E • Painel do Mestre • Página 2</div>
+    </div>
+
+    <!-- PÁGINA 3: ADICIONAL DIDÁTICO - RESOLUÇÃO DE ÁREAS DE EFEITO -->
+    <div class="page">
+        <h1>Resolução de Efeitos: Alvos e Formatos de Área de Efeito</h1>
+        
+        <div class="columns-3">
+            <!-- Coluna 1: Regras de Trajetória -->
+            <div class="sub-column">
+                <div class="flow-block step-neutral" style="height: 100%;">
+                    <div class="block-title" style="color:#7a2021;">Caminho Desimpedido [PHB 204]</div>
+                    Para que uma magia afete um alvo ou ponto no espaço, é obrigatório possuir uma trajetória desobstruída:
+                    <ul>
+                        <li>O alvo **não pode estar sob Cobertura Total** em relação ao conjurador.</li>
+                        <li>Se você lançar uma área de efeito em um ponto invisível bloqueado por uma parede, a magia irrompe na face mais próxima do obstáculo sólido.</li>
+                        <li><strong>Alvejar a si mesmo:</strong> Se a magia permite escolher uma criatura, você pode se escolher, a menos que o texto exija explicitamente um alvo hostil.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Coluna 2: Formatos Volumétricos (As 5 Geometrias) -->
+            <div class="sub-column" style="grid-column: span 2; display: grid; grid-template-columns: 1fr 1fr; grid-gap: 12px;">
+                <div class="flow-block step-success">
+                    <div class="block-title">Cone [PHB 204]</div>
+                    Estende-se na direção escolhida a partir do ponto de origem. A largura do cone em qualquer ponto equivale à sua distância da origem. A origem **não é inclusa** na área de efeito.
+                </div>
+                <div class="flow-block step-success">
+                    <div class="block-title">Cubo [PHB 204]</div>
+                    Você escolhe o ponto de origem, localizado em qualquer lugar de uma das faces do efeito cúbico. O tamanho é a extensão de seus lados. A origem **não é inclusa** na área.
+                </div>
+                <div class="flow-block step-success">
+                    <div class="block-title">Cilindro [PHB 204]</div>
+                    A origem é o centro de um círculo de raio específico. A energia expande-se em linhas retas até o perímetro da base e dispara para cima ou baixo. A origem **está inclusa** na área.
+                </div>
+                <div class="flow-block step-success">
+                    <div class="block-title">Linha & Esfera [PHB 205]</div>
+                    • <strong>Linha:</strong> Estende-se em caminho reto cobrindo sua largura. Origem desconsiderada.<br>
+                    • <strong>Esfera:</strong> Expande-se simetricamente a partir do ponto central (raio). A origem **está inclusa** na área.
+                </div>
+            </div>
+        </div>
+        <div class="footer">D&D 5E • Painel do Mestre • Página 3</div>
+    </div>
+
+    <!-- PÁGINA 4: ADICIONAL DIDÁTICO - MANUTENÇÃO E CONCENTRAÇÃO -->
+    <div class="page">
+        <h1>Painel de Sustentação de Magias e Concentração</h1>
+        
+        <div class="columns-2">
+            <!-- COLUNA ESQUERDA: TRIAGEM DE QUEBRA DE CONCENTRAÇÃO -->
+            <div class="sub-column">
+                <h2 style="border-color:#c0392b; text-transform: uppercase; font-size: 12px; color: #a04000; font-weight: bold; border-bottom: 1px solid #dcd1b4; padding-bottom: 2px; margin: 0;">Gatilhos de Quebra Automática [PHB 203]</h2>
+                
+                <div class="flow-block step-fail">
+                    <div class="block-title">Gatilho 1: Nova Concentração</div>
+                    Você perde a concentração em uma magia ativa no momento exato em que começa a **conjurar outra magia que também exija concentração**. É impossível manter duas magias deste tipo ativas ao mesmo tempo.
+                </div>
+
+                <div class="flow-block step-decision">
+                    <div class="block-title" style="color:#fdfaf4;">Gatilho 2: Sofreu Dano em Combate?</div>
+                    Sempre que sofrer dano (flechas, magias, sopro de dragão), faça uma Salvaguarda de Constituição.
+                    <div style="font-weight: normal; margin-top: 5px; font-size: 9.5px;">
+                        <strong>Cálculo da CD:</strong> O alvo deve bater a CD de **10** ou **metade do dano sofrido** (o que for maior). Fontes de dano separadas exigem rolagens de salvaguarda totalmente separadas.
+                    </div>
+                </div>
+
+                <div class="flow-block step-fail">
+                    <div class="block-title">Gatilho 3: Estados de Incapacidade</div>
+                    Você perde o controle e encerra a magia instantaneamente se cair sob a condição **Incapacitado** ou se o seu personagem for morto.
+                </div>
+            </div>
+
+            <!-- COLUNA DIREITA: O QUE NÃO QUEBRA E EVENTOS AMBIENTAIS -->
+            <div class="sub-column">
+                <h2 style="border-color:#27ae60; text-transform: uppercase; font-size: 12px; color: #a04000; font-weight: bold; border-bottom: 1px solid #dcd1b4; padding-bottom: 2px; margin: 0;">O que NÃO quebra a Concentração</h2>
+                
+                <div class="flow-block step-success">
+                    <div class="block-title">Atividades Livres Permitidas [PHB 203]</div>
+                    Realizar atividades normais da rodada não interfere com o sustento da sua magia ativa. Você pode executar livremente:
+                    <ul>
+                        <li>Mover-se por todo o seu deslocamento no mapa.</li>
+                        <li>Desferir ataques físicos normais (*Ação de Atacar*).</li>
+                        <li>Conjurar magias instantâneas ou truques que não exijam concentração.</li>
+                    </ul>
+                </div>
+
+                <div class="flow-block step-neutral">
+                    <div class="block-title" style="color:#7a2021;">Decreto do Mestre: Fenômenos Ambientais [PHB 204]</div>
+                    O Mestre pode julgar que eventos extremos no ambiente (como uma onda gigante quebrando no convés de um navio em tempestade) abalam o foco místico. nestes casos raros, o conjurador deve passar em uma salvaguarda de **CON CD 10** para não perder a magia.
+                </div>
+            </div>
+        </div>
+        <div class="footer">D&D 5E • Painel do Mestre • Página 4</div>
+    </div>
+
+</body>
+</html>
