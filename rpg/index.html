@@ -5,60 +5,227 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arquivos da Pasta</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; }
-        ul { list-style-type: none; padding: 0; }
-        li { margin: 10px 0; }
-        a { color: #0366d6; text-decoration: none; font-size: 18px; }
-        a:hover { text-decoration: underline; }
+        /* Cores e Configurações Modernas */
+        :root {
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-main: #24292e;
+            --text-muted: #586069;
+            --link-color: #0366d6;
+            --border-color: #e1e4e8;
+            --hover-bg: #f6f8fa;
+        }
+
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        /* Breadcrumb Minimalista */
+        .breadcrumb {
+            padding: 0;
+            list-style: none;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+        .breadcrumb li {
+            display: inline;
+        }
+        .breadcrumb li+li:before {
+            padding: 0 8px;
+            color: var(--text-muted);
+            content: "/";
+        }
+        .breadcrumb li a {
+            color: var(--link-color);
+            text-decoration: none;
+        }
+        .breadcrumb li a:hover {
+            text-decoration: underline;
+        }
+        .breadcrumb li.atual {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        /* Painel/Card de Arquivos */
+        .file-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .file-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* Linha do Arquivo */
+        .file-item {
+            border-bottom: 1px solid var(--border-color);
+        }
+        .file-item:last-child {
+            border-bottom: none;
+        }
+
+        .file-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            color: var(--text-main);
+            text-decoration: none;
+            transition: background-color 0.2s ease;
+        }
+
+        .file-link:hover {
+            background-color: var(--hover-bg);
+        }
+
+        /* Lado Esquerdo: Ícone + Nome */
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .file-info svg {
+            flex-shrink: 0;
+        }
+
+        .file-link:hover .file-name {
+            color: var(--link-color);
+        }
+
+        /* Lado Direito: Tamanho/Meta */
+        .file-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-family: monospace;
+        }
+
+        /* Estado de Carregamento e Vazio */
+        .status-message {
+            padding: 30px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 15px;
+        }
     </style>
 </head>
 <body>
 
-    <h1>Lista de Arquivos</h1>
-    <ul id="lista-arquivos">Carregando arquivos...</ul>
+<div class="container">
+    <ul class="breadcrumb">
+        <li><a href="../">Início</a></li>
+        <li class="atual">RPG</li>
+    </ul>
 
-    <script>
-        // === PREENCHA AQUI COM OS SEUS DADOS ===
-        const usuario = 'epietragalla';
-        const repositorio = 'epietragalla.github.io';
-        const pasta = 'rpg'; 
-        // =======================================
+    <h1>Arquivos Disponíveis</h1>
 
-        const urlAPI = `https://api.github.com/repos/${usuario}/${repositorio}/contents/${pasta}`;
+    <div class="file-panel">
+        <ul id="lista-arquivos" class="file-list">
+            <div class="status-message">Buscando arquivos...</div>
+        </ul>
+    </div>
+</div>
 
-        fetch(urlAPI)
-            .then(response => {
-                if (!response.ok) throw new Error('Erro ao buscar dados do GitHub');
-                return response.json();
-            })
-            .then(arquivos => {
-                const listaUl = document.getElementById('lista-arquivos');
-                listaUl.innerHTML = ''; // Limpa o "Carregando..."
+<script>
+    // === SEUS DADOS CONFIGURADOS ===
+    const usuario = 'epietragalla';
+    const repositorio = 'epietragalla.github.io';
+    const pasta = 'rpg'; 
+    // ===============================
 
-                // Filtra para não mostrar o próprio index.html na lista
-                const arquivosFiltrados = arquivos.filter(arq => arq.name !== 'index.html');
+    const urlAPI = `https://api.github.com/repos/${usuario}/${repositorio}/contents/${pasta}`;
 
-                if (arquivosFiltrados.length === 0) {
-                    listaUl.innerHTML = '<li>Nenhum arquivo encontrado nesta pasta.</li>';
-                    return;
-                }
+    // Ícones em formato SVG limpo
+    const iconePasta = `<svg width="20" height="20" viewBox="0 0 24 24" fill="#54aeff" xmlns="http://www.w3.org/2000/svg"><path d="M10 4H4C2.9 4 2.01 4.9 2.01 6L2 18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V8C22 6.9 21.1 6 20 6H12L10 4Z"/></svg>`;
+    const iconeArquivo = `<svg width="20" height="20" viewBox="0 0 24 24" fill="#8b949e" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2ZM16 18H8V16H16V18ZM16 14H8V12H16V14ZM13 9V3.5L18.5 9H13Z"/></svg>`;
 
-                arquivosFiltrados.forEach(arquivo => {
-                    const li = document.createElement('li');
-                    const a = document.createElement('a');
-                    
-                    // Define o link para o arquivo (usando o nome relativo)
-                    a.href = arquivo.name; 
-                    a.textContent = arquivo.name;
-                    
-                    li.appendChild(a);
-                    listaUl.appendChild(li);
-                });
-            })
-            .catch(erro => {
-                console.error(erro);
-                document.getElementById('lista-arquivos').innerHTML = '<li>Erro ao carregar os arquivos. Verifique as configurações.</li>';
+    // Função para formatar o tamanho do arquivo de Bytes para KB/MB
+    function formatarTamanho(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const tamanhos = ['Bytes', 'KB', 'MB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + tamanhos[i];
+    }
+
+    fetch(urlAPI)
+        .then(response => {
+            if (!response.ok) throw new Error('Erro ao buscar dados');
+            return response.json();
+        })
+        .then(arquivos => {
+            const listaUl = document.getElementById('lista-arquivos');
+            listaUl.innerHTML = ''; 
+
+            // Filtra o index.html
+            const arquivosFiltrados = arquivos.filter(arq => arq.name !== 'index.html');
+
+            if (arquivosFiltrados.length === 0) {
+                listaUl.innerHTML = '<div class="status-message">Nenhum arquivo encontrado nesta pasta.</div>';
+                return;
+            }
+
+            // Ordena colocando pastas primeiro, depois arquivos
+            arquivosFiltrados.sort((a, b) => (b.type === 'dir') - (a.type === 'dir'));
+
+            arquivosFiltrados.forEach(arquivo => {
+                const li = document.createElement('li');
+                li.className = 'file-item';
+
+                // Verifica o tipo para escolher o ícone e o link correto
+                const ehPasta = arquivo.type === 'dir';
+                const icone = ehPasta ? iconePasta : iconeArquivo;
+                const tamanho = ehPasta ? 'Pasta' : formatarTamanho(arquivo.size);
+                
+                // Se for pasta, adiciona uma barra no final para navegar certo
+                const linkDestino = ehPasta ? `${arquivo.name}/` : arquivo.name;
+
+                li.innerHTML = `
+                    <a href="${linkDestino}" class="file-link">
+                        <div class="file-info">
+                            ${icone}
+                            <span class="file-name">${arquivo.name}</span>
+                        </div>
+                        <div class="file-meta">${tamanho}</div>
+                    </a>
+                `;
+                
+                listaUl.appendChild(li);
             });
-    </script>
+        })
+        .catch(erro => {
+            console.error(erro);
+            document.getElementById('lista-arquivos').innerHTML = '<div class="status-message" style="color: #cf222e;">Erro ao carregar os arquivos. Verifique a conexão ou repositório.</div>';
+        });
+</script>
+
 </body>
 </html>
