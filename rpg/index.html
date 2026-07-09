@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arquivos da Pasta</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        ul { list-style-type: none; padding: 0; }
+        li { margin: 10px 0; }
+        a { color: #0366d6; text-decoration: none; font-size: 18px; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <h1>Lista de Arquivos</h1>
+    <ul id="lista-arquivos">Carregando arquivos...</ul>
+
+    <script>
+        // === PREENCHA AQUI COM OS SEUS DADOS ===
+        const usuario = 'epietragalla';
+        const repositorio = 'epietragalla/epietragalla.github.io';
+        const pasta = 'rpg'; 
+        // =======================================
+
+        const urlAPI = `https://api.github.com/repos/${usuario}/${repositorio}/contents/${pasta}`;
+
+        fetch(urlAPI)
+            .then(response => {
+                if (!response.ok) throw new Error('Erro ao buscar dados do GitHub');
+                return response.json();
+            })
+            .then(arquivos => {
+                const listaUl = document.getElementById('lista-arquivos');
+                listaUl.innerHTML = ''; // Limpa o "Carregando..."
+
+                // Filtra para não mostrar o próprio index.html na lista
+                const arquivosFiltrados = arquivos.filter(arq => arq.name !== 'index.html');
+
+                if (arquivosFiltrados.length === 0) {
+                    listaUl.innerHTML = '<li>Nenhum arquivo encontrado nesta pasta.</li>';
+                    return;
+                }
+
+                arquivosFiltrados.forEach(arquivo => {
+                    const li = document.createElement('li');
+                    const a = document.createElement('a');
+                    
+                    // Define o link para o arquivo (usando o nome relativo)
+                    a.href = arquivo.name; 
+                    a.textContent = arquivo.name;
+                    
+                    li.appendChild(a);
+                    listaUl.appendChild(li);
+                });
+            })
+            .catch(erro => {
+                console.error(erro);
+                document.getElementById('lista-arquivos').innerHTML = '<li>Erro ao carregar os arquivos. Verifique as configurações.</li>';
+            });
+    </script>
+</body>
+</html>
