@@ -10603,13 +10603,45 @@
       el.dataset.manual = currentManual + delta;
       calcular();
     }
-    function atualizarResumoPericias() {
+    const dadosMagiasGenasi = {
+      "Genasi do Ar": {
+        truque: "Toque Chocante",
+        m3: "Queda Suave",
+        m5: "Levitação"
+      },
+      "Genasi da Terra": {
+        truque: "Moldar Terra",
+        m3: "Passos Sem Pegadas",
+        m5: "Mesclar-se à Rocha"
+      },
+      "Genasi do Fogo": {
+        truque: "Chama Sagrada",
+        m3: "Mãos Flamejantes",
+        m5: "Chama Contínua"
+      },
+      "Genasi da Água": {
+        truque: "Moldar Água",
+        m3: "Criar ou Destruir Água",
+        m5: "Restauração Menor"
+      }
+    };
+   function atualizarResumoPericias() {
       const getCor = (atual, limite) => atual > limite ? "red" : (atual === limite ? "green" : "#b8860b");
       const classe = document.getElementById("class_name").value;
       const raca = document.getElementById("race_name").value;
+      const subraca = document.getElementById("subrace_name").value;
       const subclasse = document.getElementById("subclass_name").value;
       const antec = document.getElementById("bg_name").value;
       const nivel = parseInt(document.getElementById("level_val").value) || 1;
+      
+      // BANCO DE DADOS INTERNO DO GENASI (Para evitar quebras de escopo)
+      const dadosMagiasGenasi = {
+        "Genasi do Ar": { truque: "Toque Chocante", m3: "Queda Suave", m5: "Levitação" },
+        "Genasi da Terra": { truque: "Moldar Terra", m3: "Passos Sem Pegadas", m5: "Mesclar-se à Rocha" },
+        "Genasi do Fogo": { truque: "Chama Sagrada", m3: "Mãos Flamejantes", m5: "Chama Contínua" },
+        "Genasi da Água": { truque: "Moldar Água", m3: "Criar ou Destruir Água", m5: "Restauração Menor" }
+      };
+
       let totalASIPermitida = 0;
       const niveisASI = [4, 8, 12, 16, 19];
       niveisASI.forEach(n => { if (nivel >= n) totalASIPermitida++; });
@@ -10619,17 +10651,25 @@
       } else if (classe === "Ladino (Rogue)") {
         if (nivel >= 10) totalASIPermitida++;
       }
+      
       let totalProfPermitida = (regrasPericiasDND.classes[classe] || 0) + (regrasPericiasDND.racas[raca] || 0) + (antec ? 2 : 0);
       let totalExpPermitida = (classe && regrasPericiasDND.expertise[classe]) ? regrasPericiasDND.expertise[classe](nivel) : 0;
       const totalProfMarcada = document.querySelectorAll('.skill-prof[data-prof-level="1"], .skill-prof[data-prof-level="2"]').length;
       const totalExpMarcada = document.querySelectorAll('.skill-prof[data-prof-level="2"]').length;
-      const talentosSel = Array.from(document.querySelectorAll(".talento-select")).filter(sel => sel.value !== "").length;
-      const isHumanoVariante = raca.includes("Humano");
-      const talentosGastos = Math.max(0, talentosSel - (isHumanoVariante ? 1 : 0));
+      const talentosGastos = Math.max(0, Array.from(document.querySelectorAll(".talento-select")).filter(sel => sel.value !== "").length - (raca.includes("Humano") ? 1 : 0));
+      
       let somaHabilidadesBase = 0;
-      attrs.forEach(at => {
-        somaHabilidadesBase += parseInt(document.getElementById(`${at.id}_score`).value) || 0;
-      });
+      if (typeof attrs !== "undefined") {
+        attrs.forEach(at => {
+          somaHabilidadesBase += parseInt(document.getElementById(`${at.id}_score`)?.value || 0);
+        });
+      } else {
+        // Fallback caso a constante global 'attrs' não esteja acessível neste escopo
+        ["FOR", "DES", "CON", "INT", "SAB", "CAR"].forEach(id => {
+          somaHabilidadesBase += parseInt(document.getElementById(`${id}_score`)?.value || 0);
+        });
+      }
+      
       let pontosExtras = Math.max(0, somaHabilidadesBase - 72);
       let totalGenasiUsado = 0;
       if (raca === "Genasi") {
@@ -10638,6 +10678,7 @@
       }
       const melhoriasViaPontos = pontosExtras / 2;
       const totalASIUsada = talentosGastos + melhoriasViaPontos;
+      
       let detalhesHTML = `<ul style="padding-left:15px; margin:0; list-style:square;">`;
       if (raca === "Genasi") {
         detalhesHTML += `<li><b>Melhorias de Genasi:</b> +2pts em uma habilidade e +1pt em outra habilidade ou +1pt em três habilidades</li>`;
@@ -10654,6 +10695,7 @@
       if (antec) {
         detalhesHTML += `<li><b>Antecedente:</b> +2 Proficiências</li>`;
       }
+      
       let expExibir = totalExpPermitida;
       regrasPericiasDND.especiais.forEach(regra => {
         if (regra.check(classe, subclasse, nivel)) {
@@ -10668,6 +10710,7 @@
         detalhesHTML += `<li><b>Classe:</b> ${expExibir} Especializações</li>`;
       }
       detalhesHTML += `</ul>`;
+
       const magiasSubclasseDB = {
         "Devoção": { tipo: "Juramento", 3: ["Proteção Contra Bem e Mal", "Santuário"], 5: ["Zona da Verdade", "Restauração Menor"], 9: ["Sinal de Esperança", "Dissipar Magia"], 13: ["Movimentação Livre", "Guardião da Fé"], 17: ["Comunhão", "Coluna de Chamas"] },
         "Anciões": { tipo: "Juramento", 3: ["Auxílio de Enredar", "Falar com Animais"], 5: ["Passo Nebuloso", "Raio Lunar"], 9: ["Ampliar Plantas", "Proteção Contra Elementos"], 13: ["Tempestade de Gelo", "Pele Rochosa"], 17: ["Comunhão com a Natureza", "Onda Destrutiva"] },
@@ -10688,16 +10731,19 @@
         "Armeiro": { tipo: "Especialista", 3: ["Mísseis Mágicos", "Onda Trovejante"], 5: ["Despedaçar", "Reflexos"], 9: ["Padrão Hipnótico", "Relâmpago"], 13: ["Escudo de Fogo", "Invisibilidade Maior"], 17: ["Criar Passagem", "Muralha de Energia"] },
         "Artilheiro": { tipo: "Especialista", 3: ["Escudo Arcano", "Onda Trovejante"], 5: ["Despedaçar", "Raio Ardente"], 9: ["Bola de Fogo", "Muralha de Vento"], 13: ["Muralha de Fogo", "Tempestade de Gelo"], 17: ["Cone de Frio", "Muralha de Energia"] },
         "Ferreiro de Batalha": { tipo: "Especialista", 3: ["Escudo Arcano", "Heroísmo"], 5: ["Marca do Caçador", "Vínculo Protetor"], 9: ["Aura de Vitalidade", "Conjurar Rajada"], 13: ["Aura de Pureza", "Escudo de Fogo"], 17: ["Curar Ferimentos em Massa", "Punição Banidora"] },
-        "Esporos": { tipo: "Círculo", 2: ["Toque Macabro"], 3: ["Cegueira/Surdez", "Repouso Tranquilo"], 5: ["Animar os Mortos", "Forma Gasosa"], 7: ["Confusão", "Deteriorar"], 9: ["Contágio", "Névoa Mortal"] },
+        "Espores": { tipo: "Círculo", 2: ["Toque Macabro"], 3: ["Cegueira/Surdez", "Repouso Tranquilo"], 5: ["Animar os Mortos", "Forma Gasosa"], 7: ["Confusão", "Deteriorar"], 9: ["Contágio", "Névoa Mortal"] },
         "Fogo Selvagem": { tipo: "Círculo", 2: ["Curar Ferimentos", "Mãos Flamejantes"], 3: ["Esfera Flamejante", "Raio Ardente"], 5: ["Ampliar Plantas", "Reviver"], 7: ["Escudo de Fogo"], 9: ["Coluna de Chamas", "Curar Ferimentos em Massa"] }
       };
+
       let truquesMax = 0;
       let magiasMax = 0;
       let tipoMagiaLabel = "Magias Conhecidas";
       let notaClasseHTML = "";
-      const intMod = Math.floor(((parseInt(document.getElementById("INT_score")?.value) || 10) - 10) / 2);
-      const sabMod = Math.floor(((parseInt(document.getElementById("SAB_score")?.value) || 10) - 10) / 2);
-      const carMod = Math.floor(((parseInt(document.getElementById("CAR_score")?.value) || 10) - 10) / 2);
+
+      const intMod = Math.floor((parseInt(document.getElementById("INT_score")?.value || 10) - 10) / 2);
+      const sabMod = Math.floor((parseInt(document.getElementById("SAB_score")?.value || 10) - 10) / 2);
+      const carMod = Math.floor((parseInt(document.getElementById("CAR_score")?.value || 10) - 10) / 2);
+
       if (classe === "Mago (Wizard)") {
         tipoMagiaLabel = "Magias Preparadas";
         truquesMax = nivel >= 10 ? 5 : (nivel >= 4 ? 4 : 3);
@@ -10791,13 +10837,15 @@
           notaClasseHTML = `As magias devem ser da lista de Mago. Obrigatoriamente <b>${restritas} magias</b> devem ser das escolas de <b>Abjuração</b> ou <b>Evocação</b>. As outras <b>${livres} magias</b> podem ser de qualquer escola de magia.`;
         }
       }
+
       let truquesAtuais = 0;
       let magiasPorNivel = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0 };
       let totalMagiasAtuais = 0;
+      
       document.querySelectorAll(".magia-select").forEach(sel => {
         let val = sel.value;
         if (val) {
-          let lvlSpell = getSpellLevel(val);
+          let lvlSpell = typeof getSpellLevel === "function" ? getSpellLevel(val) : 0;
           if (lvlSpell === 0) {
             truquesAtuais++;
           } else if (lvlSpell >= 1 && lvlSpell <= 9) {
@@ -10806,10 +10854,12 @@
           }
         }
       });
+
       const conjuradoresCompletos = ["Mago (Wizard)", "Clérigo (Cleric)", "Bardo (Bard)", "Druida (Druid)", "Feiticeiro (Sorcerer)", "Bruxo (Warlock)"];
       const conjuradoresMeios = ["Paladino (Paladin)", "Patrulheiro (Ranger)"];
       const conjuradoresTerco = ["Trapaceiro Arcano (Arcane Trickster)", "Cavaleiro Arcano (Eldritch Knight)"];
       let slotsDisponiveis = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+      
       if (conjuradoresCompletos.includes(classe)) {
         slotsDisponiveis = slotsDB.full[nivel - 1] || [0, 0, 0, 0, 0, 0, 0, 0, 0];
       } else if (classe === "Artífice (Artificer)") {
@@ -10819,6 +10869,7 @@
       } else if (conjuradoresTerco.includes(subclasse)) {
         slotsDisponiveis = slotsDB.third[nivel - 1] || [0, 0, 0, 0, 0, 0, 0, 0, 0];
       }
+      
       let magiasHTML = "";
       if (truquesMax > 0) {
         magiasHTML += `
@@ -10832,6 +10883,7 @@
               <b>Magias escolhidas:</b>
           </div>`;
       }
+      
       slotsDisponiveis.forEach((slots, idx) => {
         let spellLvl = idx + 1;
         if (slots > 0) {
@@ -10855,6 +10907,7 @@
           <div style="margin-bottom:4px; margin-top: 4px; border-top: 1px dotted #ccc; padding-top: 4px;">
               <b>Total de ${tipoMagiaLabel}:</b> <span style="color:${getCor(totalMagiasAtuais, magiasMax)}">${totalMagiasAtuais} / ${magiasMax}</span>
           </div>`;
+          
         if (classe === "Artífice (Artificer)" && nivel >= 2) {
           let infConhecidas = 4;
           let infAtivas = 2;
@@ -10941,9 +10994,6 @@
         }
       }
 
-      // ==========================================================================
-      // 🏃 PAINEL DINÂMICO DE ARTES MARCIAIS (MONGE)
-      // ==========================================================================
       if (classe === "Monge (Monk)") {
         let dadoArtesMarciais = "1d4";
         if (nivel >= 17) dadoArtesMarciais = "1d10";
@@ -10970,9 +11020,6 @@
           </div>`;
       }
 
-      // ==========================================================================
-      // 🪓 PAINEL DINÂMICO DE FÚRIA E CRÍTICO (BÁRBARO)
-      // ==========================================================================
       if (classe === "Bárbaro (Barbarian)") {
         let danoFuria = "+2";
         if (nivel >= 16) danoFuria = "+4";
@@ -11002,6 +11049,58 @@
           </div>`;
       }
 
+      // ==========================================================================
+      // 🌋 NOVO: PAINEL DINÂMICO DE MAGIA INATA (GENASI ELEMENTAL)
+      // ==========================================================================
+      if (raca === "Genasi" && dadosMagiasGenasi[subraca]) {
+        const elemental = dadosMagiasGenasi[subraca];
+        
+        let truquesGenasiMax = 1;
+        let magiasGenasiMax = 0;
+        if (nivel >= 5) magiasGenasiMax = 2;
+        else if (nivel >= 3) magiasGenasiMax = 1;
+
+        let truquesGenasiAtuais = 0;
+        let magiasGenasiAtuais = 0;
+
+        document.querySelectorAll(".magia-select").forEach(sel => {
+          let val = sel.value;
+          if (val) {
+            if (val === elemental.truque) truquesGenasiAtuais++;
+            if (nivel >= 3 && val === elemental.m3) magiasGenasiAtuais++;
+            if (nivel >= 5 && val === elemental.m5) magiasGenasiAtuais++;
+          }
+        });
+
+        let statusM3 = nivel >= 3 
+          ? `<span style="color:#2e7d32;">✔ <b>${elemental.m3}</b> (Liberada - 1x/Descanso Longo)</span>` 
+          : `<span style="color:#757575;">🔒 <b>${elemental.m3}</b> (Bloqueada - Requer Nível 3)</span>`;
+          
+        let statusM5 = nivel >= 5 
+          ? `<span style="color:#2e7d32;">✔ <b>${elemental.m5}</b> (Liberada - 1x/Descanso Longo)</span>` 
+          : `<span style="color:#757575;">🔒 <b>${elemental.m5}</b> (Bloqueada - Requer Nível 5)</span>`;
+
+        magiasHTML += `
+          <div style="margin-top: 6px; padding: 6px; background-color: #fffde7; border-left: 3px solid #fbc02d; font-size: 10px; color: #222; line-height: 1.4; text-align: left;">
+              <b>Magia Inata Genasi (${subraca.split(" ").pop()}):</b><br>
+              • Truques Elementais: <span style="font-weight:bold; color:${getCor(truquesGenasiAtuais, truquesGenasiMax)};">${truquesGenasiAtuais} / ${truquesGenasiMax}</span><br>
+              • Magias Inatas: <span style="font-weight:bold; color:${getCor(magiasGenasiAtuais, magiasGenasiMax)};">${magiasGenasiAtuais} / ${magiasGenasiMax}</span>
+              
+              <div style="margin-top: 4px; padding-top: 4px; border-top: 1px dashed #fbc02d; font-size: 9px; color: #444;">
+                <b>Lista de Feitiços Genasi:</b><br>
+                • Truque: <span style="color:#2e7d32;">✔ <b>${elemental.truque}</b></span><br>
+                • 1º Círculo: ${statusM3}<br>
+                • 2º Círculo: ${statusM5}
+              </div>
+              <div style="font-size:8px; color:#555; margin-top:4px; font-style:italic;">
+                * Conjure sem gastar componentes materiais. Você também pode usar seus slots de classe normais se preferir. Atributo chave: INT, SAB ou CAR.
+              </div>
+          </div>`;
+      }
+
+      // ==========================================================================
+      // 📥 RENDERIZAÇÃO FINAL DO CONTEÚDO NA TELA
+      // ==========================================================================
       const boxConteudo = document.getElementById("conteudo-resumo-pericias");
       if (boxConteudo) {
         let genasiRowHTML = "";
