@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Análise Consolidada do SUS - Dashboard de Usabilidade</title>
+    <title>Análise Consolidada do SUS - Dashboard CSV</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     
     <style>
         .hint-tooltip {
@@ -46,10 +45,10 @@
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
                 <h1 class="text-3xl font-extrabold text-blue-400 flex items-center gap-3">
-                    <i class="fa-solid fa-chart-line text-blue-500"></i> Dashboard Analítico SUS
+                    <i class="fa-solid fa-chart-line text-blue-500"></i> Dashboard Analítico SUS (CSV)
                 </h1>
                 <p class="text-slate-400 text-sm mt-1">
-                    Análise em lote, distribuições estatísticas e curvas de percentil baseadas em benchmarks científicos.
+                    Importação exclusiva de arquivos CSV com geração automática de curvas de distribuição e estatísticas.
                 </p>
             </div>
             <div class="flex items-center gap-2 text-xs bg-slate-700/50 p-2.5 rounded-lg border border-slate-600">
@@ -64,22 +63,22 @@
             <div class="lg:col-span-2 bg-slate-800 rounded-2xl border border-slate-700 p-6 flex flex-col justify-between">
                 <div>
                     <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
-                        <i class="fa-solid fa-file-excel text-green-500"></i> Importar Planilha do SUS
+                        <i class="fa-solid fa-file-csv text-blue-400"></i> Importar Planilha CSV do SUS
                     </h2>
                     <div class="bg-blue-950/40 border border-blue-800/40 rounded-lg p-3 mb-4">
                         <p class="text-blue-300 text-xs leading-relaxed flex items-start gap-2">
                             <i class="fa-solid fa-circle-exclamation mt-0.5"></i>
-                            <span><strong>Dica de ouro:</strong> Para garantir uma leitura perfeita, envie seu arquivo contendo <strong>apenas uma aba ativa</strong> estruturada com as colunas <strong class="text-white">Q1 a Q10</strong> e os IDs dos usuários (Ex: <strong class="text-white">U01, U02...</strong>) identificando as linhas ou vice-versa!</span>
+                            <span><strong>Atenção:</strong> Este sistema aceita <strong>apenas arquivos no formato CSV</strong>. Certifique-se de que seu arquivo contém colunas/linhas com os rótulos de <strong>Q1 a Q10</strong> e os IDs dos respondentes (ex: <strong>U01, U02...</strong>).</span>
                         </p>
                     </div>
                 </div>
                 
                 <div class="border-2 border-dashed border-slate-600 hover:border-blue-500 rounded-xl p-8 text-center transition-colors cursor-pointer bg-slate-900/40" id="dropZone">
-                    <input type="file" id="fileInput" accept=".xlsx, .xls, .csv" class="hidden">
-                    <label for="fileInput" class="cursor-pointer space-y-2">
-                        <i class="fa-solid fa-cloud-arrow-up text-4xl text-slate-500"></i>
-                        <p class="text-sm font-medium text-slate-300">Arraste seu arquivo ou clique para buscar</p>
-                        <p class="text-xs text-slate-500">Suporta arquivos Excel (.xlsx) e CSV estruturados por linhas ou colunas</p>
+                    <input type="file" id="fileInput" accept=".csv" class="hidden">
+                    <label for="fileInput" class="cursor-pointer space-y-2 block" id="uploadLabel">
+                        <i class="fa-solid fa-cloud-arrow-up text-4xl text-slate-500" id="uploadIcon"></i>
+                        <p class="text-sm font-medium text-slate-300" id="uploadText">Arraste seu arquivo CSV ou clique para buscar</p>
+                        <p class="text-xs text-slate-500">Apenas arquivos no formato (.csv)</p>
                     </label>
                 </div>
             </div>
@@ -165,7 +164,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="lg:col-span-2 bg-slate-800 p-6 rounded-2xl border border-slate-700">
                     <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-chart-area text-purple-400"></i> Curva de Distribuição do SUS
+                        <i class="fa-solid fa-chart-area text-purple-400"></i> Curva de Distribuição Crescente do SUS
                     </h3>
                     <div class="relative h-80 w-full">
                         <canvas id="susDistributionChart"></canvas>
@@ -197,11 +196,11 @@
             <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 pb-4 border-b border-slate-700">
                     <div>
-                        <h3 class="text-base font-bold text-white">Notas Individuais por Participante</h3>
-                        <p class="text-xs text-slate-400">Tabela de conferência com as notas brutas mapeadas de 1 a 5.</p>
+                        <h3 class="text-base font-bold text-white">Notas Individuais por Participante (Ordenado por Score)</h3>
+                        <p class="text-xs text-slate-400">Tabela de conferência ordenada do menor para o maior nível de usabilidade.</p>
                     </div>
-                    <button onclick="exportarExcel()" class="bg-green-600 hover:bg-green-700 text-white text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors">
-                        <i class="fa-solid fa-file-export"></i> Exportar Dados Processados
+                    <button onclick="exportarCSV_Local()" class="bg-green-600 hover:bg-green-700 text-white text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors">
+                        <i class="fa-solid fa-file-export"></i> Exportar Resultados (CSV)
                     </button>
                 </div>
 
@@ -249,71 +248,110 @@
 
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
+        const uploadIcon = document.getElementById('uploadIcon');
+        const uploadText = document.getElementById('uploadText');
 
-        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-blue-500'); });
-        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('border-blue-500'));
+        // Drag and Drop exclusivo para CSV
+        dropZone.addEventListener('dragover', (e) => { 
+            e.preventDefault(); 
+            dropZone.classList.add('border-blue-500', 'bg-blue-950/20'); 
+        });
+        
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('border-blue-500', 'bg-blue-950/20');
+        });
+        
         dropZone.addEventListener('drop', (e) => {
             e.preventDefault();
-            dropZone.classList.remove('border-blue-500');
+            dropZone.classList.remove('border-blue-500', 'bg-blue-950/20');
             const files = e.dataTransfer.files;
-            if (files.length > 0) processarArquivo(files[0]);
+            if (files.length > 0) {
+                if (files[0].name.endsWith('.csv')) {
+                    fileInput.files = files;
+                    processarArquivo(files[0]);
+                } else {
+                    alert("Apenas arquivos .csv são suportados!");
+                }
+            }
         });
 
         fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) processarArquivo(e.target.files[0]);
+            if (e.target.files.length > 0) {
+                processarArquivo(e.target.files[0]);
+            }
         });
 
+        // Clique na área de upload ativa o input
+        dropZone.addEventListener('click', (e) => {
+            if (e.target !== fileInput && !document.getElementById('uploadLabel').contains(e.target)) {
+                fileInput.click();
+            }
+        });
+
+        function atualizarUIStatusCarregando(carregando, nomeArquivo = "") {
+            if (carregando) {
+                uploadIcon.className = "fa-solid fa-spinner fa-spin text-4xl text-blue-500";
+                uploadText.innerHTML = `Lendo arquivo CSV <span class="text-blue-400 font-bold">${nomeArquivo}</span>...`;
+            } else {
+                uploadIcon.className = "fa-solid fa-cloud-arrow-up text-4xl text-slate-500";
+                uploadText.innerText = "Arraste seu arquivo CSV ou clique para buscar";
+            }
+        }
+
         function processarArquivo(file) {
+            atualizarUIStatusCarregando(true, file.name);
             const reader = new FileReader();
             
-            if (file.name.endsWith('.csv')) {
+            try {
                 reader.onload = function(e) {
-                    const text = e.target.result;
-                    parseCSV(text);
+                    try {
+                        const text = e.target.result;
+                        parseCSV(text);
+                    } catch (err) {
+                        alert("Erro ao analisar arquivo CSV: " + err.message);
+                        atualizarUIStatusCarregando(false);
+                    }
                 };
                 reader.readAsText(file);
-            } else {
-                reader.onload = function(e) {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    // Lê a primeira aba ativa
-                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                    const rawData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-                    processarDadosPlanilha(rawData);
-                };
-                reader.readAsArrayBuffer(file);
+            } catch (err) {
+                alert("Não foi possível carregar o arquivo: " + err.message);
+                atualizarUIStatusCarregando(false);
             }
         }
 
         function parseCSV(text) {
-            const rows = text.split('\n').map(row => row.split(',').map(cell => cell.trim()));
+            // Suporta delimitadores vírgula (,) ou ponto-e-vírgula (;)
+            const lines = text.split(/\r?\n/);
+            const rows = lines.map(line => {
+                let delimiter = ',';
+                if (line.includes(';')) delimiter = ';';
+                return line.split(delimiter).map(cell => cell.trim().replace(/^["']|["']$/g, ""));
+            });
             processarDadosPlanilha(rows);
         }
 
-        /**
-         * Motor Inteligente de Mapeamento SUS:
-         * Varre a planilha e reconhece automaticamente se o layout está em Linhas (cada linha é um usuário)
-         * ou em Colunas (cada coluna é um usuário), localizando chaves de Q1 a Q10.
-         */
         function processarDadosPlanilha(rows) {
             parsedParticipants = [];
             
-            // Remove linhas vazias
-            const cleanRows = rows.map(r => r.map(c => (c !== undefined && c !== null) ? c.toString().trim() : ""))
-                                  .filter(r => r.some(c => c !== ""));
+            const cleanRows = rows.map(r => {
+                if (!r) return [];
+                return r.map(c => (c !== undefined && c !== null) ? c.toString().trim() : "");
+            }).filter(r => r.some(c => c !== ""));
 
             if (cleanRows.length === 0) {
-                alert("O arquivo enviado está vazio!");
+                alert("O arquivo CSV importado está vazio.");
+                atualizarUIStatusCarregando(false);
                 return;
             }
 
-            // Identificar as posições das perguntas Q1 a Q10
-            let qPositions = {}; // mapeia "Q1", "Q2" etc. para sua coordenada
-            let structureType = null; // 'user_rows' (usuários por linha) ou 'user_cols' (usuários por coluna)
+            let qPositions = {}; 
+            let structureType = null; 
 
-            // Varre as primeiras linhas e colunas para descobrir a estrutura de Q1 a Q10
-            for (let r = 0; r < cleanRows.length; r++) {
-                for (let c = 0; c < cleanRows[r].length; c++) {
+            // Varre as linhas superiores para mapear as posições de Q1 a Q10
+            const searchLimitRows = Math.min(cleanRows.length, 30);
+            for (let r = 0; r < searchLimitRows; r++) {
+                const limitCols = Math.min(cleanRows[r].length, 30);
+                for (let c = 0; c < limitCols; c++) {
                     const val = cleanRows[r][c];
                     const match = val.match(/^(Q\d+)\b/i);
                     if (match) {
@@ -323,40 +361,36 @@
                 }
             }
 
-            // Verifica se encontramos todas as 10 perguntas
             const keysFound = Object.keys(qPositions);
             if (keysFound.length < 10) {
-                alert("Não conseguimos localizar as 10 perguntas (Q1 a Q10) na planilha. Por favor, verifique se os cabeçalhos usam o padrão 'Q1', 'Q2', ..., 'Q10'.");
+                alert("Atenção: Não encontramos todas as 10 perguntas (Q1 a Q10) no seu arquivo CSV.\nCertifique-se de que existem cabeçalhos usando rótulos diretos como 'Q1', 'Q2', etc.");
+                atualizarUIStatusCarregando(false);
                 return;
             }
 
-            // Descobrir se as questões estão todas na mesma linha (ou seja, usuários nas linhas, formato clássico)
             const firstQ = qPositions['Q1'];
             const secondQ = qPositions['Q2'];
             
             if (firstQ.r === secondQ.r) {
-                structureType = 'user_rows'; // As questões estão horizontalmente no topo. Usuários são as linhas subsequentes.
+                structureType = 'user_rows';
             } else if (firstQ.c === secondQ.c) {
-                structureType = 'user_cols'; // As questões estão verticalmente em uma coluna. Usuários são colunas subsequentes.
+                structureType = 'user_cols';
             }
 
             if (!structureType) {
-                alert("A estrutura das questões Q1 a Q10 não pôde ser mapeada.");
+                alert("Incompatibilidade: Estrutura de dados não identificada.");
+                atualizarUIStatusCarregando(false);
                 return;
             }
 
             if (structureType === 'user_rows') {
-                // Usuários são representados por linhas
-                // Descobre a linha onde o cabeçalho das perguntas se encontra
                 const headerRowIndex = firstQ.r;
 
                 for (let r = headerRowIndex + 1; r < cleanRows.length; r++) {
                     const row = cleanRows[r];
-                    // O ID do usuário geralmente está na primeira coluna da linha, ou assume-se U_X
                     const userIdColIndex = Math.max(0, firstQ.c - 1);
                     let userId = row[userIdColIndex] || `U${r - headerRowIndex}`;
                     
-                    // Valida se o ID não é vazio e se parece com um identificador de participante
                     if (!userId || userId === "") continue;
 
                     let rawAnswers = [];
@@ -378,7 +412,6 @@
                     }
                 }
             } else {
-                // Usuários são representados por colunas
                 const headerColIndex = firstQ.c;
                 const numCols = cleanRows[0].length;
 
@@ -406,10 +439,16 @@
                 }
             }
 
+            atualizarUIStatusCarregando(false);
+
             if (parsedParticipants.length === 0) {
-                alert("Nenhum dado válido pôde ser extraído. Lembre-se que as notas devem ser numéricas e estar entre 1 e 5.");
+                alert("Não foi possível extrair dados válidos de respondentes.");
                 return;
             }
+
+            // ORDENA OS PARTICIPANTES PELO SCORE (Do menor para o maior)
+            // Isso garante que o gráfico desenhe uma curva de distribuição/escada real
+            parsedParticipants.sort((a, b) => a.score - b.score);
 
             atualizarDashboard();
         }
@@ -422,9 +461,9 @@
                 const rawVal = rawAnswers[qIdx];
                 let normVal = 0;
                 if ((qIdx + 1) % 2 !== 0) {
-                    normVal = rawVal - 1; // Ímpar
+                    normVal = rawVal - 1; 
                 } else {
-                    normVal = 5 - rawVal; // Par
+                    normVal = 5 - rawVal; 
                 }
                 answersNormalized.push(normVal);
                 individualScore += normVal;
@@ -445,11 +484,9 @@
             const n = scores.length;
             const mean = scores.reduce((a, b) => a + b, 0) / n;
             
-            // Desvio Padrão Amostral (correção de Bessel n-1)
             const variance = n > 1 ? scores.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / (n - 1) : 0;
             const stdDev = Math.sqrt(variance);
 
-            // Margem de erro (t de Student para 95% de Confiança)
             const tValues = {
                 1: 12.706, 2: 4.303, 3: 3.182, 4: 2.776, 5: 2.571, 
                 6: 2.447, 7: 2.365, 8: 2.306, 9: 2.262, 10: 2.228,
@@ -507,6 +544,8 @@
 
             construirTabela();
             renderizarGrafico(stats.mean);
+            
+            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
         }
 
         function construirTabela() {
@@ -549,45 +588,45 @@
                 chartInstance.destroy();
             }
 
-            const dataPontos = parsedParticipants.map((p, idx) => ({
-                x: idx + 1,
-                y: p.score,
-                label: p.id
-            }));
+            // Agora os dados já estão ordenados e distribuídos sequencialmente no eixo X
+            const labelsEixoX = parsedParticipants.map(p => p.id);
+            const dadosScores = parsedParticipants.map(p => p.score);
 
             chartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
+                    labels: labelsEixoX,
                     datasets: [
                         {
-                            label: 'Nota por Participante',
-                            data: dataPontos,
-                            borderColor: 'rgba(99, 102, 241, 0.5)',
-                            backgroundColor: '#3b82f6',
+                            label: 'Curva de Notas Individuais',
+                            data: dadosScores,
+                            borderColor: '#3b82f6',
+                            borderWidth: 2,
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            pointBackgroundColor: '#60a5fa',
+                            pointBorderColor: '#1e3a8a',
                             pointRadius: 6,
                             pointHoverRadius: 8,
-                            showLine: false,
-                            type: 'scatter'
+                            fill: true,
+                            tension: 0.2 // Deixa a linha curvada sutilmente
                         },
                         {
-                            label: 'Média do Grupo',
-                            data: Array(dataPontos.length).fill(scoreMedio),
+                            label: 'Média Amostral Obtida',
+                            data: Array(labelsEixoX.length).fill(scoreMedio),
                             borderColor: '#34d399',
                             borderWidth: 3,
                             borderDash: [5, 5],
                             pointRadius: 0,
-                            fill: false,
-                            type: 'line'
+                            fill: false
                         },
                         {
-                            label: 'Média Global (Benchmark = 68)',
-                            data: Array(dataPontos.length).fill(68),
+                            label: 'Média de Mercado (Benchmark = 68)',
+                            data: Array(labelsEixoX.length).fill(68),
                             borderColor: '#ef4444',
                             borderWidth: 1.5,
                             borderDash: [3, 3],
                             pointRadius: 0,
-                            fill: false,
-                            type: 'line'
+                            fill: false
                         }
                     ]
                 },
@@ -598,7 +637,7 @@
                         x: {
                             grid: { color: 'rgba(255,255,255,0.05)' },
                             ticks: { color: '#94a3b8', font: { size: 10 } },
-                            title: { display: true, text: 'Participante', color: '#94a3b8' }
+                            title: { display: true, text: 'Participantes ordenados (Escada Usabilidade)', color: '#94a3b8' }
                         },
                         y: {
                             min: 0,
@@ -615,8 +654,8 @@
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
+                                    const p = parsedParticipants[context.dataIndex];
                                     if (context.datasetIndex === 0) {
-                                        const p = parsedParticipants[context.dataIndex];
                                         return `${p.id}: Score ${p.score.toFixed(1)}`;
                                     }
                                     return `${context.dataset.label}: ${context.raw.toFixed(1)}`;
@@ -628,26 +667,30 @@
             });
         }
 
-        function exportarExcel() {
-            const exportData = [];
-            exportData.push(["Participante", "Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "Q7", "Q8", "Q9", "Q10", "Score Final", "Grade", "Aceitabilidade", "NPS"]);
+        function exportarCSV_Local() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Participante,Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10,Score Final,Grade,Aceitabilidade,NPS\n";
             
             parsedParticipants.forEach(p => {
                 const interp = getInterpretation(p.score);
-                exportData.push([
+                const row = [
                     p.id,
                     ...p.rawAnswers,
-                    p.score,
+                    p.score.toFixed(1),
                     interp.grade,
                     interp.acceptability,
                     interp.nps
-                ]);
+                ].join(",");
+                csvContent += row + "\n";
             });
 
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.aoa_to_sheet(exportData);
-            XLSX.utils.book_append_sheet(wb, ws, "Resultados Consolidados");
-            XLSX.writeFile(wb, "Resultados_SUS_Processados.xlsx");
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Resultados_SUS_Processados.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
     </script>
 </body>
