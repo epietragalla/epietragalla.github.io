@@ -3,242 +3,589 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora & Interpretador SUS (System Usability Scale)</title>
+    <title>Análise Consolidada do SUS - Dashboard de Usabilidade</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    
     <style>
-        .sus-radio:checked + label {
-            background-color: #3b82f6;
-            color: white;
-            border-color: #3b82f6;
+        .hint-tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+        .hint-tooltip .tooltip-text {
+            visibility: hidden;
+            width: 280px;
+            background-color: #1e293b;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 50;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.2s;
+            font-size: 0.75rem;
+            line-height: 1.25rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .hint-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
         }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen text-slate-800 font-sans">
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans">
 
-    <header class="bg-blue-600 text-white py-6 shadow-md">
-        <div class="max-w-4xl mx-auto px-4">
-            <h1 class="text-3xl font-bold flex items-center gap-2">
-                <i class="fa-solid fa-chart-simple"></i> Calculadora e Interpretador SUS
-            </h1>
-            <p class="text-blue-100 mt-1 text-sm md:text-base">
-                Métricas baseadas nos modelos científicos e bancos de dados de benchmark da <span class="font-semibold text-white">MeasuringU</span>.
-            </p>
+    <header class="bg-slate-800 border-b border-slate-700 py-6 px-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-3xl font-extrabold text-blue-400 flex items-center gap-3">
+                    <i class="fa-solid fa-chart-line text-blue-500"></i> Dashboard Analítico SUS
+                </h1>
+                <p class="text-slate-400 text-sm mt-1">
+                    Análise em lote, distribuições estatísticas e curvas de percentil baseadas em benchmarks científicos.
+                </p>
+            </div>
+            <div class="flex items-center gap-2 text-xs bg-slate-700/50 p-2.5 rounded-lg border border-slate-600">
+                <span class="font-semibold text-slate-300">Normativa:</span> ISO 9241-11 | Brooke (1996) | Sauro & Lewis (2016)
+            </div>
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto px-4 py-8">
-        
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
-            <div class="lg:col-span-2 space-y-6">
-                <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-100">
-                    <h2 class="text-xl font-bold text-slate-700 mb-4 pb-2 border-b border-slate-100">
-                        Formulário de Resposta
+    <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 bg-slate-800 rounded-2xl border border-slate-700 p-6 flex flex-col justify-between">
+                <div>
+                    <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-file-excel text-green-500"></i> Importar Planilha do SUS
                     </h2>
-                    <p class="text-sm text-slate-500 mb-6">
-                        Insira as notas de 1 (Discordo Totalmente) a 5 (Concordo Totalmente) dadas pelo usuário para calcular o SUS score individual.
+                    <p class="text-slate-400 text-xs mb-4 leading-relaxed">
+                        Arraste ou selecione sua planilha <span class="text-blue-400 font-semibold">.xlsx, .xls ou .csv</span>. O sistema mapeará automaticamente as linhas de perguntas de <strong>Q1 a Q10</strong> contidas na aba <span class="text-green-400 font-mono">Cálculo SUS</span> ou na página ativa do documento.
                     </p>
-
-                    <form id="susForm" class="space-y-6">
-                        <div id="questionsContainer" class="space-y-6"></div>
-                        
-                        <div class="pt-4 flex gap-3">
-                            <button type="button" onclick="calcularSUS()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-calculator"></i> Calcular Métricas
-                            </button>
-                            <button type="button" onclick="resetarFormulario()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-3 px-4 rounded-lg transition-colors">
-                                Limpar
-                            </button>
-                        </div>
-                    </form>
+                </div>
+                
+                <div class="border-2 border-dashed border-slate-600 hover:border-blue-500 rounded-xl p-8 text-center transition-colors cursor-pointer bg-slate-900/40" id="dropZone">
+                    <input type="file" id="fileInput" accept=".xlsx, .xls, .csv" class="hidden">
+                    <label for="fileInput" class="cursor-pointer space-y-2">
+                        <i class="fa-solid fa-cloud-arrow-up text-4xl text-slate-500"></i>
+                        <p class="text-sm font-medium text-slate-300">Arraste seu arquivo modelo ou clique para buscar</p>
+                        <p class="text-xs text-slate-500">Suporta formatações baseadas no arquivo de amostra ("U1", "U2", etc.)</p>
+                    </label>
                 </div>
             </div>
 
-            <div class="lg:col-span-1">
-                <div class="sticky top-6 space-y-6">
-                    <div class="bg-white rounded-xl shadow-md p-6 border border-slate-100 text-center">
-                        <h3 class="text-lg font-bold text-slate-600 mb-2">Pontuação SUS</h3>
-                        <div class="my-4">
-                            <span id="susScore" class="text-6xl font-extrabold text-blue-600">--</span>
-                            <span class="text-slate-400 text-xl">/100</span>
+            <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6 space-y-4">
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-circle-info text-blue-400"></i> Regras de Cálculo do SUS
+                </h3>
+                <div class="space-y-3 text-xs text-slate-300 leading-relaxed">
+                    <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700">
+                        <span class="font-bold text-blue-400">Itens Ímpares (Q1, Q3, Q5, Q7, Q9):</span>
+                        <p class="text-slate-400 mt-0.5">Pontuação = Resposta do Usuário - 1</p>
+                    </div>
+                    <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700">
+                        <span class="font-bold text-red-400">Itens Pares (Q2, Q4, Q6, Q8, Q10):</span>
+                        <p class="text-slate-400 mt-0.5">Pontuação = 5 - Resposta do Usuário</p>
+                    </div>
+                    <p class="text-[11px] text-slate-500 italic">
+                        * A soma das pontuações de cada usuário é multiplicada por 2,5 para normalizar a escala de 0 a 100.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="resultsSection" class="space-y-8 hidden">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 text-center">
+                    <div class="text-slate-400 text-xs font-semibold flex items-center justify-center gap-1.5">
+                        Média Amostral
+                        <div class="hint-tooltip">
+                            <i class="fa-solid fa-circle-question text-blue-400"></i>
+                            <span class="tooltip-text">Média aritmética simples de todos os respondentes válidos. Média histórica de mercado é 68.</span>
                         </div>
-                        <p class="text-xs text-slate-400 px-4">Esta pontuação não é uma porcentagem, mas sim uma nota normalizada comparada a outras ferramentas.</p>
+                    </div>
+                    <div id="statMean" class="text-4xl font-extrabold text-blue-400 mt-2">--</div>
+                    <span id="statGrade" class="text-xs px-2.5 py-0.5 font-bold rounded mt-2 inline-block">--</span>
+                </div>
+
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 text-center">
+                    <div class="text-slate-400 text-xs font-semibold flex items-center justify-center gap-1.5">
+                        I.C. 95%
+                        <div class="hint-tooltip">
+                            <i class="fa-solid fa-circle-question text-blue-400"></i>
+                            <span class="tooltip-text">Intervalo de Confiança t-Student (95%): indica a faixa de variação real estimada para a população de usuários.</span>
+                        </div>
+                    </div>
+                    <div id="statCI" class="text-2xl font-bold text-white mt-4">--</div>
+                    <p class="text-[10px] text-slate-500 mt-1">Margem de Erro</p>
+                </div>
+
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 text-center">
+                    <div class="text-slate-400 text-xs font-semibold flex items-center justify-center gap-1.5">
+                        Percentil Rank
+                        <div class="hint-tooltip">
+                            <i class="fa-solid fa-circle-question text-blue-400"></i>
+                            <span class="tooltip-text">Indica a porcentagem de sistemas da indústria que sua solução supera. Fonte: Sauro-Lewis database.</span>
+                        </div>
+                    </div>
+                    <div id="statPercentile" class="text-2xl font-bold text-white mt-4">--</div>
+                    <p id="statAdjective" class="text-xs text-slate-400 mt-1">--</p>
+                </div>
+
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 text-center">
+                    <div class="text-slate-400 text-xs font-semibold">Participantes (N)</div>
+                    <div id="statN" class="text-4xl font-extrabold text-white mt-2">--</div>
+                    <p class="text-[10px] text-slate-500 mt-2">Respostas Processadas</p>
+                </div>
+
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 text-center">
+                    <div class="text-slate-400 text-xs font-semibold flex items-center justify-center gap-1.5">
+                        Desvio Padrão (s)
+                        <div class="hint-tooltip">
+                            <i class="fa-solid fa-circle-question text-blue-400"></i>
+                            <span class="tooltip-text">Mede a dispersão ou consistência das notas em relação à média.</span>
+                        </div>
+                    </div>
+                    <div id="statStdDev" class="text-4xl font-extrabold text-white mt-2">--</div>
+                    <div class="text-[10px] text-slate-500 mt-2">Dispersão Amostral</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 bg-slate-800 p-6 rounded-2xl border border-slate-700">
+                    <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-area text-purple-400"></i> Curva de Distribuição do SUS
+                    </h3>
+                    <div class="relative h-80 w-full">
+                        <canvas id="susDistributionChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 space-y-4">
+                    <h3 class="text-base font-bold text-white border-b border-slate-700 pb-2">Interpretação Consolidada</h3>
+                    
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center bg-slate-900/40 p-3 rounded-lg border border-slate-700/50">
+                            <span class="text-xs text-slate-400 font-medium">Aceitabilidade:</span>
+                            <span id="interpAcceptability" class="text-xs font-bold px-2 py-1 rounded">--</span>
+                        </div>
+
+                        <div class="flex justify-between items-center bg-slate-900/40 p-3 rounded-lg border border-slate-700/50">
+                            <span class="text-xs text-slate-400 font-medium">Classificação NPS:</span>
+                            <span id="interpNps" class="text-xs font-bold px-2 py-1 rounded">--</span>
+                        </div>
                     </div>
 
-                    <div class="bg-white rounded-xl shadow-md p-6 border border-slate-100 space-y-4">
-                        <h3 class="text-base font-bold text-slate-700 border-b border-slate-100 pb-2 flex items-center gap-2">
-                            <i class="fa-solid fa-graduation-cap text-blue-500"></i> Métricas de Usabilidade
-                        </h3>
-                        
-                        <div class="flex justify-between items-center py-1">
-                            <span class="text-sm text-slate-500 font-medium">Nota (Grade Curve):</span>
-                            <span id="metricGrade" class="text-lg font-bold text-slate-800">--</span>
-                        </div>
-
-                        <div class="flex justify-between items-center py-1 border-t border-slate-50">
-                            <span class="text-sm text-slate-500 font-medium">Faixa de Percentil:</span>
-                            <span id="metricPercentile" class="text-sm font-semibold text-slate-800">--</span>
-                        </div>
-
-                        <div class="flex justify-between items-center py-1 border-t border-slate-50">
-                            <span class="text-sm text-slate-500 font-medium">Adjetivo:</span>
-                            <span id="metricAdjective" class="text-sm font-semibold text-slate-800">--</span>
-                        </div>
-
-                        <div class="flex justify-between items-center py-1 border-t border-slate-50">
-                            <span class="text-sm text-slate-500 font-medium">Aceitabilidade:</span>
-                            <span id="metricAcceptability" class="text-sm font-semibold text-slate-800">--</span>
-                        </div>
-
-                        <div class="flex justify-between items-center py-1 border-t border-slate-50">
-                            <span class="text-sm text-slate-500 font-medium">Equivalente NPS:</span>
-                            <span id="metricNps" class="text-sm font-semibold text-slate-800">--</span>
-                        </div>
+                    <div class="bg-slate-900/20 p-4 rounded-xl border border-slate-700 text-xs text-slate-400 space-y-2">
+                        <span class="font-bold text-slate-300">Conclusão Analítica:</span>
+                        <p id="interpSummary" class="leading-relaxed"></p>
                     </div>
                 </div>
             </div>
 
-        </div>
+            <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 pb-4 border-b border-slate-700">
+                    <div>
+                        <h3 class="text-base font-bold text-white">Notas Individuais por Participante</h3>
+                        <p class="text-xs text-slate-400">Detalhe das respostas normalizadas (de 0 a 4 pontos por questão).</p>
+                    </div>
+                    <button onclick="exportarExcel()" class="bg-green-600 hover:bg-green-700 text-white text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors">
+                        <i class="fa-solid fa-file-export"></i> Exportar Dados Processados
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto rounded-lg border border-slate-700">
+                    <table class="min-w-full divide-y divide-slate-700 text-sm text-left">
+                        <thead class="bg-slate-900 text-slate-400 text-xs">
+                            <tr id="tableHeader">
+                                </tr>
+                        </thead>
+                        <tbody id="tableBody" class="divide-y divide-slate-700 bg-slate-800">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
     </main>
 
-    <footer class="bg-slate-800 text-slate-400 text-xs py-8 mt-12 border-t border-slate-700">
-        <div class="max-w-4xl mx-auto px-4 text-center space-y-2">
-            <p>A média global e padrão de usabilidade do SUS determinada por mais de 500 estudos é de <strong>68 pontos</strong>.</p>
-            <p>Este sistema aplica os dados de conversão oficiais definidos e atualizados pela <strong>MeasuringU</strong>.</p>
-        </div>
-    </footer>
-
     <script>
-        // Perguntas oficiais do SUS
-        const questions = [
-            { id: 1, text: "Acho que gostaria de usar este sistema frequentemente.", positive: true },
-            { id: 2, text: "Achei o sistema desnecessariamente complexo.", positive: false },
-            { id: 3, text: "Achei o sistema fácil de usar.", positive: true },
-            { id: 4, text: "Acho que precisaria do suporte de um técnico para conseguir usar este sistema.", positive: false },
-            { id: 5, text: "Achei que as várias funções do sistema estavam muito bem integradas.", positive: true },
-            { id: 6, text: "Achei que havia muita inconsistência neste sistema.", positive: false },
-            { id: 7, text: "Imagino que a maioria das pessoas aprenderia a usar este sistema rapidamente.", positive: true },
-            { id: 8, text: "Achei o sistema muito complicado de usar.", positive: false },
-            { id: 9, text: "Senti-me muito confiante ao usar o sistema.", positive: true },
-            { id: 10, text: "Precisei aprender muitas coisas novas antes de conseguir usar o sistema.", positive: false }
-        ];
-
-        // Tabela de conversão da MeasuringU (Sauro-Lewis curved grading scale)
+        // Tabela de conversão da MeasuringU (Escala de Sauro-Lewis)
         const scoringDatabase = [
-            { maxScore: 25.0, grade: 'F', percentile: '0 - 1.9%', adjective: 'Worst Imaginable', acceptability: 'Inaceitável', nps: 'Detrator' },
-            { maxScore: 51.6, grade: 'F', percentile: '2 - 14%', adjective: 'Poor (Ruim)', acceptability: 'Inaceitável', nps: 'Detrator' },
-            { maxScore: 62.6, grade: 'D', percentile: '15 - 34%', adjective: 'OK', acceptability: 'Marginalmente Aceitável', nps: 'Detrator' },
-            { maxScore: 64.9, grade: 'C-', percentile: '35 - 40%', adjective: 'Good (Bom)', acceptability: 'Marginalmente Aceitável', nps: 'Passivo' },
-            { maxScore: 71.0, grade: 'C', percentile: '41 - 59%', adjective: 'Good (Bom)', acceptability: 'Marginalmente Aceitável', nps: 'Passivo' },
-            { maxScore: 72.5, grade: 'C+', percentile: '60 - 64%', adjective: 'Good (Bom)', acceptability: 'Aceitável', nps: 'Passivo' },
-            { maxScore: 74.0, grade: 'B-', percentile: '65 - 69%', adjective: 'Good (Bom)', acceptability: 'Aceitável', nps: 'Passivo' },
-            { maxScore: 77.1, grade: 'B', percentile: '70 - 79%', adjective: 'Excellent (Excelente)', acceptability: 'Aceitável', nps: 'Passivo' },
-            { maxScore: 78.8, grade: 'B+', percentile: '80 - 84%', adjective: 'Excellent (Excelente)', acceptability: 'Aceitável', nps: 'Passivo' },
-            { maxScore: 80.7, grade: 'A-', percentile: '85 - 89%', adjective: 'Excellent (Excelente)', acceptability: 'Aceitável', nps: 'Promotor' },
-            { maxScore: 84.0, grade: 'A', percentile: '90 - 95%', adjective: 'Excellent (Excelente)', acceptability: 'Aceitável', nps: 'Promotor' },
-            { maxScore: 100.0, grade: 'A+', percentile: '96 - 100%', adjective: 'Best Imaginable (Melhor Possível)', acceptability: 'Aceitável', nps: 'Promotor' }
+            { maxScore: 25.0, grade: 'F', percentile: '0 - 1.9%', adjective: 'Worst Imaginable', acceptability: 'Inaceitável', nps: 'Detrator', colorClass: 'bg-red-500/20 text-red-400 border border-red-500/30' },
+            { maxScore: 51.6, grade: 'F', percentile: '2 - 14%', adjective: 'Poor (Ruim)', acceptability: 'Inaceitável', nps: 'Detrator', colorClass: 'bg-red-500/20 text-red-400 border border-red-500/30' },
+            { maxScore: 62.6, grade: 'D', percentile: '15 - 34%', adjective: 'OK', acceptability: 'Marginalmente Aceitável', nps: 'Detrator', colorClass: 'bg-orange-500/20 text-orange-400 border border-orange-500/30' },
+            { maxScore: 64.9, grade: 'C-', percentile: '35 - 40%', adjective: 'Good (Bom)', acceptability: 'Marginalmente Aceitável', nps: 'Passivo', colorClass: 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' },
+            { maxScore: 71.0, grade: 'C', percentile: '41 - 59%', adjective: 'Good (Bom)', acceptability: 'Marginalmente Aceitável', nps: 'Passivo', colorClass: 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' },
+            { maxScore: 72.5, grade: 'C+', percentile: '60 - 64%', adjective: 'Good (Bom)', acceptability: 'Aceitável', nps: 'Passivo', colorClass: 'bg-blue-500/20 text-blue-400 border border-blue-500/30' },
+            { maxScore: 74.0, grade: 'B-', percentile: '65 - 69%', adjective: 'Good (Bom)', acceptability: 'Aceitável', nps: 'Passivo', colorClass: 'bg-blue-500/20 text-blue-400 border border-blue-500/30' },
+            { maxScore: 77.1, grade: 'B', percentile: '70 - 79%', adjective: 'Excellent (Excelente)', acceptability: 'Aceitável', nps: 'Passivo', colorClass: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' },
+            { maxScore: 78.8, grade: 'B+', percentile: '80 - 84%', adjective: 'Excellent (Excelente)', acceptability: 'Aceitável', nps: 'Passivo', colorClass: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' },
+            { maxScore: 80.7, grade: 'A-', percentile: '85 - 89%', adjective: 'Excellent (Excelente)', acceptability: 'Aceitável', nps: 'Promotor', colorClass: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' },
+            { maxScore: 84.0, grade: 'A', percentile: '90 - 95%', adjective: 'Excellent (Excelente)', acceptability: 'Aceitável', nps: 'Promotor', colorClass: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' },
+            { maxScore: 100.0, grade: 'A+', percentile: '96 - 100%', adjective: 'Best Imaginable (Melhor Possível)', acceptability: 'Aceitável', nps: 'Promotor', colorClass: 'bg-green-500/20 text-green-400 border border-green-500/30' }
         ];
 
-        // Renderiza as perguntas dinamicamente
-        const container = document.getElementById('questionsContainer');
-        questions.forEach((q) => {
-            const div = document.createElement('div');
-            div.className = "p-4 rounded-lg bg-slate-50 border border-slate-200 transition-all hover:shadow-sm";
-            div.innerHTML = `
-                <div class="mb-3">
-                    <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2.5 py-0.5 rounded font-semibold mr-2">Q${q.id}</span>
-                    <span class="text-sm font-semibold text-slate-700">${q.text}</span>
-                </div>
-                <div class="flex justify-between items-center gap-1 md:gap-4 mt-2">
-                    <span class="text-xs text-slate-400 hidden md:block">Discordo totalmente</span>
-                    <div class="flex flex-1 justify-between max-w-md mx-auto">
-                        ${[1, 2, 3, 4, 5].map(val => `
-                            <div class="text-center">
-                                <input type="radio" id="q${q.id}_v${val}" name="q${q.id}" value="${val}" class="sr-only sus-radio" required>
-                                <label for="q${q.id}_v${val}" class="block w-10 h-10 leading-10 rounded-full border border-slate-300 text-sm font-bold cursor-pointer transition-all hover:bg-slate-100 text-slate-600">
-                                    ${val}
-                                </label>
-                            </div>
-                        `).join('')}
-                    </div>
-                    <span class="text-xs text-slate-400 hidden md:block">Concordo totalmente</span>
-                </div>
-            `;
-            container.appendChild(div);
+        let parsedParticipants = [];
+        let chartInstance = null;
+
+        // Gerenciar Drag and Drop
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-blue-500'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('border-blue-500'));
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-blue-500');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) processarArquivo(files[0]);
         });
 
-        // Função para calcular o score e a interpretação
-        function calcularSUS() {
-            let totalScore = 0;
-            let formValido = true;
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) processarArquivo(e.target.files[0]);
+        });
 
-            // Valida se todas as perguntas foram respondidas
-            for (let i = 1; i <= 10; i++) {
-                const checkedOption = document.querySelector(`input[name="q${i}"]:checked`);
-                if (!checkedOption) {
-                    formValido = false;
-                    break;
+        function processarArquivo(file) {
+            const reader = new FileReader();
+            
+            if (file.name.endsWith('.csv')) {
+                reader.onload = function(e) {
+                    const text = e.target.result;
+                    parseCSV(text);
+                };
+                reader.readAsText(file);
+            } else {
+                reader.onload = function(e) {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    
+                    // Prioriza aba "Cálculo SUS" ou pega a primeira aba
+                    let sheetName = workbook.SheetNames.find(name => name.toLowerCase().includes('sus')) || workbook.SheetNames[0];
+                    const sheet = workbook.Sheets[sheetName];
+                    const rawData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                    processarDadosPlanilha(rawData);
+                };
+                reader.readAsArrayBuffer(file);
+            }
+        }
+
+        function parseCSV(text) {
+            const rows = text.split('\n').map(row => row.split(',').map(cell => cell.trim()));
+            processarDadosPlanilha(rows);
+        }
+
+        function processarDadosPlanilha(rows) {
+            parsedParticipants = [];
+            
+            // Procurar a tabela de 'Resposta SUS' ou as perguntas diretamente
+            let userHeaders = [];
+            let questionRows = {};
+
+            // Encontrar mapeamento de U1, U2, etc e os valores de Q1 a Q10
+            rows.forEach((row, rowIndex) => {
+                if (!row[0]) return;
+                const rowHeader = row[0].toString().trim();
+                
+                // Mapear cabeçalho dos participantes (Ex: se contiver QUESTÕES e depois U1, U2...)
+                if (rowHeader.toUpperCase().includes('QUESTÕES') || rowHeader.toUpperCase().includes('QUESTOES')) {
+                    userHeaders = row.slice(1).filter(cell => cell && cell.toString().trim() !== '');
                 }
                 
-                const valor = parseInt(checkedOption.value);
-                if (i % 2 !== 0) {
-                    // Perguntas Ímpares: subtrai 1 da resposta (val - 1)
-                    totalScore += (valor - 1);
-                } else {
-                    // Perguntas Pares: subtrai a resposta de 5 (5 - val)
-                    totalScore += (5 - valor);
+                // Mapear perguntas Q1 a Q10
+                const match = rowHeader.match(/^(Q\d+)\b/i);
+                if (match) {
+                    const qKey = match[1].toUpperCase();
+                    questionRows[qKey] = row.slice(1);
+                }
+            });
+
+            const numUsers = userHeaders.length || 10; // Backup para 10 usuários caso o cabeçalho falhe
+
+            for (let i = 0; i < numUsers; i++) {
+                let userAnswers = [];
+                let fullyAnswered = true;
+                const userName = userHeaders[i] || `U${i+1}`;
+
+                // Coletar respostas de Q1 a Q10
+                for (let qNum = 1; qNum <= 10; qNum++) {
+                    const qAnswers = questionRows[`Q${qNum}`];
+                    const val = qAnswers ? parseFloat(qAnswers[i]) : null;
+                    
+                    if (val !== null && !isNaN(val) && val >= 1 && val <= 5) {
+                        userAnswers.push(val);
+                    } else {
+                        fullyAnswered = false;
+                        break;
+                    }
+                }
+
+                if (fullyAnswered && userAnswers.length === 10) {
+                    // Calcular Pontuação Unitária
+                    let individualScore = 0;
+                    const answersNormalized = [];
+
+                    for (let qIdx = 0; qIdx < 10; qIdx++) {
+                        const rawVal = userAnswers[qIdx];
+                        let normVal = 0;
+                        if ((qIdx + 1) % 2 !== 0) {
+                            normVal = rawVal - 1; // Itens ímpares
+                        } else {
+                            normVal = 5 - rawVal; // Itens pares
+                        }
+                        answersNormalized.push(normVal);
+                        individualScore += normVal;
+                    }
+                    
+                    const finalScore = individualScore * 2.5;
+
+                    parsedParticipants.push({
+                        id: userName,
+                        rawAnswers: userAnswers,
+                        normAnswers: answersNormalized,
+                        score: finalScore
+                    });
                 }
             }
 
-            if (!formValido) {
-                alert("Por favor, responda a todas as 10 perguntas antes de calcular!");
+            if (parsedParticipants.length === 0) {
+                alert("Nenhum dado válido de SUS (Q1 a Q10 com respostas de 1 a 5) foi encontrado na aba correspondente.");
                 return;
             }
 
-            // O total acumulado (máximo 40) é multiplicado por 2.5 (máximo 100)
-            const finalScore = totalScore * 2.5;
-
-            // Exibir o Score final
-            document.getElementById('susScore').innerText = finalScore.toFixed(1);
-
-            // Obter métricas de interpretação com base na pontuação obtida
-            let interpretation = scoringDatabase.find(item => finalScore <= item.maxScore);
-            
-            if (!interpretation) {
-                // Margem de segurança caso caia no limite máximo
-                interpretation = scoringDatabase[scoringDatabase.length - 1];
-            }
-
-            // Atualiza os dados no painel lateral
-            const gradeEl = document.getElementById('metricGrade');
-            gradeEl.innerText = interpretation.grade;
-            
-            // Colore a nota dependendo do resultado para efeito visual refinado
-            if (['A+', 'A', 'A-'].includes(interpretation.grade)) {
-                gradeEl.className = "text-xl font-black text-green-600 bg-green-50 px-2 py-0.5 rounded";
-            } else if (['B+', 'B', 'B-', 'C+', 'C'].includes(interpretation.grade)) {
-                gradeEl.className = "text-xl font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded";
-            } else {
-                gradeEl.className = "text-xl font-black text-red-600 bg-red-50 px-2 py-0.5 rounded";
-            }
-
-            document.getElementById('metricPercentile').innerText = interpretation.percentile;
-            document.getElementById('metricAdjective').innerText = interpretation.adjective;
-            document.getElementById('metricAcceptability').innerText = interpretation.acceptability;
-            document.getElementById('metricNps').innerText = interpretation.nps;
+            atualizarDashboard();
         }
 
-        // Função para limpar o formulário
-        function resetarFormulario() {
-            document.getElementById('susForm').reset();
-            document.getElementById('susScore').innerText = "--";
-            document.getElementById('metricGrade').innerText = "--";
-            document.getElementById('metricGrade').className = "text-lg font-bold text-slate-800";
-            document.getElementById('metricPercentile').innerText = "--";
-            document.getElementById('metricAdjective').innerText = "--";
-            document.getElementById('metricAcceptability').innerText = "--";
-            document.getElementById('metricNps').innerText = "--";
+        function calcularEstatisticas() {
+            const scores = parsedParticipants.map(p => p.score);
+            const n = scores.length;
+            const mean = scores.reduce((a, b) => a + b, 0) / n;
+            
+            // Desvio Padrão Amostral (Bessel's correction)
+            const variance = n > 1 ? scores.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / (n - 1) : 0;
+            const stdDev = Math.sqrt(variance);
+
+            // Margem de erro (t de Student para 95% de Confiança)
+            const tValues = {
+                1: 12.706, 2: 4.303, 3: 3.182, 4: 2.776, 5: 2.571, 
+                6: 2.447, 7: 2.365, 8: 2.306, 9: 2.262, 10: 2.228,
+                11: 2.201, 12: 2.179, 13: 2.160, 14: 2.145, 15: 2.131,
+                20: 2.086, 30: 2.042, 60: 2.000, 120: 1.980, 999: 1.960
+            };
+            const df = Math.min(n - 1, 120);
+            const t = tValues[df] || (df > 120 ? 1.96 : 2.228);
+            const marginOfError = n > 1 ? t * (stdDev / Math.sqrt(n)) : 0;
+
+            return { n, mean, stdDev, marginOfError };
+        }
+
+        function getInterpretation(score) {
+            let interpretation = scoringDatabase.find(item => score <= item.maxScore);
+            return interpretation || scoringDatabase[scoringDatabase.length - 1];
+        }
+
+        function atualizarDashboard() {
+            const stats = calcularEstatisticas();
+            const interpretation = getInterpretation(stats.mean);
+
+            // Mostrar Seção de Resultados
+            document.getElementById('resultsSection').classList.remove('hidden');
+
+            // Preencher Kpis
+            document.getElementById('statMean').innerText = stats.mean.toFixed(1);
+            
+            const gradeEl = document.getElementById('statGrade');
+            gradeEl.innerText = `Grade: ${interpretation.grade}`;
+            gradeEl.className = `text-xs px-2.5 py-0.5 font-bold rounded mt-2 inline-block ${interpretation.colorClass}`;
+
+            document.getElementById('statN').innerText = stats.n;
+            document.getElementById('statStdDev').innerText = stats.stdDev.toFixed(1);
+            document.getElementById('statCI').innerText = `± ${stats.marginOfError.toFixed(1)}`;
+            document.getElementById('statPercentile').innerText = interpretation.percentile;
+            document.getElementById('statAdjective').innerText = `Adjetivo: ${interpretation.adjective}`;
+
+            // Painel de Interpretação
+            const acceptEl = document.getElementById('interpAcceptability');
+            acceptEl.innerText = interpretation.acceptability;
+            acceptEl.className = `text-xs font-bold px-2 py-1 rounded ${interpretation.colorClass}`;
+
+            const npsEl = document.getElementById('interpNps');
+            npsEl.innerText = interpretation.nps;
+            npsEl.className = `text-xs font-bold px-2 py-1 rounded ${
+                interpretation.nps === 'Promotor' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                interpretation.nps === 'Passivo' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 
+                'bg-red-500/20 text-red-400 border border-red-500/30'
+            }`;
+
+            // Resumo dinâmico
+            document.getElementById('interpSummary').innerHTML = `
+                A sua amostra de <strong class="text-white">${stats.n} participantes</strong> obteve um SUS médio de 
+                <strong class="text-blue-400">${stats.mean.toFixed(1)}</strong>. 
+                Isso significa que seu sistema é classificado como <strong class="text-white">"${interpretation.adjective}"</strong> 
+                e possui um nível de aceitação classificado como <strong class="text-white">${interpretation.acceptability}</strong> pelo usuário final.
+            `;
+
+            // Construir Tabela
+            construirTabela();
+
+            // Renderizar Gráfico
+            renderizarGrafico(stats.mean);
+        }
+
+        function construirTabela() {
+            const header = document.getElementById('tableHeader');
+            const body = document.getElementById('tableBody');
+
+            // Gerar Cabeçalho
+            let headerHTML = `<th class="px-4 py-3 font-semibold">Participante</th>`;
+            for (let i = 1; i <= 10; i++) {
+                headerHTML += `<th class="px-3 py-3 font-semibold text-center">Q${i}</th>`;
+            }
+            headerHTML += `<th class="px-4 py-3 font-semibold text-right">Score Final</th>`;
+            headerHTML += `<th class="px-4 py-3 font-semibold text-center">Nota</th>`;
+            header.innerHTML = headerHTML;
+
+            // Gerar Linhas
+            body.innerHTML = '';
+            parsedParticipants.forEach(p => {
+                const interp = getInterpretation(p.score);
+                let rowHTML = `
+                    <tr class="hover:bg-slate-700/50 transition-colors">
+                        <td class="px-4 py-3 font-bold text-slate-300">${p.id}</td>
+                `;
+                p.rawAnswers.forEach(ans => {
+                    rowHTML += `<td class="px-3 py-3 text-center text-slate-400">${ans}</td>`;
+                });
+                rowHTML += `
+                    <td class="px-4 py-3 font-bold text-right text-blue-400">${p.score.toFixed(1)}</td>
+                    <td class="px-4 py-3 text-center">
+                        <span class="text-xs font-bold px-2 py-0.5 rounded ${interp.colorClass}">${interp.grade}</span>
+                    </td>
+                    </tr>
+                `;
+                body.innerHTML += rowHTML;
+            });
+        }
+
+        function renderizarGrafico(scoreMedio) {
+            const ctx = document.getElementById('susDistributionChart').getContext('2d');
+            
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            // Mapear pontuações individuais para o gráfico
+            const dataPontos = parsedParticipants.map((p, idx) => ({
+                x: idx + 1,
+                y: p.score,
+                label: p.id
+            }));
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Nota por Participante',
+                            data: dataPontos,
+                            borderColor: 'rgba(99, 102, 241, 0.5)',
+                            backgroundColor: '#3b82f6',
+                            pointRadius: 6,
+                            pointHoverRadius: 8,
+                            showLine: false,
+                            type: 'scatter'
+                        },
+                        {
+                            label: 'Média do Grupo',
+                            data: Array(dataPontos.length).fill(scoreMedio),
+                            borderColor: '#34d399',
+                            borderWidth: 3,
+                            borderDash: [5, 5],
+                            pointRadius: 0,
+                            fill: false,
+                            type: 'line'
+                        },
+                        {
+                            label: 'Média Global (Benchmark = 68)',
+                            data: Array(dataPontos.length).fill(68),
+                            borderColor: '#ef4444',
+                            borderWidth: 1.5,
+                            borderDash: [3, 3],
+                            pointRadius: 0,
+                            fill: false,
+                            type: 'line'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: '#94a3b8', font: { size: 10 } },
+                            title: { display: true, text: 'Participante', color: '#94a3b8' }
+                        },
+                        y: {
+                            min: 0,
+                            max: 100,
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: '#94a3b8', stepSize: 10 },
+                            title: { display: true, text: 'Pontuação SUS', color: '#94a3b8' }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: { color: '#e2e8f0', font: { size: 11 } }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.datasetIndex === 0) {
+                                        const p = parsedParticipants[context.dataIndex];
+                                        return `${p.id}: Score ${p.score.toFixed(1)}`;
+                                    }
+                                    return `${context.dataset.label}: ${context.raw.toFixed(1)}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function exportarExcel() {
+            // Criar matriz estruturada para exportação
+            const exportData = [];
+            
+            // Cabeçalho
+            exportData.push(["Participante", "Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "Q7", "Q8", "Q9", "Q10", "Score Final", "Grade", "Aceitabilidade", "NPS"]);
+            
+            parsedParticipants.forEach(p => {
+                const interp = getInterpretation(p.score);
+                exportData.push([
+                    p.id,
+                    ...p.rawAnswers,
+                    p.score,
+                    interp.grade,
+                    interp.acceptability,
+                    interp.nps
+                ]);
+            });
+
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(exportData);
+            XLSX.utils.book_append_sheet(wb, ws, "Resultados Consolidados");
+            XLSX.writeFile(wb, "Resultados_SUS_Processados.xlsx");
         }
     </script>
 </body>
