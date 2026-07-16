@@ -66,17 +66,20 @@
                     <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
                         <i class="fa-solid fa-file-excel text-green-500"></i> Importar Planilha do SUS
                     </h2>
-                    <p class="text-slate-400 text-xs mb-4 leading-relaxed">
-                        Arraste ou selecione sua planilha <span class="text-blue-400 font-semibold">.xlsx, .xls ou .csv</span>. O sistema mapeará automaticamente as linhas de perguntas de <strong>Q1 a Q10</strong> contidas na aba <span class="text-green-400 font-mono">Cálculo SUS</span> ou na página ativa do documento.
-                    </p>
+                    <div class="bg-blue-950/40 border border-blue-800/40 rounded-lg p-3 mb-4">
+                        <p class="text-blue-300 text-xs leading-relaxed flex items-start gap-2">
+                            <i class="fa-solid fa-circle-exclamation mt-0.5"></i>
+                            <span><strong>Dica de ouro:</strong> Para garantir uma leitura perfeita, envie seu arquivo contendo <strong>apenas uma aba ativa</strong> estruturada com as colunas <strong class="text-white">Q1 a Q10</strong> e os IDs dos usuários (Ex: <strong class="text-white">U01, U02...</strong>) identificando as linhas ou vice-versa!</span>
+                        </p>
+                    </div>
                 </div>
                 
                 <div class="border-2 border-dashed border-slate-600 hover:border-blue-500 rounded-xl p-8 text-center transition-colors cursor-pointer bg-slate-900/40" id="dropZone">
                     <input type="file" id="fileInput" accept=".xlsx, .xls, .csv" class="hidden">
                     <label for="fileInput" class="cursor-pointer space-y-2">
                         <i class="fa-solid fa-cloud-arrow-up text-4xl text-slate-500"></i>
-                        <p class="text-sm font-medium text-slate-300">Arraste seu arquivo modelo ou clique para buscar</p>
-                        <p class="text-xs text-slate-500">Suporta formatações baseadas no arquivo de amostra ("U1", "U2", etc.)</p>
+                        <p class="text-sm font-medium text-slate-300">Arraste seu arquivo ou clique para buscar</p>
+                        <p class="text-xs text-slate-500">Suporta arquivos Excel (.xlsx) e CSV estruturados por linhas ou colunas</p>
                     </label>
                 </div>
             </div>
@@ -95,7 +98,7 @@
                         <p class="text-slate-400 mt-0.5">Pontuação = 5 - Resposta do Usuário</p>
                     </div>
                     <p class="text-[11px] text-slate-500 italic">
-                        * A soma das pontuações de cada usuário é multiplicada por 2,5 para normalizar a escala de 0 a 100.
+                        * A soma de todas as pontuações individuais de usabilidade é multiplicada por 2,5 para normalizar a escala final de 0 a 100 pontos.
                     </p>
                 </div>
             </div>
@@ -109,7 +112,7 @@
                         Média Amostral
                         <div class="hint-tooltip">
                             <i class="fa-solid fa-circle-question text-blue-400"></i>
-                            <span class="tooltip-text">Média aritmética simples de todos os respondentes válidos. Média histórica de mercado é 68.</span>
+                            <span class="tooltip-text">Média aritmética simples de todos os respondentes válidos. Média histórica global de mercado é 68.</span>
                         </div>
                     </div>
                     <div id="statMean" class="text-4xl font-extrabold text-blue-400 mt-2">--</div>
@@ -121,7 +124,7 @@
                         I.C. 95%
                         <div class="hint-tooltip">
                             <i class="fa-solid fa-circle-question text-blue-400"></i>
-                            <span class="tooltip-text">Intervalo de Confiança t-Student (95%): indica a faixa de variação real estimada para a população de usuários.</span>
+                            <span class="tooltip-text">Intervalo de Confiança t-Student (95%): indica a faixa estimada onde se encontra a verdadeira média populacional.</span>
                         </div>
                     </div>
                     <div id="statCI" class="text-2xl font-bold text-white mt-4">--</div>
@@ -133,7 +136,7 @@
                         Percentil Rank
                         <div class="hint-tooltip">
                             <i class="fa-solid fa-circle-question text-blue-400"></i>
-                            <span class="tooltip-text">Indica a porcentagem de sistemas da indústria que sua solução supera. Fonte: Sauro-Lewis database.</span>
+                            <span class="tooltip-text">Indica a porcentagem de sistemas da indústria que sua solução supera. Fonte: Sauro-Lewis database (MeasuringU).</span>
                         </div>
                     </div>
                     <div id="statPercentile" class="text-2xl font-bold text-white mt-4">--</div>
@@ -151,7 +154,7 @@
                         Desvio Padrão (s)
                         <div class="hint-tooltip">
                             <i class="fa-solid fa-circle-question text-blue-400"></i>
-                            <span class="tooltip-text">Mede a dispersão ou consistência das notas em relação à média.</span>
+                            <span class="tooltip-text">Mede o grau de dispersão ou consistência das notas em relação à média geral do grupo.</span>
                         </div>
                     </div>
                     <div id="statStdDev" class="text-4xl font-extrabold text-white mt-2">--</div>
@@ -195,7 +198,7 @@
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 pb-4 border-b border-slate-700">
                     <div>
                         <h3 class="text-base font-bold text-white">Notas Individuais por Participante</h3>
-                        <p class="text-xs text-slate-400">Detalhe das respostas normalizadas (de 0 a 4 pontos por questão).</p>
+                        <p class="text-xs text-slate-400">Tabela de conferência com as notas brutas mapeadas de 1 a 5.</p>
                     </div>
                     <button onclick="exportarExcel()" class="bg-green-600 hover:bg-green-700 text-white text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors">
                         <i class="fa-solid fa-file-export"></i> Exportar Dados Processados
@@ -218,8 +221,14 @@
 
     </main>
 
+    <footer class="bg-slate-800 text-slate-400 text-xs py-8 mt-12 border-t border-slate-700">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
+            <p>Este sistema aplica os dados de conversão oficiais definidos e atualizados pela <strong>MeasuringU</strong>.</p>
+        </div>
+    </footer>
+
     <script>
-        // Tabela de conversão da MeasuringU (Escala de Sauro-Lewis)
+        // Tabela de conversão de Percentis e Notas (MeasuringU / Sauro-Lewis)
         const scoringDatabase = [
             { maxScore: 25.0, grade: 'F', percentile: '0 - 1.9%', adjective: 'Worst Imaginable', acceptability: 'Inaceitável', nps: 'Detrator', colorClass: 'bg-red-500/20 text-red-400 border border-red-500/30' },
             { maxScore: 51.6, grade: 'F', percentile: '2 - 14%', adjective: 'Poor (Ruim)', acceptability: 'Inaceitável', nps: 'Detrator', colorClass: 'bg-red-500/20 text-red-400 border border-red-500/30' },
@@ -238,7 +247,6 @@
         let parsedParticipants = [];
         let chartInstance = null;
 
-        // Gerenciar Drag and Drop
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
 
@@ -268,10 +276,8 @@
                 reader.onload = function(e) {
                     const data = new Uint8Array(e.target.result);
                     const workbook = XLSX.read(data, { type: 'array' });
-                    
-                    // Prioriza aba "Cálculo SUS" ou pega a primeira aba
-                    let sheetName = workbook.SheetNames.find(name => name.toLowerCase().includes('sus')) || workbook.SheetNames[0];
-                    const sheet = workbook.Sheets[sheetName];
+                    // Lê a primeira aba ativa
+                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
                     const rawData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
                     processarDadosPlanilha(rawData);
                 };
@@ -284,85 +290,154 @@
             processarDadosPlanilha(rows);
         }
 
+        /**
+         * Motor Inteligente de Mapeamento SUS:
+         * Varre a planilha e reconhece automaticamente se o layout está em Linhas (cada linha é um usuário)
+         * ou em Colunas (cada coluna é um usuário), localizando chaves de Q1 a Q10.
+         */
         function processarDadosPlanilha(rows) {
             parsedParticipants = [];
             
-            // Procurar a tabela de 'Resposta SUS' ou as perguntas diretamente
-            let userHeaders = [];
-            let questionRows = {};
+            // Remove linhas vazias
+            const cleanRows = rows.map(r => r.map(c => (c !== undefined && c !== null) ? c.toString().trim() : ""))
+                                  .filter(r => r.some(c => c !== ""));
 
-            // Encontrar mapeamento de U1, U2, etc e os valores de Q1 a Q10
-            rows.forEach((row, rowIndex) => {
-                if (!row[0]) return;
-                const rowHeader = row[0].toString().trim();
-                
-                // Mapear cabeçalho dos participantes (Ex: se contiver QUESTÕES e depois U1, U2...)
-                if (rowHeader.toUpperCase().includes('QUESTÕES') || rowHeader.toUpperCase().includes('QUESTOES')) {
-                    userHeaders = row.slice(1).filter(cell => cell && cell.toString().trim() !== '');
-                }
-                
-                // Mapear perguntas Q1 a Q10
-                const match = rowHeader.match(/^(Q\d+)\b/i);
-                if (match) {
-                    const qKey = match[1].toUpperCase();
-                    questionRows[qKey] = row.slice(1);
-                }
-            });
+            if (cleanRows.length === 0) {
+                alert("O arquivo enviado está vazio!");
+                return;
+            }
 
-            const numUsers = userHeaders.length || 10; // Backup para 10 usuários caso o cabeçalho falhe
+            // Identificar as posições das perguntas Q1 a Q10
+            let qPositions = {}; // mapeia "Q1", "Q2" etc. para sua coordenada
+            let structureType = null; // 'user_rows' (usuários por linha) ou 'user_cols' (usuários por coluna)
 
-            for (let i = 0; i < numUsers; i++) {
-                let userAnswers = [];
-                let fullyAnswered = true;
-                const userName = userHeaders[i] || `U${i+1}`;
-
-                // Coletar respostas de Q1 a Q10
-                for (let qNum = 1; qNum <= 10; qNum++) {
-                    const qAnswers = questionRows[`Q${qNum}`];
-                    const val = qAnswers ? parseFloat(qAnswers[i]) : null;
-                    
-                    if (val !== null && !isNaN(val) && val >= 1 && val <= 5) {
-                        userAnswers.push(val);
-                    } else {
-                        fullyAnswered = false;
-                        break;
+            // Varre as primeiras linhas e colunas para descobrir a estrutura de Q1 a Q10
+            for (let r = 0; r < cleanRows.length; r++) {
+                for (let c = 0; c < cleanRows[r].length; c++) {
+                    const val = cleanRows[r][c];
+                    const match = val.match(/^(Q\d+)\b/i);
+                    if (match) {
+                        const qName = match[1].toUpperCase();
+                        qPositions[qName] = { r, c };
                     }
                 }
+            }
 
-                if (fullyAnswered && userAnswers.length === 10) {
-                    // Calcular Pontuação Unitária
-                    let individualScore = 0;
-                    const answersNormalized = [];
+            // Verifica se encontramos todas as 10 perguntas
+            const keysFound = Object.keys(qPositions);
+            if (keysFound.length < 10) {
+                alert("Não conseguimos localizar as 10 perguntas (Q1 a Q10) na planilha. Por favor, verifique se os cabeçalhos usam o padrão 'Q1', 'Q2', ..., 'Q10'.");
+                return;
+            }
 
-                    for (let qIdx = 0; qIdx < 10; qIdx++) {
-                        const rawVal = userAnswers[qIdx];
-                        let normVal = 0;
-                        if ((qIdx + 1) % 2 !== 0) {
-                            normVal = rawVal - 1; // Itens ímpares
+            // Descobrir se as questões estão todas na mesma linha (ou seja, usuários nas linhas, formato clássico)
+            const firstQ = qPositions['Q1'];
+            const secondQ = qPositions['Q2'];
+            
+            if (firstQ.r === secondQ.r) {
+                structureType = 'user_rows'; // As questões estão horizontalmente no topo. Usuários são as linhas subsequentes.
+            } else if (firstQ.c === secondQ.c) {
+                structureType = 'user_cols'; // As questões estão verticalmente em uma coluna. Usuários são colunas subsequentes.
+            }
+
+            if (!structureType) {
+                alert("A estrutura das questões Q1 a Q10 não pôde ser mapeada.");
+                return;
+            }
+
+            if (structureType === 'user_rows') {
+                // Usuários são representados por linhas
+                // Descobre a linha onde o cabeçalho das perguntas se encontra
+                const headerRowIndex = firstQ.r;
+
+                for (let r = headerRowIndex + 1; r < cleanRows.length; r++) {
+                    const row = cleanRows[r];
+                    // O ID do usuário geralmente está na primeira coluna da linha, ou assume-se U_X
+                    const userIdColIndex = Math.max(0, firstQ.c - 1);
+                    let userId = row[userIdColIndex] || `U${r - headerRowIndex}`;
+                    
+                    // Valida se o ID não é vazio e se parece com um identificador de participante
+                    if (!userId || userId === "") continue;
+
+                    let rawAnswers = [];
+                    let hasAllAnswers = true;
+
+                    for (let qNum = 1; qNum <= 10; qNum++) {
+                        const pos = qPositions[`Q${qNum}`];
+                        const val = parseFloat(row[pos.c]);
+                        if (!isNaN(val) && val >= 1 && val <= 5) {
+                            rawAnswers.push(val);
                         } else {
-                            normVal = 5 - rawVal; // Itens pares
+                            hasAllAnswers = false;
+                            break;
                         }
-                        answersNormalized.push(normVal);
-                        individualScore += normVal;
                     }
-                    
-                    const finalScore = individualScore * 2.5;
 
-                    parsedParticipants.push({
-                        id: userName,
-                        rawAnswers: userAnswers,
-                        normAnswers: answersNormalized,
-                        score: finalScore
-                    });
+                    if (hasAllAnswers) {
+                        adicionarParticipante(userId, rawAnswers);
+                    }
+                }
+            } else {
+                // Usuários são representados por colunas
+                const headerColIndex = firstQ.c;
+                const numCols = cleanRows[0].length;
+
+                for (let c = headerColIndex + 1; c < numCols; c++) {
+                    let userId = cleanRows[Math.max(0, firstQ.r - 1)][c] || `U${c - headerColIndex}`;
+                    if (!userId || userId === "") continue;
+
+                    let rawAnswers = [];
+                    let hasAllAnswers = true;
+
+                    for (let qNum = 1; qNum <= 10; qNum++) {
+                        const pos = qPositions[`Q${qNum}`];
+                        const val = parseFloat(cleanRows[pos.r][c]);
+                        if (!isNaN(val) && val >= 1 && val <= 5) {
+                            rawAnswers.push(val);
+                        } else {
+                            hasAllAnswers = false;
+                            break;
+                        }
+                    }
+
+                    if (hasAllAnswers) {
+                        adicionarParticipante(userId, rawAnswers);
+                    }
                 }
             }
 
             if (parsedParticipants.length === 0) {
-                alert("Nenhum dado válido de SUS (Q1 a Q10 com respostas de 1 a 5) foi encontrado na aba correspondente.");
+                alert("Nenhum dado válido pôde ser extraído. Lembre-se que as notas devem ser numéricas e estar entre 1 e 5.");
                 return;
             }
 
             atualizarDashboard();
+        }
+
+        function adicionarParticipante(userId, rawAnswers) {
+            let individualScore = 0;
+            const answersNormalized = [];
+
+            for (let qIdx = 0; qIdx < 10; qIdx++) {
+                const rawVal = rawAnswers[qIdx];
+                let normVal = 0;
+                if ((qIdx + 1) % 2 !== 0) {
+                    normVal = rawVal - 1; // Ímpar
+                } else {
+                    normVal = 5 - rawVal; // Par
+                }
+                answersNormalized.push(normVal);
+                individualScore += normVal;
+            }
+            
+            const finalScore = individualScore * 2.5;
+
+            parsedParticipants.push({
+                id: userId,
+                rawAnswers: rawAnswers,
+                normAnswers: answersNormalized,
+                score: finalScore
+            });
         }
 
         function calcularEstatisticas() {
@@ -370,7 +445,7 @@
             const n = scores.length;
             const mean = scores.reduce((a, b) => a + b, 0) / n;
             
-            // Desvio Padrão Amostral (Bessel's correction)
+            // Desvio Padrão Amostral (correção de Bessel n-1)
             const variance = n > 1 ? scores.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / (n - 1) : 0;
             const stdDev = Math.sqrt(variance);
 
@@ -397,10 +472,8 @@
             const stats = calcularEstatisticas();
             const interpretation = getInterpretation(stats.mean);
 
-            // Mostrar Seção de Resultados
             document.getElementById('resultsSection').classList.remove('hidden');
 
-            // Preencher Kpis
             document.getElementById('statMean').innerText = stats.mean.toFixed(1);
             
             const gradeEl = document.getElementById('statGrade');
@@ -413,7 +486,6 @@
             document.getElementById('statPercentile').innerText = interpretation.percentile;
             document.getElementById('statAdjective').innerText = `Adjetivo: ${interpretation.adjective}`;
 
-            // Painel de Interpretação
             const acceptEl = document.getElementById('interpAcceptability');
             acceptEl.innerText = interpretation.acceptability;
             acceptEl.className = `text-xs font-bold px-2 py-1 rounded ${interpretation.colorClass}`;
@@ -426,7 +498,6 @@
                 'bg-red-500/20 text-red-400 border border-red-500/30'
             }`;
 
-            // Resumo dinâmico
             document.getElementById('interpSummary').innerHTML = `
                 A sua amostra de <strong class="text-white">${stats.n} participantes</strong> obteve um SUS médio de 
                 <strong class="text-blue-400">${stats.mean.toFixed(1)}</strong>. 
@@ -434,10 +505,7 @@
                 e possui um nível de aceitação classificado como <strong class="text-white">${interpretation.acceptability}</strong> pelo usuário final.
             `;
 
-            // Construir Tabela
             construirTabela();
-
-            // Renderizar Gráfico
             renderizarGrafico(stats.mean);
         }
 
@@ -445,7 +513,6 @@
             const header = document.getElementById('tableHeader');
             const body = document.getElementById('tableBody');
 
-            // Gerar Cabeçalho
             let headerHTML = `<th class="px-4 py-3 font-semibold">Participante</th>`;
             for (let i = 1; i <= 10; i++) {
                 headerHTML += `<th class="px-3 py-3 font-semibold text-center">Q${i}</th>`;
@@ -454,7 +521,6 @@
             headerHTML += `<th class="px-4 py-3 font-semibold text-center">Nota</th>`;
             header.innerHTML = headerHTML;
 
-            // Gerar Linhas
             body.innerHTML = '';
             parsedParticipants.forEach(p => {
                 const interp = getInterpretation(p.score);
@@ -483,7 +549,6 @@
                 chartInstance.destroy();
             }
 
-            // Mapear pontuações individuais para o gráfico
             const dataPontos = parsedParticipants.map((p, idx) => ({
                 x: idx + 1,
                 y: p.score,
@@ -564,10 +629,7 @@
         }
 
         function exportarExcel() {
-            // Criar matriz estruturada para exportação
             const exportData = [];
-            
-            // Cabeçalho
             exportData.push(["Participante", "Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "Q7", "Q8", "Q9", "Q10", "Score Final", "Grade", "Aceitabilidade", "NPS"]);
             
             parsedParticipants.forEach(p => {
