@@ -16,7 +16,7 @@
         }
         .hint-tooltip .tooltip-text {
             visibility: hidden;
-            width: 280px;
+            width: 290px;
             background-color: #1e293b;
             color: #fff;
             text-align: left;
@@ -48,7 +48,7 @@
                     <i class="fa-solid fa-chart-line text-blue-500"></i> Dashboard Analítico SUS (CSV)
                 </h1>
                 <p class="text-slate-400 text-sm mt-1">
-                    Análise em lote, distribuições estatísticas, curvas de percentil e correlação com Heurísticas de Nielsen.
+                    Análise em lote, distribuições estatísticas, curvas de percentil, distribuição de respostas, subescalas e correlação heurística.
                 </p>
             </div>
             <div class="flex items-center gap-2 text-xs bg-slate-700/50 p-2.5 rounded-lg border border-slate-600">
@@ -68,7 +68,9 @@
                     <div class="bg-blue-950/40 border border-blue-800/40 rounded-lg p-3 mb-4">
                         <p class="text-blue-300 text-xs leading-relaxed flex items-start gap-2">
                             <i class="fa-solid fa-circle-exclamation mt-0.5"></i>
-                            <span><strong>Atenção:</strong> Este sistema aceita <strong>apenas arquivos no formato CSV</strong>. Certifique-se de que seu arquivo contém colunas ou linhas com os rótulos de <strong>Q1 a Q10</strong> e os IDs dos respondentes (ex: <strong>U01, U02...</strong>).</span>
+                            <span>
+                                <strong>Compatibilidade Total MS Forms:</strong> O sistema detecta e processa automaticamente relatórios brutos exportados do Microsoft Forms, filtrando as colunas numeradas de <strong>1 a 10</strong> e anonimizando o nome real dos usuários em IDs seguros (<strong class="text-white">U01, U02...</strong>).
+                            </span>
                         </p>
                     </div>
                 </div>
@@ -193,6 +195,21 @@
                 </div>
             </div>
 
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
+                <div class="flex items-center gap-2 mb-4">
+                    <h3 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-chart-bar text-emerald-400"></i> Distribuição de Respostas por Questão (Escala 1 a 5)
+                    </h3>
+                    <div class="hint-tooltip">
+                        <i class="fa-solid fa-circle-question text-blue-400"></i>
+                        <span class="tooltip-text">Este gráfico mostra o volume acumulado de votos para cada uma das opções (1 a 5) em cada pergunta de forma detalhada. Ao passar o mouse, veja a quantidade exata de usuários e a respectiva porcentagem que essa escolha representa.</span>
+                    </div>
+                </div>
+                <div class="relative h-96 w-full">
+                    <canvas id="susStackedResponsesChart"></canvas>
+                </div>
+            </div>
+
             <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 pb-4 border-b border-slate-700">
                     <div>
@@ -216,19 +233,73 @@
                 </div>
             </div>
 
-            <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6">
-                <div class="flex items-center gap-2 pb-4 border-b border-slate-700 mb-6">
-                    <h3 class="text-base font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-shield-halved text-amber-400"></i> Correlação com Heurísticas de Nielsen
-                    </h3>
-                    <div class="hint-tooltip">
-                        <i class="fa-solid fa-circle-question text-blue-400"></i>
-                        <span class="tooltip-text">Este modelo de mapeamento correlaciona as médias das questões do SUS (convertidas de 0 a 4) com as Heurísticas de Nielsen, conforme o artigo publicado na UX Design Brasil. Embora amplamente adotado pela comunidade de design, serve como diagnóstico complementar (sem valor de norma ISO estrita).</span>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <div class="lg:col-span-1 bg-slate-800 rounded-2xl border border-slate-700 p-6 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 pb-3 border-b border-slate-700 mb-4">
+                            <h3 class="text-base font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-brain text-pink-400"></i> Usabilidade vs. Aprendizado
+                            </h3>
+                            <div class="hint-tooltip">
+                                <i class="fa-solid fa-circle-question text-blue-400"></i>
+                                <span class="tooltip-text">
+                                    <strong>Subescalas do SUS (Lewis & Sauro, 2009)</strong><br><br>
+                                    Dividido com base no artigo científico: <em>"The Factor Structure of the System Usability Scale"</em>.<br><br>
+                                    - <strong>Usabilidade (8 perguntas)</strong>: Itens 1, 2, 3, 5, 6, 7, 8 e 9.<br>
+                                    - <strong>Aprendizado (2 perguntas)</strong>: Itens 4 e 10.
+                                </span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-6 leading-relaxed">
+                            Descubra se as barreiras do seu sistema estão na usabilidade geral ou na facilidade que o usuário tem para aprender a utilizá-lo.
+                        </p>
+
+                        <div class="space-y-2 mb-6">
+                            <div class="flex justify-between text-xs font-semibold">
+                                <span class="text-slate-300">Subescala de Usabilidade</span>
+                                <span id="subUsabilityVal" class="text-blue-400">--</span>
+                            </div>
+                            <div class="w-full bg-slate-700 rounded-full h-2.5">
+                                <div id="subUsabilityBar" class="bg-blue-500 h-2.5 rounded-full" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-xs font-semibold">
+                                <span class="text-slate-300">Subescala de Aprendizado (Learnability)</span>
+                                <span id="subLearnabilityVal" class="text-pink-400">--</span>
+                            </div>
+                            <div class="w-full bg-slate-700 rounded-full h-2.5">
+                                <div id="subLearnabilityBar" class="bg-pink-500 h-2.5 rounded-full" style="width: 0%"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6" id="heuristicsContainer">
+                <div class="lg:col-span-2 bg-slate-800 rounded-2xl border border-slate-700 p-6">
+                    <div class="flex items-center gap-2 pb-3 border-b border-slate-700 mb-4">
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-shield-halved text-amber-400"></i> Correlação com Heurísticas de Nielsen
+                        </h3>
+                        <div class="hint-tooltip">
+                            <i class="fa-solid fa-circle-question text-blue-400"></i>
+                            <span class="tooltip-text">
+                                <strong>Mapeamento Heurístico de UX</strong><br><br>
+                                Correlaciona as médias de $0$ a $4$ das respostas do SUS com as Heurísticas de Nielsen, conforme consolidado no artigo do <em>UX Design Brasil</em>.<br><br>
+                                - <strong>Aprendizagem</strong>: Q3, Q4, Q7, Q10<br>
+                                - <strong>Eficiência</strong>: Q5, Q6, Q8<br>
+                                - <strong>Memorização</strong>: Q2<br>
+                                - <strong>Prevenção de Erros</strong>: Q6<br>
+                                - <strong>Satisfação</strong>: Q1, Q4, Q9
+                            </span>
+                        </div>
                     </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2" id="heuristicsContainer">
+                        </div>
+                </div>
+
             </div>
 
         </section>
@@ -260,6 +331,7 @@
 
         let parsedParticipants = [];
         let chartInstance = null;
+        let chartStackedInstance = null;
 
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
@@ -325,30 +397,60 @@
                         atualizarUIStatusCarregando(false);
                     }
                 };
-                reader.readAsText(file);
+                reader.readAsText(file, "UTF-8"); // Garante leitura correta de acentos do Forms
             } catch (err) {
                 alert("Não foi possível carregar o arquivo: " + err.message);
                 atualizarUIStatusCarregando(false);
             }
         }
 
+        /**
+         * PARSER RFC 4180 COMPLETO E RESILIENTE:
+         * Ignora quebras de linha (\n) que ocorrem dentro de aspas (comum nos textos de cabeçalho do Forms).
+         */
         function parseCSV(text) {
-            const lines = text.split(/\r?\n/);
-            const rows = lines.map(line => {
-                let delimiter = ',';
-                if (line.includes(';')) delimiter = ';';
-                return line.split(delimiter).map(cell => cell.trim().replace(/^["']|["']$/g, ""));
-            });
+            let rows = [];
+            let row = [""];
+            let inQuotes = false;
+            let delimiter = ",";
+
+            // Descobre o delimitador buscando na primeira linha estrutural
+            if (text.split(/\r?\n/)[0].includes(";")) {
+                delimiter = ";";
+            }
+
+            for (let i = 0; i < text.length; i++) {
+                let c = text[i];
+                let next = text[i+1];
+
+                if (c === '"') {
+                    if (inQuotes && next === '"') { 
+                        row[row.length - 1] += '"'; i++; 
+                    } else { 
+                        inQuotes = !inQuotes; 
+                    }
+                } else if (c === delimiter && !inQuotes) {
+                    row.push("");
+                } else if ((c === '\r' || c === '\n') && !inQuotes) {
+                    if (c === '\r' && next === '\n') { i++; }
+                    rows.push(row.map(cell => cell.trim()));
+                    row = [""];
+                } else {
+                    row[row.length - 1] += c;
+                }
+            }
+            if (row.length > 1 || row[0] !== "") {
+                rows.push(row.map(cell => cell.trim()));
+            }
+
             processarDadosPlanilha(rows);
         }
 
         function processarDadosPlanilha(rows) {
             parsedParticipants = [];
             
-            const cleanRows = rows.map(r => {
-                if (!r) return [];
-                return r.map(c => (c !== undefined && c !== null) ? c.toString().trim() : "");
-            }).filter(r => r.some(c => c !== ""));
+            // Remove registros totalmente fantasmas
+            const cleanRows = rows.filter(r => r.some(c => c !== ""));
 
             if (cleanRows.length === 0) {
                 alert("O arquivo CSV importado está vazio.");
@@ -359,22 +461,36 @@
             let qPositions = {}; 
             let structureType = null; 
 
-            const searchLimitRows = Math.min(cleanRows.length, 30);
+            // Varre as primeiras linhas para mapear as posições de Q1 a Q10 com inteligência
+            const searchLimitRows = Math.min(cleanRows.length, 10);
             for (let r = 0; r < searchLimitRows; r++) {
-                const limitCols = Math.min(cleanRows[r].length, 30);
-                for (let c = 0; c < limitCols; c++) {
+                for (let c = 0; c < cleanRows[r].length; c++) {
                     const val = cleanRows[r][c];
-                    const match = val.match(/^(Q\d+)\b/i);
-                    if (match) {
-                        const qName = match[1].toUpperCase();
-                        qPositions[qName] = { r, c };
+                    
+                    // Regex super flexível para pegar números isolados ou prefixados (ex: "1. Eu", "Q1", "\n8. Eu")
+                    const matchQ = val.match(/(?:^|\b)(?:Q|(\d+))[\.\-\s\b]/i);
+                    if (matchQ) {
+                        let qNum = null;
+                        if (matchQ[1]) {
+                            qNum = parseInt(matchQ[1]);
+                        } else {
+                            const numericMatch = val.match(/\d+/);
+                            if (numericMatch) qNum = parseInt(numericMatch[0]);
+                        }
+                        
+                        if (qNum && qNum >= 1 && qNum <= 10) {
+                            const qKey = `Q${qNum}`;
+                            if (!qPositions[qKey]) { 
+                                qPositions[qKey] = { r, c };
+                            }
+                        }
                     }
                 }
             }
 
             const keysFound = Object.keys(qPositions);
             if (keysFound.length < 10) {
-                alert("Atenção: Não encontramos todas as 10 perguntas (Q1 a Q10) no seu arquivo CSV.");
+                alert("Atenção: Não encontramos todas as 10 perguntas (Q1 a Q10) no seu arquivo CSV.\nCertifique-se de que existem cabeçalhos usando rótulos diretos ou que iniciam com o número correspondente (ex: '1. Pergunta', 'Q2').");
                 atualizarUIStatusCarregando(false);
                 return;
             }
@@ -394,16 +510,16 @@
                 return;
             }
 
+            let userIndex = 1;
+
             if (structureType === 'user_rows') {
                 const headerRowIndex = firstQ.r;
 
                 for (let r = headerRowIndex + 1; r < cleanRows.length; r++) {
                     const row = cleanRows[r];
-                    const userIdColIndex = Math.max(0, firstQ.c - 1);
-                    let userId = row[userIdColIndex] || `U${r - headerRowIndex}`;
+                    // Mascara nomes e gera IDs seguros em sequência (U01, U02...)
+                    let userId = "U" + String(userIndex).padStart(2, '0');
                     
-                    if (!userId || userId === "") continue;
-
                     let rawAnswers = [];
                     let hasAllAnswers = true;
 
@@ -420,6 +536,7 @@
 
                     if (hasAllAnswers) {
                         adicionarParticipante(userId, rawAnswers);
+                        userIndex++;
                     }
                 }
             } else {
@@ -427,9 +544,7 @@
                 const numCols = cleanRows[0].length;
 
                 for (let c = headerColIndex + 1; c < numCols; c++) {
-                    let userId = cleanRows[Math.max(0, firstQ.r - 1)][c] || `U${c - headerColIndex}`;
-                    if (!userId || userId === "") continue;
-
+                    let userId = "U" + String(userIndex).padStart(2, '0');
                     let rawAnswers = [];
                     let hasAllAnswers = true;
 
@@ -446,6 +561,7 @@
 
                     if (hasAllAnswers) {
                         adicionarParticipante(userId, rawAnswers);
+                        userIndex++;
                     }
                 }
             }
@@ -453,11 +569,11 @@
             atualizarUIStatusCarregando(false);
 
             if (parsedParticipants.length === 0) {
-                alert("Não foi possível extrair dados válidos de respondentes.");
+                alert("Nenhum dado numérico válido (entre 1 e 5) foi associado aos respondentes.");
                 return;
             }
 
-            // Ordena crescentemente para desenhar a curva sem empilhamento
+            // Ordenação crescente automática para traçar a curva perfeita
             parsedParticipants.sort((a, b) => a.score - b.score);
 
             atualizarDashboard();
@@ -515,8 +631,6 @@
             return interpretation || scoringDatabase[scoringDatabase.length - 1];
         }
 
-        // Função de Classificação Heurística (Fiel ao Ajuste Fino Recomendado)
-        // Se preferir voltar à sua regra exata, altere os limites para: 1.0 (Muito Ruim), 2.0 (Ruim), 3.0 (Regular), 3.5 (Boa) e 4.0 (Muito Boa)
         function classificarHeuristica(mediaScore) {
             if (mediaScore <= 1.0) return { texto: "Muito Ruim", classe: "text-red-400 bg-red-950/40 border-red-800/40" };
             if (mediaScore <= 2.0) return { texto: "Ruim", classe: "text-orange-400 bg-orange-950/40 border-orange-800/40" };
@@ -537,20 +651,10 @@
 
             const mediasFinais = mediasQ.map(soma => soma / n);
 
-            // Mapeamentos Heurísticos Exatos do Artigo:
-            // 1. Facilidade de aprendizagem: Q3, Q4, Q7 e Q10
             const hAprendizagem = (mediasFinais[2] + mediasFinais[3] + mediasFinais[6] + mediasFinais[9]) / 4;
-
-            // 2. Eficiência: Q5, Q6 e Q8
             const hEficiencia = (mediasFinais[4] + mediasFinais[5] + mediasFinais[7]) / 3;
-
-            // 3. Facilidade de memorização: Q2
             const hMemorizacao = mediasFinais[1];
-
-            // 4. Minimização dos erros: Q6
             const hMinErros = mediasFinais[5];
-
-            // 5. Satisfação: Q1, Q4 e Q9
             const hSatisfacao = (mediasFinais[0] + mediasFinais[3] + mediasFinais[8]) / 3;
 
             return [
@@ -562,12 +666,31 @@
             ];
         }
 
+        function calcularSubescalas() {
+            let somaUsabilidadeGlobal = 0;
+            let somaAprendizadoGlobal = 0;
+            const n = parsedParticipants.length;
+
+            parsedParticipants.forEach(p => {
+                const norm = p.normAnswers;
+                const somaUsabilidadeIndividual = norm[0] + norm[1] + norm[2] + norm[4] + norm[5] + norm[6] + norm[7] + norm[8]; 
+                const somaAprendizadoIndividual = norm[3] + norm[9]; 
+
+                somaUsabilidadeGlobal += (somaUsabilidadeIndividual * 3.125);
+                somaAprendizadoGlobal += (somaAprendizadoIndividual * 12.5);
+            });
+
+            return {
+                usabilidade: somaUsabilidadeGlobal / n,
+                aprendizado: somaAprendizadoGlobal / n
+            };
+        }
+
         function atualizarDashboard() {
             const stats = calcularEstatisticas();
             const interpretation = getInterpretation(stats.mean);
 
             document.getElementById('resultsSection').classList.remove('hidden');
-
             document.getElementById('statMean').innerText = stats.mean.toFixed(1);
             
             const gradeEl = document.getElementById('statGrade');
@@ -601,7 +724,9 @@
 
             construirTabela();
             renderizarGrafico(stats.mean);
+            renderizarGraficoStackedRespostas();
             renderizarHeuristicas();
+            renderizarSubescalas();
             
             document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
         }
@@ -664,14 +789,19 @@
             });
         }
 
+        function renderizarSubescalas() {
+            const sub = calcularSubescalas();
+            document.getElementById('subUsabilityVal').innerText = `${sub.usabilidade.toFixed(1)} / 100`;
+            document.getElementById('subLearnabilityVal').innerText = `${sub.aprendizado.toFixed(1)} / 100`;
+            document.getElementById('subUsabilityBar').style.width = `${sub.usabilidade}%`;
+            document.getElementById('subLearnabilityBar').style.width = `${sub.aprendizado}%`;
+        }
+
         function renderizarGrafico(scoreMedio) {
             const ctx = document.getElementById('susDistributionChart').getContext('2d');
             
-            if (chartInstance) {
-                chartInstance.destroy();
-            }
+            if (chartInstance) { chartInstance.destroy(); }
 
-            // Mapeia posições lineares sequenciais simples para evitar qualquer tipo de sobreposição/empilhamento
             const labelsEixoX = parsedParticipants.map(p => p.id);
             const dadosScores = parsedParticipants.map(p => p.score);
 
@@ -723,25 +853,83 @@
                             title: { display: true, text: 'Participantes Ordenados (Baixo para Alto)', color: '#94a3b8' }
                         },
                         y: {
-                            min: 0,
-                            max: 100,
+                            min: 0, max: 100,
                             grid: { color: 'rgba(255,255,255,0.05)' },
                             ticks: { color: '#94a3b8', stepSize: 10 },
                             title: { display: true, text: 'Pontuação SUS', color: '#94a3b8' }
                         }
                     },
                     plugins: {
-                        legend: {
-                            labels: { color: '#e2e8f0', font: { size: 11 } }
-                        },
+                        legend: { labels: { color: '#e2e8f0', font: { size: 11 } } },
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
                                     const p = parsedParticipants[context.dataIndex];
-                                    if (context.datasetIndex === 0) {
-                                        return `${p.id}: Score ${p.score.toFixed(1)}`;
-                                    }
+                                    if (context.datasetIndex === 0) { return `${p.id}: Score ${p.score.toFixed(1)}`; }
                                     return `${context.dataset.label}: ${context.raw.toFixed(1)}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderizarGraficoStackedRespostas() {
+            const ctx = document.getElementById('susStackedResponsesChart').getContext('2d');
+
+            if (chartStackedInstance) { chartStackedInstance.destroy(); }
+
+            const totalRespondentes = parsedParticipants.length;
+            const labelsQ = ["Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "Q7", "Q8", "Q9", "Q10"];
+            const contagens = Array.from({ length: 10 }, () => ({ 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }));
+
+            parsedParticipants.forEach(p => {
+                p.rawAnswers.forEach((voto, idxQ) => {
+                    if (contagens[idxQ][voto] !== undefined) { contagens[idxQ][voto]++; }
+                });
+            });
+
+            const dados1 = contagens.map(q => (q[1] / totalRespondentes) * 100);
+            const dados2 = contagens.map(q => (q[2] / totalRespondentes) * 100);
+            const dados3 = contagens.map(q => (q[3] / totalRespondentes) * 100);
+            const dados4 = contagens.map(q => (q[4] / totalRespondentes) * 100);
+            const dados5 = contagens.map(q => (q[5] / totalRespondentes) * 100);
+
+            chartStackedInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labelsQ,
+                    datasets: [
+                        { label: 'Discordo Totalmente (Nota 1)', data: dados1, backgroundColor: '#ef4444', votosAbsolutos: contagens.map(q => q[1]) },
+                        { label: 'Discordo Parcialmente (Nota 2)', data: dados2, backgroundColor: '#f97316', votosAbsolutos: contagens.map(q => q[2]) },
+                        { label: 'Neutro (Nota 3)', data: dados3, backgroundColor: '#64748b', votosAbsolutos: contagens.map(q => q[3]) },
+                        { label: 'Concordo Parcialmente (Nota 4)', data: dados4, backgroundColor: '#60a5fa', votosAbsolutos: contagens.map(q => q[4]) },
+                        { label: 'Concordo Totalmente (Nota 5)', data: dados5, backgroundColor: '#10b981', votosAbsolutos: contagens.map(q => q[5]) }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y', 
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            stacked: true, min: 0, max: 100,
+                            ticks: { color: '#94a3b8', callback: function(value) { return value + "%"; } },
+                            grid: { color: 'rgba(255,255,255,0.05)' }
+                        },
+                        y: { stacked: true, ticks: { color: '#94a3b8', font: { size: 12, weight: 'bold' } }, grid: { display: false } }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: '#e2e8f0', boxWidth: 12, font: { size: 11 } } },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const matchNota = context.dataset.label.match(/\(Nota (\d)\)/);
+                                    const notaTexto = matchNota ? `Nota ${matchNota[1]}` : context.dataset.label;
+                                    const totalUsuarios = context.dataset.votosAbsolutos[context.dataIndex];
+                                    const porcentagem = context.raw.toFixed(1);
+                                    return `${notaTexto} — ${totalUsuarios} ${totalUsuarios === 1 ? 'usuário' : 'usuários'} (${porcentagem}%)`;
                                 }
                             }
                         }
@@ -753,27 +941,15 @@
         function exportarCSV_Local() {
             let csvContent = "data:text/csv;charset=utf-8,";
             csvContent += "Participante,Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10,Score Final,Grade,Aceitabilidade,NPS\n";
-            
             parsedParticipants.forEach(p => {
                 const interp = getInterpretation(p.score);
-                const row = [
-                    p.id,
-                    ...p.rawAnswers,
-                    p.score.toFixed(1),
-                    interp.grade,
-                    interp.acceptability,
-                    interp.nps
-                ].join(",");
-                csvContent += row + "\n";
+                csvContent += [p.id, ...p.rawAnswers, p.score.toFixed(1), interp.grade, interp.acceptability, interp.nps].join(",") + "\n";
             });
-
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
             link.setAttribute("download", "Resultados_SUS_Processados.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
     </script>
 </body>
