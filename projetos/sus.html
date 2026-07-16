@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora & Interpretador SUS (System Usability Scale)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .sus-radio:checked + label {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800 font-sans">
+
+    <header class="bg-blue-600 text-white py-6 shadow-md">
+        <div class="max-w-4xl mx-auto px-4">
+            <h1 class="text-3xl font-bold flex items-center gap-2">
+                <i class="fa-solid fa-chart-simple"></i> Calculadora e Interpretador SUS
+            </h1>
+            <p class="text-blue-100 mt-1 text-sm md:text-base">
+                Métricas baseadas nos modelos científicos e bancos de dados de benchmark da <span class="font-semibold text-white">MeasuringU</span>.
+            </p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 py-8">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-100">
+                    <h2 class="text-xl font-bold text-slate-700 mb-4 pb-2 border-b border-slate-100">
+                        Formulário de Resposta
+                    </h2>
+                    <p class="text-sm text-slate-500 mb-6">
+                        Insira as notas de 1 (Discordo Totalmente) a 5 (Concordo Totalmente) dadas pelo usuário para calcular o SUS score individual.
+                    </p>
+
+                    <form id="susForm" class="space-y-6">
+                        <div id="questionsContainer" class="space-y-6"></div>
+                        
+                        <div class="pt-4 flex gap-3">
+                            <button type="button" onclick="calcularSUS()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-calculator"></i> Calcular Métricas
+                            </button>
+                            <button type="button" onclick="resetarFormulario()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-3 px-4 rounded-lg transition-colors">
+                                Limpar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="lg:col-span-1">
+                <div class="sticky top-6 space-y-6">
+                    <div class="bg-white rounded-xl shadow-md p-6 border border-slate-100 text-center">
+                        <h3 class="text-lg font-bold text-slate-600 mb-2">Pontuação SUS</h3>
+                        <div class="my-4">
+                            <span id="susScore" class="text-6xl font-extrabold text-blue-600">--</span>
+                            <span class="text-slate-400 text-xl">/100</span>
+                        </div>
+                        <p class="text-xs text-slate-400 px-4">Esta pontuação não é uma porcentagem, mas sim uma nota normalizada comparada a outras ferramentas.</p>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-md p-6 border border-slate-100 space-y-4">
+                        <h3 class="text-base font-bold text-slate-700 border-b border-slate-100 pb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-graduation-cap text-blue-500"></i> Métricas de Usabilidade
+                        </h3>
+                        
+                        <div class="flex justify-between items-center py-1">
+                            <span class="text-sm text-slate-500 font-medium">Nota (Grade Curve):</span>
+                            <span id="metricGrade" class="text-lg font-bold text-slate-800">--</span>
+                        </div>
+
+                        <div class="flex justify-between items-center py-1 border-t border-slate-50">
+                            <span class="text-sm text-slate-500 font-medium">Faixa de Percentil:</span>
+                            <span id="metricPercentile" class="text-sm font-semibold text-slate-800">--</span>
+                        </div>
+
+                        <div class="flex justify-between items-center py-1 border-t border-slate-50">
+                            <span class="text-sm text-slate-500 font-medium">Adjetivo:</span>
+                            <span id="metricAdjective" class="text-sm font-semibold text-slate-800">--</span>
+                        </div>
+
+                        <div class="flex justify-between items-center py-1 border-t border-slate-50">
+                            <span class="text-sm text-slate-500 font-medium">Aceitabilidade:</span>
+                            <span id="metricAcceptability" class="text-sm font-semibold text-slate-800">--</span>
+                        </div>
+
+                        <div class="flex justify-between items-center py-1 border-t border-slate-50">
+                            <span class="text-sm text-slate-500 font-medium">Equivalente NPS:</span>
+                            <span id="metricNps" class="text-sm font-semibold text-slate-800">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="bg-slate-800 text-slate-400 text-xs py-8 mt-12 border-t border-slate-700">
+        <div class="max-w-4xl mx-auto px-4 text-center space-y-2">
+            <p>A média global e padrão de usabilidade do SUS determinada por mais de 500 estudos é de <strong>68 pontos</strong>.</p>
+            <p>Este sistema aplica os dados de conversão oficiais definidos e atualizados pela <strong>MeasuringU</strong>.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Perguntas oficiais do SUS
+        const questions = [
+            { id: 1, text: "Acho que gostaria de usar este sistema frequentemente.", positive: true },
+            { id: 2, text: "Achei o sistema desnecessariamente complexo.", positive: false },
+            { id: 3, text: "Achei o sistema fácil de usar.", positive: true },
+            { id: 4, text: "Acho que precisaria do suporte de um técnico para conseguir usar este sistema.", positive: false },
+            { id: 5, text: "Achei que as várias funções do sistema estavam muito bem integradas.", positive: true },
+            { id: 6, text: "Achei que havia muita inconsistência neste sistema.", positive: false },
+            { id: 7, text: "Imagino que a maioria das pessoas aprenderia a usar este sistema rapidamente.", positive: true },
+            { id: 8, text: "Achei o sistema muito complicado de usar.", positive: false },
+            { id: 9, text: "Senti-me muito confiante ao usar o sistema.", positive: true },
+            { id: 10, text: "Precisei aprender muitas coisas novas antes de conseguir usar o sistema.", positive: false }
+        ];
+
+        // Tabela de conversão da MeasuringU (Sauro-Lewis curved grading scale)
+        const scoringDatabase = [
+            { maxScore: 25.0, grade: 'F', percentile: '0 - 1.9%', adjective: 'Worst Imaginable', acceptability: 'Inaceitável', nps: 'Detrator' },
+            { maxScore: 51.6, grade: 'F', percentile: '2 - 14%', adjective: 'Poor (Ruim)', acceptability: 'Inaceitável', nps: 'Detrator' },
+            { maxScore: 62.6, grade: 'D', percentile: '15 - 34%', adjective: 'OK', acceptability: 'Marginalmente Aceitável', nps: 'Detrator' },
+            { maxScore: 64.9, grade: 'C-', percentile: '35 - 40%', adjective: 'Good (Bom)', acceptability: 'Marginalmente Aceitável', nps: 'Passivo' },
+            { maxScore: 71.0, grade: 'C', percentile: '41 - 59%', adjective: 'Good (Bom)', acceptability: 'Marginalmente Aceitável', nps: 'Passivo' },
+            { maxScore: 72.5, grade: 'C+', percentile: '60 - 64%', adjective: 'Good (Bom)', acceptability: 'Aceitável', nps: 'Passivo' },
+            { maxScore: 74.0, grade: 'B-', percentile: '65 - 69%', adjective: 'Good (Bom)', acceptability: 'Aceitável', nps: 'Passivo' },
+            { maxScore: 77.1, grade: 'B', percentile: '70 - 79%', adjective: 'Excellent (Excelente)', acceptability: 'Aceitável', nps: 'Passivo' },
+            { maxScore: 78.8, grade: 'B+', percentile: '80 - 84%', adjective: 'Excellent (Excelente)', acceptability: 'Aceitável', nps: 'Passivo' },
+            { maxScore: 80.7, grade: 'A-', percentile: '85 - 89%', adjective: 'Excellent (Excelente)', acceptability: 'Aceitável', nps: 'Promotor' },
+            { maxScore: 84.0, grade: 'A', percentile: '90 - 95%', adjective: 'Excellent (Excelente)', acceptability: 'Aceitável', nps: 'Promotor' },
+            { maxScore: 100.0, grade: 'A+', percentile: '96 - 100%', adjective: 'Best Imaginable (Melhor Possível)', acceptability: 'Aceitável', nps: 'Promotor' }
+        ];
+
+        // Renderiza as perguntas dinamicamente
+        const container = document.getElementById('questionsContainer');
+        questions.forEach((q) => {
+            const div = document.createElement('div');
+            div.className = "p-4 rounded-lg bg-slate-50 border border-slate-200 transition-all hover:shadow-sm";
+            div.innerHTML = `
+                <div class="mb-3">
+                    <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2.5 py-0.5 rounded font-semibold mr-2">Q${q.id}</span>
+                    <span class="text-sm font-semibold text-slate-700">${q.text}</span>
+                </div>
+                <div class="flex justify-between items-center gap-1 md:gap-4 mt-2">
+                    <span class="text-xs text-slate-400 hidden md:block">Discordo totalmente</span>
+                    <div class="flex flex-1 justify-between max-w-md mx-auto">
+                        ${[1, 2, 3, 4, 5].map(val => `
+                            <div class="text-center">
+                                <input type="radio" id="q${q.id}_v${val}" name="q${q.id}" value="${val}" class="sr-only sus-radio" required>
+                                <label for="q${q.id}_v${val}" class="block w-10 h-10 leading-10 rounded-full border border-slate-300 text-sm font-bold cursor-pointer transition-all hover:bg-slate-100 text-slate-600">
+                                    ${val}
+                                </label>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <span class="text-xs text-slate-400 hidden md:block">Concordo totalmente</span>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+
+        // Função para calcular o score e a interpretação
+        function calcularSUS() {
+            let totalScore = 0;
+            let formValido = true;
+
+            // Valida se todas as perguntas foram respondidas
+            for (let i = 1; i <= 10; i++) {
+                const checkedOption = document.querySelector(`input[name="q${i}"]:checked`);
+                if (!checkedOption) {
+                    formValido = false;
+                    break;
+                }
+                
+                const valor = parseInt(checkedOption.value);
+                if (i % 2 !== 0) {
+                    // Perguntas Ímpares: subtrai 1 da resposta (val - 1)
+                    totalScore += (valor - 1);
+                } else {
+                    // Perguntas Pares: subtrai a resposta de 5 (5 - val)
+                    totalScore += (5 - valor);
+                }
+            }
+
+            if (!formValido) {
+                alert("Por favor, responda a todas as 10 perguntas antes de calcular!");
+                return;
+            }
+
+            // O total acumulado (máximo 40) é multiplicado por 2.5 (máximo 100)
+            const finalScore = totalScore * 2.5;
+
+            // Exibir o Score final
+            document.getElementById('susScore').innerText = finalScore.toFixed(1);
+
+            // Obter métricas de interpretação com base na pontuação obtida
+            let interpretation = scoringDatabase.find(item => finalScore <= item.maxScore);
+            
+            if (!interpretation) {
+                // Margem de segurança caso caia no limite máximo
+                interpretation = scoringDatabase[scoringDatabase.length - 1];
+            }
+
+            // Atualiza os dados no painel lateral
+            const gradeEl = document.getElementById('metricGrade');
+            gradeEl.innerText = interpretation.grade;
+            
+            // Colore a nota dependendo do resultado para efeito visual refinado
+            if (['A+', 'A', 'A-'].includes(interpretation.grade)) {
+                gradeEl.className = "text-xl font-black text-green-600 bg-green-50 px-2 py-0.5 rounded";
+            } else if (['B+', 'B', 'B-', 'C+', 'C'].includes(interpretation.grade)) {
+                gradeEl.className = "text-xl font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded";
+            } else {
+                gradeEl.className = "text-xl font-black text-red-600 bg-red-50 px-2 py-0.5 rounded";
+            }
+
+            document.getElementById('metricPercentile').innerText = interpretation.percentile;
+            document.getElementById('metricAdjective').innerText = interpretation.adjective;
+            document.getElementById('metricAcceptability').innerText = interpretation.acceptability;
+            document.getElementById('metricNps').innerText = interpretation.nps;
+        }
+
+        // Função para limpar o formulário
+        function resetarFormulario() {
+            document.getElementById('susForm').reset();
+            document.getElementById('susScore').innerText = "--";
+            document.getElementById('metricGrade').innerText = "--";
+            document.getElementById('metricGrade').className = "text-lg font-bold text-slate-800";
+            document.getElementById('metricPercentile').innerText = "--";
+            document.getElementById('metricAdjective').innerText = "--";
+            document.getElementById('metricAcceptability').innerText = "--";
+            document.getElementById('metricNps').innerText = "--";
+        }
+    </script>
+</body>
+</html>
