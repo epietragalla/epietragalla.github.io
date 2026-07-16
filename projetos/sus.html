@@ -48,7 +48,7 @@
                     <i class="fa-solid fa-chart-line text-blue-500"></i> Dashboard Analítico SUS (CSV)
                 </h1>
                 <p class="text-slate-400 text-sm mt-1">
-                    Importação exclusiva de arquivos CSV com geração automática de curvas de distribuição e estatísticas.
+                    Análise em lote, distribuições estatísticas, curvas de percentil e correlação com Heurísticas de Nielsen.
                 </p>
             </div>
             <div class="flex items-center gap-2 text-xs bg-slate-700/50 p-2.5 rounded-lg border border-slate-600">
@@ -68,7 +68,7 @@
                     <div class="bg-blue-950/40 border border-blue-800/40 rounded-lg p-3 mb-4">
                         <p class="text-blue-300 text-xs leading-relaxed flex items-start gap-2">
                             <i class="fa-solid fa-circle-exclamation mt-0.5"></i>
-                            <span><strong>Atenção:</strong> Este sistema aceita <strong>apenas arquivos no formato CSV</strong>. Certifique-se de que seu arquivo contém colunas/linhas com os rótulos de <strong>Q1 a Q10</strong> e os IDs dos respondentes (ex: <strong>U01, U02...</strong>).</span>
+                            <span><strong>Atenção:</strong> Este sistema aceita <strong>apenas arquivos no formato CSV</strong>. Certifique-se de que seu arquivo contém colunas ou linhas com os rótulos de <strong>Q1 a Q10</strong> e os IDs dos respondentes (ex: <strong>U01, U02...</strong>).</span>
                         </p>
                     </div>
                 </div>
@@ -216,6 +216,21 @@
                 </div>
             </div>
 
+            <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6">
+                <div class="flex items-center gap-2 pb-4 border-b border-slate-700 mb-6">
+                    <h3 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-shield-halved text-amber-400"></i> Correlação com Heurísticas de Nielsen
+                    </h3>
+                    <div class="hint-tooltip">
+                        <i class="fa-solid fa-circle-question text-blue-400"></i>
+                        <span class="tooltip-text">Este modelo de mapeamento correlaciona as médias das questões do SUS (convertidas de 0 a 4) com as Heurísticas de Nielsen, conforme o artigo publicado na UX Design Brasil. Embora amplamente adotado pela comunidade de design, serve como diagnóstico complementar (sem valor de norma ISO estrita).</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6" id="heuristicsContainer">
+                    </div>
+            </div>
+
         </section>
 
     </main>
@@ -251,7 +266,6 @@
         const uploadIcon = document.getElementById('uploadIcon');
         const uploadText = document.getElementById('uploadText');
 
-        // Drag and Drop exclusivo para CSV
         dropZone.addEventListener('dragover', (e) => { 
             e.preventDefault(); 
             dropZone.classList.add('border-blue-500', 'bg-blue-950/20'); 
@@ -281,7 +295,6 @@
             }
         });
 
-        // Clique na área de upload ativa o input
         dropZone.addEventListener('click', (e) => {
             if (e.target !== fileInput && !document.getElementById('uploadLabel').contains(e.target)) {
                 fileInput.click();
@@ -320,7 +333,6 @@
         }
 
         function parseCSV(text) {
-            // Suporta delimitadores vírgula (,) ou ponto-e-vírgula (;)
             const lines = text.split(/\r?\n/);
             const rows = lines.map(line => {
                 let delimiter = ',';
@@ -347,7 +359,6 @@
             let qPositions = {}; 
             let structureType = null; 
 
-            // Varre as linhas superiores para mapear as posições de Q1 a Q10
             const searchLimitRows = Math.min(cleanRows.length, 30);
             for (let r = 0; r < searchLimitRows; r++) {
                 const limitCols = Math.min(cleanRows[r].length, 30);
@@ -363,7 +374,7 @@
 
             const keysFound = Object.keys(qPositions);
             if (keysFound.length < 10) {
-                alert("Atenção: Não encontramos todas as 10 perguntas (Q1 a Q10) no seu arquivo CSV.\nCertifique-se de que existem cabeçalhos usando rótulos diretos como 'Q1', 'Q2', etc.");
+                alert("Atenção: Não encontramos todas as 10 perguntas (Q1 a Q10) no seu arquivo CSV.");
                 atualizarUIStatusCarregando(false);
                 return;
             }
@@ -446,8 +457,7 @@
                 return;
             }
 
-            // ORDENA OS PARTICIPANTES PELO SCORE (Do menor para o maior)
-            // Isso garante que o gráfico desenhe uma curva de distribuição/escada real
+            // Ordena crescentemente para desenhar a curva sem empilhamento
             parsedParticipants.sort((a, b) => a.score - b.score);
 
             atualizarDashboard();
@@ -505,6 +515,53 @@
             return interpretation || scoringDatabase[scoringDatabase.length - 1];
         }
 
+        // Função de Classificação Heurística (Fiel ao Ajuste Fino Recomendado)
+        // Se preferir voltar à sua regra exata, altere os limites para: 1.0 (Muito Ruim), 2.0 (Ruim), 3.0 (Regular), 3.5 (Boa) e 4.0 (Muito Boa)
+        function classificarHeuristica(mediaScore) {
+            if (mediaScore <= 1.0) return { texto: "Muito Ruim", classe: "text-red-400 bg-red-950/40 border-red-800/40" };
+            if (mediaScore <= 2.0) return { texto: "Ruim", classe: "text-orange-400 bg-orange-950/40 border-orange-800/40" };
+            if (mediaScore <= 2.7) return { texto: "Regular", classe: "text-yellow-400 bg-yellow-950/40 border-yellow-800/40" };
+            if (mediaScore <= 3.4) return { texto: "Boa", classe: "text-blue-400 bg-blue-950/40 border-blue-800/40" };
+            return { texto: "Muito Boa", classe: "text-green-400 bg-green-950/40 border-green-800/40" };
+        }
+
+        function calcularAnalyseHeuristica() {
+            const n = parsedParticipants.length;
+            const mediasQ = Array(10).fill(0);
+
+            parsedParticipants.forEach(p => {
+                for (let i = 0; i < 10; i++) {
+                    mediasQ[i] += p.normAnswers[i];
+                }
+            });
+
+            const mediasFinais = mediasQ.map(soma => soma / n);
+
+            // Mapeamentos Heurísticos Exatos do Artigo:
+            // 1. Facilidade de aprendizagem: Q3, Q4, Q7 e Q10
+            const hAprendizagem = (mediasFinais[2] + mediasFinais[3] + mediasFinais[6] + mediasFinais[9]) / 4;
+
+            // 2. Eficiência: Q5, Q6 e Q8
+            const hEficiencia = (mediasFinais[4] + mediasFinais[5] + mediasFinais[7]) / 3;
+
+            // 3. Facilidade de memorização: Q2
+            const hMemorizacao = mediasFinais[1];
+
+            // 4. Minimização dos erros: Q6
+            const hMinErros = mediasFinais[5];
+
+            // 5. Satisfação: Q1, Q4 e Q9
+            const hSatisfacao = (mediasFinais[0] + mediasFinais[3] + mediasFinais[8]) / 3;
+
+            return [
+                { id: "A", titulo: "Facilidade de Aprendizagem", desc: "Média de Q3, Q4, Q7 e Q10", score: hAprendizagem },
+                { id: "B", titulo: "Eficiência de Uso", desc: "Média de Q5, Q6 e Q8", score: hEficiencia },
+                { id: "C", titulo: "Facilidade de Memorização", desc: "Mapeada através da Q2", score: hMemorizacao },
+                { id: "D", titulo: "Minimização dos Erros", desc: "Mapeada através da Q6", score: hMinErros },
+                { id: "E", titulo: "Satisfação do Usuário", desc: "Média de Q1, Q4 e Q9", score: hSatisfacao }
+            ];
+        }
+
         function atualizarDashboard() {
             const stats = calcularEstatisticas();
             const interpretation = getInterpretation(stats.mean);
@@ -544,6 +601,7 @@
 
             construirTabela();
             renderizarGrafico(stats.mean);
+            renderizarHeuristicas();
             
             document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
         }
@@ -581,6 +639,31 @@
             });
         }
 
+        function renderizarHeuristicas() {
+            const list = calcularAnalyseHeuristica();
+            const container = document.getElementById('heuristicsContainer');
+            container.innerHTML = '';
+
+            list.forEach(h => {
+                const classeInfo = classificarHeuristica(h.score);
+                container.innerHTML += `
+                    <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700/60 flex flex-col justify-between">
+                        <div>
+                            <span class="text-[10px] uppercase font-bold text-slate-500 tracking-wider">${h.id}</span>
+                            <h4 class="text-sm font-bold text-slate-200 mt-0.5 leading-tight">${h.titulo}</h4>
+                            <p class="text-[11px] text-slate-400 mt-1 italic">${h.desc}</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-800 flex justify-between items-center">
+                            <span class="text-xs text-slate-500 font-medium">Pontuação:</span>
+                            <span class="text-xs font-bold px-2 py-1 rounded border ${classeInfo.classe}">
+                                ${classeInfo.texto} (${h.score.toFixed(2)})
+                            </span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
         function renderizarGrafico(scoreMedio) {
             const ctx = document.getElementById('susDistributionChart').getContext('2d');
             
@@ -588,7 +671,7 @@
                 chartInstance.destroy();
             }
 
-            // Agora os dados já estão ordenados e distribuídos sequencialmente no eixo X
+            // Mapeia posições lineares sequenciais simples para evitar qualquer tipo de sobreposição/empilhamento
             const labelsEixoX = parsedParticipants.map(p => p.id);
             const dadosScores = parsedParticipants.map(p => p.score);
 
@@ -598,17 +681,17 @@
                     labels: labelsEixoX,
                     datasets: [
                         {
-                            label: 'Curva de Notas Individuais',
+                            label: 'Curva de Notas Individuais (Crescente)',
                             data: dadosScores,
                             borderColor: '#3b82f6',
-                            borderWidth: 2,
+                            borderWidth: 2.5,
                             backgroundColor: 'rgba(59, 130, 246, 0.1)',
                             pointBackgroundColor: '#60a5fa',
                             pointBorderColor: '#1e3a8a',
                             pointRadius: 6,
                             pointHoverRadius: 8,
                             fill: true,
-                            tension: 0.2 // Deixa a linha curvada sutilmente
+                            tension: 0.25 
                         },
                         {
                             label: 'Média Amostral Obtida',
@@ -637,7 +720,7 @@
                         x: {
                             grid: { color: 'rgba(255,255,255,0.05)' },
                             ticks: { color: '#94a3b8', font: { size: 10 } },
-                            title: { display: true, text: 'Participantes ordenados (Escada Usabilidade)', color: '#94a3b8' }
+                            title: { display: true, text: 'Participantes Ordenados (Baixo para Alto)', color: '#94a3b8' }
                         },
                         y: {
                             min: 0,
