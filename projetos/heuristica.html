@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapeador Heurístico Digital - UX Evaluation Suite</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome para Ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js para Gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        .hint-tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+        .hint-tooltip .tooltip-text {
+            visibility: hidden;
+            width: 300px;
+            background-color: #1e293b;
+            color: #fff;
+            text-align: left;
+            border-radius: 8px;
+            padding: 12px;
+            position: absolute;
+            z-index: 50;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.2s;
+            font-size: 0.75rem;
+            line-height: 1.15rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+            border: 1px solid #334155;
+        }
+        .hint-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans">
+
+    <!-- Header -->
+    <header class="bg-slate-800 border-b border-slate-700 py-6 px-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-3xl font-extrabold text-blue-400 flex items-center gap-3">
+                    <i class="fa-solid fa-compass text-blue-500"></i> Mapeador Heurístico Digital
+                </h1>
+                <p class="text-slate-400 text-sm mt-1">
+                    Utilitário científico para condução e consolidação de avaliações heurísticas de usabilidade baseadas nas diretrizes de Jakob Nielsen.
+                </p>
+            </div>
+            <div class="flex items-center gap-2 text-xs bg-slate-700/50 p-2.5 rounded-lg border border-slate-600">
+                <span class="font-semibold text-slate-300">Metodologia:</span> Nielsen Norman Group (NN/g) | Critérios de Severidade
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+
+        <!-- Formulário e Métricas Rápidas -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Form de Captura -->
+            <div class="lg:col-span-1 bg-slate-800 rounded-2xl border border-slate-700 p-6 space-y-4">
+                <h2 class="text-lg font-bold text-white flex items-center gap-2 border-b border-slate-700 pb-2">
+                    <i class="fa-solid fa-circle-plus text-blue-400"></i> Registrar Violação de UX
+                </h2>
+
+                <!-- Descrição do Problema -->
+                <div class="space-y-1">
+                    <label class="text-xs font-semibold text-slate-400">Descrição do Problema Observado</label>
+                    <textarea id="issueDesc" rows="3" placeholder="Ex: O botão de salvar não muda de estado ao ser clicado, fazendo com que o usuário clique múltiplas vezes sem saber se funcionou..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-slate-100 focus:outline-none focus:border-blue-500"></textarea>
+                </div>
+
+                <!-- Localização / Tela -->
+                <div class="space-y-1">
+                    <label class="text-xs font-semibold text-slate-400">Localização do Problema (Tela / Fluxo)</label>
+                    <input type="text" id="issueLocation" placeholder="Ex: Checkout / Aba de Pagamento" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-slate-100 focus:outline-none focus:border-blue-500">
+                </div>
+
+                <!-- Seleção de Heurística -->
+                <div class="space-y-1">
+                    <div class="flex justify-between items-center">
+                        <label class="text-xs font-semibold text-slate-400">Heurística Violada</label>
+                        <span class="text-[10px] text-blue-400 italic">Passe o mouse para ver a definição</span>
+                    </div>
+                    <select id="issueHeuristic" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-slate-100 focus:outline-none focus:border-blue-500">
+                        <option value="H1">H1: Visibilidade do status do sistema</option>
+                        <option value="H2">H2: Correspondência entre o sistema e o mundo real</option>
+                        <option value="H3">H3: Controle e liberdade do usuário</option>
+                        <option value="H4">H4: Consistência e padrões</option>
+                        <option value="H5">H5: Prevenção de erros</option>
+                        <option value="H6">H6: Reconhecimento em vez de recordação</option>
+                        <option value="H7">H7: Flexibilidade e eficiência de uso</option>
+                        <option value="H8">H8: Estética e design minimalista</option>
+                        <option value="H9">H9: Ajuda aos usuários a reconhecer, diagnosticar e recuperar de erros</option>
+                        <option value="H10">H10: Ajuda e documentação</option>
+                    </select>
+                </div>
+
+                <!-- Grau de Severidade -->
+                <div class="space-y-1.5">
+                    <label class="text-xs font-semibold text-slate-400 block">Grau de Severidade (Critério NN/g)</label>
+                    <div class="grid grid-cols-5 gap-1" id="severidadeRadioGroup">
+                        <button type="button" onclick="setSeveridade(0)" id="btnSev0" class="py-2 text-center text-xs font-bold rounded-lg border border-slate-700 bg-slate-900 text-slate-400 hover:border-slate-500 transition-colors">0</button>
+                        <button type="button" onclick="setSeveridade(1)" id="btnSev1" class="py-2 text-center text-xs font-bold rounded-lg border border-slate-700 bg-slate-900 text-slate-400 hover:border-slate-500 transition-colors">1</button>
+                        <button type="button" onclick="setSeveridade(2)" id="btnSev2" class="py-2 text-center text-xs font-bold rounded-lg border border-slate-700 bg-slate-900 text-slate-400 hover:border-slate-500 transition-colors">2</button>
+                        <button type="button" onclick="setSeveridade(3)" id="btnSev3" class="py-2 text-center text-xs font-bold rounded-lg border border-slate-700 bg-slate-900 text-slate-400 hover:border-slate-500 transition-colors">3</button>
+                        <button type="button" onclick="setSeveridade(4)" id="btnSev4" class="py-2 text-center text-xs font-bold rounded-lg border border-slate-700 bg-slate-900 text-slate-400 hover:border-slate-500 transition-colors">4</button>
+                    </div>
+                    <div id="sevSubtitle" class="text-[10px] text-slate-500 italic text-center mt-1">Selecione uma nota de 0 (Falso Problema) a 4 (Catástrofe).</div>
+                </div>
+
+                <!-- Botão Adicionar -->
+                <button onclick="adicionarViolacao()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors shadow mt-2">
+                    <i class="fa-solid fa-square-plus text-base"></i> Adicionar à Avaliação
+                </button>
+            </div>
+
+            <!-- Painel Analítico de KPIs e Gráfico -->
+            <div class="lg:col-span-2 bg-slate-800 rounded-2xl border border-slate-700 p-6 flex flex-col justify-between">
+                <div>
+                    <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2 border-b border-slate-700 pb-2">
+                        <i class="fa-solid fa-chart-pie text-purple-400"></i> Métricas Consolidadas do Produto
+                    </h2>
+                    
+                    <!-- KPIs rápidos -->
+                    <div class="grid grid-cols-3 gap-4 mb-6">
+                        <div class="bg-slate-900/60 border border-slate-700 rounded-xl p-3 text-center">
+                            <span class="text-slate-400 text-[10px] uppercase font-bold tracking-wider">Total Encontrado</span>
+                            <div id="kpiTotal" class="text-3xl font-extrabold text-white mt-1">0</div>
+                        </div>
+                        <div class="bg-slate-900/60 border border-slate-700 rounded-xl p-3 text-center">
+                            <span class="text-slate-400 text-[10px] uppercase font-bold tracking-wider">Severidade Média</span>
+                            <div id="kpiMedia" class="text-3xl font-extrabold text-blue-400 mt-1">0.0</div>
+                        </div>
+                        <div class="bg-slate-900/60 border border-slate-700 rounded-xl p-3 text-center">
+                            <span class="text-slate-400 text-[10px] uppercase font-bold tracking-wider">Foco de Alerta Crítico</span>
+                            <div id="kpiAlerta" class="text-xs font-bold text-red-400 mt-3 truncate px-1">Nenhum</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Container do Gráfico -->
+                <div class="relative h-56 w-full bg-slate-900/40 border border-slate-700/60 rounded-xl p-2">
+                    <canvas id="heuristicChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Listagem e Mural Ponderado de Problemas -->
+        <section id="wrapperResultados" class="space-y-4 hidden">
+            <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-700 pb-4 mb-4">
+                    <div>
+                        <h3 class="text-base font-bold text-white">Mural de Backlog UX (Ordenado por Severidade)</h3>
+                        <p class="text-xs text-slate-400">Problemas priorizados para atuação do time de engenharia de produto e design.</p>
+                    </div>
+                    <button onclick="exportarHeuristicasCSV()" class="bg-green-600 hover:bg-green-700 text-white font-bold text-xs py-2 px-4 rounded-lg flex items-center gap-2 transition-colors">
+                        <i class="fa-solid fa-file-export"></i> Exportar Backlog UX (.CSV)
+                    </button>
+                </div>
+
+                <!-- Tabela de Problemas -->
+                <div class="overflow-x-auto rounded-xl border border-slate-700">
+                    <table class="min-w-full divide-y divide-slate-700 text-xs text-left">
+                        <thead class="bg-slate-900 text-slate-400 uppercase text-[10px]">
+                            <tr>
+                                <th class="px-4 py-3 font-bold">ID</th>
+                                <th class="px-4 py-3 font-bold">Heurística</th>
+                                <th class="px-4 py-3 font-bold">Localização / Tela</th>
+                                <th class="px-6 py-3 font-bold">Descrição da Falha Observada</th>
+                                <th class="px-4 py-3 font-bold text-center">Severidade</th>
+                                <th class="px-4 py-3 font-bold text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="issuesTableBody" class="divide-y divide-slate-700 bg-slate-800 text-slate-300">
+                            <!-- Inserido Dinamicamente via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+       // Definições completas das Heurísticas para mapeamento semântico de rótulos
+        const dicionarioHeuristicas = {
+            "H1": { nome: "Visibilidade do status do sistema", desc: "O sistema deve sempre manter os usuários informados sobre o que está acontecendo, por meio de feedback apropriado dentro de um tempo razoável." },
+            "H2": { nome: "Correspondência entre o sistema e o mundo real", desc: "O sistema deve falar a linguagem do usuário, com palavras, frases e conceitos familiares ao usuário, em vez de termos orientados ao sistema." },
+            "H3": { nome: "Controle e liberdade do usuário", desc: "Os usuários frequentemente realizam ações por engano e precisam de uma 'saída de emergência' claramente marcada para deixar a ação indesejada." },
+            "H4": { nome: "Consistência e padrões", desc: "Os usuários não devem ter que se perguntar se palavras, situações ou ações diferentes significam a mesma coisa. Siga as convenções estabelecidas." },
+            "H5": { nome: "Prevenção de erros", desc: "Melhor do que boas mensagens de erro é um design cuidadoso que evita que um problema ocorra em primeiro lugar." },
+            "H6": { nome: "Reconhecimento em vez de recordação", desc: "Minimize a carga de memória do usuário tornando objetos, ações e opções visíveis. O usuário não deve ter que lembrar de informações de uma parte para outra." },
+            "H7": { nome: "Flexibilidade e eficiência de uso", desc: "Atalhos — ocultos para o usuário novato — podem frequentemente acelerar a interação para o usuário especialista." },
+            "H8": { nome: "Estética e design minimalista", desc: "As interfaces não devem conter informações irrelevantes ou raramente necessárias. Cada unidade extra de informação compete com as unidades relevantes." },
+            "H9": { nome: "Ajuda dos usuários diante de erros", desc: "As mensagens de erro devem ser expressas em linguagem clara (sem códigos), indicar precisamente o problema e sugerir uma solução construtiva." },
+            "H10": { nome: "Ajuda e documentação", desc: "Embora seja melhor se o sistema puder ser usado sem documentação, pode ser necessário fornecer ajuda. Informações devem ser fáceis de buscar." }
+        };
+
+        const severidadesNNG = {
+            0: { label: "Falso Problema", class: "bg-slate-700 text-slate-300 border-slate-600" },
+            1: { label: "Cosmético", class: "bg-green-500/10 text-green-400 border-green-500/20" },
+            2: { label: "Problema Menor", class: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20" },
+            3: { label: "Problema Maior", class: "bg-orange-500/10 text-orange-400 border-orange-500/20" },
+            4: { label: "Catástrofe", class: "bg-red-500/20 text-red-400 border-red-500/30" }
+        };
+
+        let listaViolacoes = [];
+        let selectedSeveridade = null;
+        let chartInstance = null;
+
+        // Torna as funções explicitamente globais para o mapeamento do HTML
+        window.setSeveridade = function(nota) {
+            selectedSeveridade = nota;
+            for (let i = 0; i <= 4; i++) {
+                const btn = document.getElementById(`btnSev${i}`);
+                if (btn) {
+                    if (i === nota) {
+                        btn.className = "py-2 text-center text-xs font-bold rounded-lg border-2 border-blue-500 bg-blue-950/40 text-blue-400 transition-colors shadow";
+                    } else {
+                        btn.className = "py-2 text-center text-xs font-bold rounded-lg border border-slate-700 bg-slate-900 text-slate-400 hover:border-slate-500 transition-colors";
+                    }
+                }
+            }
+            document.getElementById('sevSubtitle').innerText = `${nota} — Nível: ${severidadesNNG[nota].label}`;
+        };
+
+        window.adicionarViolacao = function() {
+            const desc = document.getElementById('issueDesc').value.trim();
+            const location = document.getElementById('issueLocation').value.trim();
+            const heuristic = document.getElementById('issueHeuristic').value;
+
+            if (!desc || !location || selectedSeveridade === null) {
+                alert("Por favor, descreva a falha, informe a tela/localização e selecione uma nota de severidade.");
+                return;
+            }
+
+            listaViolacoes.push({
+                id: "ERR-" + String(listaViolacoes.length + 1).padStart(2, '0'),
+                heurisId: heuristic,
+                desc: desc,
+                location: location,
+                severity: selectedSeveridade
+            });
+
+            // Limpa o formulário de entrada
+            document.getElementById('issueDesc').value = '';
+            document.getElementById('issueLocation').value = '';
+            
+            // Reseta botões de severidade
+            selectedSeveridade = null;
+            for (let i = 0; i <= 4; i++) {
+                const btn = document.getElementById(`btnSev${i}`);
+                if (btn) btn.className = "py-2 text-center text-xs font-bold rounded-lg border border-slate-700 bg-slate-900 text-slate-400 hover:border-slate-500 transition-colors";
+            }
+            document.getElementById('sevSubtitle').innerText = "Selecione uma nota de 0 (Falso Problema) a 4 (Catástrofe).";
+
+            // Ordenação decrescente de criticidade (Catástrofes primeiro)
+            listaViolacoes.sort((a, b) => b.severity - a.severity);
+
+            atualizarDashboard();
+        };
+
+        window.removerViolacao = function(id) {
+            listaViolacoes = listaViolacoes.filter(v => v.id !== id);
+            atualizarDashboard();
+        };
+
+        function atualizarDashboard() {
+            const wrapper = document.getElementById('wrapperResultados');
+            if (listaViolacoes.length === 0) {
+                wrapper.classList.add('hidden');
+                document.getElementById('kpiTotal').innerText = "0";
+                document.getElementById('kpiMedia').innerText = "0.0";
+                document.getElementById('kpiAlerta').innerText = "Nenhum";
+                if (chartInstance) chartInstance.destroy();
+                return;
+            }
+
+            // Exibe a tabela e o botão de exportar CSV assim que o primeiro item entra
+            wrapper.classList.remove('hidden');
+
+            // Métricas Rápidas
+            const total = listaViolacoes.length;
+            const somaSev = listaViolacoes.reduce((sum, v) => sum + v.severity, 0);
+            const media = somaSev / total;
+
+            document.getElementById('kpiTotal').innerText = total;
+            document.getElementById('kpiMedia').innerText = media.toFixed(1);
+
+            // Cálculo do Índice de Alerta Crítico
+            let contagemPonderada = {};
+            Object.keys(dicionarioHeuristicas).forEach(k => contagemPonderada[k] = 0);
+            listaViolacoes.forEach(v => { contagemPonderada[v.heurisId] += (v.severity + 1); });
+
+            let maxHeurisKey = Object.keys(contagemPonderada).reduce((a, b) => contagemPonderada[a] > contagemPonderada[b] ? a : b);
+            document.getElementById('kpiAlerta').innerText = maxHeurisKey + ": " + dicionarioHeuristicas[maxHeurisKey].nome;
+
+            renderizarTabela();
+            renderizarGrafico(contagemPonderada);
+        }
+
+        function renderizarTabela() {
+            const tbody = document.getElementById('issuesTableBody');
+            tbody.innerHTML = '';
+
+            listaViolacoes.forEach(v => {
+                const configSev = severidadesNNG[v.severity];
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-700/30 transition-colors">
+                        <td class="px-4 py-3 font-mono text-slate-500">${v.id}</td>
+                        <td class="px-4 py-3 font-semibold text-blue-400">
+                            <span class="hint-tooltip">
+                                ${v.heurisId}
+                                <span class="tooltip-text font-normal text-slate-300"><strong>${dicionarioHeuristicas[v.heurisId].nome}:</strong> ${dicionarioHeuristicas[v.heurisId].desc}</span>
+                            </span>
+                        </td>
+                        <td class="px-4 py-3 font-medium text-slate-200">${v.location}</td>
+                        <td class="px-6 py-3 text-slate-400 leading-normal max-w-md break-words">${v.desc}</td>
+                        <td class="px-4 py-3 text-center">
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border ${configSev.class}">${v.severity} - ${configSev.label}</span>
+                        </td>
+                        <td class="px-4 py-3 text-center">
+                            <button onclick="removerViolacao('${v.id}')" class="text-slate-500 hover:text-red-400 transition-colors p-1"><i class="fa-solid fa-trash-can"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderizarGrafico(contagemPonderada) {
+            const ctx = document.getElementById('heuristicChart').getContext('2d');
+            if (chartInstance) chartInstance.destroy();
+
+            const labelsX = Object.keys(contagemPonderada);
+            const dataY = Object.values(contagemPonderada);
+
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labelsX,
+                    datasets: [{
+                        label: 'Índice de Carga Crítica (Frequência × Severidade)',
+                        data: dataY,
+                        backgroundColor: 'rgba(147, 51, 234, 0.4)',
+                        borderColor: '#a855f7',
+                        borderWidth: 1.5,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#94a3b8', font: { size: 10 } } },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    const key = context[0].label;
+                                    return `${key}: ${dicionarioHeuristicas[key].nome}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#64748b', font: { size: 10, weight: 'bold' } }, grid: { display: false } },
+                        y: { ticks: { color: '#64748b', stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                    }
+                }
+            });
+        }
+
+        window.exportarHeuristicasCSV = function() {
+            if (listaViolacoes.length === 0) return;
+            
+            // Define o cabeçalho do CSV com BOM para garantir compatibilidade de acentuação no Excel
+            let csvContent = "\uFEFF";
+            csvContent += "ID;Codigo Heuristica;Nome Heuristica;Tela ou Localizacao;Descricao do Problema;Nota Severidade;Classificacao Severidade\n";
+            
+            listaViolacoes.forEach(v => {
+                let linha = [
+                    v.id,
+                    v.heurisId,
+                    `"${dicionarioHeuristicas[v.heurisId].nome}"`,
+                    `"${v.location.replace(/"/g, '""')}"`,
+                    `"${v.desc.replace(/"/g, '""')}"`,
+                    v.severity,
+                    severidadesNNG[v.severity].label
+                ].join(";"); // Ponto e vírgula padrão nacional do Excel
+                csvContent += linha + "\n";
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", "Relatorio_Avaliacao_Heuristica.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+    </script>
+</body>
+</html>
