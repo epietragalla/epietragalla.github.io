@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avaliador de Maturidade UX — Modelo Avançado NN/g</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome para Ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js para Gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        .hint-tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+        .hint-tooltip .tooltip-text {
+            visibility: hidden;
+            width: 280px;
+            background-color: #1e293b;
+            color: #fff;
+            text-align: left;
+            border-radius: 8px;
+            padding: 12px;
+            position: absolute;
+            z-index: 50;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.2s;
+            font-size: 0.75rem;
+            line-height: 1.15rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+            border: 1px solid #334155;
+        }
+        .hint-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans">
+
+    <!-- Header -->
+    <header class="bg-slate-800 border-b border-slate-700 py-6 px-4 print:hidden">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-3xl font-extrabold text-blue-400 flex items-center gap-3">
+                    <i class="fa-solid fa-graduation-cap text-blue-500"></i> Auditoria de Maturidade UX (NN/g)
+                </h1>
+                <p class="text-slate-400 text-sm mt-1">
+                    Análise diagnóstica baseada nos 4 pilares e nos 6 estágios de evolução do Nielsen Norman Group.
+                </p>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="limparHistorico()" class="bg-slate-700/50 hover:bg-red-950/40 text-slate-400 hover:text-red-400 font-bold text-xs py-2.5 px-4 rounded-xl border border-slate-600 transition-colors">
+                    <i class="fa-solid fa-trash-can"></i> Limpar Histórico
+                </button>
+                <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl flex items-center gap-2 transition-colors shadow">
+                    <i class="fa-solid fa-print"></i> Exportar Relatório PDF
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+        
+        <!-- INTRODUÇÃO E FORMULÁRIO -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-8 print:hidden">
+            <!-- Coluna do Form (2/3) -->
+            <div class="lg:col-span-2 bg-slate-800 rounded-2xl border border-slate-700 p-6 space-y-6">
+                <div class="border-b border-slate-700 pb-3 flex justify-between items-center">
+                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-clipboard-list text-blue-400"></i> Questionário Multidisciplinar de Pilares
+                    </h2>
+                    <span id="progressText" class="text-xs text-slate-400 font-medium">Progresso: 0 / 16</span>
+                </div>
+
+                <!-- Form Real das Perguntas -->
+                <div id="quizContainer" class="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+                    <!-- Gerado dinamicamente via JS -->
+                </div>
+                
+                <div class="pt-2 flex justify-end">
+                    <button onclick="calcularMaturidadeFinal()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm py-3 px-6 rounded-xl flex items-center gap-2 transition-colors shadow-lg">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Calcular Diagnóstico de Maturidade
+                    </button>
+                </div>
+            </div>
+
+            <!-- Coluna de Contexto Metodológico (1/3) -->
+            <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6 flex flex-col justify-between">
+                <div class="space-y-4">
+                    <h3 class="text-base font-bold text-white flex items-center gap-2 border-b border-slate-700 pb-2">
+                        <i class="fa-solid fa-circle-nodes text-purple-400"></i> Estrutura de Pilares NN/g
+                    </h3>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        A maturidade em UX passa por 4 fatores essenciais: <strong>Estratégia</strong> (orçamento e metas), <strong>Cultura</strong> (empatia externa), <strong>Processo</strong> (métodos de pesquisa) e <strong>Resultados</strong> (impacto e ROI).
+                    </p>
+                    <div class="bg-slate-900/40 p-3 rounded-xl border border-slate-700/60 text-[11px] text-slate-300 space-y-2">
+                        <strong class="text-purple-400 block"><i class="fa-solid fa-triangle-exclamation"></i> Análise de Inconsistência</strong>
+                        <p class="text-slate-400 leading-normal">O robô cruza dados para detectar se os seus processos técnicos estão isolados e sem suporte financeiro/executivo das lideranças da empresa.</p>
+                    </div>
+                </div>
+                <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-700/50 text-[11px] text-slate-400 italic">
+                    Avalie o cenário sincero da sua organização de 1 (Discordo Totalmente) a 5 (Concordo Totalmente).
+                </div>
+            </div>
+        </section>
+
+        <!-- CENTRAL DE INTELIGÊNCIA E RESULTADOS (DASHBOARD) -->
+        <section id="dashboardSection" class="space-y-8 hidden">
+            
+            <!-- Banner do Estágio Calculado -->
+            <div class="bg-gradient-to-r from-blue-950/50 via-slate-800 to-purple-950/50 border-2 border-blue-600 rounded-2xl p-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <span class="text-blue-400 text-xs font-bold tracking-wider uppercase block">Diagnóstico de Maturidade Consolidado</span>
+                        <h2 id="resultEstagioTitle" class="text-3xl font-black text-white mt-1">--</h2>
+                        <p id="resultEstagioDesc" class="text-slate-300 text-xs mt-1.5 max-w-3xl leading-relaxed">--</p>
+                    </div>
+                    <div class="bg-slate-900/80 px-5 py-3 rounded-xl border border-slate-700 text-center min-w-[150px] shrink-0">
+                        <span class="text-slate-400 text-[10px] font-bold uppercase block tracking-wider">Score Geral</span>
+                        <div id="resultScoreMedio" class="text-3xl font-black text-blue-400 mt-0.5">0.0 / 100</div>
+                    </div>
+                </div>
+                <!-- Barra de Evolução -->
+                <div class="mt-6 pt-4 border-t border-slate-700/60">
+                    <div class="flex justify-between text-[11px] text-slate-400 mb-1.5">
+                        <span>Evolução Interna do Estágio</span>
+                        <span id="evolutionPercentage">0% para o próximo nível</span>
+                    </div>
+                    <div class="w-full bg-slate-900 rounded-full h-2.5 overflow-hidden border border-slate-700">
+                        <div id="evolutionBar" class="bg-blue-500 h-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Alerta de Gap de Consistência Corporativa -->
+                <div id="gapAlertBox" class="mt-4 p-3 bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-xl text-xs hidden flex items-start gap-2">
+                    <i class="fa-solid fa-circle-exclamation mt-0.5 text-base shrink-0"></i>
+                    <div>
+                        <strong class="block text-amber-300">Aviso de Desalinhamento (Gap Técnico):</strong>
+                        <span id="gapAlertMessage">--</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráfico de Radar e Recomendações -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Gráfico de Radar Histórico -->
+                <div class="lg:col-span-1 bg-slate-800 p-6 rounded-2xl border border-slate-700 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2 border-b border-slate-700 pb-2">
+                            <i class="fa-solid fa-chart-radar text-purple-400"></i> Desbalanço de Pilares (Radar)
+                        </h3>
+                        <p class="text-[10px] text-slate-400 mb-2">Compara sua auditoria atual com os registros passados salvos localmente.</p>
+                    </div>
+                    <div class="relative h-64 w-full flex items-center justify-center">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recomendações Táticas Automatizadas -->
+                <div class="lg:col-span-2 bg-slate-800 p-6 rounded-2xl border border-slate-700 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2 border-b border-slate-700 pb-2">
+                            <i class="fa-solid fa-route text-emerald-400"></i> Plano de Ação Estratégico para Próximo Nível
+                        </h3>
+                        <div id="recommendationsList" class="space-y-3 text-xs text-slate-300">
+                            <!-- Gerado dinamicamente -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SIMULADOR DE CENÁRIOS WHAT-IF (Apenas Interativo Screen) -->
+            <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6 space-y-4 print:hidden">
+                <div>
+                    <h3 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-sky-400"></i> Simulador de Cenários ("What-If")
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-1">
+                        Ajuste as barras deslizantes para simular o impacto de melhorias de orçamento, cultura ou processos no score final corporativo do time.
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 pt-2">
+                    <div class="space-y-2 bg-slate-900/50 p-3 rounded-xl border border-slate-700/60">
+                        <div class="flex justify-between text-xs font-semibold text-slate-300">
+                            <span>Estratégia</span>
+                            <span id="sliderValEstrat" class="text-blue-400">1.0</span>
+                        </div>
+                        <input type="range" id="sliderEstrat" min="1" max="5" step="0.1" oninput="simularWhatIf()" class="w-full accent-blue-500 bg-slate-800 h-1.5 rounded-lg appearance-none cursor-pointer">
+                    </div>
+                    
+                    <div class="space-y-2 bg-slate-900/50 p-3 rounded-xl border border-slate-700/60">
+                        <div class="flex justify-between text-xs font-semibold text-slate-300">
+                            <span>Cultura</span>
+                            <span id="sliderValCult" class="text-blue-400">1.0</span>
+                        </div>
+                        <input type="range" id="sliderCult" min="1" max="5" step="0.1" oninput="simularWhatIf()" class="w-full accent-blue-500 bg-slate-800 h-1.5 rounded-lg appearance-none cursor-pointer">
+                    </div>
+
+                    <div class="space-y-2 bg-slate-900/50 p-3 rounded-xl border border-slate-700/60">
+                        <div class="flex justify-between text-xs font-semibold text-slate-300">
+                            <span>Processo</span>
+                            <span id="sliderValProc" class="text-blue-400">1.0</span>
+                        </div>
+                        <input type="range" id="sliderProc" min="1" max="5" step="0.1" oninput="simularWhatIf()" class="w-full accent-blue-500 bg-slate-800 h-1.5 rounded-lg appearance-none cursor-pointer">
+                    </div>
+
+                    <div class="space-y-2 bg-slate-900/50 p-3 rounded-xl border border-slate-700/60">
+                        <div class="flex justify-between text-xs font-semibold text-slate-300">
+                            <span>Resultados</span>
+                            <span id="sliderValResult" class="text-blue-400">1.0</span>
+                        </div>
+                        <input type="range" id="sliderResult" min="1" max="5" step="0.1" oninput="simularWhatIf()" class="w-full accent-blue-500 bg-slate-800 h-1.5 rounded-lg appearance-none cursor-pointer">
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <script>
+        // Restituição completa das 16 perguntas originais
+        const bancoQuestoes = [
+            { id: 1, pilar: "Estratégia", texto: "Existe orçamento dedicado, claro e recorrente para a contratação de ferramentas e condução de pesquisas de UX." },
+            { id: 2, pilar: "Estratégia", texto: "A liderança executiva apoia ativamente as decisões de design e entende a experiência do usuário como diferencial competitivo." },
+            { id: 3, pilar: "Estratégia", texto: "As metas de UX estão mapeadas formalmente nos OKRs e roteiros estratégicos de produto da liderança." },
+            { id: 4, pilar: "Estratégia", texto: "A proporção de Designers/Pesquisadores em relação ao time de desenvolvedores é equilibrada e escalável." },
+            
+            { id: 5, pilar: "Cultura", texto: "Profissionais fora do design (PMs, Devs, Diretores) possuem alto nível de letramento e empatia com as dores dos usuários." },
+            { id: 6, pilar: "Cultura", texto: "Os erros e falhas de usabilidade encontrados em produção são vistos como oportunidades de aprendizado coletivo, sem culpabilização." },
+            { id: 7, pilar: "Cultura", texto: "Existe colaboração próxima entre times transversais (Data Analytics, Atendimento, Suporte) e o time de Design." },
+            { id: 8, pilar: "Cultura", texto: "A empresa compartilha feedbacks de usuários e relatórios de pesquisas abertamente em canais públicos e de fácil acesso." },
+
+            { id: 9, pilar: "Processo", texto: "As pesquisas de usabilidade exploratórias (qualitativas/quantitativas) ocorrem antes do início do desenvolvimento do código." },
+            { id: 10, pilar: "Processo", texto: "O time utiliza e retroalimenta de forma padronizada um Design System robusto e documentado." },
+            { id: 11, pilar: "Processo", texto: "Existem rotinas estruturadas de testes de usabilidade iterativos e validações com usuários reais a cada ciclo." },
+            { id: 12, pilar: "Processo", texto: "Os fluxos e histórias de usuário (User Stories) são cocriados em parceria contínua com os times de engenharia e produto." },
+
+            { id: 13, pilar: "Resultados", texto: "Métricas de UX (como SUS, UMUX, taxas de conversão ou retenção) são mensuradas sistematicamente." },
+            { id: 14, pilar: "Resultados", texto: "O sucesso de um lançamento de produto é medido com base no valor entregue ao usuário, e não apenas no prazo da entrega." },
+            { id: 15, pilar: "Resultados", texto: "As melhorias contínuas de usabilidade refletem-se diretamente na redução de chamados de suporte técnico e reclamações." },
+            { id: 16, pilar: "Resultados", texto: "A empresa possui visibilidade histórica do Retorno sobre o Investimento (ROI) gerado pelas iniciativas de UX Research." }
+        ];
+
+        const estagiosNNG = [
+            { nivel: 1, maxScore: 16.6, nome: "Estágio 1: Ausente (Absent)", desc: "A experiência do usuário é totalmente ignorada ou não reconhecida pela organização. O foco corporativo é puramente técnico, funcional e sem foco no cliente.", recs: ["Evite termos acadêmicos ou metodologias complexas de UX. Foque em coletar e expor reclamações diretas recebidas na Central de Atendimento.", "Grave testes de guerrilha curtos, de 3 minutos, mostrando usuários reais travados nas telas atuais da empresa e exiba o vídeo aos diretores.", "Foque em vencer pequenas lutas de layout para ganhar espaço institucional inicial."] },
+            { nivel: 2, maxScore: 33.3, nome: "Estágio 2: Limitado (Limited)", desc: "UX ocorre de forma esporádica e desestruturada, puxada exclusivamente por entusiastas locais. A liderança enxerga UX puramente como 'estética visual de telas' (UI).", recs: ["Institua e ofereça sessões rápidas de letramento em UX e mapeamento de dores focado nos Product Managers (PMs).", "Documente métricas básicas de 'Antes e Depois' (Ex: Tempo de fluxo caiu pela metade) e compartilhe abertamente por e-mail/chats.", "Crie um guia de estilos visuais unificado para acelerar entregas de desenvolvimento e reduzir atritos técnicos."] },
+            { nivel: 3, maxScore: 50.0, nome: "Estágio 3: Emergente (Emergent)", desc: "A área começa a se estruturar oficialmente. Há times dedicados e métodos repetíveis sendo introduzidos, mas o apoio executivo ainda oscila sob pressão de prazos.", recs: ["Institua pesquisas rápidas e dinâmicas de validação integradas diretamente antes da entrega das demandas de desenvolvimento.", "Monte um repositório unificado de pesquisas (Research Ops) para impedir que dados preciosos de usuários se percam entre as squads.", "Sincronize as rotinas de entrega de design com o ciclo das sprints das equipes de desenvolvimento."] },
+            { nivel: 4, maxScore: 66.6, nome: "Estágio 4: Estruturado (Structured)", desc: "UX é uma disciplina respeitada de grande valor estratégico na empresa. Há fluxos integrados e o Design System opera de ponta a ponta nas equipes de produto.", recs: ["Fixe métricas científicas padronizadas (SUS/UMUX) embutidas formalmente nos OKRs estratégicos de produto monitorados pela diretoria.", "Invista pesadamente no letramento de acessibilidade digital (WCAG) transformando-a em requisito obrigatório de aprovação de código.", "Crie canais contínuos automatizados de recrutamento de usuários para dar velocidade aos testes de usabilidade."] },
+            { nivel: 5, maxScore: 83.3, nome: "Estágio 5: Integrado (Integrated)", desc: "UX está totalmente integrado aos fluxos de negócios. Pesquisas de UX Research profundas direcionam roadmaps de produto e lideranças de design participam de decisões orçamentárias corporativas.", recs: ["Desenvolva fórmulas maduras de mensuração de ROI de UX interligando engenharia evitada com aumento real de conversão.", "Promova rituais regulares de Design Quality Assurance (Design QA) para blindar a consistência do ecossistema de produtos.", "Garanta autonomia de longo prazo nas frentes orçamentárias alocadas diretamente para laboratórios de testes."] },
+            { nivel: 6, maxScore: 100.0, nome: "Estágio 6: Guiado pelo Usuário (User-Driven)", desc: "O design centrado no ser humano é a fundação que guia toda a estratégia existencial da organização. Cultura corporativa e metas de negócios respiram design de forma simbiótica.", recs: ["Publique artigos de mercado e compartilhe metodologias e frameworks proprietários desenvolvidos pelo seu time com a comunidade global de UX.", "Refine monitoramentos éticos complexos e governanças de privacidade de interações avançadas.", "Assegure que os critérios de sustentabilidade e design humanizado continuem ditando as metas macroeconômicas futuras da empresa."] }
+        ];
+
+        let radarChartInstance = null;
+        let votosRealizados = {};
+
+        function inicializarQuiz() {
+            const container = document.getElementById('quizContainer');
+            container.innerHTML = '';
+
+            bancoQuestoes.forEach(q => {
+                const corPilar = q.pilar === "Estratégia" ? "text-blue-400" : q.pilar === "Cultura" ? "text-purple-400" : q.pilar === "Processo" ? "text-orange-400" : "text-emerald-400";
+                container.innerHTML += `
+                    <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/60 space-y-3" id="cardQ_${q.id}">
+                        <div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider">
+                            <span class="${corPilar}"><i class="fa-solid fa-layer-group mr-1"></i> ${q.pilar}</span>
+                            <span class="text-slate-500 font-mono">NNG-Q${String(q.id).padStart(2, '0')}</span>
+                        </div>
+                        <p class="text-xs text-slate-200 font-medium leading-relaxed">${q.texto}</p>
+                        <div class="grid grid-cols-5 gap-1.5 pt-1">
+                            ${[1, 2, 3, 4, 5].map(v => `
+                                <button type="button" onclick="votar(${q.id}, ${v})" id="btn_${q.id}_${v}" class="py-2 text-center text-xs font-bold rounded-lg border border-slate-700 bg-slate-900/80 text-slate-400 hover:border-slate-500 transition-all">
+                                    ${v}
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+            atualizarProgressoUI();
+        }
+
+        window.votar = function(qId, valor) {
+            votosRealizados[qId] = valor;
+            for (let v = 1; v <= 5; v++) {
+                const btn = document.getElementById(`btn_${qId}_${v}`);
+                if (btn) {
+                    if (v === valor) {
+                        btn.className = "py-2 text-center text-xs font-bold rounded-lg border-2 border-blue-500 bg-blue-950/40 text-blue-400 transition-all shadow";
+                    } else {
+                        btn.className = "py-2 text-center text-xs font-bold rounded-lg border border-slate-700 bg-slate-900/80 text-slate-400 hover:border-slate-500 transition-all";
+                    }
+                }
+            }
+            atualizarProgressoUI();
+        };
+
+        function atualizarProgressoUI() {
+            const count = Object.keys(votosRealizados).length;
+            document.getElementById('progressText').innerText = `Progresso: ${count} / 16`;
+        }
+
+        window.calcularMaturidadeFinal = function() {
+            if (Object.keys(votosRealizados).length < 16) {
+                alert("Por favor, responda a todas as 16 afirmações do questionário para processar o diagnóstico.");
+                return;
+            }
+
+            let totais = { "Estratégia": 0, "Cultura": 0, "Processo": 0, "Resultados": 0 };
+            bancoQuestoes.forEach(q => {
+                totais[q.pilar] += votosRealizados[q.id];
+            });
+
+            const pilaresScores = {
+                "Estratégia": totais["Estratégia"] / 4,
+                "Cultura": totais["Cultura"] / 4,
+                "Processo": totais["Processo"] / 4,
+                "Resultados": totais["Resultados"] / 4
+            };
+
+            // Transpõe os dados apurados reais diretamente para as frentes do simulador interativo What-If
+            document.getElementById('sliderEstrat').value = pilaresScores["Estratégia"];
+            document.getElementById('sliderCult').value = pilaresScores["Cultura"];
+            document.getElementById('sliderProc').value = pilaresScores["Processo"];
+            document.getElementById('sliderResult').value = pilaresScores["Resultados"];
+
+            const mediaGeral = (pilaresScores["Estratégia"] + pilaresScores["Cultura"] + pilaresScores["Processo"] + pilaresScores["Resultados"]) / 4;
+            const scoreFinal = ((mediaGeral - 1) / 4) * 100;
+
+            salvarNoHistoricoLocal(pilaresScores, scoreFinal);
+            atualizarInterfaceDashboard(pilaresScores, scoreFinal);
+        };
+
+        function atualizarInterfaceDashboard(pilares, scoreFinal) {
+            // Atualiza labels numéricos dos Sliders do simulador
+            document.getElementById('sliderValEstrat').innerText = parseFloat(document.getElementById('sliderEstrat').value).toFixed(1);
+            document.getElementById('sliderValCult').innerText = parseFloat(document.getElementById('sliderCult').value).toFixed(1);
+            document.getElementById('sliderValProc').innerText = parseFloat(document.getElementById('sliderProc').value).toFixed(1);
+            document.getElementById('sliderValResult').innerText = parseFloat(document.getElementById('sliderResult').value).toFixed(1);
+
+            const estagio = estagiosNNG.find(e => scoreFinal <= e.maxScore) || estagiosNNG[estagiosNNG.length - 1];
+
+            document.getElementById('dashboardSection').classList.remove('hidden');
+            document.getElementById('resultEstagioTitle').innerText = estagio.nome;
+            document.getElementById('resultEstagioDesc').innerText = estagio.desc;
+            document.getElementById('resultScoreMedio').innerText = scoreFinal.toFixed(1) + " / 100";
+
+            // Lógica incremental da barra interna do nível de estágio
+            let minEstagioAnterior = 0;
+            if (estagio.nivel > 1) minEstagioAnterior = estagiosNNG[estagio.nivel - 2].maxScore;
+            
+            const evoluçãoInternaPercent = ((scoreFinal - minEstagioAnterior) / (estagio.maxScore - minEstagioAnterior)) * 100;
+            document.getElementById('evolutionBar').style.width = `${evoluçãoInternaPercent}%`;
+            document.getElementById('evolutionPercentage').innerText = estagio.nivel === 6 ? "Estágio Máximo Concluído" : `${evoluçãoInternaPercent.toFixed(0)}% de evolução no estágio atual`;
+
+            // Lógica de Detecção Avançada de Gaps NN/g
+            const gapBox = document.getElementById('gapAlertBox');
+            const gapMsg = document.getElementById('gapAlertMessage');
+            
+            if (pilares["Processo"] >= 3.5 && (pilares["Estratégia"] < 2.8 || pilares["Cultura"] < 2.8)) {
+                gapBox.classList.remove('hidden');
+                gapMsg.innerText = "Isolamento Técnico de Squad detectado. Seus métodos e entregas operacionais de UX estão amadurecendo, mas enfrentam barreiras severas devido à falta de orçamento estruturado e baixo letramento das diretorias executivas.";
+            } else if (pilares["Estratégia"] >= 3.5 && pilares["Processo"] < 2.5) {
+                gapBox.classList.remove('hidden');
+                gapMsg.innerText = "Subutilização de Recursos. A alta gerência apoia e financia as posições, porém o time falha em aplicar rotinas empíricas sistemáticas e testes de usabilidade estruturados no roadmap.";
+            } else {
+                gapBox.classList.add('hidden');
+            }
+
+            // Lista de Recomendações Táticas Automatizadas
+            const recsList = document.getElementById('recommendationsList');
+            recsList.innerHTML = '';
+            estagio.recs.forEach((r, idx) => {
+                recsList.innerHTML += `
+                    <div class="flex items-start gap-3 bg-slate-900/40 p-3 rounded-xl border border-slate-700/60">
+                        <span class="w-5 h-5 rounded-full bg-blue-600/20 text-blue-400 border border-blue-500/30 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">${idx+1}</span>
+                        <p class="text-slate-300 leading-relaxed">${r}</p>
+                    </div>
+                `;
+            });
+
+            // Resgata o histórico local criptografado para o Radar Comparativo
+            const historico = JSON.parse(localStorage.getItem('nng_ux_history_v2')) || [];
+            let datasetsRadar = [{
+                label: 'Auditoria Atual',
+                data: [pilares["Estratégia"], pilares["Cultura"], pilares["Processo"], pilares["Resultados"]],
+                backgroundColor: 'rgba(59, 130, 246, 0.15)',
+                borderColor: '#3b82f6',
+                borderWidth: 2.5,
+                pointBackgroundColor: '#60a5fa',
+                pointRadius: 4
+            }];
+
+            if (historico.length > 1) {
+                const auditoriaPassada = historico[historico.length - 2].pilares;
+                datasetsRadar.unshift({
+                    label: 'Auditoria Anterior',
+                    data: [auditoriaPassada["Estratégia"], auditoriaPassada["Cultura"], auditoriaPassada["Processo"], auditoriaPassada["Resultados"]],
+                    backgroundColor: 'rgba(148, 163, 184, 0.04)',
+                    borderColor: '#64748b',
+                    borderWidth: 1.5,
+                    borderDash: [4, 4],
+                    pointBackgroundColor: '#94a3b8',
+                    pointRadius: 3
+                });
+            }
+
+            renderizarGraficoRadar(datasetsRadar);
+        }
+
+        window.simularWhatIf = function() {
+            // Recalcula o score instantaneamente com os dados flutuantes capturados das barras deslizantes
+            const est = parseFloat(document.getElementById('sliderEstrat').value);
+            const cult = parseFloat(document.getElementById('sliderCult').value);
+            const proc = parseFloat(document.getElementById('sliderProc').value);
+            const res = parseFloat(document.getElementById('sliderResult').value);
+
+            const novaMedia = (est + cult + proc + res) / 4;
+            const novoScoreCentesimal = ((novaMedia - 1) / 4) * 100;
+
+            const simuladoPilares = { "Estratégia": est, "Cultura": cult, "Processo": proc, "Resultados": res };
+            atualizarInterfaceDashboard(simuladoPilares, novoScoreCentesimal);
+        };
+
+        function renderizarGraficoRadar(datasets) {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            if (radarChartInstance) radarChartInstance.destroy();
+
+            radarChartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Estratégia', 'Cultura', 'Processo', 'Resultados'],
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#94a3b8', font: { size: 10, weight: 'bold' } }, position: 'bottom' }
+                    },
+                    scales: {
+                        r: {
+                            min: 1, max: 5,
+                            ticks: { stepSize: 1, color: '#475569', showLabelBackdrop: false },
+                            angleLines: { color: 'rgba(255,255,255,0.06)' },
+                            grid: { color: 'rgba(255,255,255,0.06)' },
+                            pointLabels: { color: '#94a3b8', font: { size: 11, weight: 'bold' } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function salvarNoHistoricoLocal(pilares, score) {
+            let historico = JSON.parse(localStorage.getItem('nng_ux_history_v2')) || [];
+            historico.push({ pilares: pilares, score: score });
+            if (historico.length > 5) historico.shift(); // Preserva apenas auditorias recentes
+            localStorage.setItem('nng_ux_history_v2', JSON.stringify(historico));
+        }
+
+       window.limparHistorico = function() {
+            if(confirm("Deseja expurgar permanentemente todos os registros de evolução salvos localmente?")) {
+                // 1. Limpa o banco de dados do navegador
+                localStorage.removeItem('nng_ux_history_v2');
+                
+                // 2. Limpa a memória de respostas do teste atual
+                votosRealizados = {};
+                
+                // 3. Reseta visualmente todos os botões de 1 a 5 para o estado inicial
+                bancoQuestoes.forEach(q => {
+                    for (let v = 1; v <= 5; v++) {
+                        const btn = document.getElementById(`btn_${q.id}_${v}`);
+                        if (btn) {
+                            btn.className = "py-2 text-center text-xs font-bold rounded-lg border border-slate-700 bg-slate-900/80 text-slate-400 hover:border-slate-500 transition-all";
+                        }
+                    }
+                });
+                
+                // 4. Reseta a barra de progresso visual
+                atualizarProgressoUI();
+                
+                // 5. Esconde o dashboard de resultados e limpa o gráfico da tela
+                document.getElementById('dashboardSection').classList.add('hidden');
+                if (radarChartInstance) {
+                    radarChartInstance.destroy();
+                    radarChartInstance = null;
+                }
+                
+                alert("Histórico de auditoria e progresso atual foram totalmente reiniciados.");
+            }
+        };
+
+        // Boot da Aplicação
+        inicializarQuiz();
+    </script>
+</body>
+</html>
