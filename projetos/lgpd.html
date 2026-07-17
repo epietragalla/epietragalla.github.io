@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suíte de Privacidade UX - TCLE & Anonimizador LGPD</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome para Ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- jsPDF para Geração de PDF no Cliente -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans">
+
+    <!-- Header -->
+    <header class="bg-slate-800 border-b border-slate-700 py-6 px-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-3xl font-extrabold text-blue-400 flex items-center gap-3">
+                    <i class="fa-solid fa-user-shield text-blue-500"></i> Suíte de Privacidade UX Research
+                </h1>
+                <p class="text-slate-400 text-sm mt-1">
+                    Mecanismo autônomo para conformidade com a LGPD: Emissão de TCLE com assinatura digital e higienização de bases de dados.
+                </p>
+            </div>
+            <!-- Navegação por Abas -->
+            <div class="flex bg-slate-900 p-1.5 rounded-xl border border-slate-700">
+                <button onclick="alternarAba('tcle')" id="btnAbaTcle" class="px-4 py-2 text-xs font-bold rounded-lg transition-all bg-blue-600 text-white shadow">
+                    <i class="fa-solid fa-pen-nib mr-1.5"></i> 1. Gerador de TCLE
+                </button>
+                <button onclick="alternarAba('anon')" id="btnAbaAnon" class="px-4 py-2 text-xs font-bold rounded-lg transition-all text-slate-400 hover:text-slate-200 ml-1">
+                    <i class="fa-solid fa-mask mr-1.5"></i> 2. Anonimizador de Dados
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        
+        <!-- SECTION 1: GERADOR DE TCLE -->
+        <section id="sectionTcle" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Formulário do Participante -->
+            <div class="lg:col-span-1 bg-slate-800 rounded-2xl border border-slate-700 p-6 space-y-5">
+                <h2 class="text-lg font-bold text-white flex items-center gap-2 border-b border-slate-700 pb-2">
+                    <i class="fa-solid fa-id-card text-blue-400"></i> Dados do Participante
+                </h2>
+                
+                <div class="space-y-1">
+                    <label class="text-xs font-semibold text-slate-400">Nome Completo</label>
+                    <input type="text" id="partNome" placeholder="Ex: João Silva de Souza" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-sm text-slate-100 focus:outline-none focus:border-blue-500">
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-xs font-semibold text-slate-400">Documento de Identidade (CPF ou RG)</label>
+                    <input type="text" id="partDoc" placeholder="Ex: 000.000.000-00" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-sm text-slate-100 focus:outline-none focus:border-blue-500">
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-xs font-semibold text-slate-400">E-mail de Contato</label>
+                    <input type="email" id="partEmail" placeholder="joao.silva@email.com" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-sm text-slate-100 focus:outline-none focus:border-blue-500">
+                </div>
+
+                <!-- Consentimentos de Mídia -->
+                <div class="space-y-3 pt-2">
+                    <label class="text-xs font-semibold text-slate-400 block border-b border-slate-700 pb-1">Cláusulas de Captura de Mídia</label>
+                    
+                    <div class="flex items-center justify-between p-2.5 bg-slate-900/40 border border-slate-700 rounded-xl">
+                        <span class="text-xs text-slate-300 font-medium"><i class="fa-solid fa-microphone text-blue-400 mr-1.5"></i> Gravação de Áudio/Voz</span>
+                        <input type="checkbox" id="checkAudio" checked class="w-4 h-4 text-blue-600 bg-slate-900 border-slate-700 rounded focus:ring-blue-500">
+                    </div>
+
+                    <div class="flex items-center justify-between p-2.5 bg-slate-900/40 border border-slate-700 rounded-xl">
+                        <span class="text-xs text-slate-300 font-medium"><i class="fa-solid fa-video text-blue-400 mr-1.5"></i> Registro de Vídeo/Rosto</span>
+                        <input type="checkbox" id="checkVideo" checked class="w-4 h-4 text-blue-600 bg-slate-900 border-slate-700 rounded focus:ring-blue-500">
+                    </div>
+
+                    <div class="flex items-center justify-between p-2.5 bg-slate-900/40 border border-slate-700 rounded-xl">
+                        <span class="text-xs text-slate-300 font-medium"><i class="fa-solid fa-desktop text-blue-400 mr-1.5"></i> Captura de Tela (Interação)</span>
+                        <input type="checkbox" id="checkTela" checked class="w-4 h-4 text-blue-600 bg-slate-900 border-slate-700 rounded focus:ring-blue-500">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quadro de Visualização de Minuta e Assinatura -->
+            <div class="lg:col-span-2 bg-slate-800 rounded-2xl border border-slate-700 p-6 flex flex-col justify-between">
+                <div>
+                    <h2 class="text-lg font-bold text-white mb-3 flex items-center gap-2 border-b border-slate-700 pb-2">
+                        <i class="fa-solid fa-file-signature text-purple-400"></i> Termo de Consentimento e Assinatura Digital
+                    </h2>
+                    <!-- Pré-visualização Jurídica do Termo -->
+                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 max-h-60 overflow-y-auto text-xs text-slate-400 leading-relaxed space-y-3 mb-5">
+                        <h3 class="font-bold text-center text-slate-200 text-sm">TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO (TCLE) — UX RESEARCH</h3>
+                        <p>Por meio deste instrumento, em conformidade estrita com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018 - LGPD), eu declaro que autorizo de forma livre, informada e inequívoca o tratamento dos meus dados pessoais fornecidos e coletados voluntariamente durante este teste de usabilidade.</p>
+                        <p><strong>Finalidade do Tratamento:</strong> Os dados e mídias coletados destinam-se única e exclusivamente à análise de usabilidade, mapeamento de melhorias de interface, fluxos e validação de soluções digitais corporativas desenvolvidas pelo time de design.</p>
+                        <p><strong>Direitos e Confidencialidade:</strong> Fica garantido que minha identidade será mantida sob sigilo absoluto perante terceiros externos através de mecanismos de anonimização ou mascaramento. Entendo que posso revogar este consentimento ou solicitar a exclusão das minhas gravações a qualquer momento, enviando uma solicitação ao time de pesquisa.</p>
+                    </div>
+                </div>
+
+                <!-- Canvas de Assinatura -->
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <label class="text-xs font-bold text-purple-400 flex items-center gap-1.5">
+                            <i class="fa-solid fa-hand-pointer animate-pulse"></i> Assine com o Mouse ou o Dedo no quadro abaixo:
+                        </label>
+                        <button onclick="limparCanvas()" class="text-slate-400 hover:text-red-400 text-xs font-semibold transition-colors flex items-center gap-1">
+                            <i class="fa-solid fa-eraser"></i> Limpar Quadro
+                        </button>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl border border-slate-600 overflow-hidden shadow-inner relative" style="height: 180px;">
+                        <canvas id="signatureCanvas" class="w-full h-full block cursor-crosshair"></canvas>
+                    </div>
+
+                    <div class="pt-2 flex justify-end">
+                        <button onclick="gerarPdfTcle()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 text-sm shadow-lg transition-colors">
+                            <i class="fa-solid fa-file-pdf text-base"></i> Gerar e Baixar Termo Assinado (PDF)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+       <!-- SECTION 2: MOTOR DE DESIDENTIFICAÇÃO -->
+        <section id="sectionAnon" class="space-y-6 hidden">
+            <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6">
+                <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-mask text-emerald-400"></i> Mecanismo de Desidentificação e Mascaramento de Bases
+                </h2>
+                <p class="text-xs text-slate-400 leading-relaxed mb-4">
+                    Copie as linhas da sua tabela direto do Excel ou do Google Sheets e cole na caixa abaixo. O sistema analisará as colunas e substituirá nomes, e-mails e CPFs de participantes por códigos seguros (<strong class="text-slate-300">U01, U02...</strong>), gerando uma base protegida para download.
+                </p>
+
+                <!-- Input de Colagem -->
+                <div class="space-y-2">
+                    <textarea id="rawTsvInput" rows="6" placeholder="Cole aqui os dados copiados da sua planilha (linhas e colunas)..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-4 text-xs font-mono text-slate-300 focus:outline-none focus:border-emerald-500 placeholder-slate-600"></textarea>
+                </div>
+
+                <div class="mt-4 flex gap-3">
+                    <button onclick="processarDesidentificacao()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2.5 px-5 rounded-xl flex items-center gap-2 transition-colors shadow">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Desidentificar Dados da Tabela
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tabela e Resultado Protegido -->
+            <div id="wrapperResultadosAnon" class="bg-slate-800 rounded-2xl border border-slate-700 p-6 hidden space-y-4">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 pb-3 border-b border-slate-700">
+                    <div>
+                        <h3 class="text-base font-bold text-white">Visualização dos Dados Protegidos</h3>
+                        <p class="text-xs text-slate-400">Todos os dados sensíveis foram ofuscados localmente conforme as diretrizes de privacidade da LGPD.</p>
+                    </div>
+                    <button onclick="baixarCsvProtegido()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 px-4 rounded-xl flex items-center gap-2 transition-colors">
+                        <i class="fa-solid fa-download"></i> Baixar Tabela Protegida (.CSV)
+                    </button>
+                </div>
+
+                <!-- Tabela Responsiva -->
+                <div class="overflow-x-auto rounded-xl border border-slate-700">
+                    <table class="min-w-full divide-y divide-slate-700 text-xs text-left">
+                        <thead class="bg-slate-900 text-slate-400">
+                            <tr id="anonTableHeader">
+                                <!-- Dinâmico -->
+                            </tr>
+                        </thead>
+                        <tbody id="anonTableBody" class="divide-y divide-slate-700 bg-slate-800 text-slate-300">
+                            <!-- Dinâmico -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // --- GERENCIAMENTO DE INTERFACE (ABAS) ---
+        function alternarAba(aba) {
+            const tcleSec = document.getElementById('sectionTcle');
+            const anonSec = document.getElementById('sectionAnon');
+            const btnTcle = document.getElementById('btnAbaTcle');
+            const btnAnon = document.getElementById('btnAbaAnon');
+
+            if (aba === 'tcle') {
+                tcleSec.classList.remove('hidden');
+                anonSec.classList.add('hidden');
+                btnTcle.className = "px-4 py-2 text-xs font-bold rounded-lg transition-all bg-blue-600 text-white shadow";
+                btnAnon.className = "px-4 py-2 text-xs font-bold rounded-lg transition-all text-slate-400 hover:text-slate-200 ml-1";
+            } else {
+                tcleSec.classList.add('hidden');
+                anonSec.classList.remove('hidden');
+                btnTcle.className = "px-4 py-2 text-xs font-bold rounded-lg transition-all text-slate-400 hover:text-slate-200";
+                btnAnon.className = "px-4 py-2 text-xs font-bold rounded-lg transition-all bg-blue-600 text-white shadow ml-1";
+                setTimeout(redimensionarCanvas, 100);
+            }
+        }
+
+       // --- MÓDULO CANVAS DE ASSINATURA ---
+        const canvas = document.getElementById('signatureCanvas');
+        const ctx = canvas.getContext('2d');
+        let desenhando = false;
+
+        function redimensionarCanvas() {
+            // Define o tamanho interno do canvas exatamente igual ao tamanho visual dele na tela
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            // Configurações da caneta (precisam ser reaplicadas após mudar o tamanho)
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.strokeStyle = '#1e293b'; // Azul escuro profissional
+        }
+
+        // Garante que o canvas se adapte ao layout assim que a página terminar de carregar totalmente
+        window.addEventListener('load', redimensionarCanvas);
+        window.addEventListener('resize', redimensionarCanvas);
+        // Executa uma checagem de segurança rápida para garantir o tamanho correto
+        setTimeout(redimensionarCanvas, 300);
+
+        // Função auxiliar para descobrir a coordenada exata do clique/toque na tela
+        function obterCoordenadas(e) {
+            const rect = canvas.getBoundingClientRect();
+            if (e.touches && e.touches.length > 0) {
+                return {
+                    x: e.touches[0].clientX - rect.left,
+                    y: e.touches[0].clientY - rect.top
+                };
+            } else {
+                return {
+                    x: e.clientX - rect.left,
+                    y: e.clientY - rect.top
+                };
+            }
+        }
+
+        // Ouvintes de Eventos de Mouse (Desktop)
+        canvas.addEventListener('mousedown', (e) => {
+            desenhando = true;
+            const pos = obterCoordenadas(e);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (!desenhando) return;
+            const pos = obterCoordenadas(e);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+        });
+
+        canvas.addEventListener('mouseup', () => desenhando = false);
+        canvas.addEventListener('mouseleave', () => desenhando = false);
+
+        // Ouvintes de Eventos Touch (Celulares, Tablets e Telas de Toque)
+        canvas.addEventListener('touchstart', (e) => {
+            desenhando = true;
+            const pos = obterCoordenadas(e);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+            e.preventDefault(); // Impede que a tela role enquanto você assina
+        }, { passive: false });
+
+        canvas.addEventListener('touchmove', (e) => {
+            if (!desenhando) return;
+            const pos = obterCoordenadas(e);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            e.preventDefault(); // Impede o scroll do navegador
+        }, { passive: false });
+
+        canvas.addEventListener('touchend', () => desenhando = false);
+
+        function limparCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+        // --- EXPORTADOR EM PDF DO TCLE ---
+        function gerarPdfTcle() {
+            const { jsPDF } = window.jspdf;
+            const nome = document.getElementById('partNome').value.trim();
+            const doc = document.getElementById('partDoc').value.trim();
+            const email = document.getElementById('partEmail').value.trim();
+
+            if (!nome || !doc) {
+                alert("Por favor, preencha ao menos o Nome e Documento do participante para gerar o termo.");
+                return;
+            }
+
+            const docPdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+            
+            // Layout Estilizado do PDF
+            docPdf.setFillColor(30, 41, 59); // Cabeçalho Dark Slate
+            docPdf.rect(0, 0, 210, 35, 'F');
+            
+            docPdf.setTextColor(255, 255, 255);
+            docPdf.setFont('Helvetica', 'bold');
+            docPdf.setFontSize(16);
+            docPdf.text("TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO", 15, 15);
+            docPdf.setFontSize(10);
+            docPdf.setFont('Helvetica', 'normal');
+            docPdf.text("Conformidade Estrita com a Lei Geral de Proteção de Dados (LGPD)", 15, 22);
+
+            // Dados do Respondente
+            docPdf.setFillColor(241, 245, 249);
+            docPdf.rect(15, 45, 180, 25, 'F');
+            docPdf.setTextColor(51, 65, 85);
+            docPdf.setFont('Helvetica', 'bold');
+            docPdf.text("DADOS DO TITULAR DOS DADOS:", 20, 52);
+            docPdf.setFont('Helvetica', 'normal');
+            docPdf.text(`Nome: ${nome}`, 20, 58);
+            docPdf.text(`Documento: ${doc}   |   E-mail: ${email || 'Não informado'}`, 20, 64);
+
+            // Corpo do Termo Jurídico
+            docPdf.setFontSize(10);
+            docPdf.setTextColor(71, 85, 105);
+            
+            let textoLegal = "Por meio deste termo, o titular acima qualificado autoriza voluntariamente o tratamento de seus dados pessoais coletados durante a sessão de teste de usabilidade em conformidade com a Lei nº 13.709/2018 (LGPD). Os dados destinar-se-ão estritamente à melhoria e validação de interfaces digitais.\n\n" +
+                             "O time de UX Research assume a responsabilidade de manter total confidencialidade sobre os registros, aplicando rotinas de mascaramento ou anonimização de dados antes de qualquer compartilhamento corporativo. É garantido ao titular o direito de revogar este termo ou solicitar a exclusão de sua base a qualquer instante.\n\n" +
+                             "Configurações de mídias autorizadas e pactuadas para este teste:";
+            
+            let splitTexto = docPdf.splitTextToSize(textoLegal, 180);
+            docPdf.text(splitTexto, 15, 80);
+
+            // Caixa de Seleção de Itens Autorizados
+            let yMedia = 120;
+            docPdf.setFont('Helvetica', 'bold');
+            docPdf.text(`[ ${document.getElementById('checkAudio').checked ? 'SIM' : 'NÃO'} ] Gravação de Voz/Áudio em Sessão`, 20, yMedia);
+            docPdf.text(`[ ${document.getElementById('checkVideo').checked ? 'SIM' : 'NÃO'} ] Registro de Imagem e Expressão Facial`, 20, yMedia + 7);
+            docPdf.text(`[ ${document.getElementById('checkTela').checked ? 'SIM' : 'NÃO'} ] Captura e Gravação de Telas de Interação`, 20, yMedia + 14);
+
+            // Rodapé e Assinatura
+            let yAssinatura = 165;
+            docPdf.setFont('Helvetica', 'normal');
+            const dataAtual = new Date().toLocaleDateString('pt-BR');
+            docPdf.text(`Emitido eletronicamente em Brasília, ${dataAtual}.`, 15, yAssinatura);
+            
+            docPdf.line(115, yAssinatura + 15, 195, yAssinatura + 15);
+            docPdf.setFontSize(9);
+            docPdf.text("Assinatura Eletrônica do Titular", 130, yAssinatura + 20);
+
+            // Inserir Desenho do Canvas no PDF
+            try {
+                const imgData = canvas.toDataURL('image/png');
+                docPdf.addImage(imgData, 'PNG', 125, yAssinatura - 5, 60, 18);
+            } catch (err) { console.log("Canvas sem assinatura registrada."); }
+
+            docPdf.save(`TCLE_LGPD_${nome.replace(/\s+/g, '_')}.pdf`);
+        }
+
+       // --- MÓDULO 2: AUTOMATIZADOR DE DESIDENTIFICAÇÃO ---
+        let baseTabelaAnonimizada = [];
+
+        function processarDesidentificacao() {
+            const rawText = document.getElementById('rawTsvInput').value;
+            if (!rawText.trim()) { alert("Cole dados de uma tabela para aplicar as máscaras de proteção."); return; }
+
+            // Identifica se a separação da colagem do Excel é por Tabulações (\t) ou ponto e vírgula
+            let rows = rawText.split('\n').map(line => {
+                if (line.includes('\t')) return line.split('\t');
+                return line.split(';');
+            });
+
+            // Filtra linhas vazias
+            rows = rows.filter(r => r.length > 0 && r.some(c => c.trim() !== ""));
+            if (rows.length === 0) return;
+
+            const headers = rows[0].map(h => h.trim());
+            
+            // Identifica colunas sensíveis por palavras-chave no cabeçalho
+            let colIndicesParaMascarar = [];
+            headers.forEach((h, idx) => {
+                let text = h.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                if (text.includes("nome") || text.includes("completo") || text.includes("email") || text.includes("correio") || text.includes("cpf") || text.includes("rg") || text.includes("documento") || text.includes("telefone") || text.includes("celular")) {
+                    colIndicesParaMascarar.push(idx);
+                }
+            });
+
+            // Montagem da tabela protegida
+            baseTabelaAnonimizada = [headers];
+            let userCounter = 1;
+
+            for (let r = 1; r < rows.length; r++) {
+                let currentRow = [...rows[r]].map(c => c.trim());
+                if (currentRow.length !== headers.length) continue; // Pula linhas desalinhadas
+
+                let userId = "U" + String(userCounter).padStart(2, '0');
+                
+                // Substitui campos sensíveis mapeados por dados protegidos
+                colIndicesParaMascarar.forEach(colIdx => {
+                    if (currentRow[colIdx] !== "") {
+                        let headerName = headers[colIdx].toLowerCase();
+                        if (headerName.includes("nome")) {
+                            currentRow[colIdx] = `Participante ${userId}`;
+                        } else if (headerName.includes("email")) {
+                            currentRow[colIdx] = `usuario.${userId}@anonimizado.ux`;
+                        } else if (headerName.includes("cpf") || headerName.includes("rg") || headerName.includes("documento")) {
+                            currentRow[colIdx] = `DOC-MASKS-${userId}`;
+                        } else {
+                            currentRow[colIdx] = `[OFUSCADO-${userId}]`;
+                        }
+                    }
+                });
+
+                baseTabelaAnonimizada.push(currentRow);
+                userCounter++;
+            }
+
+            renderizarTabelaProtegida();
+        }
+
+        function renderizarTabelaProtegida() {
+            const head = document.getElementById('anonTableHeader');
+            const body = document.getElementById('anonTableBody');
+            const wrapper = document.getElementById('wrapperResultadosAnon');
+
+            wrapper.classList.remove('hidden');
+            head.innerHTML = '';
+            body.innerHTML = '';
+
+            // Renderiza Cabeçalho
+            baseTabelaAnonimizada[0].forEach(h => {
+                head.innerHTML += `<th class="px-4 py-3 font-bold border-b border-slate-700">${h}</th>`;
+            });
+
+            // Renderiza Linhas Mascaradas
+            for (let r = 1; r < baseTabelaAnonimizada.length; r++) {
+                let rowHTML = `<tr class="hover:bg-slate-700/40 transition-colors">`;
+                baseTabelaAnonimizada[r].forEach((cell, idx) => {
+                    let isMasked = cell.includes("U" + String(r).padStart(2, '0')) || cell.includes("Participante");
+                    let textClass = isMasked ? "text-emerald-400 font-semibold" : "text-slate-400";
+                    rowHTML += `<td class="px-4 py-2.5 border-b border-slate-700/50 ${textClass}">${cell}</td>`;
+                });
+                rowHTML += `</tr>`;
+                body.innerHTML += rowHTML;
+            }
+        }
+
+        function baixarCsvProtegido() {
+            if (baseTabelaAnonimizada.length === 0) return;
+            
+            // Une a matriz em texto separado por ponto e vírgula
+            let csvContent = "data:text/csv;charset=utf-8,";
+            baseTabelaAnonimizada.forEach(row => {
+                csvContent += row.map(c => `"${c.replace(/"/g, '""')}"`).join(";") + "\n";
+            });
+
+            const link = document.createElement("a");
+            link.setAttribute("href", encodeURI(csvContent));
+            link.setAttribute("download", "Base_Pesquisa_Protegida_LGPD.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
