@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Universal UX - Módulo UMUX & UMUX-LITE</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome para Ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js para Gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        .hint-tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+        .hint-tooltip .tooltip-text {
+            visibility: hidden;
+            width: 320px;
+            background-color: #1e293b;
+            color: #fff;
+            text-align: left;
+            border-radius: 8px;
+            padding: 12px;
+            position: absolute;
+            z-index: 50;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.2s;
+            font-size: 0.75rem;
+            line-height: 1.25rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            border: 1px solid #334155;
+        }
+        .hint-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans">
+
+    <!-- Header -->
+    <header class="bg-slate-800 border-b border-slate-700 py-6 px-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-3xl font-extrabold text-blue-400 flex items-center gap-3">
+                    <i class="fa-solid fa-calculator text-blue-500"></i> Dashboard Analítico UMUX & UMUX-LITE
+                </h1>
+                <p class="text-slate-400 text-sm mt-1">
+                    Processador de métricas ágeis de usabilidade percebida com conversão para a escala equivalente do SUS.
+                </p>
+            </div>
+            <div class="flex items-center gap-2 text-xs bg-slate-700/50 p-2.5 rounded-lg border border-slate-600">
+                <span class="font-semibold text-slate-300">Normativa:</span> ISO 9241-11 | Finstad (2010) | Lewis et al. (2013)
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+
+        <!-- Upload e Configuração do Tipo de Métrica -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Card de Upload -->
+            <div class="lg:col-span-2 bg-slate-800 rounded-2xl border border-slate-700 p-6 flex flex-col justify-between">
+                <div>
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+                        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-file-csv text-blue-400"></i> Importar Planilha CSV (UMUX)
+                        </h2>
+                        
+                        <!-- Seletor do Tipo de Métrica -->
+                        <div class="bg-slate-900 p-1 rounded-xl border border-slate-700 flex">
+                            <button id="modeUmux" onclick="setMetricaMode('UMUX')" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-blue-600 text-white shadow">UMUX (4 Itens)</button>
+                            <button id="modeUmuxLite" onclick="setMetricaMode('UMUX-LITE')" class="px-3 py-1.5 text-xs font-bold rounded-lg text-slate-400 hover:text-slate-200 ml-1">UMUX-LITE (2 Itens)</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-950/40 border border-blue-800/40 rounded-lg p-3 mb-4">
+                        <p class="text-blue-300 text-xs leading-relaxed flex items-start gap-2">
+                            <span class="hint-tooltip inline-block text-blue-400 hover:text-blue-300 transition-colors">
+                                <i class="fa-solid fa-circle-info text-base mt-0.5 cursor-help"></i>
+                                <span class="tooltip-text !w-[380px] !bottom-auto !top-full mt-2 p-4 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl space-y-2">
+                                    <strong class="text-blue-400 text-sm block border-b border-slate-700 pb-1">📋 Mapeamento de Colunas</strong>
+                                    <span class="block text-slate-300"><strong>Modo UMUX:</strong> Procura colunas com os radicais: <code class="text-blue-300">requirements</code> (Q1), <code class="text-blue-300">frustrat</code> (Q2), <code class="text-blue-300">easy</code> (Q3) e <code class="text-blue-300">correcting</code> (Q4).</span>
+                                    <span class="block text-slate-300"><strong>Modo UMUX-LITE:</strong> Procura colunas com os radicais: <code class="text-blue-300">requirements</code> (Q1) e <code class="text-blue-300">easy</code> (Q2).</span>
+                                </span>
+                            </span>
+                            <span>
+                                <strong>Motor de Busca Semântica Avançado:</strong> Aceita exportações numéricas (Escala de 1 a 7) ou textuais brutas do Forms. Ele ignora as colunas de metadados do sistema e localiza as afirmações automaticamente.
+                            </span>
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="border-2 border-dashed border-slate-600 hover:border-blue-500 rounded-xl p-8 text-center transition-colors cursor-pointer bg-slate-900/40" id="dropZone">
+                    <input type="file" id="fileInput" accept=".csv" class="hidden">
+                    <label for="fileInput" class="cursor-pointer space-y-2 block" id="uploadLabel">
+                        <i class="fa-solid fa-cloud-arrow-up text-4xl text-slate-500" id="uploadIcon"></i>
+                        <p class="text-sm font-medium text-slate-300" id="uploadText">Arraste seu arquivo CSV ou clique para buscar</p>
+                        <p class="text-xs text-slate-500">Apenas arquivos no formato (.csv)</p>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Box Metodológico -->
+            <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6 space-y-4">
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-circle-question text-purple-400"></i> Fórmulas de Cálculo
+                </h3>
+                <div id="formulaContainer" class="space-y-3 text-xs text-slate-300 leading-relaxed">
+                    <!-- Gerado dinamicamente com base no modo selecionado -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Resultados Dashboard -->
+        <section id="resultsSection" class="space-y-8 hidden">
+            
+            <!-- Cards de KPI -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                <!-- Média Convertida -->
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 text-center">
+                    <div class="text-slate-400 text-xs font-semibold flex items-center justify-center gap-1.5">
+                        Média Equivalente SUS
+                        <div class="hint-tooltip">
+                            <i class="fa-solid fa-circle-question text-blue-400"></i>
+                            <span class="tooltip-text">Nota normalizada na escala clássica de 0 a 100 pontos, permitindo a comparação direta com benchmarks históricos do SUS.</span>
+                        </div>
+                    </div>
+                    <div id="statMean" class="text-4xl font-extrabold text-blue-400 mt-2">--</div>
+                    <span id="statGrade" class="text-xs px-2.5 py-0.5 font-bold rounded mt-2 inline-block">--</span>
+                </div>
+
+                <!-- Intervalo de Confiança -->
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 text-center">
+                    <div class="text-slate-400 text-xs font-semibold flex items-center justify-center gap-1.5">
+                        I.C. 95%
+                        <div class="hint-tooltip">
+                            <i class="fa-solid fa-circle-question text-blue-400"></i>
+                            <span class="tooltip-text">Intervalo de Confiança t-Student (95%) calculado sobre os scores projetados.</span>
+                        </div>
+                    </div>
+                    <div id="statCI" class="text-2xl font-bold text-white mt-4">--</div>
+                    <p class="text-[10px] text-slate-500 mt-1">Margem de Erro</p>
+                </div>
+
+                <!-- Percentil Histórico -->
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 text-center">
+                    <div class="text-slate-400 text-xs font-semibold flex items-center justify-center gap-1.5">
+                        Percentil Rank
+                        <div class="hint-tooltip">
+                            <i class="fa-solid fa-circle-question text-blue-400"></i>
+                            <span class="tooltip-text">Porcentagem de soluções globais que o seu produto supera segundo os dados psicométricos de Sauro & Lewis.</span>
+                        </div>
+                    </div>
+                    <div id="statPercentile" class="text-2xl font-bold text-white mt-4">--</div>
+                    <p id="statAdjective" class="text-xs text-slate-400 mt-1">--</p>
+                </div>
+
+                <!-- Amostra -->
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 text-center">
+                    <div class="text-slate-400 text-xs font-semibold">Participantes (N)</div>
+                    <div id="statN" class="text-4xl font-extrabold text-white mt-2">--</div>
+                    <p class="text-[10px] text-slate-500 mt-2">Respostas Válidas</p>
+                </div>
+
+                <!-- Desvio Padrão -->
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 text-center">
+                    <div class="text-slate-400 text-xs font-semibold">Desvio Padrão (s)</div>
+                    <div id="statStdDev" class="text-4xl font-extrabold text-white mt-2">--</div>
+                    <div class="text-[10px] text-slate-500 mt-2">Dispersão Amostral</div>
+                </div>
+            </div>
+
+            <!-- Gráfico da Curva e Resumo -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 bg-slate-800 p-6 rounded-2xl border border-slate-700">
+                    <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-area text-purple-400"></i> Distribuição Crescente de Scores Projetados
+                    </h3>
+                    <div class="relative h-80 w-full">
+                        <canvas id="metricChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 space-y-4">
+                    <h3 class="text-base font-bold text-white border-b border-slate-700 pb-2">Interpretação Baseada em Evidências</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center bg-slate-900/40 p-3 rounded-lg border border-slate-700/50">
+                            <span class="text-xs text-slate-400 font-medium">Aceitabilidade:</span>
+                            <span id="interpAcceptability" class="text-xs font-bold px-2 py-1 rounded">--</span>
+                        </div>
+                        <div class="flex justify-between items-center bg-slate-900/40 p-3 rounded-lg border border-slate-700/50">
+                            <span class="text-xs text-slate-400 font-medium">Classificação NPS:</span>
+                            <span id="interpNps" class="text-xs font-bold px-2 py-1 rounded">--</span>
+                        </div>
+                    </div>
+                    <div class="bg-slate-900/20 p-4 rounded-xl border border-slate-700 text-xs text-slate-400 space-y-2">
+                        <span class="font-bold text-slate-300">Conclusão Metodológica:</span>
+                        <p id="interpSummary" class="leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabela Detalhada por Usuário -->
+            <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 pb-4 border-b border-slate-700">
+                    <div>
+                        <h3 class="text-base font-bold text-white">Notas Projetadas por Participante (Escala 0-100)</h3>
+                        <p class="text-xs text-slate-400">Dados individuais normalizados usando criptografia em máscara sequencial de IDs.</p>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto rounded-lg border border-slate-700">
+                    <table class="min-w-full divide-y divide-slate-700 text-sm text-left">
+                        <thead class="bg-slate-900 text-slate-400 text-xs">
+                            <tr id="tableHeader"></tr>
+                        </thead>
+                        <tbody id="tableBody" class="divide-y divide-slate-700 bg-slate-800"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        const scoringDatabase = [
+            { maxScore: 25.0, grade: 'F', percentile: '0 - 1.9%', adjective: 'Worst Imaginable', acceptability: 'Inaceitável', nps: 'Detrator', colorClass: 'bg-red-500/20 text-red-400 border border-red-500/30' },
+            { maxScore: 51.6, grade: 'F', percentile: '2 - 14%', adjective: 'Poor (Ruim)', acceptability: 'Inaceitável', nps: 'Detrator', colorClass: 'bg-red-500/20 text-red-400 border border-red-500/30' },
+            { maxScore: 62.6, grade: 'D', percentile: '15 - 34%', adjective: 'OK', acceptability: 'Marginalmente Aceitável', nps: 'Detrator', colorClass: 'bg-orange-500/20 text-orange-400 border border-orange-500/30' },
+            { maxScore: 64.9, grade: 'C-', percentile: '35 - 40%', adjective: 'Good (Bom)', acceptability: 'Marginalmente Aceitável', nps: 'Passivo', colorClass: 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' },
+            { maxScore: 71.0, grade: 'C', percentile: '41 - 59%', adjective: 'Good (Bom)', acceptability: 'Marginalmente Aceitável', nps: 'Passivo', colorClass: 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' },
+            { maxScore: 72.5, grade: 'C+', percentile: '60 - 64%', adjective: 'Good (Bom)', acceptability: 'Aceitável', nps: 'Passivo', colorClass: 'bg-blue-500/20 text-blue-400 border border-blue-500/30' },
+            { maxScore: 74.0, grade: 'B-', percentile: '65 - 69%', adjective: 'Good (Bom)', acceptability: 'Aceitável', nps: 'Passivo', colorClass: 'bg-blue-500/20 text-blue-400 border border-blue-500/30' },
+            { maxScore: 77.1, grade: 'B', percentile: '70 - 79%', adjective: 'Excellent (Excelente)', acceptability: 'Aceitável', nps: 'Passivo', colorClass: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' },
+            { maxScore: 78.8, grade: 'B+', percentile: '80 - 84%', adjective: 'Excellent (Excelente)', acceptability: 'Aceitável', nps: 'Passivo', colorClass: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' },
+            { maxScore: 80.7, grade: 'A-', percentile: '85 - 89%', adjective: 'Excellent (Excelente)', acceptability: 'Aceitável', nps: 'Promotor', colorClass: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' },
+            { maxScore: 84.0, grade: 'A', percentile: '90 - 95%', adjective: 'Excellent (Excelente)', acceptability: 'Aceitável', nps: 'Promotor', colorClass: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' },
+            { maxScore: 100.0, grade: 'A+', percentile: '96 - 100%', adjective: 'Best Imaginable (Melhor Possível)', acceptability: 'Aceitável', nps: 'Promotor', colorClass: 'bg-green-500/20 text-green-400 border border-green-500/30' }
+        ];
+
+        let currentMode = 'UMUX';
+        let parsedParticipants = [];
+        let chartInstance = null;
+
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const uploadIcon = document.getElementById('uploadIcon');
+        const uploadText = document.getElementById('uploadText');
+
+        // Configuração Inicial de Abas e Regras de Negócio do Mapeamento
+        function setMetricaMode(mode) {
+            currentMode = mode;
+            document.getElementById('modeUmux').className = mode === 'UMUX' ? "px-3 py-1.5 text-xs font-bold rounded-lg bg-blue-600 text-white shadow" : "px-3 py-1.5 text-xs font-bold rounded-lg text-slate-400 hover:text-slate-200 ml-1";
+            document.getElementById('modeUmuxLite').className = mode === 'UMUX-LITE' ? "px-3 py-1.5 text-xs font-bold rounded-lg bg-blue-600 text-white shadow ml-1" : "px-3 py-1.5 text-xs font-bold rounded-lg text-slate-400 hover:text-slate-200 ml-1";
+            renderizarFormulasDoc();
+            if (fileInput.files.length > 0) processarArquivo(fileInput.files[0]);
+        }
+
+        function renderizarFormulasDoc() {
+            const container = document.getElementById('formulaContainer');
+            if (currentMode === 'UMUX') {
+                container.innerHTML = `
+                    <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700">
+                        <span class="font-bold text-blue-400">Itens Ímpares (Q1, Q3):</span>
+                        <p class="text-slate-400 mt-0.5">Pontos = Voto - 1</p>
+                    </div>
+                    <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700">
+                        <span class="font-bold text-red-400">Itens Pares (Q2, Q4):</span>
+                        <p class="text-slate-400 mt-0.5">Pontos = 7 - Voto</p>
+                    </div>
+                    <p class="text-[11px] text-slate-500 italic">* Conversão Final: (Soma de pontos / 24) * 100 para equivalência com SUS (0-100).</p>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700">
+                        <span class="font-bold text-pink-400">Estrutura Direta de Itens (Q1, Q2):</span>
+                        <p class="text-slate-400 mt-0.5">Pontos = Voto - 1</p>
+                    </div>
+                    <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700">
+                        <span class="font-bold text-blue-400">Regressão Linear de Lewis (Paridade SUS):</span>
+                        <p class="text-slate-400 mt-0.5">Score = 0.65 * ((Soma / 12) * 100) + 22.9</p>
+                    </div>
+                `;
+            }
+        }
+        renderizarFormulasDoc();
+
+        // Drag and Drop
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-blue-500', 'bg-blue-950/20'); });
+        dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('border-blue-500', 'bg-blue-950/20'); });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-blue-500', 'bg-blue-950/20');
+            if (e.dataTransfer.files.length > 0) {
+                fileInput.files = e.dataTransfer.files;
+                processarArquivo(e.dataTransfer.files[0]);
+            }
+        });
+        fileInput.addEventListener('change', (e) => { if (e.target.files.length > 0) processarArquivo(e.target.files[0]); });
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        function processarArquivo(file) {
+            uploadIcon.className = "fa-solid fa-spinner fa-spin text-4xl text-blue-500";
+            uploadText.innerText = `Processando ${file.name}...`;
+            const reader = new FileReader();
+            reader.onload = function(e) { parseCSV(e.target.result); };
+            reader.readAsText(file, "UTF-8");
+        }
+
+        function parseCSV(text) {
+            let delimiter = text.split('\n')[0].includes(';') ? ';' : ',';
+            let rows = text.split(/\r?\n/).map(line => line.split(delimiter).map(c => c.replace(/^"|"$/g, '').trim()));
+            processarDadosMatriz(rows);
+        }
+
+        function normalizarSetePontos(val) {
+            if (!val || val === "") return NaN;
+            let num = parseInt(val);
+            if (!isNaN(num) && num >= 1 && num <= 7) return num;
+
+            let clean = val.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            if (clean.includes("discordo totalmente") || clean === "1") return 1;
+            if (clean.includes("discordo parcialmente") || clean.includes("discordo em partes")) return 2;
+            if (clean.includes("discordo") || clean === "3") return 3;
+            if (clean.includes("nem concordo") || clean.includes("neutro") || clean === "4") return 4;
+            if (clean.includes("concordo parcialmente") || clean === "5") return 5;
+            if (clean.includes("concordo") && !clean.includes("totalmente")) return 6;
+            if (clean.includes("concordo totalmente") || clean === "7") return 7;
+            return NaN;
+        }
+
+        function detectarColunaMétrica(headerText) {
+            if (!headerText) return null;
+            let h = headerText.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            
+            let matchIndex = h.match(/^(\d+)\s*[\.\-\s]/);
+            let idx = matchIndex ? parseInt(matchIndex[1]) : null;
+
+            if (currentMode === 'UMUX') {
+                if (h.includes("requirement") || h.includes("capacidades atendem") || idx === 1) return 1;
+                if (h.includes("frustrat") || h.includes("frustrante") || idx === 2) return 2;
+                if (h.includes("easy") || h.includes("facil") || idx === 3) return 3;
+                if (h.includes("correcting") || h.includes("corrigindo") || h.includes("trabalhoso") || idx === 4) return 4;
+            } else {
+                if (h.includes("requirement") || h.includes("capacidades atendem") || idx === 1) return 1;
+                if (h.includes("easy") || h.includes("facil") || idx === 2) return 2;
+            }
+            return null;
+        }
+
+        function processarDadosMatriz(rows) {
+            parsedParticipants = [];
+            const cleanRows = rows.filter(r => r.some(c => c !== ""));
+            let qPositions = {};
+            const numItensNecessarios = currentMode === 'UMUX' ? 4 : 2;
+
+            for (let c = 0; c < cleanRows[0].length; c++) {
+                let qNum = detectarColunaMétrica(cleanRows[0][c]);
+                if (qNum && !qPositions[`Q${qNum}`]) qPositions[`Q${qNum}`] = c;
+            }
+
+            if (Object.keys(qPositions).length < numItensNecessarios) {
+                alert(`Erro: Não foi possível mapear todas as colunas necessárias para o modo ${currentMode}. Verifique os cabeçalhos.`);
+                uploadIcon.className = "fa-solid fa-cloud-arrow-up text-4xl text-slate-500";
+                uploadText.innerText = "Arraste seu arquivo CSV ou clique para buscar";
+                return;
+            }
+
+            let userIdx = 1;
+            for (let r = 1; r < cleanRows.length; r++) {
+                let row = cleanRows[r];
+                let answers = [];
+                let valid = true;
+
+                for (let i = 1; i <= numItensNecessarios; i++) {
+                    let colIdx = qPositions[`Q${i}`];
+                    let val = normalizarSetePontos(row[colIdx]);
+                    if (!isNaN(val)) answers.push(val); else { valid = false; break; }
+                }
+
+                if (valid) {
+                    let score = 0;
+                    if (currentMode === 'UMUX') {
+                        let q1 = answers[0] - 1;
+                        let q2 = 7 - answers[1];
+                        let q3 = answers[2] - 1;
+                        let q4 = 7 - answers[3];
+                        score = ((q1 + q2 + q3 + q4) / 24) * 100;
+                    } else {
+                        let q1 = answers[0] - 1;
+                        let q2 = answers[1] - 1;
+                        let rawScore = ((q1 + q2) / 12) * 100;
+                        score = (0.65 * rawScore) + 22.9; // Regressão de Lewis & Sauro
+                    }
+
+                    parsedParticipants.push({ id: `U${String(userIdx).padStart(2, '0')}`, raw: answers, score: score });
+                    userIdx++;
+                }
+            }
+
+            parsedParticipants.sort((a, b) => a.score - b.score);
+            uploadIcon.className = "fa-solid fa-cloud-arrow-up text-4xl text-slate-500";
+            uploadText.innerText = "Arraste seu arquivo CSV ou clique para buscar";
+            atualizarDashboard();
+        }
+
+        function calcularEstatisticas() {
+            const scores = parsedParticipants.map(p => p.score);
+            const n = scores.length;
+            const mean = scores.reduce((a, b) => a + b, 0) / n;
+            const variance = n > 1 ? scores.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / (n - 1) : 0;
+            const stdDev = Math.sqrt(variance);
+            const margin = n > 1 ? 1.96 * (stdDev / Math.sqrt(n)) : 0;
+            return { n, mean, stdDev, margin };
+        }
+
+        function atualizarDashboard() {
+            const stats = calcularEstatisticas();
+            const interp = scoringDatabase.find(item => stats.mean <= item.maxScore) || scoringDatabase[scoringDatabase.length - 1];
+
+            document.getElementById('resultsSection').classList.remove('hidden');
+            document.getElementById('statMean').innerText = stats.mean.toFixed(1);
+            document.getElementById('statN').innerText = stats.n;
+            document.getElementById('statStdDev').innerText = stats.stdDev.toFixed(1);
+            document.getElementById('statCI').innerText = `± ${stats.margin.toFixed(1)}`;
+            document.getElementById('statPercentile').innerText = interp.percentile;
+            document.getElementById('statAdjective').innerText = `Adjetivo: ${interp.adjective}`;
+            
+            const gradeEl = document.getElementById('statGrade');
+            gradeEl.innerText = `Grade: ${interp.grade}`;
+            gradeEl.className = `text-xs px-2.5 py-0.5 font-bold rounded mt-2 inline-block ${interp.colorClass}`;
+
+            document.getElementById('interpAcceptability').innerText = interp.acceptability;
+            document.getElementById('interpAcceptability').className = `text-xs font-bold px-2 py-1 rounded ${interp.colorClass}`;
+            
+            document.getElementById('interpNps').innerText = interp.nps;
+            document.getElementById('interpNps').className = `text-xs font-bold px-2 py-1 rounded ${interp.nps === 'Promotor' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`;
+
+            document.getElementById('interpSummary').innerHTML = `A análise de <strong class="text-white">${stats.n} respondentes</strong> via <strong class="text-blue-400">${currentMode}</strong> gerou uma pontuação de usabilidade projetada em <strong class="text-white">${stats.mean.toFixed(1)} / 100</strong> na régua equivalente do SUS. Isso classifica o produto como <strong class="text-white">"${interp.adjective}"</strong> com aceitabilidade <strong class="text-white">${interp.acceptability}</strong>.`;
+
+            renderizarTabela();
+            renderizarGrafico(stats.mean);
+            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function renderizarTabela() {
+            const head = document.getElementById('tableHeader');
+            const body = document.getElementById('tableBody');
+            let numItens = currentMode === 'UMUX' ? 4 : 2;
+
+            let headHTML = `<th class="px-4 py-3 font-semibold">Participante</th>`;
+            for(let i=1; i<=numItens; i++) headHTML += `<th class="px-3 py-3 font-semibold text-center">Q${i}</th>`;
+            headHTML += `<th class="px-4 py-3 font-semibold text-right">Score Equiv. SUS</th><th class="px-4 py-3 font-semibold text-center">Nota</th>`;
+            head.innerHTML = headHTML;
+
+            body.innerHTML = '';
+            parsedParticipants.forEach(p => {
+                const i = scoringDatabase.find(item => p.score <= item.maxScore) || scoringDatabase[scoringDatabase.length - 1];
+                let rowHTML = `<tr class="hover:bg-slate-700/50"><td class="px-4 py-3 font-bold text-slate-300">${p.id}</td>`;
+                p.raw.forEach(v => { rowHTML += `<td class="px-3 py-3 text-center text-slate-400">${v}</td>`; });
+                rowHTML += `<td class="px-4 py-3 font-bold text-right text-blue-400">${p.score.toFixed(1)}</td><td class="px-4 py-3 text-center"><span class="text-xs font-bold px-2 py-0.5 rounded ${i.colorClass}">${i.grade}</span></td></tr>`;
+                body.innerHTML += rowHTML;
+            });
+        }
+
+        function renderizarGrafico(scoreMedio) {
+            const ctx = document.getElementById('metricChart').getContext('2d');
+            if (chartInstance) chartInstance.destroy();
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: parsedParticipants.map(p => p.id),
+                    datasets: [
+                        { label: 'Curva de Scores Projetados', data: parsedParticipants.map(p => p.score), borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', fill: true, tension: 0.2, pointRadius: 5 },
+                        { label: 'Média Projetada', data: Array(parsedParticipants.length).fill(scoreMedio), borderColor: '#34d399', borderWidth: 2, borderDash: [5, 5], pointRadius: 0 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { color: 'rgba(255,255,255,0.05)' } }, y: { min: 0, max: 100, grid: { color: 'rgba(255,255,255,0.05)' } } } }
+            });
+        }
+    </script>
+</body>
+</html>
