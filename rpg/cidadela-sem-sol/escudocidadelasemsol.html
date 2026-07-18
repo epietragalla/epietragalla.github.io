@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛡️ Escudo do Mestre Supremo - D&D 5e Fiel</title>
+    <style>
+        :root {
+            --bg-color: #1a1a15;
+            --panel-bg: #26261f;
+            --border-color: #8c7355;
+            --text-color: #e6dfd3;
+            --accent-color: #a63a2b;
+            --accent-hover: #cc4e3b;
+            --claimed-color: #4a5d4e;
+            --claimed-hover: #5c7361;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        header {
+            background-color: #0d0d0a;
+            border-bottom: 2px solid var(--border-color);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .hud-info {
+            display: flex;
+            gap: 20px;
+            font-weight: bold;
+        }
+
+        .hud-item {
+            background: #1f1f1a;
+            padding: 5px 15px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+        nav {
+            background-color: #141410;
+            display: flex;
+            justify-content: center;
+            border-bottom: 2px solid var(--border-color);
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            padding: 12px 18px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab-btn:hover {
+            background-color: var(--panel-bg);
+            color: var(--border-color);
+        }
+
+        .tab-btn.active {
+            background-color: var(--accent-color);
+            color: white;
+            border-bottom: 3px solid var(--border-color);
+        }
+
+        main {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            gap: 20px;
+        }
+
+        .panel {
+            display: none;
+            width: 100%;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .panel.active {
+            display: grid;
+        }
+
+        .card {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            height: fit-content;
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+            font-size: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+
+        th, td {
+            padding: 6px 8px;
+            text-align: left;
+            border-bottom: 1px solid #3d3d33;
+        }
+
+        th {
+            background-color: #1a1a15;
+            color: var(--border-color);
+        }
+
+        .encounter-box {
+            margin-bottom: 10px;
+            border: 1px solid #3d3d33;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .encounter-header {
+            background-color: #1f1f1a;
+            padding: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .encounter-content {
+            display: none;
+            padding: 10px;
+            background-color: #1c1c17;
+            font-size: 14px;
+        }
+
+        .xp-btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background-color 0.2s;
+        }
+
+        .xp-btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .xp-btn.claimed {
+            background-color: var(--claimed-color);
+        }
+
+        .xp-btn.claimed:hover {
+            background-color: var(--claimed-hover);
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #11110e;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: fit-content;
+        }
+
+        .dice-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .dice-btn {
+            background-color: #2b2b22;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .dice-btn:hover {
+            background-color: var(--accent-color);
+        }
+
+        #dice-log {
+            background-color: #0d0d0a;
+            border: 1px solid #3d3d33;
+            padding: 8px;
+            border-radius: 4px;
+            height: 120px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div style="font-size: 18px; font-weight: bold; color: var(--border-color);">📜 ESCUDO DO MESTRE SUPREMO</div>
+        <div class="hud-info">
+            <div class="hud-item">XP Coletivo: <span id="total-xp">0</span> / 300 (Nível 1)</div>
+            <div class="hud-item">Tempo da Campanha: <span id="dungeon-time">0</span> horas</div>
+            <button class="xp-btn" onclick="addTime()">+1 Hora de Exploração</button>
+            <button class="xp-btn" style="background-color: #555;" onclick="removeTime()">-1 Hora de Exploração</button>
+        </div>
+    </header>
+
+    <nav>
+        <button class="tab-btn active" onclick="openTab('orig-pag1')">📋 Original - Pág 1</button>
+        <button class="tab-btn" onclick="openTab('orig-pag2')">📋 Original - Pág 2</button>
+        <button class="tab-btn" onclick="openTab('orig-pag3')">📋 Original - Pág 3</button>
+        <button class="tab-btn" onclick="openTab('orig-pag4')">📋 Original - Pág 4</button>
+        <button class="tab-btn" onclick="openTab('encontros')">⚔️ Nível da Fortaleza (Cronológico)</button>
+        <button class="tab-btn" onclick="openTab('jogadores')">📝 Jogadores & Improvisos</button>
+    </nav>
+
+    <main>
+        
+        <!-- PÁGINA 1 ORIGINAL -->
+        <div id="orig-pag1" class="panel active">
+            <div class="card">
+                <h3>CONDITIONS (A - I)</h3>
+                <p><strong>Cego</strong><br>• Uma criatura cega não pode ver e falha automaticamente qualquer teste de habilidade que requer visão.<br>Jogadas de ataque contra a criatura ganham vantagem, jogadas de ataque da criatura ganham desvantagem.</p>
+                <p><strong>Enfeitiçado</strong><br>• Uma criatura encantada não pode atacar ou lançar magia em quem o enfeitiçou.<br>• O encantador tem a vantagem em um teste de habilidade de interagir socialmente com a criatura.</p>
+                <p><strong>Surdo</strong><br>• Uma criatura ensurdecida não pode ouvir e falha automaticamente qualquer teste de habilidade que requer audição.</p>
+                <p><strong>Amedrontado</strong><br>• Uma criatura amedrontada tem desvantagem em teste de habilidade e jogadas de ataque, enquanto a fonte do seu medo esta na sua linha de visão.<br>• A criatura não pode se aproximar da fonte do seu medo.</p>
+                <p><strong>Agarrado</strong><br>• Uma criatura agarrada tem deslocamento caído a zero e não se beneficia com bônus de movimento.<br>• A condição acaba se o predador estiver incapacitado<br>• A condição também termina se um efeito remove a criatura agarrada do alcance do agarrador, como quando uma criatura é arremessada para longe com magia.</p>
+                <p><strong>Incapacitado</strong><br>• Uma criatura incapacitada não pode realizar uma ação ou reação.</p>
+            </div>
+            <div class="card">
+                <h3>CONDITIONS (I - Z)</h3>
+                <p><strong>Invisível</strong><br>• Uma criatura invisível é impossível de ser vista sem ajuda de magia ou sentido especial. A localização da criatura pode be detectada pelo seu barulho ou pelas pegadas deixadas.<br>Jogadas de ataque contra a criatura ganham desvantagem e jogadas de ataque da criatura ganham vantagem.</p>
+                <p><strong>Paralisado</strong><br>• Uma criatura paralisada está incapacitada (veja a condição) e não pode se mover ou falar.<br>• A criatura falha automaticamente nos testes de Força e Destreza.<br>• Ataque contra a criatura ganham vantagem.<br>• Qualquer ataque que atinja a criatura é um acerto crítico se o atacante estiver dentro de 1,5 mestros da criatura.</p>
+                <p><strong>Petrificado</strong><br>• Uma criatura petrificada é transformada, juntamente com qualquer objeto não mágico que está vestindo ou carregando, em uma substância inanimada sólida (normalmente pedra). Seu peso aumenta por um fator de dez, e ela deixa de envelhecer.<br>• A criatura está incapacitada (veja a condição), não pode se mover ou falar, e não tem conhecimento de seus arredores. Jogadas de ataque contra a criatura ganham vantagem.<br>• A criatura falha automaticamente nos testes de Força e Destreza.<br>• A criatura tem resistência a todos os danos.<br>• A criatura é imune ao veneno e doença.</p>
+                <p><strong>Envenenado</strong><br>• Uma criatura envenenada tem desvantagem nas jogadas de ataque e testes de habilidade.</p>
+                <p><strong>Caído</strong><br>• A única opção de movimento de uma criatura caída é engatinhar, a menos que se levanta e, assim, termina a condição.<br>• A criatura ganha desvantagem nas jogadas de ataque.<br>• Uma jogada de ataque contra a criatura ganha vantagem se o invasor estiver dentro de 1 metro e meio da criatura. Caso contrário, a jogada de ataque ganha desvantagem.</p>
+                <p><strong>Impedido</strong><br>• Velocidade de uma criatura presa torna-se zero, e não pode se beneficiar de qualquer bônus de movimento.<br>Jogadas de ataque contra a criatura ganham vantagem, e jogadas de ataque da criatura ganham desvantagem.<br>• A criatura ganha desvantagem em testes de resistência de Destreza.</p>
+                <p><strong>Atordoado</strong><br>• Uma criatura atordoada está incapacitada (Veja a condição), não pode se mover, e pode falar hesitantemente.<br>• A criatura falha automaticamente em testes de resistência de força e destreza.<br>Jogadas de ataque contra a criatura ganham vantagem.</p>
+                <p><strong>Inconsciente</strong><br>Uma criatura inconsciente está incapacitada (veja a condição), não pode mover ou falar, e não tem conhecimento de seus arredores.<br>• A criatura derruba tudo o que está segurando e cai de bruços.<br>• A criatura falha automaticamente testes de resistência de Força e Destreza.<br>Jogadas de ataque contra a criatura ganham vantagem.<br>Any ataque que atinja a criatura é um acerto crítico se o atacante estiver dentro de 1 metro e meio da criatura.</p>
+            </div>
+            <div class="card">
+                <h3>Exaustão</h3>
+                <table>
+                    <tr><th>Level</th><th>Efeito</th></tr>
+                    <tr><td>1</td><td>Desvantagem em testes de habilidade</td></tr>
+                    <tr><td>2</td><td>Deslocamento reduzido pela metade</td></tr>
+                    <tr><td>3</td><td>Desvantagem nas jogadas de ataque e testes de resistência</td></tr>
+                    <tr><td>4</td><td>Máximo de pontos de vida reduzido pela metade</td></tr>
+                    <tr><td>5</td><td>Deslocamento reduzido a o</td></tr>
+                    <tr><td>6</td><td>Morte</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- PÁGINA 2 ORIGINAL -->
+        <div id="orig-pag2" class="panel">
+            <div class="card">
+                <h3>Cobertura</h3>
+                <table>
+                    <tr><th>Cobertura</th><th>Efeito</th></tr>
+                    <tr><td>Meio coberto</td><td>+2 Bônus na CA e testes de resistência de Destreza contra ataques e efeitos que se originam no lado oposto da cobertura.</td></tr>
+                    <tr><td>Três quartos de cobertura</td><td>+5 bônus na CA e testes de resistência de destreza contra ataques e efeitos que se originam no lado oposto da cobertura.</td></tr>
+                    <tr><td>Cobertura Total</td><td>Não pode ser alvo diretamente de um ataque ou feitiço</td></tr>
+                </table>
+                <br>
+                <h3>Áreas Obscurecidas</h3>
+                <table>
+                    <tr><th>Obscuridade</th><th>Efeito</th><th>Exemplos</th></tr>
+                    <tr><td>Levemente obscurecida</td><td>Criaturas têm desvantagem na teste de sabedoria (percepção) que dependem de vista.</td><td>Penumbra, nevoeiro irregular, folhagem moderada</td></tr>
+                    <tr><td>Pesadamente obscurecida</td><td>Visão é bloqueada; criaturas são efetivamente cegos.</td><td>Escuridão, o nevoeiro opaco, folhagem densa</td></tr>
+                </table>
+            </div>
+            <div class="card">
+                <h3>Luz</h3>
+                <table>
+                    <tr><th>Fonte</th><th>Luz brilhante</th><th>Luz difusa</th><th>Duração</th></tr>
+                    <tr><td>Vela</td><td>1,5 metros</td><td>+ 1,5 metros</td><td>1 hora</td></tr>
+                    <tr><td>Lampada</td><td>4,5 metros</td><td>+ 4,5 metros</td><td>6 horas</td></tr>
+                    <tr><td>Lanterna, na mosca</td><td>18 metros</td><td>+ 18 metros</td><td>6 horas</td></tr>
+                    <tr><td>Lanterna, encapuzado</td><td>9 metros</td><td>+ 9 metros</td><td>6 horas</td></tr>
+                    <tr><td>Capuz recolhido</td><td></td><td>+ 1,5 metros</td><td></td></tr>
+                    <tr><td>Tocha</td><td>6 metros</td><td>+ 6 metros</td><td>1 hora</td></tr>
+                </table>
+            </div>
+            <div class="card">
+                <h3>PERÍCIAS E HABILIDADES ASSOCIADAS</h3>
+                <table>
+                    <tr><th>Perícia</th><th>Habilidade</th><th>Skill</th><th>Habilidade</th></tr>
+                    <tr><td>Acrobacia</td><td>Destreza</td><td>Medicina</td><td>Sabedoria</td></tr>
+                    <tr><td>Adestrar animais</td><td>Sabedoria</td><td>Natureza</td><td>Inteligência</td></tr>
+                    <tr><td>Arcanismo</td><td>Inteligência</td><td>Percepção</td><td>Sabedoria</td></tr>
+                    <tr><td>Atletismo</td><td>Força</td><td>Atuação</td><td>Carisma</td></tr>
+                    <tr><td>Enganação</td><td>Carisma</td><td>Persuasão</td><td>Carisma</td></tr>
+                    <tr><td>História</td><td>Inteligência</td><td>Religião</td><td>Inteligência</td></tr>
+                    <tr><td>Intuição</td><td>Sabedoria</td><td>Golpe de mão</td><td>Destreza</td></tr>
+                    <tr><td>Intimidação</td><td>Carisma</td><td>Furtividade</td><td>Destreza</td></tr>
+                    <tr><td>Investigação</td><td>Inteligência</td><td>Sobrevivência</td><td>Sabedoria</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- PÁGINA 3 ORIGINAL -->
+        <div id="orig-pag3" class="panel">
+            <div class="card">
+                <h3>Classe de Dificuldade (CD)</h3>
+                <table>
+                    <tr><th>Dificuldade</th><th>CD</th></tr>
+                    <tr><td>Muito fácil</td><td>5</td></tr>
+                    <tr><td>Fácil</td><td>10</td></tr>
+                    <tr><td>Moderado</td><td>15</td></tr>
+                    <tr><td>Dificil</td><td>20</td></tr>
+                    <tr><td>Muito dificil</td><td>25</td></tr>
+                    <tr><td>Quase impossível</td><td>30</td></tr>
+                </table>
+                <br>
+                <h3>RITMO DE VIAGEM</h3>
+                <table>
+                    <tr><th>Ritmo</th><th>Minuto</th><th>Hora</th><th>Dia</th><th>Efeito</th></tr>
+                    <tr><td>Rápido</td><td>120 metros</td><td>6 Km</td><td>46 Km</td><td>Passivel de penalidade de -5 pontos em sabedoria (Percepção)</td></tr>
+                    <tr><td>Normal</td><td>90 metros</td><td>4,5 Km</td><td>36 Km</td><td>-</td></tr>
+                    <tr><td>Devagar</td><td>60 metros</td><td>3 Km</td><td>27 Km</td><td>Capaz de usar furtividade</td></tr>
+                </table>
+            </div>
+            <div class="card">
+                <h3>Distância de encontro</h3>
+                <table>
+                    <tr><th>Terreno</th><th>Distância de encontro</th></tr>
+                    <tr><td>Ártico, deserto, campos agrícolas ou pastagens.</td><td>6d6 x 3 metros</td></tr>
+                    <tr><td>Floresta, pântano ou bosque.</td><td>2d8 x 3 metros</td></tr>
+                    <tr><td>Colina ou terreno baldio</td><td>2d10 x 3 metros</td></tr>
+                    <tr><td>Selva</td><td>2d6 x 3 metros</td></tr>
+                    <tr><td>Montanha</td><td>4d10 x 3 metros</td></tr>
+                </table>
+                <br>
+                <h3>Distância audível</h3>
+                <p>Tentando ser quieto: 2d6 x 1,5 metros<br>Nível de ruído normal: 2d6 x 3 metros<br>Muito alto: 2d6 x 15 metros</p>
+                <h3>Visibilidade ao ar livre</h3>
+                <p>Dia claro sem obstruções: 3 Km<br>Chuvoso: 1,5 Km<br>Neblina: 30 a 90 metros</p>
+            </div>
+            <div class="card">
+                <h3>ALGO ACONTECE</h3>
+                <table>
+                    <tr><th>d20</th><th>Evento</th></tr>
+                    <tr><td>1</td><td>Uma porta se abre.</td></tr>
+                    <tr><td>2</td><td>Um incêndio começa.</td></tr>
+                    <tr><td>3</td><td>Um meteoro cai do céu.</td></tr>
+                    <tr><td>4</td><td>Um monstro aparece.</td></tr>
+                    <tr><td>5</td><td>Um som perfura o ar.</td></tr>
+                    <tr><td>6</td><td>Uma tempestade começa.</td></tr>
+                    <tr><td>7</td><td>Uma estranha estrela aparece no céu.</td></tr>
+                    <tr><td>8</td><td>Uma forte rajada de vento sopra.</td></tr>
+                    <tr><td>9</td><td>Um tremor sacode o chão.</td></tr>
+                    <tr><td>10</td><td>Alguém tem um déjà vu.</td></tr>
+                    <tr><td>11</td><td>Alguém fica furioso.</td></tr>
+                    <tr><td>12</td><td>Alguém tem um vislumbre do futuro.</td></tr>
+                    <tr><td>13</td><td>Alguém tem um pressentimento.</td></tr>
+                    <tr><td>14</td><td>Alguém tem que ir ao banheiro.</td></tr>
+                    <tr><td>15</td><td>Algo derrama ou cai no chão.</td></tr>
+                    <tr><td>16</td><td>Algo não é o que parece ser.</td></tr>
+                    <tr><td>17</td><td>A luz se apaga.</td></tr>
+                    <tr><td>18</td><td>O sol se põe.</td></tr>
+                    <tr><td>19</td><td>Há um mau cheiro no ar.</td></tr>
+                    <tr><td>20</td><td>Uma magia inexplicável ocorre.</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- PÁGINA 4 ORIGINAL -->
+        <div id="orig-pag4" class="panel">
+            <div class="card">
+                <h3>ACHADOS RAPIDOS</h3>
+                <table>
+                    <tr><th>d12</th><th>Achado</th></tr>
+                    <tr><td>1</td><td>Pintura</td></tr>
+                    <tr><td>2</td><td>Corpo</td></tr>
+                    <tr><td>3</td><td>Comida e bebida</td></tr>
+                    <tr><td>4</td><td>Joia</td></tr>
+                    <tr><td>5</td><td>Chave</td></tr>
+                    <tr><td>6</td><td>Carta</td></tr>
+                    <tr><td>7</td><td>Ervas mágicas</td></tr>
+                    <tr><td>8</td><td>Mapa</td></tr>
+                    <tr><td>9</td><td>Parte de monstro</td></tr>
+                    <tr><td>10</td><td>Mensagem secreta</td></tr>
+                    <tr><td>11</td><td>Sinete ou insignia</td></tr>
+                    <tr><td>12</td><td>Livro grosso</td></tr>
+                </table>
+                <br>
+                <h3>DANO POR NÍVEL E GRAVIDADE</h3>
+                <table>
+                    <tr><th>Level</th><th>Revés</th><th>Perigoso</th><th>Mortal</th></tr>
+                    <tr><td>1-4</td><td>1d10</td><td>2d10</td><td>4d10</td></tr>
+                    <tr><td>5-10</td><td>2d10</td><td>4d10</td><td>10d10</td></tr>
+                    <tr><td>11-16</td><td>4d10</td><td>10d10</td><td>18d10</td></tr>
+                    <tr><td>17-20</td><td>10d10</td><td>18d10</td><td>24d10</td></tr>
+                </table>
+                <p style="font-size: 13px; margin-top: 5px;">A partir de um altura X 20</p>
+            </div>
+            <div class="card">
+                <h3>PdM Característica</h3>
+                <p><strong>d20 Características:</strong> 1: Distraido, 2: Arrogante, 3: Grosseiro, 4: Mastiga algo, 5: Desajeitado, 6: Curioso, 7: Estúpido (Pouco inteligente), 8: Inquieto e impaciente, 9: Usa palavras erradas com frequência, 10: Amigável, 11: Nervoso, 12: Sempre prevê desgraça, 13: Marcado com cicatrizes, 14: Usa palavras de calúnia, lingua presa, ou gagueja, 15: Fala alto ou sussurrando, 16: Vesgo, 17: Olhar distante, 18: Desconfiado, 19: Faz juramentos coloridos, 20: Usa discurso florido ou palavras longa.</p>
+                <h3>PdM IDEAI</h3>
+                <p><strong>d20 Ideais (Alinhamento):</strong> 1: Pretenção (qualquer), 2: Caridade (bom), 3: Comunidade (leal), 4: Creatividade (caótico), 5: Descoberta (qualquer), 6: Justiça (leal), 7: Liberdade (caótico), 8: Gloria (qualquer), 9: Bem maior (bom), 10: Ganancia (mau), 11: Honra (leal), 12: Independência (caótico), 13: Conhecimento (neutro), 14: Vida (bom), 15: Viva e deixe viver (neutro), 16: Força (mau), 17: Nação (qualquer), 18: Pessoas (neutro), 19: Poder (mau), 20: Redenção (qualquer).</p>
+                <h3>PdM Defeitos</h3>
+                <p><strong>d12 FALHA:</strong> 1: Amor proibido ou susceptibilidade romântica, 2: Decadência, 3: Arrogância, 4: Inveja de bens de outra pessoa, 5: Ganância avassaladora, 6: Propenso a raiva, 7: Inimigo poderoso, 8: Fobia especifica, 9: História vergonhosa ou escandalosa, 10: Crime secreto ou delito, 11: Porte de conhecimento proibido, 12: Bravura imprudente.</p>
+            </div>
+            <div class="card">
+                <h3>Gerador de Nomes</h3>
+                <table>
+                    <tr><th>d20</th><th>Começo</th><th>Meio</th><th>Fim</th></tr>
+                    <tr><td>1</td><td>-</td><td>bar</td><td>-</td></tr>
+                    <tr><td>2</td><td>-</td><td>ched</td><td>-a</td></tr>
+                    <tr><td>3</td><td>-</td><td>dell</td><td>-ac</td></tr>
+                    <tr><td>4</td><td>-</td><td>far</td><td>-ai</td></tr>
+                    <tr><td>5</td><td>A-</td><td>gran</td><td>-al</td></tr>
+                    <tr><td>6</td><td>Be-</td><td>hal</td><td>-am</td></tr>
+                    <tr><td>7</td><td>De-</td><td>jen</td><td>-an</td></tr>
+                    <tr><td>8</td><td>El-</td><td>kel</td><td>-ar</td></tr>
+                    <tr><td>9</td><td>Fa-</td><td>lim</td><td>-ea</td></tr>
+                    <tr><td>10</td><td>Jo-</td><td>mor</td><td>-el</td></tr>
+                    <tr><td>11</td><td>Ki-</td><td>net</td><td>-er</td></tr>
+                    <tr><td>12</td><td>La-</td><td>penn</td><td>-ess</td></tr>
+                    <tr><td>13</td><td>Ma-</td><td>quil</td><td>-ett</td></tr>
+                    <tr><td>14</td><td>Na-</td><td>rond</td><td>-ic</td></tr>
+                    <tr><td>15</td><td>O-</td><td>sark</td><td>-id</td></tr>
+                    <tr><td>16</td><td>Pa-</td><td>shen</td><td>-</td></tr>
+                    <tr><td>17</td><td>Re-</td><td>tur</td><td>-in</td></tr>
+                    <tr><td>18</td><td>Si-</td><td>vash</td><td>-is</td></tr>
+                    <tr><td>19</td><td>Ta-</td><td>yor</td><td>-or</td></tr>
+                    <tr><td>20</td><td>Va-</td><td>zen</td><td>-us</td></tr>
+                </table>
+                <br>
+                <h3>NPC Vínculo</h3>
+                <p><strong>d10 Vínculos:</strong> 1: Objetivo pessoal ou realização, 2: Membros da familia, 3: Companheiros o compatriotas, 4: Benfeitor, patrono, ou empregador, 5: Interesse romantico, 6: Lugar especial, 7: Lembrança, 8: Posse de algo valioso, 9: Vingança, 10: Role duas vezes, ignorando mais rolos de 10.</p>
+            </div>
+        </div>
+
+        <!-- ABA 5: ENCONTROS CRONOLÓGICOS DO NÍVEL DA FORTALEZA -->
+        <div id="encontros" class="panel">
+            <div class="card" style="grid-column: span 3;">
+                <h3>Mapeamento de Encontros: Nível da Fortaleza</h3>
+                <p style="font-size: 13px; color: #aaa;">Clique na barra para ver os detalhes da sala. Use o botão para adicionar ou remover o XP do montante diário.</p>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>🌍 Encontro Opcional: Estrada para a Cidadela</span>
+                        <button class="xp-btn" onclick="toggleXp(100, this, event)">Adicionar 100 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Inços-Praga Ramo (4):</strong> 25 XP cada.<br>
+                        <strong>Notas:</strong> Atacam à noite de forma furtiva antes do grupo chegar à ravina.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 1: O Mirante</span>
+                        <button class="xp-btn" onclick="toggleXp(75, this, event)">Adicionar 75 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Ratos Gigantes (3):</strong> 25 XP cada.<br>
+                        <strong>Notas:</strong> Escondem-se nos escombros. Atacam se os aventureiros não descerem em silêncio.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 3: Pátio em Ruínas (Fosso Oculto)</span>
+                        <button class="xp-btn" onclick="toggleXp(25, this, event)">Adicionar 25 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Rato Gigante (1):</strong> 25 XP.<br>
+                        <strong>Notas:</strong> Está preso dentro do fosso oculto se alimentando de um goblin morto recente.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 5: Pequena Câmara Secreta</span>
+                        <button class="xp-btn" onclick="toggleXp(150, this, event)">Adicionar 150 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Esqueletos Arqueiros (3):</strong> 50 XP cada.<br>
+                        <strong>Notas:</strong> Ativam-se com luzes vermelhas nos olhos assim que o grupo abre a porta secreta da Área 4.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 6: Passagem Antiga</span>
+                        <button class="xp-btn" onclick="toggleXp(25, this, event)">Adicionar 25 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Rato Gigante (1):</strong> 25 XP.<br>
+                        <strong>Notas:</strong> Esconde-se nos escombros ao sul. Ataca quem chegar a 1,5m ou quem for deixado sozinho.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 10: Guarda de Honra</span>
+                        <button class="xp-btn" onclick="toggleXp(200, this, event)">Adicionar 200 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Quasit (Jot):</strong> 200 XP.<br>
+                        <strong>Notas:</strong> Fica invisível e espera do outro lado do arco. Não luta até a morte, foge para incomodar depois.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 12: Tumba do Sacerdote Dragão Fracassado</span>
+                        <button class="xp-btn" onclick="toggleXp(450, this, event)">Adicionar 450 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Troll Enfraquecido:</strong> 450 XP.<br>
+                        <strong>Notas:</strong> Antigo elfo corrompido em troll. Começa com 30 PV, regenera 5 PV/turno e não tem ataques múltiplos.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 14: Estoque de Água Enfeitiçada</span>
+                        <button class="xp-btn" onclick="toggleXp(200, this, event)">Adicionar 200 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Mefit de Gelo (1) e Mefit de Vapor (1):</strong> 100 XP cada.<br>
+                        <strong>Notas:</strong> Estão trancados dentro de um barril de ferro. Atacam quem romper ou perturbar o barril.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 16: Sala da Guarda Kobold</span>
+                        <button class="xp-btn" onclick="toggleXp(75, this, event)">Adicionar 75 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Kobolds Combatentes (3):</strong> 25 XP cada.<br>
+                        <strong>Notas:</strong> Porta com armadilha de jarro de lixo. Podem ser amigáveis se usarem a senha de Meepo.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 18: Prisão Kobold (Goblins Cativos)</span>
+                        <button class="xp-btn" onclick="toggleXp(200, this, event)">Adicionar 200 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Goblins Prisioneiros (4):</strong> 50 XP cada.<br>
+                        <strong>Notas:</strong> Se libertados, quebram o acordo com os Kobolds. Eles traem o grupo na primeira oportunidade.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 19: Salão dos Dragões</span>
+                        <button class="xp-btn" onclick="toggleXp(75, this, event)">Adicionar 75 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Kobolds de Elite (3):</strong> 25 XP cada.<br>
+                        <strong>Notas:</strong> Guardas de patrulha com 7 PV cada. Se houver combate, atrai reforços das salas vizinhas e Yusdrayl.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 20: Colônia Kobold</span>
+                        <button class="xp-btn" onclick="toggleXp(250, this, event)">Adicionar 250 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Kobolds Combatentes (3) e Plebeus (7):</strong> 25 XP cada.<br>
+                        <strong>Notas:</strong> Sala com 24 kobolds, mas a maioria é de não-combatentes que fogem e não valem XP.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 21: Trono do Dragão (Líder)</span>
+                        <button class="xp-btn" onclick="toggleXp(250, this, event)">Adicionar 250 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Yusdrayl (Líder) e Guardas de Elite (2):</strong> 200 XP líder + 25 XP cada guarda.<br>
+                        <strong>Notas:</strong> Oferece aliança e prêmios do altar arcanos se aceitarem resgatar o dragão filhote Calcryx.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 23: Acesso à Umbreterna</span>
+                        <button class="xp-btn" onclick="toggleXp(75, this, event)">Adicionar 75 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Kobolds Caçadores/Sentinelas (3):</strong> 25 XP cada.<br>
+                        <strong>Notas:</strong> Vigiam a passagem para o subterrâneo selvagem. Reagem igual aos guardas normais.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 27: Santuário das Tumbas</span>
+                        <button class="xp-btn" onclick="toggleXp(250, this, event)">Adicionar 250 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Esqueletos Guardas (5):</strong> 50 XP cada.<br>
+                        <strong>Notas:</strong> Emergem juntos dos sarcófagos se os aventureiros tocarem ou profanarem o altar de obsidiana.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 28: Celas Infestadas</span>
+                        <button class="xp-btn" onclick="toggleXp(75, this, event)">Adicionar 75 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Ratos Gigantes (3):</strong> 25 XP cada.<br>
+                        <strong>Notas:</strong> Um em cada cela ocupada do corredor. Luz ou barulho atrai os três simultaneamente.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 30: O Ninho da Mamãe Rato</span>
+                        <button class="xp-btn" onclick="toggleXp(130, this, event)">Adicionar 130 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Guthash, A Inchada (1) e Ratos Gigantes (3):</strong> 55 XP líder + 25 XP cada rato.<br>
+                        <strong>Notas:</strong> Guthash é uma rata colossal doente (16 PV). No ninho está o corpo do guardião Karakas e seu anel Hucrele.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 32: Portão Goblin (Guarda das Ameias)</span>
+                        <button class="xp-btn" onclick="toggleXp(100, this, event)">Adicionar 100 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Goblins Defensores (2):</strong> 50 XP cada.<br>
+                        <strong>Notas:</strong> Atiram de trás de uma mureta de cobertura. Se um fugir, alerta a Área 33. O corredor tem estrepes no chão.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 33: Estande de Tiro Goblin</span>
+                        <button class="xp-btn" onclick="toggleXp(150, this, event)">Adicionar 150 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Goblins Atiradores (3):</strong> 50 XP cada.<br>
+                        <strong>Notas:</strong> Praticam tiro em bonecos de estopa. Um deles carrega a chave para a prisão da Área 34.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 34: Prisão Goblin (Resgate de Erky Lenhas)</span>
+                        <button class="xp-btn" onclick="toggleXp(100, this, event)">Adicionar 100 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Erky Lenhas (Gnomo Acólito):</strong> 100 XP (concedido como recompensa por salvá-lo).<br>
+                        <strong>Notas:</strong> Erky pode se juntar ao grupo. Ele revela informações cruciais sobre os irmãos Hucrele e a Árvore Gulthias.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 36: Quartel dos Bandidos Goblins</span>
+                        <button class="xp-btn" onclick="toggleXp(150, this, event)">Adicionar 150 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Goblins Bandidos (3):</strong> 50 XP cada.<br>
+                        <strong>Notas:</strong> Há três salas idênticas com esta configuração no norte da fortaleza. Tentam capturar os PJs vivos para pedir resgate.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 37: Sala de Troféus (O Covil de Calcryx)</span>
+                        <button class="xp-btn" onclick="toggleXp(200, this, event)">Adicionar 200 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Calcryx (Filhote de Dragão Branco):</strong> 200 XP.<br>
+                        <strong>Notas:</strong> Extremamente hostil. Libertou-se das correntes dos goblins e destruiu a sala. Se Meepo estiver junto, ela foca nele primeiro.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 40: Vilarejo Goblin</span>
+                        <button class="xp-btn" onclick="toggleXp(500, this, event)">Adicionar 500 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Goblins Combatentes (4) e Plebeus (10):</strong> 50 XP cada combatente + 30 XP cada plebeu estruturado.<br>
+                        <strong>Notas:</strong> Antiga catedral entulhada de lixo. Há mais 20 não-combatentes que fogem em pânico e não dão XP.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>👑 Área 41: O Salão do Chefe Durnn</span>
+                        <button class="xp-btn" onclick="toggleXp(725, this, event)">Adicionar 725 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Chefe Durnn, Hobgoblins (3), Xamã Grenl, Inço-Praga:</strong> Total 725 XP.<br>
+                        <strong>Notas:</strong> Durnn veste a cota de talas Hucrele e o anel de Talgen. Grenl odeia Durnn; se ele morrer, ela aceita negociar a paz.
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ABA 6: STATUS DOS JOGADORES & GATILHOS -->
+        <div id="jogadores" class="panel">
+            <div class="card">
+                <h3>Ficha Passiva dos Jogadores</h3>
+                <table>
+                    <tr><th>Personagem</th><th>CA</th><th>Percepção P.</th><th>Notas / Peculiaridade</th></tr>
+                    <tr><td>🌪️ Alvo</td><td>13</td><td>13</td><td>Primordial. Ouve os sussurros do vento.</td></tr>
+                    <tr><td>🪓 Vento Ligeiro</td><td>14</td><td>13</td><td>Alergia Crônica à Poeira. Rastreamento.</td></tr>
+                    <tr><td>🍲 Bao de Xangô</td><td>15</td><td>12</td><td>Tentará dialogar com os monstros.</td></tr>
+                    <tr><td>⚙️ Orrin</td><td>14</td><td>10</td><td>Artífice. Carrega o Projeto Sentinela.</td></tr>
+                </table>
+            </div>
+            <div class="card">
+                <h3>Gatilhos Narrativos de Background</h3>
+                <p><strong>Alvo Quiriquiri:</strong> A semente rosa em seu bolso reage ao Nível do Bosque. Ele sente quando o solo está corrompido.</p>
+                <p><strong>Vento Ligeiro:</strong> Em salas com poeira densa, Salvaguarda de CON CD 12. Falha = espirra alto e zera furtividade. Fúria imediata se ver traços dracônicos/indefesos sob ataque.</p>
+                <p><strong>Bao de Xangô:</strong> Forçar testes de persuasão bizarros com os líderes. Pimenta no ensopado do Descanso Curto (+1d4 PV bônus se passarem em CON CD 10).</p>
+                <p><strong>Orrin Faíscaponta:</strong> Espalhar peças mecânicas para o robô na Área 14 (barril) e Área 37 (estojo anão de Khundrukar).</p>
+            </div>
+            <div class="card">
+                <h3>Gerador de Reação de PdMs</h3>
+                <p>Se tentarem conversar com os Goblins da Área 40 ou Goblins Plebeus:</p>
+                <p><strong>CD Indiferente:</strong> CD 10 ajuda sem risco, CD 20 aceita risco pequeno.</p>
+                <p><strong>CD Hostil:</strong> CD 15 não faz mal, CD 20 faz o pedido contanto que não haja risco nenhum.</p>
+                <p><strong>Traço Rápido (1d6):</strong> 1: Distraído, 2: Arrogante, 3: Grosseiro, 4: Mastiga algo, 5: Desajeitado, 6: Curioso.</p>
+            </div>
+        </div>
+
+        <!-- BARRA LATERAL (ROLADOR DE DADOS GERAL) -->
+        <div class="sidebar">
+            <h3 style="margin: 0; color: var(--border-color); text-align: center;">🎲 Rolador de Dados</h3>
+            <div class="dice-grid">
+                <button class="dice-btn" onclick="rollDice(20)">d20</button>
+                <button class="dice-btn" onclick="rollDice(6)">d6</button>
+                <button class="dice-btn" onclick="rollDice(8)">d8</button>
+                <button class="dice-btn" onclick="rollDice(10)">d10</button>
+                <button class="dice-btn" onclick="rollDice(12)">d12</button>
+                <button class="dice-btn" onclick="rollDice(100)">d100</button>
+            </div>
+            <div id="dice-log">Logs de rolagem...</div>
+            <button class="xp-btn" style="width: 100%; padding: 8px;" onclick="clearLog()">Limpar Histórico</button>
+        </div>
+    </main>
+
+    <!-- Inclui a biblioteca do Firebase via CDN (Link direto do GitHub Pages) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        // CONFIGURAÇÃO DO SEU FIREBASE
+        // COLE AQUI A URL QUE VOCÊ COPIOU NO PASSO 1 DENTRO DAS ASPAS
+        const firebaseConfig = {
+            databaseURL: "https://escudodomestre-ba3ae-default-rtdb.firebaseio.com" 
+        };
+
+        // Inicializa o Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Variáveis globais de controle local
+        let totalXp = 0;
+        let hours = 0;
+
+        // ESCUTA A NUVEM EM TEMPO REAL
+        // Toda vez que QUALQUER aparelho mudar os dados no GitHub, este bloco roda em todas as telas abertas
+        db.ref('campanha/status').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                totalXp = data.xp || 0;
+                hours = data.tempo || 0;
+                
+                // Atualiza o visual das telas
+                document.getElementById('total-xp').innerText = totalXp;
+                document.getElementById('dungeon-time').innerText = hours;
+            }
+        });
+
+        // Escuta em tempo real quais monstros foram derrotados
+        db.ref('campanha/monstros').on('value', (snapshot) => {
+            const monstrosDerrotados = snapshot.val() || {};
+            const boxes = document.querySelectorAll('.encounter-box');
+            
+            boxes.forEach(box => {
+                const title = box.querySelector('span').innerText;
+                const button = box.querySelector('.xp-btn');
+                const amount = button.innerText.replace(/[^0-9]/g, '');
+                
+                if (monstrosDerrotados[title] === true) {
+                    button.classList.add('claimed');
+                    button.innerText = `Remover ${amount} XP`;
+                } else {
+                    button.classList.remove('claimed');
+                    button.innerText = `Adicionar ${amount} XP`;
+                }
+            });
+        });
+
+        function openTab(tabId) {
+            const panels = document.querySelectorAll('.panel');
+            const buttons = document.querySelectorAll('.tab-btn');
+            
+            panels.forEach(p => p.classList.remove('active'));
+            buttons.forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        function toggleEncounter(header) {
+            const content = header.nextElementSibling;
+            if (content.style.display === "block") {
+                content.style.display = "none";
+            } else {
+                content.style.display = "block";
+            }
+        }
+
+        // Sistema de XP sincronizado na Nuvem
+        function toggleXp(amount, button, event) {
+            event.stopPropagation(); 
+            const encounterId = button.closest('.encounter-box').querySelector('span').innerText;
+            const isClaimed = button.classList.contains('claimed');
+            
+            let novoXp = totalXp;
+            
+            if (isClaimed) {
+                novoXp -= amount;
+                if (novoXp < 0) novoXp = 0;
+                // Remove a marcação do monstro na nuvem
+                db.ref('campanha/monstros/' + encounterId).remove();
+            } else {
+                novoXp += amount;
+                // Salva a marcação do monstro na nuvem
+                db.ref('campanha/monstros/' + encounterId).set(true);
+                
+                // Alertas de evolução rápidos locais
+                if (novoXp >= 900 && totalXp < 900) alert("⚔️ MARCO ALCANÇADO! O grupo acumulou XP suficiente para o NÍVEL 3!");
+                if (novoXp >= 300 && totalXp < 300) alert("✨ MARCO ALCANÇADO! O grupo acumulou XP suficiente para o NÍVEL 2!");
+            }
+            
+            // Envia o novo XP para a nuvem sincronizar todos os aparelhos
+            db.ref('campanha/status/xp').set(novoXp);
+        }
+
+        // Controle de Tempo sincronizado na Nuvem
+        function addTime() {
+            let novoTempo = hours + 1;
+            db.ref('campanha/status/tempo').set(novoTempo);
+            
+            if (novoTempo % 12 === 0) {
+                let check = Math.floor(Math.random() * 20) + 1;
+                const log = document.getElementById('dice-log');
+                if (check <= 6) {
+                    log.innerHTML = `<span style='color: #ff4d4d;'>⚠️ [FALHA 12H] Rolo: ${check} - UM ENCONTRO ALEATÓRIO OCORREU!</span><br>` + log.innerHTML;
+                    alert("⚠️ Teste de Encontro Aleatório disparou um monstro patrulheiro na masmorra!");
+                } else {
+                    log.innerHTML = `<span style='color: #4aff4a;'>⏳ [SUCESSO 12H] Rolo: ${check} - Corredores permanecem quietos.</span><br>` + log.innerHTML;
+                }
+            }
+        }
+
+        function removeTime() {
+            if (hours > 0) {
+                db.ref('campanha/status/tempo').set(hours - 1);
+            }
+        }
+
+        function rollDice(faces) {
+            const roll = Math.floor(Math.random() * faces) + 1;
+            const log = document.getElementById('dice-log');
+            log.innerHTML = `🎲 d${faces}: <strong>${roll}</strong><br>` + log.innerHTML;
+        }
+
+        function clearLog() {
+            document.getElementById('dice-log').innerHTML = "Logs limpos...";
+        }
+    </script>
+</body>
+</html>
