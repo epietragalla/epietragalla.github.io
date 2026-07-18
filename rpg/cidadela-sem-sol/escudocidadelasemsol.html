@@ -229,7 +229,9 @@
     <header>
         <div style="font-size: 18px; font-weight: bold; color: var(--border-color);">📜 ESCUDO DO MESTRE SUPREMO</div>
         <div class="hud-info">
-            <div class="hud-item">XP Coletivo: <span id="total-xp">0</span> / 300 (Nível 1)</div>
+            <div class="hud-item"><span id="level-display">Nível 1</span></div>
+            <div class="hud-item">XP Individual: <span id="individual-xp">0</span> / <span id="next-target-ind">300</span></div>
+            <div class="hud-item">XP Coletivo: <span id="total-xp">0</span> / <span id="next-target-col">1200</span></div>
             <div class="hud-item">Tempo da Campanha: <span id="dungeon-time">0</span> horas</div>
             <button class="xp-btn" onclick="addTime()">+1 Hora de Exploração</button>
             <button class="xp-btn" style="background-color: #555;" onclick="removeTime()">-1 Hora de Exploração</button>
@@ -735,6 +737,15 @@
                     </div>
                 </div>
 
+                <div class="card" style="margin-top: 20px; background-color: #1f1f1a; border-color: #a63a2b;">
+                    <h4 style="margin-top: 0; color: #cc4e3b; font-size: 15px; display: flex; align-items: center; gap: 5px;">
+                        💡 Dica de Ouro: Gerenciamento de Ritmo e Nível por Áreas
+                    </h4>
+                    <p style="font-size: 13px; margin: 0; line-height: 1.6; color: #e6dfd3;">
+                        Use os encontros da masmorra para ditar os momentos de descanso e evolução com precisão. Force a subida para o <strong>Nível 2</strong> assim que eles resolverem a situação diplomática ou de combate com a Rainha Kobold Yusdrayl na <strong>Área 21 (O Trono do Dragão)</strong>, ou alternativamente, logo após lidarem com o resgate ou confronto com o dragão filhote Calcryx na <strong>Área 37 (Sala de Troféus)</strong>. Da mesma forma, force a transição para o <strong>Nível 3</strong> no momento exato em que eles limparem o salão do líder goblin na <strong>Área 41 (O Salão do Chefe Durnn)</strong> e tomarem a decisão de descer pelas vinhas através do poço da <strong>Área 42 (O Poço do Bosque)</strong> em direção ao nível inferior da masmorra.
+                    </p>
+                </div>
+
             </div>
         </div>
 
@@ -803,15 +814,51 @@
 
         // ESCUTA A NUVEM EM TEMPO REAL
         // Toda vez que QUALQUER aparelho mudar os dados no GitHub, este bloco roda em todas as telas abertas
+        const xpProgression = [
+            { level: 1, indTarget: 300, colTarget: 1200 },
+            { level: 2, indTarget: 900, colTarget: 3600 },
+            { level: 3, indTarget: 2700, colTarget: 10800 },
+            { level: 4, indTarget: 6500, colTarget: 26000 },
+            { level: 5, indTarget: 0, colTarget: 0 } // Patamar Máximo da masmorra
+        ];
+
+        // ESCUTA A NUVEM EM TEMPO REAL
         db.ref('campanha/status').on('value', (snapshot) => {
             const data = snapshot.val();
             if (data) {
                 totalXp = data.xp || 0;
                 hours = data.tempo || 0;
                 
-                // Atualiza o visual das telas
+                // Calcula o XP individual dividido por 4 jogadores
+                let indXp = Math.floor(totalXp / 4);
+                
+                // Determina o nível atual e os alvos com base no XP acumulado
+                let currentLevel = 1;
+                let indTarget = 300;
+                let colTarget = 1200;
+
+                for (let i = 0; i < xpProgression.length; i++) {
+                    if (indXp >= xpProgression[i].indTarget && xpProgression[i].indTarget !== 0) {
+                        currentLevel = xpProgression[i].level + 1;
+                        indTarget = xpProgression[i+1] ? xpProgression[i+1].indTarget : xpProgression[i].indTarget;
+                        colTarget = xpProgression[i+1] ? xpProgression[i+1].colTarget : xpProgression[i].colTarget;
+                    }
+                }
+
+                // Atualiza o visual dinamicamente de acordo com o progresso
                 document.getElementById('total-xp').innerText = totalXp;
+                document.getElementById('individual-xp').innerText = indXp;
                 document.getElementById('dungeon-time').innerText = hours;
+                
+                if (currentLevel <= 4) {
+                    document.getElementById('level-display').innerText = `Nível ${currentLevel}`;
+                    document.getElementById('next-target-ind').innerText = indTarget;
+                    document.getElementById('next-target-col').innerText = colTarget;
+                } else {
+                    document.getElementById('level-display').innerText = `Nível 5 (Máximo)`;
+                    document.getElementById('next-target-ind').innerText = "—";
+                    document.getElementById('next-target-col').innerText = "—";
+                }
             }
         });
 
@@ -855,30 +902,32 @@
             }
         }
 
-        // Sistema de XP sincronizado na Nuvem
+        // Sistema de XP sincronizado na Nuvem com Alertas de Evolução
         function toggleXp(amount, button, event) {
             event.stopPropagation(); 
             const encounterId = button.closest('.encounter-box').querySelector('span').innerText;
             const isClaimed = button.classList.contains('claimed');
             
             let novoXp = totalXp;
+            let xpAntigoInd = Math.floor(totalXp / 4);
             
             if (isClaimed) {
                 novoXp -= amount;
                 if (novoXp < 0) novoXp = 0;
-                // Remove a marcação do monstro na nuvem
                 db.ref('campanha/monstros/' + encounterId).remove();
             } else {
                 novoXp += amount;
-                // Salva a marcação do monstro na nuvem
                 db.ref('campanha/monstros/' + encounterId).set(true);
                 
-                // Alertas de evolução rápidos locais
-                if (novoXp >= 900 && totalXp < 900) alert("⚔️ MARCO ALCANÇADO! O grupo acumulou XP suficiente para o NÍVEL 3!");
-                if (novoXp >= 300 && totalXp < 300) alert("✨ MARCO ALCANÇADO! O grupo acumulou XP suficiente para o NÍVEL 2!");
+                let xpNovoInd = Math.floor(novoXp / 4);
+                
+                // Dispara alertas assim que o limiar individual de corte é cruzado para cima
+                if (xpNovoInd >= 6500 && xpAntigoInd < 6500) alert("⚔️ MARCO ALCANÇADO! O grupo acumulou XP suficiente para o NÍVEL 5!");
+                else if (xpNovoInd >= 2700 && xpAntigoInd < 2700) alert("⚔️ MARCO ALCANÇADO! O grupo acumulou XP suficiente para o NÍVEL 4!");
+                else if (xpNovoInd >= 900 && xpAntigoInd < 900) alert("⚔️ MARCO ALCANÇADO! O grupo acumulou XP suficiente para o NÍVEL 3!");
+                else if (xpNovoInd >= 300 && xpAntigoInd < 300) alert("✨ MARCO ALCANÇADO! O grupo acumulou XP suficiente para o NÍVEL 2!");
             }
             
-            // Envia o novo XP para a nuvem sincronizar todos os aparelhos
             db.ref('campanha/status/xp').set(novoXp);
         }
 
