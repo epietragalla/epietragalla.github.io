@@ -1,0 +1,1892 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛡️ Escudo do Mestre Supremo - D&D 5e Fiel</title>
+    <style>
+        :root {
+            --bg-color: #1a1a15;
+            --panel-bg: #26261f;
+            --border-color: #8c7355;
+            --text-color: #e6dfd3;
+            --accent-color: #a63a2b;
+            --accent-hover: #cc4e3b;
+            --claimed-color: #4a5d4e;
+            --claimed-hover: #5c7361;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        header {
+            background-color: #0d0d0a;
+            border-bottom: 2px solid var(--border-color);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .hud-info {
+            display: flex;
+            gap: 20px;
+            font-weight: bold;
+        }
+
+        .hud-item {
+            background: #1f1f1a;
+            padding: 5px 15px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+        nav {
+            background-color: #141410;
+            display: flex;
+            justify-content: center;
+            border-bottom: 2px solid var(--border-color);
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            padding: 12px 18px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab-btn:hover {
+            background-color: var(--panel-bg);
+            color: var(--border-color);
+        }
+
+        .tab-btn.active {
+            background-color: var(--accent-color);
+            color: white;
+            border-bottom: 3px solid var(--border-color);
+        }
+
+        main {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            gap: 20px;
+        }
+
+        .panel {
+            display: none;
+            width: 100%;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .panel.active {
+            display: grid;
+        }
+
+        .card {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            height: fit-content;
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+            font-size: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+
+        th, td {
+            padding: 6px 8px;
+            text-align: left;
+            border-bottom: 1px solid #3d3d33;
+        }
+
+        th {
+            background-color: #1a1a15;
+            color: var(--border-color);
+        }
+
+        .encounter-box {
+            margin-bottom: 10px;
+            border: 1px solid #3d3d33;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .encounter-header {
+            background-color: #1f1f1a;
+            padding: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .encounter-content {
+            display: none;
+            padding: 10px;
+            background-color: #1c1c17;
+            font-size: 14px;
+        }
+
+        .xp-btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background-color 0.2s;
+        }
+
+        .xp-btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .xp-btn.claimed {
+            background-color: var(--claimed-color);
+        }
+
+        .xp-btn.claimed:hover {
+            background-color: var(--claimed-hover);
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #11110e;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: fit-content;
+        }
+
+        .dice-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .dice-btn {
+            background-color: #2b2b22;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .dice-btn:hover {
+            background-color: var(--accent-color);
+        }
+
+        #dice-log {
+            background-color: #0d0d0a;
+            border: 1px solid #3d3d33;
+            padding: 8px;
+            border-radius: 4px;
+            height: 120px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 13px;
+        }
+        /* --- ESTILOS EXCLUSIVOS PARA OS CARDS DE MONSTROS --- */
+        .monsters-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            width: 100%;
+            grid-column: span 3;
+        }
+        .monster-card {
+            width: 10cm;
+            height: 14cm;
+            background-color: #fdfaf4;
+            color: #1a1105;
+            border: 4px solid #5c3a21;
+            border-radius: 8px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+            page-break-inside: avoid;
+        }
+        .monster-card .header {
+            border-bottom: 2px solid #5c3a21;
+            padding-bottom: 2px;
+            margin-bottom: 4px;
+            background-color: transparent;
+        }
+        .monster-card .title-block {
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+        }
+        .monster-card .title {
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #a04000;
+            margin: 0;
+            line-height: 1.1;
+            border: none;
+            padding: 0;
+        }
+        .monster-card .subtitle-en {
+            font-size: 12px;
+            font-style: italic;
+            color: #7a5230;
+            margin: 0 0 2px 0;
+        }
+        .monster-card .meta {
+            font-size: 9px;
+            color: #403a35;
+            margin-top: 1px;
+            line-height: 1.2;
+            font-weight: normal;
+        }
+        .monster-card .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 2px;
+            text-align: center;
+            background: #f2ebd9;
+            border-radius: 4px;
+            padding: 2px 0;
+            margin: 3px 0;
+            border: 1px solid #dcd1b4;
+        }
+        .monster-card .stat-box {
+            display: flex;
+            flex-direction: column;
+        }
+        .monster-card .stat-label {
+            font-size: 8px;
+            font-weight: bold;
+            color: #5c3a21;
+            text-transform: uppercase;
+        }
+        .monster-card .stat-val {
+            font-size: 9px;
+            font-weight: bold;
+            color: #1a1105;
+        }
+        .monster-card .content {
+            font-size: 11px;
+            line-height: 1.35;
+            text-align: justify;
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 2px;
+        }
+        .monster-card .content::-webkit-scrollbar {
+            width: 3px;
+        }
+        .monster-card .content::-webkit-scrollbar-thumb {
+            background-color: #5c3a21;
+            border-radius: 2px;
+        }
+        .monster-card .bullet-list {
+            margin: 2px 0;
+            padding-left: 10px;
+        }
+        .monster-card .bullet-item {
+            display: list-item;
+            list-style-type: disc;
+            margin-bottom: 2px;
+        }
+        .monster-card .section-title {
+            font-weight: bold;
+            color: #a04000;
+            text-transform: uppercase;
+            font-size: 7.5px;
+            margin-top: 3px;
+            border-bottom: 1px solid #dcd1b4;
+            padding-bottom: 1px;
+        }
+        .monster-card .footer {
+            font-size: 5px;
+            text-align: right;
+            color: #5c3a21;
+            font-weight: bold;
+            border-top: 1px dashed #5c3a21;
+            padding-top: 2px;
+            margin-top: 2px;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div style="font-size: 18px; font-weight: bold; color: var(--border-color);">📜 ESCUDO DO MESTRE SUPREMO</div>
+        <div class="hud-info">
+            <div class="hud-item"><span id="level-display">Nível 1</span></div>
+            <div class="hud-item">XP Individual: <span id="individual-xp">0</span> / <span id="next-target-ind">300</span></div>
+            <div class="hud-item">XP Coletivo: <span id="total-xp">0</span> / <span id="next-target-col">1200</span></div>
+            <div class="hud-item">Tempo da Campanha: <span id="dungeon-time">0</span> horas</div>
+            <button class="xp-btn" onclick="addTime()">+1 Hora de Exploração</button>
+            <button class="xp-btn" style="background-color: #555;" onclick="removeTime()">-1 Hora de Exploração</button>
+        </div>
+    </header>
+
+    <nav>
+        <button class="tab-btn active" onclick="openTab('orig-pag1')">📋 Original - Pág 1</button>
+        <button class="tab-btn" onclick="openTab('orig-pag2')">📋 Original - Pág 2</button>
+        <button class="tab-btn" onclick="openTab('orig-pag3')">📋 Original - Pág 3</button>
+        <button class="tab-btn" onclick="openTab('orig-pag4')">📋 Original - Pág 4</button>
+        <button class="tab-btn" onclick="openTab('encontros')">⚔️ Nível da Fortaleza (Cronológico)</button>
+        <button class="tab-btn" onclick="openTab('jogadores')">📝 Jogadores & Improvisos</button>
+        <button class="tab-btn" onclick="openTab('monstros-campanha')">🎯 Monstros da Campanha</button>
+        <button class="tab-btn" onclick="openTab('dicas')">🧠 Dicas</button>
+        
+    </nav>
+
+    <main>
+        
+        <!-- PÁGINA 1 ORIGINAL -->
+        <div id="orig-pag1" class="panel active">
+            <div class="card">
+                <h3>CONDITIONS (A - I)</h3>
+                <p><strong>Cego</strong><br>• Uma criatura cega não pode ver e falha automaticamente qualquer teste de habilidade que requer visão.<br>Jogadas de ataque contra a criatura ganham vantagem, jogadas de ataque da criatura ganham desvantagem.</p>
+                <p><strong>Enfeitiçado</strong><br>• Uma criatura encantada não pode atacar ou lançar magia em quem o enfeitiçou.<br>• O encantador tem a vantagem em um teste de habilidade de interagir socialmente com a criatura.</p>
+                <p><strong>Surdo</strong><br>• Uma criatura ensurdecida não pode ouvir e falha automaticamente qualquer teste de habilidade que requer audição.</p>
+                <p><strong>Amedrontado</strong><br>• Uma criatura amedrontada tem desvantagem em teste de habilidade e jogadas de ataque, enquanto a fonte do seu medo esta na sua linha de visão.<br>• A criatura não pode se aproximar da fonte do seu medo.</p>
+                <p><strong>Agarrado</strong><br>• Uma criatura agarrada tem deslocamento caído a zero e não se beneficia com bônus de movimento.<br>• A condição acaba se o predador estiver incapacitado<br>• A condição também termina se um efeito remove a criatura agarrada do alcance do agarrador, como quando uma criatura é arremessada para longe com magia.</p>
+                <p><strong>Incapacitado</strong><br>• Uma criatura incapacitada não pode realizar uma ação ou reação.</p>
+            </div>
+            <div class="card">
+                <h3>CONDITIONS (I - Z)</h3>
+                <p><strong>Invisível</strong><br>• Uma criatura invisível é impossível de ser vista sem ajuda de magia ou sentido especial. A localização da criatura pode be detectada pelo seu barulho ou pelas pegadas deixadas.<br>Jogadas de ataque contra a criatura ganham desvantagem e jogadas de ataque da criatura ganham vantagem.</p>
+                <p><strong>Paralisado</strong><br>• Uma criatura paralisada está incapacitada (veja a condição) e não pode se mover ou falar.<br>• A criatura falha automaticamente nos testes de Força e Destreza.<br>• Ataque contra a criatura ganham vantagem.<br>• Qualquer ataque que atinja a criatura é um acerto crítico se o atacante estiver dentro de 1,5 mestros da criatura.</p>
+                <p><strong>Petrificado</strong><br>• Uma criatura petrificada é transformada, juntamente com qualquer objeto não mágico que está vestindo ou carregando, em uma substância inanimada sólida (normalmente pedra). Seu peso aumenta por um fator de dez, e ela deixa de envelhecer.<br>• A criatura está incapacitada (veja a condição), não pode se mover ou falar, e não tem conhecimento de seus arredores. Jogadas de ataque contra a criatura ganham vantagem.<br>• A criatura falha automaticamente nos testes de Força e Destreza.<br>• A criatura tem resistência a todos os danos.<br>• A criatura é imune ao veneno e doença.</p>
+                <p><strong>Envenenado</strong><br>• Uma criatura envenenada tem desvantagem nas jogadas de ataque e testes de habilidade.</p>
+                <p><strong>Caído</strong><br>• A única opção de movimento de uma criatura caída é engatinhar, a menos que se levanta e, assim, termina a condição.<br>• A criatura ganha desvantagem nas jogadas de ataque.<br>• Uma jogada de ataque contra a criatura ganha vantagem se o invasor estiver dentro de 1 metro e meio da criatura. Caso contrário, a jogada de ataque ganha desvantagem.</p>
+                <p><strong>Impedido</strong><br>• Velocidade de uma criatura presa torna-se zero, e não pode se beneficiar de qualquer bônus de movimento.<br>Jogadas de ataque contra a criatura ganham vantagem, e jogadas de ataque da criatura ganham desvantagem.<br>• A criatura ganha desvantagem em testes de resistência de Destreza.</p>
+                <p><strong>Atordoado</strong><br>• Uma criatura atordoada está incapacitada (Veja a condição), não pode se mover, e pode falar hesitantemente.<br>• A criatura falha automaticamente em testes de resistência de força e destreza.<br>Jogadas de ataque contra a criatura ganham vantagem.</p>
+                <p><strong>Inconsciente</strong><br>Uma criatura inconsciente está incapacitada (veja a condição), não pode mover ou falar, e não tem conhecimento de seus arredores.<br>• A criatura derruba tudo o que está segurando e cai de bruços.<br>• A criatura falha automaticamente testes de resistência de Força e Destreza.<br>Jogadas de ataque contra a criatura ganham vantagem.<br>Any ataque que atinja a criatura é um acerto crítico se o atacante estiver dentro de 1 metro e meio da criatura.</p>
+            </div>
+            <div class="card">
+                <h3>Exaustão</h3>
+                <table>
+                    <tr><th>Level</th><th>Efeito</th></tr>
+                    <tr><td>1</td><td>Desvantagem em testes de habilidade</td></tr>
+                    <tr><td>2</td><td>Deslocamento reduzido pela metade</td></tr>
+                    <tr><td>3</td><td>Desvantagem nas jogadas de ataque e testes de resistência</td></tr>
+                    <tr><td>4</td><td>Máximo de pontos de vida reduzido pela metade</td></tr>
+                    <tr><td>5</td><td>Deslocamento reduzido a o</td></tr>
+                    <tr><td>6</td><td>Morte</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- PÁGINA 2 ORIGINAL -->
+        <div id="orig-pag2" class="panel">
+            <div class="card">
+                <h3>Cobertura</h3>
+                <table>
+                    <tr><th>Cobertura</th><th>Efeito</th></tr>
+                    <tr><td>Meio coberto</td><td>+2 Bônus na CA e testes de resistência de Destreza contra ataques e efeitos que se originam no lado oposto da cobertura.</td></tr>
+                    <tr><td>Três quartos de cobertura</td><td>+5 bônus na CA e testes de resistência de destreza contra ataques e efeitos que se originam no lado oposto da cobertura.</td></tr>
+                    <tr><td>Cobertura Total</td><td>Não pode ser alvo diretamente de um ataque ou feitiço</td></tr>
+                </table>
+                <br>
+                <h3>Áreas Obscurecidas</h3>
+                <table>
+                    <tr><th>Obscuridade</th><th>Efeito</th><th>Exemplos</th></tr>
+                    <tr><td>Levemente obscurecida</td><td>Criaturas têm desvantagem na teste de sabedoria (percepção) que dependem de vista.</td><td>Penumbra, nevoeiro irregular, folhagem moderada</td></tr>
+                    <tr><td>Pesadamente obscurecida</td><td>Visão é bloqueada; criaturas são efetivamente cegos.</td><td>Escuridão, o nevoeiro opaco, folhagem densa</td></tr>
+                </table>
+            </div>
+            <div class="card">
+                <h3>Luz</h3>
+                <table>
+                    <tr><th>Fonte</th><th>Luz brilhante</th><th>Luz difusa</th><th>Duração</th></tr>
+                    <tr><td>Vela</td><td>1,5 metros</td><td>+ 1,5 metros</td><td>1 hora</td></tr>
+                    <tr><td>Lampada</td><td>4,5 metros</td><td>+ 4,5 metros</td><td>6 horas</td></tr>
+                    <tr><td>Lanterna, na mosca</td><td>18 metros</td><td>+ 18 metros</td><td>6 horas</td></tr>
+                    <tr><td>Lanterna, encapuzado</td><td>9 metros</td><td>+ 9 metros</td><td>6 horas</td></tr>
+                    <tr><td>Capuz recolhido</td><td></td><td>+ 1,5 metros</td><td></td></tr>
+                    <tr><td>Tocha</td><td>6 metros</td><td>+ 6 metros</td><td>1 hora</td></tr>
+                </table>
+            </div>
+            <div class="card">
+                <h3>PERÍCIAS E HABILIDADES ASSOCIADAS</h3>
+                <table>
+                    <tr><th>Perícia</th><th>Habilidade</th><th>Skill</th><th>Habilidade</th></tr>
+                    <tr><td>Acrobacia</td><td>Destreza</td><td>Medicina</td><td>Sabedoria</td></tr>
+                    <tr><td>Adestrar animais</td><td>Sabedoria</td><td>Natureza</td><td>Inteligência</td></tr>
+                    <tr><td>Arcanismo</td><td>Inteligência</td><td>Percepção</td><td>Sabedoria</td></tr>
+                    <tr><td>Atletismo</td><td>Força</td><td>Atuação</td><td>Carisma</td></tr>
+                    <tr><td>Enganação</td><td>Carisma</td><td>Persuasão</td><td>Carisma</td></tr>
+                    <tr><td>História</td><td>Inteligência</td><td>Religião</td><td>Inteligência</td></tr>
+                    <tr><td>Intuição</td><td>Sabedoria</td><td>Golpe de mão</td><td>Destreza</td></tr>
+                    <tr><td>Intimidação</td><td>Carisma</td><td>Furtividade</td><td>Destreza</td></tr>
+                    <tr><td>Investigação</td><td>Inteligência</td><td>Sobrevivência</td><td>Sabedoria</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- PÁGINA 3 ORIGINAL -->
+        <div id="orig-pag3" class="panel">
+            <div class="card">
+                <h3>Classe de Dificuldade (CD)</h3>
+                <table>
+                    <tr><th>Dificuldade</th><th>CD</th></tr>
+                    <tr><td>Muito fácil</td><td>5</td></tr>
+                    <tr><td>Fácil</td><td>10</td></tr>
+                    <tr><td>Moderado</td><td>15</td></tr>
+                    <tr><td>Dificil</td><td>20</td></tr>
+                    <tr><td>Muito dificil</td><td>25</td></tr>
+                    <tr><td>Quase impossível</td><td>30</td></tr>
+                </table>
+                <br>
+                <h3>RITMO DE VIAGEM</h3>
+                <table>
+                    <tr><th>Ritmo</th><th>Minuto</th><th>Hora</th><th>Dia</th><th>Efeito</th></tr>
+                    <tr><td>Rápido</td><td>120 metros</td><td>6 Km</td><td>46 Km</td><td>Passivel de penalidade de -5 pontos em sabedoria (Percepção)</td></tr>
+                    <tr><td>Normal</td><td>90 metros</td><td>4,5 Km</td><td>36 Km</td><td>-</td></tr>
+                    <tr><td>Devagar</td><td>60 metros</td><td>3 Km</td><td>27 Km</td><td>Capaz de usar furtividade</td></tr>
+                </table>
+            </div>
+            <div class="card">
+                <h3>Distância de encontro</h3>
+                <table>
+                    <tr><th>Terreno</th><th>Distância de encontro</th></tr>
+                    <tr><td>Ártico, deserto, campos agrícolas ou pastagens.</td><td>6d6 x 3 metros</td></tr>
+                    <tr><td>Floresta, pântano ou bosque.</td><td>2d8 x 3 metros</td></tr>
+                    <tr><td>Colina ou terreno baldio</td><td>2d10 x 3 metros</td></tr>
+                    <tr><td>Selva</td><td>2d6 x 3 metros</td></tr>
+                    <tr><td>Montanha</td><td>4d10 x 3 metros</td></tr>
+                </table>
+                <br>
+                <h3>Distância audível</h3>
+                <p>Tentando ser quieto: 2d6 x 1,5 metros<br>Nível de ruído normal: 2d6 x 3 metros<br>Muito alto: 2d6 x 15 metros</p>
+                <h3>Visibilidade ao ar livre</h3>
+                <p>Dia claro sem obstruções: 3 Km<br>Chuvoso: 1,5 Km<br>Neblina: 30 a 90 metros</p>
+            </div>
+            <div class="card">
+                <h3>ALGO ACONTECE</h3>
+                <table>
+                    <tr><th>d20</th><th>Evento</th></tr>
+                    <tr><td>1</td><td>Uma porta se abre.</td></tr>
+                    <tr><td>2</td><td>Um incêndio começa.</td></tr>
+                    <tr><td>3</td><td>Um meteoro cai do céu.</td></tr>
+                    <tr><td>4</td><td>Um monstro aparece.</td></tr>
+                    <tr><td>5</td><td>Um som perfura o ar.</td></tr>
+                    <tr><td>6</td><td>Uma tempestade começa.</td></tr>
+                    <tr><td>7</td><td>Uma estranha estrela aparece no céu.</td></tr>
+                    <tr><td>8</td><td>Uma forte rajada de vento sopra.</td></tr>
+                    <tr><td>9</td><td>Um tremor sacode o chão.</td></tr>
+                    <tr><td>10</td><td>Alguém tem um déjà vu.</td></tr>
+                    <tr><td>11</td><td>Alguém fica furioso.</td></tr>
+                    <tr><td>12</td><td>Alguém tem um vislumbre do futuro.</td></tr>
+                    <tr><td>13</td><td>Alguém tem um pressentimento.</td></tr>
+                    <tr><td>14</td><td>Alguém tem que ir ao banheiro.</td></tr>
+                    <tr><td>15</td><td>Algo derrama ou cai no chão.</td></tr>
+                    <tr><td>16</td><td>Algo não é o que parece ser.</td></tr>
+                    <tr><td>17</td><td>A luz se apaga.</td></tr>
+                    <tr><td>18</td><td>O sol se põe.</td></tr>
+                    <tr><td>19</td><td>Há um mau cheiro no ar.</td></tr>
+                    <tr><td>20</td><td>Uma magia inexplicável ocorre.</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- PÁGINA 4 ORIGINAL -->
+        <div id="orig-pag4" class="panel">
+            <div class="card">
+                <h3>ACHADOS RAPIDOS</h3>
+                <table>
+                    <tr><th>d12</th><th>Achado</th></tr>
+                    <tr><td>1</td><td>Pintura</td></tr>
+                    <tr><td>2</td><td>Corpo</td></tr>
+                    <tr><td>3</td><td>Comida e bebida</td></tr>
+                    <tr><td>4</td><td>Joia</td></tr>
+                    <tr><td>5</td><td>Chave</td></tr>
+                    <tr><td>6</td><td>Carta</td></tr>
+                    <tr><td>7</td><td>Ervas mágicas</td></tr>
+                    <tr><td>8</td><td>Mapa</td></tr>
+                    <tr><td>9</td><td>Parte de monstro</td></tr>
+                    <tr><td>10</td><td>Mensagem secreta</td></tr>
+                    <tr><td>11</td><td>Sinete ou insignia</td></tr>
+                    <tr><td>12</td><td>Livro grosso</td></tr>
+                </table>
+                <br>
+                <h3>DANO POR NÍVEL E GRAVIDADE</h3>
+                <table>
+                    <tr><th>Level</th><th>Revés</th><th>Perigoso</th><th>Mortal</th></tr>
+                    <tr><td>1-4</td><td>1d10</td><td>2d10</td><td>4d10</td></tr>
+                    <tr><td>5-10</td><td>2d10</td><td>4d10</td><td>10d10</td></tr>
+                    <tr><td>11-16</td><td>4d10</td><td>10d10</td><td>18d10</td></tr>
+                    <tr><td>17-20</td><td>10d10</td><td>18d10</td><td>24d10</td></tr>
+                </table>
+                <p style="font-size: 13px; margin-top: 5px;">A partir de um altura X 20</p>
+            </div>
+            <div class="card">
+                <h3>PdM Característica</h3>
+                <p><strong>d20 Características:</strong> 1: Distraido, 2: Arrogante, 3: Grosseiro, 4: Mastiga algo, 5: Desajeitado, 6: Curioso, 7: Estúpido (Pouco inteligente), 8: Inquieto e impaciente, 9: Usa palavras erradas com frequência, 10: Amigável, 11: Nervoso, 12: Sempre prevê desgraça, 13: Marcado com cicatrizes, 14: Usa palavras de calúnia, lingua presa, ou gagueja, 15: Fala alto ou sussurrando, 16: Vesgo, 17: Olhar distante, 18: Desconfiado, 19: Faz juramentos coloridos, 20: Usa discurso florido ou palavras longa.</p>
+                <h3>PdM IDEAI</h3>
+                <p><strong>d20 Ideais (Alinhamento):</strong> 1: Pretenção (qualquer), 2: Caridade (bom), 3: Comunidade (leal), 4: Creatividade (caótico), 5: Descoberta (qualquer), 6: Justiça (leal), 7: Liberdade (caótico), 8: Gloria (qualquer), 9: Bem maior (bom), 10: Ganancia (mau), 11: Honra (leal), 12: Independência (caótico), 13: Conhecimento (neutro), 14: Vida (bom), 15: Viva e deixe viver (neutro), 16: Força (mau), 17: Nação (qualquer), 18: Pessoas (neutro), 19: Poder (mau), 20: Redenção (qualquer).</p>
+                <h3>PdM Defeitos</h3>
+                <p><strong>d12 FALHA:</strong> 1: Amor proibido ou susceptibilidade romântica, 2: Decadência, 3: Arrogância, 4: Inveja de bens de outra pessoa, 5: Ganância avassaladora, 6: Propenso a raiva, 7: Inimigo poderoso, 8: Fobia especifica, 9: História vergonhosa ou escandalosa, 10: Crime secreto ou delito, 11: Porte de conhecimento proibido, 12: Bravura imprudente.</p>
+            </div>
+            <div class="card">
+                <h3>Gerador de Nomes</h3>
+                <table>
+                    <tr><th>d20</th><th>Começo</th><th>Meio</th><th>Fim</th></tr>
+                    <tr><td>1</td><td>-</td><td>bar</td><td>-</td></tr>
+                    <tr><td>2</td><td>-</td><td>ched</td><td>-a</td></tr>
+                    <tr><td>3</td><td>-</td><td>dell</td><td>-ac</td></tr>
+                    <tr><td>4</td><td>-</td><td>far</td><td>-ai</td></tr>
+                    <tr><td>5</td><td>A-</td><td>gran</td><td>-al</td></tr>
+                    <tr><td>6</td><td>Be-</td><td>hal</td><td>-am</td></tr>
+                    <tr><td>7</td><td>De-</td><td>jen</td><td>-an</td></tr>
+                    <tr><td>8</td><td>El-</td><td>kel</td><td>-ar</td></tr>
+                    <tr><td>9</td><td>Fa-</td><td>lim</td><td>-ea</td></tr>
+                    <tr><td>10</td><td>Jo-</td><td>mor</td><td>-el</td></tr>
+                    <tr><td>11</td><td>Ki-</td><td>net</td><td>-er</td></tr>
+                    <tr><td>12</td><td>La-</td><td>penn</td><td>-ess</td></tr>
+                    <tr><td>13</td><td>Ma-</td><td>quil</td><td>-ett</td></tr>
+                    <tr><td>14</td><td>Na-</td><td>rond</td><td>-ic</td></tr>
+                    <tr><td>15</td><td>O-</td><td>sark</td><td>-id</td></tr>
+                    <tr><td>16</td><td>Pa-</td><td>shen</td><td>-</td></tr>
+                    <tr><td>17</td><td>Re-</td><td>tur</td><td>-in</td></tr>
+                    <tr><td>18</td><td>Si-</td><td>vash</td><td>-is</td></tr>
+                    <tr><td>19</td><td>Ta-</td><td>yor</td><td>-or</td></tr>
+                    <tr><td>20</td><td>Va-</td><td>zen</td><td>-us</td></tr>
+                </table>
+                <br>
+                <h3>NPC Vínculo</h3>
+                <p><strong>d10 Vínculos:</strong> 1: Objetivo pessoal ou realização, 2: Membros da familia, 3: Companheiros o compatriotas, 4: Benfeitor, patrono, ou empregador, 5: Interesse romantico, 6: Lugar especial, 7: Lembrança, 8: Posse de algo valioso, 9: Vingança, 10: Role duas vezes, ignorando mais rolos de 10.</p>
+            </div>
+        </div>
+
+        <!-- ABA 5: ENCONTROS CRONOLÓGICOS DO NÍVEL DA FORTALEZA -->
+        <div id="encontros" class="panel">
+            <div class="card" style="grid-column: span 3;">
+                <h3>Mapeamento de Encontros: Nível da Fortaleza</h3>
+                <p style="font-size: 13px; color: #aaa;">Clique na barra para ver os detalhes da sala. Use o botão para adicionar ou remover o XP do montante diário.</p>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>🌍 Encontro Opcional: Estrada para a Cidadela</span>
+                        <button class="xp-btn" onclick="toggleXp(100, this, event)">Adicionar 100 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Inços-Praga Ramo (4):</strong> 25 XP cada.<br>
+                        <strong>Notas:</strong> Atacam à noite de forma furtiva antes do grupo chegar à ravina.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 1: O Mirante</span>
+                        <button class="xp-btn" onclick="toggleXp(75, this, event)">Adicionar 75 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Ratos Gigantes (3):</strong> 25 XP cada.<br>
+                        <strong>Notas:</strong> Escondem-se nos escombros. Atacam se os aventureiros não descerem em silêncio.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 3: Pátio em Ruínas (Fosso Oculto)</span>
+                        <button class="xp-btn" onclick="toggleXp(25, this, event)">Adicionar 25 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Rato Gigante (1):</strong> 25 XP.<br>
+                        <strong>Notas:</strong> Está preso dentro do fosso oculto se alimentando de um goblin morto recente.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 5: Pequena Câmara Secreta</span>
+                        <button class="xp-btn" onclick="toggleXp(150, this, event)">Adicionar 150 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Esqueletos Arqueiros (3):</strong> 50 XP cada.<br>
+                        <strong>Notas:</strong> Ativam-se com luzes vermelhas nos olhos assim que o grupo abre a porta secreta da Área 4.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 6: Passagem Antiga</span>
+                        <button class="xp-btn" onclick="toggleXp(25, this, event)">Adicionar 25 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Rato Gigante (1):</strong> 25 XP.<br>
+                        <strong>Notas:</strong> Esconde-se nos escombros ao sul. Ataca quem chegar a 1,5m ou quem for deixado sozinho.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 10: Guarda de Honra</span>
+                        <button class="xp-btn" onclick="toggleXp(200, this, event)">Adicionar 200 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Quasit (Jot):</strong> 200 XP.<br>
+                        <strong>Notas:</strong> Fica invisível e espera do outro lado do arco. Não luta até a morte, foge para incomodar depois.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 12: Tumba do Sacerdote Dragão Fracassado</span>
+                        <button class="xp-btn" onclick="toggleXp(450, this, event)">Adicionar 450 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Troll Enfraquecido:</strong> 450 XP.<br>
+                        <strong>Notas:</strong> Antigo elfo corrompido em troll. Começa com 30 PV, regenera 5 PV/turno e não tem ataques múltiplos.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 14: Estoque de Água Enfeitiçada</span>
+                        <button class="xp-btn" onclick="toggleXp(200, this, event)">Adicionar 200 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Mefit de Gelo (1) e Mefit de Vapor (1):</strong> 100 XP cada.<br>
+                        <strong>Notas:</strong> Estão trancados dentro de um barril de ferro. Atacam quem romper ou perturbar o barril.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 16: Sala da Guarda Kobold</span>
+                        <button class="xp-btn" onclick="toggleXp(75, this, event)">Adicionar 75 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Kobolds Combatentes (3):</strong> 25 XP cada.<br>
+                        <strong>Notas:</strong> Porta com armadilha de jarro de lixo. Podem ser amigáveis se usarem a senha de Meepo.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 18: Prisão Kobold (Goblins Cativos)</span>
+                        <button class="xp-btn" onclick="toggleXp(200, this, event)">Adicionar 200 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Goblins Prisioneiros (4):</strong> 50 XP cada.<br>
+                        <strong>Notas:</strong> Se libertados, quebram o acordo com os Kobolds. Eles traem o grupo na primeira oportunidade.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 19: Salão dos Dragões</span>
+                        <button class="xp-btn" onclick="toggleXp(75, this, event)">Adicionar 75 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Kobolds de Elite (3):</strong> 25 XP cada.<br>
+                        <strong>Notas:</strong> Guardas de patrulha com 7 PV cada. Se houver combate, atrai reforços das salas vizinhas e Yusdrayl.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 20: Colônia Kobold</span>
+                        <button class="xp-btn" onclick="toggleXp(250, this, event)">Adicionar 250 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Kobolds Combatentes (3) e Plebeus (7):</strong> 25 XP cada.<br>
+                        <strong>Notas:</strong> Sala com 24 kobolds, mas a maioria é de não-combatentes que fogem e não valem XP.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 21: Trono do Dragão (Líder)</span>
+                        <button class="xp-btn" onclick="toggleXp(250, this, event)">Adicionar 250 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Yusdrayl (Líder) e Guardas de Elite (2):</strong> 200 XP líder + 25 XP cada guarda.<br>
+                        <strong>Notas:</strong> Oferece aliança e prêmios do altar arcanos se aceitarem resgatar o dragão filhote Calcryx.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 23: Acesso à Umbreterna</span>
+                        <button class="xp-btn" onclick="toggleXp(75, this, event)">Adicionar 75 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Kobolds Caçadores/Sentinelas (3):</strong> 25 XP cada.<br>
+                        <strong>Notas:</strong> Vigiam a passagem para o subterrâneo selvagem. Reagem igual aos guardas normais.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 27: Santuário das Tumbas</span>
+                        <button class="xp-btn" onclick="toggleXp(250, this, event)">Adicionar 250 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Esqueletos Guardas (5):</strong> 50 XP cada.<br>
+                        <strong>Notas:</strong> Emergem juntos dos sarcófagos se os aventureiros tocarem ou profanarem o altar de obsidiana.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 28: Celas Infestadas</span>
+                        <button class="xp-btn" onclick="toggleXp(75, this, event)">Adicionar 75 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Ratos Gigantes (3):</strong> 25 XP cada.<br>
+                        <strong>Notas:</strong> Um em cada cela ocupada do corredor. Luz ou barulho atrai os três simultaneamente.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 30: O Ninho da Mamãe Rato</span>
+                        <button class="xp-btn" onclick="toggleXp(130, this, event)">Adicionar 130 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Guthash, A Inchada (1) e Ratos Gigantes (3):</strong> 55 XP líder + 25 XP cada rato.<br>
+                        <strong>Notas:</strong> Guthash é uma rata colossal doente (16 PV). No ninho está o corpo do guardião Karakas e seu anel Hucrele.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 32: Portão Goblin (Guarda das Ameias)</span>
+                        <button class="xp-btn" onclick="toggleXp(100, this, event)">Adicionar 100 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Goblins Defensores (2):</strong> 50 XP cada.<br>
+                        <strong>Notas:</strong> Atiram de trás de uma mureta de cobertura. Se um fugir, alerta a Área 33. O corredor tem estrepes no chão.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 33: Estande de Tiro Goblin</span>
+                        <button class="xp-btn" onclick="toggleXp(150, this, event)">Adicionar 150 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Goblins Atiradores (3):</strong> 50 XP cada.<br>
+                        <strong>Notas:</strong> Praticam tiro em bonecos de estopa. Um deles carrega a chave para a prisão da Área 34.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 34: Prisão Goblin (Resgate de Erky Lenhas)</span>
+                        <button class="xp-btn" onclick="toggleXp(100, this, event)">Adicionar 100 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Erky Lenhas (Gnomo Acólito):</strong> 100 XP (concedido como recompensa por salvá-lo).<br>
+                        <strong>Notas:</strong> Erky pode se juntar ao grupo. Ele revela informações cruciais sobre os irmãos Hucrele e a Árvore Gulthias.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 36: Quartel dos Bandidos Goblins</span>
+                        <button class="xp-btn" onclick="toggleXp(150, this, event)">Adicionar 150 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Goblins Bandidos (3):</strong> 50 XP cada.<br>
+                        <strong>Notas:</strong> Há três salas idênticas com esta configuração no norte da fortaleza. Tentam capturar os PJs vivos para pedir resgate.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 37: Sala de Troféus (O Covil de Calcryx)</span>
+                        <button class="xp-btn" onclick="toggleXp(200, this, event)">Adicionar 200 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Calcryx (Filhote de Dragão Branco):</strong> 200 XP.<br>
+                        <strong>Notas:</strong> Extremamente hostil. Libertou-se das correntes dos goblins e destruiu a sala. Se Meepo estiver junto, ela foca nele primeiro.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>📍 Área 40: Vilarejo Goblin</span>
+                        <button class="xp-btn" onclick="toggleXp(500, this, event)">Adicionar 500 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Goblins Combatentes (4) e Plebeus (10):</strong> 50 XP cada combatente + 30 XP cada plebeu estruturado.<br>
+                        <strong>Notas:</strong> Antiga catedral entulhada de lixo. Há mais 20 não-combatentes que fogem em pânico e não dão XP.
+                    </div>
+                </div>
+
+                <div class="encounter-box">
+                    <div class="encounter-header" onclick="toggleEncounter(this)">
+                        <span>👑 Área 41: O Salão do Chefe Durnn</span>
+                        <button class="xp-btn" onclick="toggleXp(725, this, event)">Adicionar 725 XP</button>
+                    </div>
+                    <div class="encounter-content">
+                        <strong>Chefe Durnn, Hobgoblins (3), Xamã Grenl, Inço-Praga:</strong> Total 725 XP.<br>
+                        <strong>Notas:</strong> Durnn veste a cota de talas Hucrele e o anel de Talgen. Grenl odeia Durnn; se ele morrer, ela aceita negociar a paz.
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 20px; background-color: #1f1f1a; border-color: #a63a2b;">
+                    <h4 style="margin-top: 0; color: #cc4e3b; font-size: 15px; display: flex; align-items: center; gap: 5px;">
+                        💡 Dica de Ouro: Gerenciamento de Ritmo e Nível por Áreas
+                    </h4>
+                    <p style="font-size: 13px; margin: 0; line-height: 1.6; color: #e6dfd3;">
+                        Use os encontros da masmorra para ditar os momentos de descanso e evolução com precisão. Force a subida para o <strong>Nível 2</strong> assim que eles resolverem a situação diplomática ou de combate com a Rainha Kobold Yusdrayl na <strong>Área 21 (O Trono do Dragão)</strong>, ou alternativamente, logo após lidarem com o resgate ou confronto com o dragão filhote Calcryx na <strong>Área 37 (Sala de Troféus)</strong>. Da mesma forma, force a transição para o <strong>Nível 3</strong> no momento exato em que eles limparem o salão do líder goblin na <strong>Área 41 (O Salão do Chefe Durnn)</strong> e tomarem a decisão de descer pelas vinhas através do poço da <strong>Área 42 (O Poço do Bosque)</strong> em direção ao nível inferior da masmorra.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ABA 6: STATUS DOS JOGADORES & GATILHOS -->
+        <div id="jogadores" class="panel">
+            <div class="card">
+                <h3>Ficha Passiva dos Jogadores</h3>
+                <table>
+                    <tr><th>Personagem</th><th>CA</th><th>Percepção P.</th><th>Notas / Peculiaridade</th></tr>
+                    <tr><td>🌪️ Alvo</td><td>13</td><td>13</td><td>Primordial. Ouve os sussurros do vento.</td></tr>
+                    <tr><td>🪓 Vento Ligeiro</td><td>14</td><td>13</td><td>Alergia Crônica à Poeira. Rastreamento.</td></tr>
+                    <tr><td>🍲 Bao de Xangô</td><td>15</td><td>12</td><td>Tentará dialogar com os monstros.</td></tr>
+                    <tr><td>⚙️ Orrin</td><td>14</td><td>10</td><td>Artífice. Carrega o Projeto Sentinela.</td></tr>
+                </table>
+            </div>
+            <div class="card">
+                <h3>Gatilhos Narrativos de Background</h3>
+                <p><strong>Alvo Quiriquiri:</strong> A semente rosa em seu bolso reage ao Nível do Bosque. Ele sente quando o solo está corrompido.</p>
+                <p><strong>Vento Ligeiro:</strong> Em salas com poeira densa, Salvaguarda de CON CD 12. Falha = espirra alto e zera furtividade. Fúria imediata se ver traços dracônicos/indefesos sob ataque.</p>
+                <p><strong>Bao de Xangô:</strong> Forçar testes de persuasão bizarros com os líderes. Pimenta no ensopado do Descanso Curto (+1d4 PV bônus se passarem em CON CD 10).</p>
+                <p><strong>Orrin Faíscaponta:</strong> Espalhar peças mecânicas para o robô na Área 14 (barril) e Área 37 (estojo anão de Khundrukar).</p>
+            </div>
+            <div class="card">
+                <h3>Gerador de Reação de PdMs</h3>
+                <p>Se tentarem conversar com os Goblins da Área 40 ou Goblins Plebeus:</p>
+                <p><strong>CD Indiferente:</strong> CD 10 ajuda sem risco, CD 20 aceita risco pequeno.</p>
+                <p><strong>CD Hostil:</strong> CD 15 não faz mal, CD 20 faz o pedido contanto que não haja risco nenhum.</p>
+                <p><strong>Traço Rápido (1d6):</strong> 1: Distraído, 2: Arrogante, 3: Grosseiro, 4: Mastiga algo, 5: Desajeitado, 6: Curioso.</p>
+            </div>
+        </div>
+
+        <div id="dicas" class="panel">
+            <div class="card" style="grid-column: span 3; border-color: #a63a2b;">
+                <h3 style="color: #cc4e3b;">🛑 Se os Monstros estiverem fortes demais (Risco de TPK / Morte do Grupo)</h3>
+                <p style="font-size: 14px; color: #aaa; margin-bottom: 15px;">Se os goblins ou ratos começaram a acertar todos os golpes e seus jogadores estão caindo um a um, use estas ferramentas:</p>
+                
+                <p><strong>Ajuste os Pontos de Vida (PV) na surdina:</strong> Os pontos de vida dos monstros no livro são uma média. O Chefe Durnn, por exemplo, tem uma quantidade padrão de PV, mas você pode decidir secretamente que ele tem menos se o grupo estiver sofrendo muito. Se o próximo golpe de um jogador deixar o monstro com 5 PV restantes, descreva o ataque de forma éco e diga que o monstro caiu!</p>
+                
+                <p><strong>Mude a Tática (Raciocínio Tático Flutuante):</strong> Criaturas inteligentes não são máquinas perfeitas de matar. Um goblin pode ficar arrogante e gastar o turno dele rindo de um personagem caído ou provocando o guerreiro em vez de desferir o golpe de misericórdia. Monstros irracionais (como os Ratos Gigantes) podem morder alguém e, se sofrerem dano, focar em tentar arrastar aquele pedaço de comida para longe em vez de continuar lutando até a morte.</p>
+                
+                <p><strong>A Regra da Moral (Eles fogem!):</strong> Quase nenhuma criatura luta até o último homem, exceto mortos-vivos ou construtos. Se o grupo estava enfrentando 4 goblins e a situação está feia, assim que os jogadores conseguirem matar um deles, faça os outros 3 entrarem em pânico, recuarem ou tentarem negociar a própria vida.</p>
+                
+                <p><strong>Gaste os Recursos do Monstro com burrice:</strong> Se o monstro tem un ataque especial forte (como o soco do filhote de dragão), faça ele usar esse golpe em um momento taticamente ruim, ou descreva que ele errou a mira e atingiu a parede, gastando o recurso sem massacrar o grupo.</p>
+            </div>
+
+            <div class="card" style="grid-column: span 3; border-color: #4a5d4e;">
+                <h3 style="color: #5c7361;">⚡ Se os Personagens estiverem fortes demais (Monstros morrendo muito fácil)</h3>
+                <p style="font-size: 14px; color: #aaa; margin-bottom: 15px;">Se os seus jogadores estão atropelando os vilões em uma rodada e o combate está parecendo sem graça ou sem desafio, use o oposto:</p>
+                
+                <p><strong>A "Injeção" de PV:</strong> Da mesma forma que você pode reduzir, você pode aumentar os PV de um monstro até o limite máximo dos dados dele para fazer a luta durar mais uma ou duas rodadas, dando tempo de o vilão mostrar a que veio.</p>
+                
+                <p><strong>A Chegada de Reforços (O Alarme):</strong> Essa é a técnica mais fácil em masmorras como a Cidadela. Se os goblins ou kobolds estão sendo massacrados, descreva que um deles usou uma ação bônus para gritar por socorro ou bater em um gongo. Na próxima rodada, mais 2 ou 3 guardas das salas vizinhas entram correndo pela porta!</p>
+                
+                <p><strong>Use o Terreno a favor do Monstro:</strong> Descreva que os goblins começaram a recuar para trás de pilastras ou caixas para ganhar Meia Cobertura (+2 CA) ou Cobertura de Três Quartos (+5 CA), forçando os jogadores a se moverem e pensarem de forma mais tática.</p>
+                
+                <p><strong>Adicione Objetivos Dinâmicos:</strong> Em vez de ser apenas uma luta até zerar o PV, faça um goblin correr em direção a uma alavanca para liberar uma armadilha, ou tente trancar uma porta para isolar metade do grupo. Isso muda o foco da batalha de "dar dano" para "resolver um problema urgente".</p>
+            </div>
+
+        
+            <div class="card" style="grid-column: span 3; border-color: #8c7355; margin-top: 10px;">
+                <h3 style="color: #8c7355;">🚪 Regras de Exploração: Status de Portas e Lógica de Masmorra</h3>
+                <p style="font-size: 14px; color: #aaa; margin-bottom: 15px;">Dicas fundamentais de arbitragem para o Mestre gerenciar a navegação dos jogadores pelos corredores:</p>
+                
+                <p><strong>A Regra Geral do Silêncio:</strong> Se a descrição do livro não menciona explicitamente o estado de uma porta, adote a convenção padrão: a porta está apenas <strong>FECHADA e DESTRANCADA</strong>. Não peça testes de dados para interações normais; os jogadores simplesmente abrem a porta e a narrativa flui para o interior da sala.</p>
+                
+                <p><strong>Portas Especiais (Com texto no livro):</strong> O módulo gastará linhas de texto apenas para quebrar a normalidade. Se uma porta exigir esforço, o texto avisará de forma direta (ex: <i>"porta emperrada, requer um teste de Força CD 13 para arrombar"</i> ou <i>"porta trancada, requer ferramentas de ladrão CD 15"</i>).</p>
+                
+                <p><strong>A Lógica das Facções Vivas:</strong> Use o bom senso com base nos moradores. Portas que dividem os territórios das tribos rivais (como as defesas na Área 32) ou que guardam tesouros de líderes (Áreas 21 e 41) estarão trancadas por sobrevivência. Portas em áreas abandonadas ou infestadas por monstros irracionais estarão destrancadas, mas pesadas ou gastas pelo tempo.</p>
+                
+                <p><strong>Jogadores Trancando Portas (Descanso Curto):</strong> Se o grupo tentar travar uma porta para descansar ou bloquear perseguidores, permita soluções criativas. Se o ladino possuir ferramentas, ele pode tentar trancá-la com um teste de Destreza contra uma CD Média (CD 15). Se não houver chaves, eles podem usar <strong>cunhas de ferro</strong> (item padrão de kit de exploração) ou empilhar móveis pesados criando uma barricada, forçando os monstros a realizarem testes de Força caso tentem invadir.</p>
+            </div>
+        </div>
+
+        <!-- ABA 9: CARDS DE MONSTROS COMPLETOS DA CAMPANHA -->
+        <div id="monstros-campanha" class="panel">
+            <div class="monsters-container">
+
+                <!-- 1. GOBLIN -->
+                <div class="monster-card">
+                    <div class="header">
+                        <div class="title-block">
+                            <h1 class="title">Goblin</h1>
+                            <span class="subtitle-en">Goblin</span>
+                        </div>
+                        <div class="meta">
+                            <span>Humanoide Pequeno (goblinoide), maligno e neutro</span><br>
+                            <strong>Classe de Armadura:</strong> 15 (armadura de couro, escudo) | <strong>Pontos de Vida:</strong> 7 (2d6)<br>
+                            <strong>Deslocamento:</strong> 9 m
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-box"><span class="stat-label">FOR</span><span class="stat-val">8 (-1)</span></div>
+                        <div class="stat-box"><span class="stat-label">DES</span><span class="stat-val">14 (+2)</span></div>
+                        <div class="stat-box"><span class="stat-label">CON</span><span class="stat-val">10 (+0)</span></div>
+                        <div class="stat-box"><span class="stat-label">INT</span><span class="stat-val">10 (+0)</span></div>
+                        <div class="stat-box"><span class="stat-label">SAB</span><span class="stat-val">8 (-1)</span></div>
+                        <div class="stat-box"><span class="stat-label">CAR</span><span class="stat-val">8 (-1)</span></div>
+                    </div>
+                    <div class="content">
+                        <div class="bullet-list">
+                            <div><strong>Perícias:</strong> Furtividade +6</div>
+                            <div><strong>Sentidos:</strong> visão no escuro 18 m, Percepção passiva 9</div>
+                            <div><strong>Idiomas:</strong> Comum, Goblin</div>
+                            <div><strong>Nível de Desafio:</strong> 1/4 (50 XP)</div>
+                            <div><strong>Fuga Ágil.</strong> O goblin pode realizar a ação de Desengajar ou Esconder-se com uma ação bônus em cada um dos seus turnos.</div>
+                        </div>
+                        <div class="section-title">Ações</div>
+                        <div class="bullet-list">
+                            <div><strong>Cimitarra.</strong> <em>Ataque Corpo-a-Corpo com Arma:</em> +4 para atingir, alcance 1,5 m, um alvo. <em>Acerto:</em> 5 (1d6 + 2) de dano cortante.</div>
+                            <div><strong>Arco Curto.</strong> <em>Ataque à Distância com Arma:</em> +4 para atingir, alcance 24/96 m, um alvo. <em>Acerto:</em> 5 (1d6 + 2) de dano perfurante.</div>
+                        </div>
+                    </div>
+                    <div class="footer">Manual dos Monstros</div>
+                </div>
+
+                <!-- 2. KOBOLD -->
+                <div class="monster-card">
+                    <div class="header">
+                        <div class="title-block">
+                            <h1 class="title">Kobold</h1>
+                            <span class="subtitle-en">Kobold</span>
+                        </div>
+                        <div class="meta">
+                            <span>Humanoide Pequeno, leal e mau</span><br>
+                            <strong>Classe de Armadura:</strong> 12 | <strong>Pontos de Vida:</strong> 5 (2d6 - 2)<br>
+                            <strong>Deslocamento:</strong> 9 m
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-box"><span class="stat-label">FOR</span><span class="stat-val">7 (-2)</span></div>
+                        <div class="stat-box"><span class="stat-label">DES</span><span class="stat-val">15 (+2)</span></div>
+                        <div class="stat-box"><span class="stat-label">CON</span><span class="stat-val">9 (-1)</span></div>
+                        <div class="stat-box"><span class="stat-label">INT</span><span class="stat-val">8 (-1)</span></div>
+                        <div class="stat-box"><span class="stat-label">SAB</span><span class="stat-val">7 (-2)</span></div>
+                        <div class="stat-box"><span class="stat-label">CAR</span><span class="stat-val">8 (-1)</span></div>
+                    </div>
+                    <div class="content">
+                        <div class="bullet-list">
+                            <div><strong>Sentidos:</strong> visão no escuro 18 m, Percepção passiva 8</div>
+                            <div><strong>Idiomas:</strong> Dracônico</div>
+                            <div><strong>Nível de Desafio:</strong> 1/8 (25 XP)</div>
+                            <div><strong>Sensibilidade à Luz Solar.</strong> Enquanto estiver sob a luz solar, o kobold tem desvantagem nas jogadas de ataque e testes de Percepção baseados na visão.</div>
+                            <div><strong>Táticas de Matilha.</strong> O kobold tem vantagem em jogadas de ataque contra uma criatura se pelo menos um dos aliados do kobold estiver a até 1,5 metro da criatura e não estiver incapacitado.</div>
+                        </div>
+                        <div class="section-title">Ações</div>
+                        <div class="bullet-list">
+                            <div><strong>Adaga.</strong> <em>Ataque Corpo-a-Corpo com Arma:</em> +4 para atingir, alcance 1,5 m, um alvo. <em>Acerto:</em> 4 (1d4 + 2) de dano perfurante.</div>
+                            <div><strong>Funda.</strong> <em>Ataque à Distância com Arma:</em> +4 para atingir, alcance 9/36 m, um alvo. <em>Acerto:</em> 4 (1d4 + 2) de dano contundente.</div>
+                        </div>
+                    </div>
+                    <div class="footer">Manual dos Monstros</div>
+                </div>
+
+                <!-- 3. INÇO-PRAGA RAMO -->
+                <div class="monster-card">
+                    <div class="header">
+                        <div class="title-block">
+                            <h1 class="title">Inço-Praga Ramo</h1>
+                            <span class="subtitle-en">Twig Blight</span>
+                        </div>
+                        <div class="meta">
+                            <span>Planta Pequena, neutro e mau</span><br>
+                            <strong>Classe de Armadura:</strong> 13 (armadura natural) | <strong>Pontos de Vida:</strong> 4 (1d6 + 1)<br>
+                            <strong>Deslocamento:</strong> 6 m
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-box"><span class="stat-label">FOR</span><span class="stat-val">6 (-2)</span></div>
+                        <div class="stat-box"><span class="stat-label">DES</span><span class="stat-val">13 (+1)</span></div>
+                        <div class="stat-box"><span class="stat-label">CON</span><span class="stat-val">12 (+1)</span></div>
+                        <div class="stat-box"><span class="stat-label">INT</span><span class="stat-val">4 (-3)</span></div>
+                        <div class="stat-box"><span class="stat-label">SAB</span><span class="stat-val">8 (-1)</span></div>
+                        <div class="stat-box"><span class="stat-label">CAR</span><span class="stat-val">3 (-4)</span></div>
+                    </div>
+                    <div class="content">
+                        <div class="bullet-list">
+                            <div><strong>Perícias:</strong> Furtividade +3</div>
+                            <div><strong>Vulnerabilidades a Dano:</strong> fogo</div>
+                            <div><strong>Imunidades a Condição:</strong> cego, surdo</div>
+                            <div><strong>Sentidos:</strong> percepção às cegas 18 m (cego além desse raio), Percepção passiva 9</div>
+                            <div><strong>Idiomas:</strong> compreende Silvestre mas não fala</div>
+                            <div><strong>Nível de Desafio:</strong> 1/8 (25 XP)</div>
+                            <div><strong>Aparência Falsa.</strong> Enquanto o inço-praga permanecer imóvel, ele é indistinguível de um arbusto morto.</div>
+                        </div>
+                        <div class="section-title">Ações</div>
+                        <div class="bullet-list">
+                            <div><strong>Garras.</strong> <em>Ataque Corpo-a-Corpo com Arma:</em> +3 para atingir, alcance 1,5 m, um alvo. <em>Acerto:</em> 3 (1d4 + 1) de dano perfurante.</div>
+                        </div>
+                    </div>
+                    <div class="footer">Manual dos Monstros</div>
+                </div>
+
+                <!-- 4. RATO GIGANTE -->
+                <div class="monster-card">
+                    <div class="header">
+                        <div class="title-block">
+                            <h1 class="title">Rato Gigante</h1>
+                            <span class="subtitle-en">Giant Rat</span>
+                        </div>
+                        <div class="meta">
+                            <span>Besta Pequena, imparcial</span><br>
+                            <strong>Classe de Armadura:</strong> 12 | <strong>Pontos de Vida:</strong> 7 (2d6)<br>
+                            <strong>Deslocamento:</strong> 9 m
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-box"><span class="stat-label">FOR</span><span class="stat-val">7 (-2)</span></div>
+                        <div class="stat-box"><span class="stat-label">DES</span><span class="stat-val">15 (+2)</span></div>
+                        <div class="stat-box"><span class="stat-label">CON</span><span class="stat-val">11 (+0)</span></div>
+                        <div class="stat-box"><span class="stat-label">INT</span><span class="stat-val">2 (-4)</span></div>
+                        <div class="stat-box"><span class="stat-label">SAB</span><span class="stat-val">10 (+0)</span></div>
+                        <div class="stat-box"><span class="stat-label">CAR</span><span class="stat-val">4 (-3)</span></div>
+                    </div>
+                    <div class="content">
+                        <div class="bullet-list">
+                            <div><strong>Sentidos:</strong> visão no escuro 18 m, Percepção passiva 10</div>
+                            <div><strong>Idiomas:</strong> -</div>
+                            <div><strong>Nível de Desafio:</strong> 1/8 (25 XP)</div>
+                            <div><strong>Olfato Aguçado.</strong> O rato tem vantagem em testes de Sabedoria (Percepção) que dependam do olfato.</div>
+                            <div><strong>Táticas de Matilha.</strong> O rato tem vantagem em jogadas de ataque contra uma criatura se pelo menos um dos aliados do rato estiver a até 1,5 metro da criatura e não estiver incapacitado.</div>
+                        </div>
+                        <div class="section-title">Ações</div>
+                        <div class="bullet-list">
+                            <div><strong>Mordida.</strong> <em>Ataque Corpo-a-Corpo com Arma:</em> +4 para atingir, alcance 1,5 m, um alvo. <em>Acerto:</em> 4 (1d4 + 2) de dano perfurante.</div>
+                        </div>
+                    </div>
+                    <div class="footer">Manual dos Monstros</div>
+                </div>
+
+                <!-- 5. SAPO GIGANTE -->
+                <div class="monster-card">
+                    <div class="header">
+                        <div class="title-block">
+                            <h1 class="title">Sapo Gigante</h1>
+                            <span class="subtitle-en">Giant Frog</span>
+                        </div>
+                        <div class="meta">
+                            <span>Besta Média, imparcial</span><br>
+                            <strong>Classe de Armadura:</strong> 11 | <strong>Pontos de Vida:</strong> 18 (4d8)<br>
+                            <strong>Deslocamento:</strong> 6 m, natação 9 m
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-box"><span class="stat-label">FOR</span><span class="stat-val">12 (+1)</span></div>
+                        <div class="stat-box"><span class="stat-label">DES</span><span class="stat-val">13 (+1)</span></div>
+                        <div class="stat-box"><span class="stat-label">CON</span><span class="stat-val">11 (+0)</span></div>
+                        <div class="stat-box"><span class="stat-label">INT</span><span class="stat-val">2 (-4)</span></div>
+                        <div class="stat-box"><span class="stat-label">SAB</span><span class="stat-val">10 (+0)</span></div>
+                        <div class="stat-box"><span class="stat-label">CAR</span><span class="stat-val">3 (-4)</span></div>
+                    </div>
+                    <div class="content">
+                        <div class="bullet-list">
+                            <div><strong>Perícias:</strong> Furtividade +3</div>
+                            <div><strong>Sentidos:</strong> visão no escuro 9 m, Percepção passiva 10</div>
+                            <div><strong>Idiomas:</strong> -</div>
+                            <div><strong>Nível de Desafio:</strong> 1/4 (50 XP)</div>
+                            <div><strong>Salto Parado.</strong> O salto em distância do bullywug [sapo] é de até 6 metros e seu salto em altura é de até 3 metros, com ou sem uma corrida inicial.</div>
+                        </div>
+                        <div class="section-title">Ações</div>
+                        <div class="bullet-list">
+                            <div><strong>Mordida.</strong> <em>Ataque Corpo-a-Corpo com Arma:</em> +3 para atingir, alcance 1,5 m, um alvo. <em>Acerto:</em> 4 (1d6 + 1) de dano perfurante e o alvo fica agarrado (CD 11 para escapar) e o alvo é impedido até o agarrão terminar e o sapo não pode morder outro alvo.</div>
+                            <div><strong>Engolir.</strong> O sapo realiza um ataque de mordida contra um alvo Miúdo ou menor que esteja agarrando. Se o ataque atingir, o alvo também será engolido e o agarrão termina. Enquanto estiver engolido, o alvo estará cego e impedido, ele terá cobertura total contra ataques e outros efeitos de fora do sapo e sofre 3 (1d6) de dano ácido no começo de cada turno do sapo. Um sapo pode ter apenas uma criatura engolida por vez. Se o sapo morrer, uma criatura engolida não estará mais impedida por ele e poderá escapar do corpo usando 1,5 metro de movimento, estando caída ao sair.</div>
+                        </div>
+                    </div>
+                    <div class="footer">Manual dos Monstros</div>
+                </div>
+
+                <!-- 6. ESQUELETO -->
+                <div class="monster-card">
+                    <div class="header">
+                        <div class="title-block">
+                            <h1 class="title">Esqueleto</h1>
+                            <span class="subtitle-en">Skeleton</span>
+                        </div>
+                        <div class="meta">
+                            <span>Morto-vivo Médio, neutro e mau</span><br>
+                            <strong>Classe de Armadura:</strong> 13 (restos de armadura) | <strong>Pontos de Vida:</strong> 13 (2d8 + 4)<br>
+                            <strong>Deslocamento:</strong> 9 m
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-box"><span class="stat-label">FOR</span><span class="stat-val">10 (+0)</span></div>
+                        <div class="stat-box"><span class="stat-label">DES</span><span class="stat-val">14 (+2)</span></div>
+                        <div class="stat-box"><span class="stat-label">CON</span><span class="stat-val">15 (+2)</span></div>
+                        <div class="stat-box"><span class="stat-label">INT</span><span class="stat-val">6 (-2)</span></div>
+                        <div class="stat-box"><span class="stat-label">SAB</span><span class="stat-val">8 (-1)</span></div>
+                        <div class="stat-box"><span class="stat-label">CAR</span><span class="stat-val">5 (-3)</span></div>
+                    </div>
+                    <div class="content">
+                        <div class="bullet-list">
+                            <div><strong>Vulnerabilidades a Dano:</strong> contundente</div>
+                            <div><strong>Imunidade a Dano:</strong> veneno</div>
+                            <div><strong>Imunidade a Condição:</strong> envenenado, exaustão</div>
+                            <div><strong>Sentidos:</strong> visão no escuro 18 m, Percepção passiva 9</div>
+                            <div><strong>Idiomas:</strong> os idiomas que conhecia em vida mas não pode falar</div>
+                            <div><strong>Nível de Desafio:</strong> 1/4 (50 XP)</div>
+                        </div>
+                        <div class="section-title">Ações</div>
+                        <div class="bullet-list">
+                            <div><strong>Espada Curta.</strong> <em>Ataque Corpo-a-Corpo com Arma:</em> +4 para atingir, alcance 1,5 m, um alvo. <em>Acerto:</em> 5 (1d6 + 2) de dano cortante.</div>
+                            <div><strong>Arco Curto.</strong> <em>Ataque à Distância com Arma:</em> +4 para atingir, alcance 24/96 m, um alvo. <em>Acerto:</em> 5 (1d6 + 2) de dano perfurante.</div>
+                        </div>
+                    </div>
+                    <div class="footer">Manual dos Monstros</div>
+                </div>
+
+                <!-- 7. SOMBRA -->
+                <div class="monster-card">
+                    <div class="header">
+                        <div class="title-block">
+                            <h1 class="title">Sombra</h1>
+                            <span class="subtitle-en">Shadow</span>
+                        </div>
+                        <div class="meta">
+                            <span>Morto-vivo Médio, caótico e mau</span><br>
+                            <strong>Classe de Armadura:</strong> 12 | <strong>Pontos de Vida:</strong> 16 (3d8 + 3)<br>
+                            <strong>Deslocamento:</strong> 12 m
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-box"><span class="stat-label">FOR</span><span class="stat-val">6 (-2)</span></div>
+                        <div class="stat-box"><span class="stat-label">DES</span><span class="stat-val">14 (+2)</span></div>
+                        <div class="stat-box"><span class="stat-label">CON</span><span class="stat-val">13 (+1)</span></div>
+                        <div class="stat-box"><span class="stat-label">INT</span><span class="stat-val">6 (-2)</span></div>
+                        <div class="stat-box"><span class="stat-label">SAB</span><span class="stat-val">10 (+0)</span></div>
+                        <div class="stat-box"><span class="stat-label">CAR</span><span class="stat-val">8 (-1)</span></div>
+                    </div>
+                    <div class="content">
+                        <div class="bullet-list">
+                            <div><strong>Perícias:</strong> Furtividade +4 (+6 quando em penumbra ou escuridão)</div>
+                            <div><strong>Resistência a Dano:</strong> ácido, elétrico, fogo, frio, trovejante; concussão, perfurante e cortante de ataques não-mágicos</div>
+                            <div><strong>Imunidade a Dano:</strong> necrótico, veneno</div>
+                            <div><strong>Imunidade a Condição:</strong> agarrado, caído, enfeitiçado, envenenado, exausto, impedido, inconsciente, paralisado, petrificado</div>
+                            <div><strong>Sentidos:</strong> visão no escuro 18 m, Percepção passiva 10</div>
+                            <div><strong>Idiomas:</strong> -</div>
+                            <div><strong>Nível de Desafio:</strong> 1/2 (100 XP)</div>
+                            <div><strong>Sombra Viva.</strong> Enquanto estiver na penumbra ou escuridão, a sombra possui resistência a danos que não sejam de energia, psíquico e radiante.</div>
+                            <div><strong>Furtividade Sombria.</strong> Enquanto estiver na penumbra ou escuridão, a sombra pode realizar a ação Esconder-se com uma ação bônus.</div>
+                            <div><strong>Sensibilidade à Luz Sunlight.</strong> Enquanto estiver sob luz solar, a sombra tem desvantagem nas jogada de ataque, assim como em testes de Sabedoria (Percepção) que tenham a ver com visão.</div>
+                        </div>
+                        <div class="section-title">Ações</div>
+                        <div class="bullet-list">
+                            <div><strong>Dreno de Força.</strong> <em>Ataque Corpo-a-Corpo com Arma:</em> +4 para atingir, alcance 1,5 m, um alvo. <em>Acerto:</em> 9 (2d6 + 2) de dano necrótico e a Força do alvo é reduzida em 1d4. O alvo morre se esse efeito reduzir sua Força a 0. Do contrário, a redução dura até o alvo terminar um descanso curto ou longo. Se um não-maligno morrer por esse ataque, uma nova sombra ergue-se do corpo morto 1d4 horas depois.</div>
+                        </div>
+                    </div>
+                    <div class="footer">Manual dos Monstros</div>
+                </div>
+
+                <!-- 8. QUASIT -->
+                <div class="monster-card">
+                    <div class="header">
+                        <div class="title-block">
+                            <h1 class="title">Quasit</h1>
+                            <span class="subtitle-en">Quasit</span>
+                        </div>
+                        <div class="meta">
+                            <span>Corruptor Miúdo (demônio, metamorfo), caótico e mau</span><br>
+                            <strong>Classe de Armadura:</strong> 13 | <strong>Pontos de Vida:</strong> 7 (3d4) | <strong>Deslocamento:</strong> 12 m
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-box"><span class="stat-label">FOR</span><span class="stat-val">5 (-3)</span></div>
+                        <div class="stat-box"><span class="stat-label">DES</span><span class="stat-val">17 (+3)</span></div>
+                        <div class="stat-box"><span class="stat-label">CON</span><span class="stat-val">10 (+0)</span></div>
+                        <div class="stat-box"><span class="stat-label">INT</span><span class="stat-val">7 (-2)</span></div>
+                        <div class="stat-box"><span class="stat-label">SAB</span><span class="stat-val">10 (+0)</span></div>
+                        <div class="stat-box"><span class="stat-label">CAR</span><span class="stat-val">10 (+0)</span></div>
+                    </div>
+                    <div class="content" style="font-size: 9.4px;">
+                        <div class="bullet-list">
+                            <div><strong>Perícias:</strong> Furtividade +5</div>
+                            <div><strong>Resistência a Dano:</strong> frio, fogo, elétrico; concussão, cortante e perfurante de ataques não-mágicos</div>
+                            <div><strong>Imunidade a Dano:</strong> veneno</div>
+                            <div><strong>Sentidos:</strong> visão no escuro 36 m, Percepção passiva 10</div>
+                            <div><strong>Idiomas:</strong> Abissal, Comum</div>
+                            <div><strong>Nível de Desafio:</strong> 1 (200 XP)</div>
+                            <div><strong>Metamorfo.</strong> O quasit pode usar sua ação para se metamorfosear nas formas de besta de um morcego (deslocamento 3 m, voo 12 m), centopeia (12 m, escalada 12 m) ou sapo (12 m, natação 12 m), ou em sua forma de demônio. Suas estatísticas são as mesmas em todas as formas, no entanto, seu ataque é diferente em algumas delas. Qualquer equipamento carregado não será transformado. Se for morto, o quasit volta a sua forma de demônio.</div>
+                            <div><strong>Resistência à Magia.</strong> O quasit tem vantagem em testes de resistência contra magias e outros efeitos mágicos.</div>
+                        </div>
+                        <div class="section-title">Ações</div>
+                        <div class="bullet-list">
+                            <div><strong>Garras (Mordida em Forma de Besta).</strong> <em>Ataque Corpo-a-Corpo com Arma:</em> +5 para atingir, alcance 1,5 m, um alvo. <em>Acerto:</em> 5 (1d4 + 3) de dano perfurante. Se o alvo for uma criatura, ela deve ser bem sucedida num teste de resistência de Constituição CD 10 ou sofrerá 5 (2d4) de dano de veneno e ficará envenenado por 1 minuto. A criatura pode repetir o teste de resistência no final de cada um dos seus turnos, terminando o efeito prematuramente se obtiver sucesso.</div>
+                            <div><strong>Assustar (1/Dia).</strong> Uma criatura, à escolha do quasit, a até 6 metros dele, deve ser bem sucedida num teste de resistência de Sabedoria CD 10 ou ficará amedrontada por 1 minuto. O alvo pode repetir o teste de resistência no final de cada um dos seus turnos, com desvantagem se o quasit estiver em sua linha de visão, terminando o efeito prematuramente se obtiver sucesso.</div>
+                            <div><strong>Invisibilidade.</strong> O quasit fica invisível até ele atacar, usar Assustar ou sua concentração acabar. Qualquer coisa que o quasit invisível estiver carregando ou vestindo fica invisível contanto que permaneça em contato com ele.</div>
+                        </div>
+                    </div>
+                    <div class="footer">Manual dos Monstros</div>
+                </div>
+
+                <!-- 9. CALCRYX -->
+                <div class="monster-card">
+                    <div class="header">
+                        <div class="title-block">
+                            <h1 class="title">Calcryx</h1>
+                            <span class="subtitle-en">White Dragon Wyrmling</span>
+                        </div>
+                        <div class="meta">
+                            <span>Dragão Médio, caótico e mau</span><br>
+                            <strong>Classe de Armadura:</strong> 16 (armadura natural) | <strong>Pontos de Vida:</strong> 32 (5d8 + 10)<br>
+                            <strong>Deslocamento:</strong> 9 m, escavação 4,5 m, voo 15 m, natação 9 m
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-box"><span class="stat-label">FOR</span><span class="stat-val">14 (+2)</span></div>
+                        <div class="stat-box"><span class="stat-label">DES</span><span class="stat-val">10 (+0)</span></div>
+                        <div class="stat-box"><span class="stat-label">CON</span><span class="stat-val">14 (+2)</span></div>
+                        <div class="stat-box"><span class="stat-label">INT</span><span class="stat-val">5 (-3)</span></div>
+                        <div class="stat-box"><span class="stat-label">SAB</span><span class="stat-val">10 (+0)</span></div>
+                        <div class="stat-box"><span class="stat-label">CAR</span><span class="stat-val">11 (+0)</span></div>
+                    </div>
+                    <div class="content">
+                        <div class="bullet-list">
+                            <div><strong>Perícias:</strong> Furtividade +2, Percepção +4</div>
+                            <div><strong>Imunidade a Dano:</strong> frio</div>
+                            <div><strong>Sentidos:</strong> percepção cega 3 m, visão no escuro 18 m, Percepção passiva 14</div>
+                            <div><strong>Idiomas:</strong> Dracônico</div>
+                            <div><strong>Nível de Desafio:</strong> 2 (450 XP)</div>
+                            <div><strong>Anfíbio.</strong> O dragão pode respirar ar e água.</div>
+                        </div>
+                        <div class="section-title">Ações</div>
+                        <div class="bullet-list">
+                            <div><strong>Mordida.</strong> <em>Ataque Corpo-a-Corpo com Arma:</em> +4 para atingir, alcance 1,5 m, um alvo. <em>Acerto:</em> 7 (1d10 + 2) de dano perfurante mais 2 (1d4) de dano de frio.</div>
+                            <div><strong>Sopro de Gelo (Recarga 5-6).</strong> O dragão expele um cone de gelo de 4,5 metros. Cada criatura na área deve fazer uma salvaguarda de Constituição CD 12, sofrendo 22 (5d8) de dano de frio se falhar na salvaguarda, ou metade se obtiver sucesso.</div>
+                        </div>
+                    </div>
+                    <div class="footer">Contos do Portal Bocejante</div>
+                </div>
+
+                <!-- 10. HOBGOBLIN -->
+                <div class="monster-card">
+                    <div class="header">
+                        <div class="title-block">
+                            <h1 class="title">Hobgoblin</h1>
+                            <span class="subtitle-en">Hobgoblin</span>
+                        </div>
+                        <div class="meta">
+                            <span>Humanoide Médio (goblinoide), leal e mau</span><br>
+                            <strong>Classe de Armadura:</strong> 18 (cota de malha, escudo) | <strong>Pontos de Vida:</strong> 11 (2d8 + 2)<br>
+                            <strong>Deslocamento:</strong> 9 m
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-box"><span class="stat-label">FOR</span><span class="stat-val">13 (+1)</span></div>
+                        <div class="stat-box"><span class="stat-label">DES</span><span class="stat-val">12 (+1)</span></div>
+                        <div class="stat-box"><span class="stat-label">CON</span><span class="stat-val">12 (+1)</span></div>
+                        <div class="stat-box"><span class="stat-label">INT</span><span class="stat-val">10 (+0)</span></div>
+                        <div class="stat-box"><span class="stat-label">SAB</span><span class="stat-val">10 (+0)</span></div>
+                        <div class="stat-box"><span class="stat-label">CAR</span><span class="stat-val">10 (+0)</span></div>
+                    </div>
+                    <div class="content">
+                        <div class="bullet-list">
+                            <div><strong>Sentidos:</strong> visão no escuro 18 m, Percepção passiva 10</div>
+                            <div><strong>Idiomas:</strong> Comum, Goblin</div>
+                            <div><strong>Nível de Desafio:</strong> 1/4 (50 XP)</div>
+                            <div><strong>Vantagem Marcial.</strong> O hobgoblin causa 7 (2d6) de dano extra a uma criatura que ele atinja com um ataque com arma se a criatura estiver a até 1,5 metro de um aliado do hobgoblin que não esteja incapacitado (1/turno).</div>
+                        </div>
+                        <div class="section-title">Ações</div>
+                        <div class="bullet-list">
+                            <div><strong>Espada Longa.</strong> <em>Ataque Corpo-a-Corpo com Arma:</em> +3 para atingir, alcance 1,5 m, um alvo. <em>Acerto:</em> 5 (1d8 + 1) de dano cortante ou 6 (1d10 + 1) de dano cortante se for usada com as duas mãos para realizar um ataque corpo-a-corpo.</div>
+                            <div><strong>Arco Longo.</strong> <em>Ataque à Distância com Arma:</em> +3 para atingir, distância 45/180 m, um alvo. <em>Acerto:</em> 5 (1d8 + 1) de dano perfurante.</div>
+                        </div>
+                    </div>
+                    <div class="footer">Manual dos Monstros</div>
+                </div>
+
+                <!-- 11. BARGHEST -->
+                <div class="monster-card">
+                    <div class="header">
+                        <div class="title-block">
+                            <h1 class="title">Barghest</h1>
+                            <span class="subtitle-en">Barghest</span>
+                        </div>
+                        <div class="meta">
+                            <span>Corruptor Médio (metamorfo), leal e mau</span><br>
+                            <strong>Classe de Armadura:</strong> 17 (armadura natural) | <strong>Pontos de Vida:</strong> 90 (12d8 + 36)<br>
+                            <strong>Deslocamento:</strong> 18 m (9 m em forma de goblin)
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-box"><span class="stat-label">FOR</span><span class="stat-val">19 (+4)</span></div>
+                        <div class="stat-box"><span class="stat-label">DES</span><span class="stat-val">15 (+2)</span></div>
+                        <div class="stat-box"><span class="stat-label">CON</span><span class="stat-val">16 (+3)</span></div>
+                        <div class="stat-box"><span class="stat-label">INT</span><span class="stat-val">13 (+1)</span></div>
+                        <div class="stat-box"><span class="stat-label">SAB</span><span class="stat-val">12 (+1)</span></div>
+                        <div class="stat-box"><span class="stat-label">CAR</span><span class="stat-val">14 (+2)</span></div>
+                    </div>
+                    <div class="content">
+                        <div class="bullet-list">
+                            <div><strong>Perícias:</strong> Enganação +4, Furtividade +4, Intimidação +4, Percepção +3</div>
+                            <div><strong>Resistência a Dano:</strong> frio, elétrico, relâmpago; concussão, cortante e perfurante de ataques não-mágicos</div>
+                            <div><strong>Imunidade a Dano:</strong> fogo</div>
+                            <div><strong>Sentidos:</strong> visão no escuro 18 m, Percepção passiva 13</div>
+                            <div><strong>Idiomas:</strong> Abissal, Comun, Goblin</div>
+                            <div><strong>Nível de Desafio:</strong> 4 (1.100 XP)</div>
+                            <div><strong>Metamorfo.</strong> O barghest pode usar sua ação para se transformar em um goblin ou em um lobo terrível, ou voltar para sua verdadeira forma.</div>
+                            <div><strong>Resistência à Magia.</strong> O barghest possui vantagem nos testes de resistência contra magias e outros efeitos mágicos.</div>
+                            <div><strong>Conjuração Inata.</strong> O atributo de conjuração do barghest é Carisma (CD 12). Ele pode conjurar as seguintes magias inatamente, exigindo apenas componentes verbais: À vontade: *levitação*, *passos sem pegadas*; 1/day cada: *piscar*, *sugestão*.</div>
+                        </div>
+                        <div class="section-title">Ações</div>
+                        <div class="bullet-list">
+                            <div><strong>Mordida.</strong> <em>Ataque Corpo-a-Corpo com Arma:</em> +6 para atingir, alcance 1,5 m, um alvo. <em>Acerto:</em> 13 (2d8 + 4) de dano perfurante. (Apenas na forma de lobo ou forma verdadeira).</div>
+                            <div><strong>Garras.</strong> <em>Ataque Corpo-a-Corpo com Arma:</em> +6 para atingir, alcance 1,5 m, um alvo. <em>Acerto:</em> 8 (1d8 + 4) de dano cortante. (Apenas na forma verdadeira).</div>
+                        </div>
+                    </div>
+                    <div class="footer">Contos do Portal Bocejante</div>
+                </div>
+
+                <!-- 12. MEFIT DE GELO -->
+                <div class="monster-card">
+                    <div class="header">
+                        <div class="title-block">
+                            <h1 class="title">Mefit de Gelo</h1>
+                            <span class="subtitle-en">Ice Mephit</span>
+                        </div>
+                        <div class="meta">
+                            <span>Elemental Pequeno, leal e mau</span><br>
+                            <strong>Classe de Armadura:</strong> 11 | <strong>Pontos de Vida:</strong> 21 (6d6)<br>
+                            <strong>Deslocamento:</strong> 9 m, voo 9 m
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-box"><span class="stat-label">FOR</span><span class="stat-val">7 (-2)</span></div>
+                        <div class="stat-box"><span class="stat-label">DES</span><span class="stat-val">13 (+1)</span></div>
+                        <div class="stat-box"><span class="stat-label">CON</span><span class="stat-val">10 (+0)</span></div>
+                        <div class="stat-box"><span class="stat-label">INT</span><span class="stat-val">9 (-1)</span></div>
+                        <div class="stat-box"><span class="stat-label">SAB</span><span class="stat-val">11 (+0)</span></div>
+                        <div class="stat-box"><span class="stat-label">CAR</span><span class="stat-val">12 (+1)</span></div>
+                    </div>
+                    <div class="content">
+                        <div class="bullet-list">
+                            <div><strong>Perícias:</strong> Furtividade +3, Percepção +2</div>
+                            <div><strong>Vulnerabilidades a Dano:</strong> fogo, contundente</div>
+                            <div><strong>Imunidade a Dano:</strong> frio, veneno</div>
+                            <div><strong>Imunidade a Condição:</strong> envenenado</div>
+                            <div><strong>Sentidos:</strong> visão no escuro 18 m, Percepção passiva 12</div>
+                            <div><strong>Idiomas:</strong> Aquan, Auran</div>
+                            <div><strong>Nível de Desafio:</strong> 1/2 (100 XP)</div>
+                            <div><strong>Estouro de Morte.</strong> Quando o mefit morre, ele explode em estilhaços de gelo. Cada criatura a até 1,5 metro dele deve realizar um teste de resistência de Destreza CD 10, sofrendo 7 (2d6) de dano de frio se falhar, ou metade se obtiver sucesso.</div>
+                            <div><strong>Falsa Aparência.</strong> Enquanto o mefit permanecer imóvel, ele é indistinguível de um pedaço ordinário de gelo.</div>
+                            <div><strong>Conjuração Inata.</strong> O atributo de conjuração do mefit é Carisma (CD 11). Ele pode conjurar, inatamente, a seguinte magia, exigindo apenas componentes verbais: 1/dia: *névoa*.</div>
+                        </div>
+                        <div class="section-title">Ações</div>
+                        <div class="bullet-list">
+                            <div><strong>Garras.</strong> <em>Ataque Corpo-a-Corpo com Arma:</em> +3 para atingir, alcance 1,5 m, um alvo. <em>Acerto:</em> 3 (1d4 + 1) de dano cortante mais 2 (1d4) de dano de frio.</div>
+                            <div><strong>Sopro de Gelo (Recarga 6).</strong> O mefit expele um cone de gelo de 4,5 metros. Cada criatura na área deve fazer uma salvaguarda de Destreza CD 10, sofrendo 5 (2d4) de dano de frio se falhar na salvaguarda, ou metade se obtiver sucesso.</div>
+                        </div>
+                    </div>
+                    <div class="footer">Manual dos Monstros</div>
+                </div>
+
+                <!-- 13. MEFIT DE VAPOR -->
+                <div class="monster-card">
+                    <div class="header">
+                        <div class="title-block">
+                            <h1 class="title">Mefit de Vapor</h1>
+                            <span class="subtitle-en">Steam Mephit</span>
+                        </div>
+                        <div class="meta">
+                            <span>Elemental Pequeno, leal e mau</span><br>
+                            <strong>Classe de Armadura:</strong> 10 | <strong>Pontos de Vida:</strong> 21 (6d6)<br>
+                            <strong>Deslocamento:</strong> 9 m, voo 9 m
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-box"><span class="stat-label">FOR</span><span class="stat-val">5 (-3)</span></div>
+                        <div class="stat-box"><span class="stat-label">DES</span><span class="stat-val">11 (+0)</span></div>
+                        <div class="stat-box"><span class="stat-label">CON</span><span class="stat-val">10 (+0)</span></div>
+                        <div class="stat-box"><span class="stat-label">INT</span><span class="stat-val">11 (+0)</span></div>
+                        <div class="stat-box"><span class="stat-label">SAB</span><span class="stat-val">10 (+0)</span></div>
+                        <div class="stat-box"><span class="stat-label">CAR</span><span class="stat-val">12 (+1)</span></div>
+                    </div>
+                    <div class="content">
+                        <div class="bullet-list">
+                            <div><strong>Perícias:</strong> Furtividade +2, Percepção +2</div>
+                            <div><strong>Imunidade a Dano:</strong> fogo, veneno</div>
+                            <div><strong>Imunidade a Condição:</strong> envenenado</div>
+                            <div><strong>Sentidos:</strong> visão no escuro 18 m, Percepção passiva 12</div>
+                            <div><strong>Idiomas:</strong> Aquan, Ignan</div>
+                            <div><strong>Nível de Desafio:</strong> 1/4 (50 XP)</div>
+                            <div><strong>Estouro de Morte.</strong> Quando o mefit morre, ele explode em uma nuvem de vapor escaldante. Cada criatura a até 1,5 metro dele deve realizar um teste de resistência de Destreza CD 10, sofrendo 4 (1d8) de dano de fogo se falhar, ou metade se obtiver sucesso.</div>
+                            <div><strong>Conjuração Inata.</strong> O atributo de conjuração do mefit é Carisma (CD 11). Ele pode conjurar, inatamente, a seguinte magia, exigindo apenas componentes verbais: 1/dia: *recuo acelerado*.</div>
+                        </div>
+                        <div class="section-title">Ações</div>
+                        <div class="bullet-list">
+                            <div><strong>Garras.</strong> <em>Ataque Corpo-a-Corpo com Arma:</em> +2 para atingir, alcance 1,5 m, um alvo. <em>Acerto:</em> 2 (1d4) de dano cortante mais 2 (1d4) de dano de fogo.</div>
+                            <div><strong>Sopro de Vapor (Recarga 6).</strong> O mefit expele uma nuvem de vapor escaldante num cone de 4,5 metros. Cada criatura na área deve fazer uma salvaguarda de Destreza CD 10, sofrendo 4 (1d8) de dano de fogo se falhar na salvaguarda, ou metade se obtiver sucesso.</div>
+                        </div>
+                    </div>
+                    <div class="footer">Manual dos Monstros</div>
+                </div>
+
+                <!-- 14. COBRA DE FOGO -->
+                <div class="monster-card">
+                    <div class="header">
+                        <div class="title-block">
+                            <h1 class="title">Cobra de Fogo</h1>
+                            <span class="subtitle-en">Fire Snake</span>
+                        </div>
+                        <div class="meta">
+                            <span>Elemental Médio, neutro e mau</span><br>
+                            <strong>Classe de Armadura:</strong> 14 (armadura natural) | <strong>Pontos de Vida:</strong> 22 (5d8)<br>
+                            <strong>Deslocamento:</strong> 9 m
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-box"><span class="stat-label">FOR</span><span class="stat-val">12 (+1)</span></div>
+                        <div class="stat-box"><span class="stat-label">DES</span><span class="stat-val">14 (+2)</span></div>
+                        <div class="stat-box"><span class="stat-label">CON</span><span class="stat-val">11 (+0)</span></div>
+                        <div class="stat-box"><span class="stat-label">INT</span><span class="stat-val">4 (-3)</span></div>
+                        <div class="stat-box"><span class="stat-label">SAB</span><span class="stat-val">10 (+0)</span></div>
+                        <div class="stat-box"><span class="stat-label">CAR</span><span class="stat-val">7 (-2)</span></div>
+                    </div>
+                    <div class="content">
+                        <div class="bullet-list">
+                            <div><strong>Resistência a Dano:</strong> ácido, elétrico, frio, trovejante; concussão, cortante e perfurante de ataques não-mágicos</div>
+                            <div><strong>Imunidade a Dano:</strong> fogo, veneno</div>
+                            <div><strong>Imunidade a Condição:</strong> envenenado</div>
+                            <div><strong>Sentidos:</strong> visão no escuro 18 m, Percepção passiva 10</div>
+                            <div><strong>Idiomas:</strong> compreende Ignan mas não pode falar</div>
+                            <div><strong>Nível de Desafio:</strong> 1 (200 XP)</div>
+                            <div><strong>Corpo Aquecido.</strong> Uma criatura que toque a cobra ou que atinja ela com um ataque corpo-a-corpo estando a até 1,5 metro dela, sofre 3 (1d6) de dano de fogo.</div>
+                        </div>
+                        <div class="section-title">Ações</div>
+                        <div class="bullet-list">
+                            <div><strong>Mordida.</strong> <em>Ataque Corpo-a-Corpo com Arma:</em> +3 para atingir, alcance 1,5 m, um alvo. <em>Acerto:</em> 4 (1d4 + 1) de dano perfurante mais 3 (1d6) de dano de fogo.</div>
+                            <div><strong>Cauda.</strong> <em>Ataque Corpo-a-Corpo com Arma:</em> +3 para atingir, alcance 1,5 m, um alvo. <em>Acerto:</em> 3 (1d4 + 1) de dano de concussão mais 3 (1d6) de dano de fogo.</div>
+                        </div>
+                    </div>
+                    <div class="footer">Manual dos Monstros</div>
+                </div>
+
+                <!-- 15. SACERDOTE DRAGÃO -->
+                <div class="monster-card">
+                    <div class="header">
+                        <div class="title-block">
+                            <h1 class="title">Sacerdote Dragão</h1>
+                            <span class="subtitle-en">Dragonpriest</span>
+                        </div>
+                        <div class="meta">
+                            <span>Gigante Grande (troll), caótico e mau</span><br>
+                            <strong>Classe de Armadura:</strong> 15 (armadura natural) | <strong>Pontos de Vida:</strong> 30 (especial)<br>
+                            <strong>Deslocamento:</strong> 9 m
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-box"><span class="stat-label">FOR</span><span class="stat-val">18 (+4)</span></div>
+                        <div class="stat-box"><span class="stat-label">DES</span><span class="stat-val">13 (+1)</span></div>
+                        <div class="stat-box"><span class="stat-label">CON</span><span class="stat-val">20 (+5)</span></div>
+                        <div class="stat-box"><span class="stat-label">INT</span><span class="stat-val">7 (-2)</span></div>
+                        <div class="stat-box"><span class="stat-label">SAB</span><span class="stat-val">9 (-1)</span></div>
+                        <div class="stat-box"><span class="stat-label">CAR</span><span class="stat-val">7 (-2)</span></div>
+                    </div>
+                    <div class="content">
+                        <div class="bullet-list">
+                            <div><strong>Perícias:</strong> Percepção +1</div>
+                            <div><strong>Sentidos:</strong> visão no escuro 18 m, Percepção passiva 11</div>
+                            <div><strong>Idiomas:</strong> Élfico, Dracônico, Gigante</div>
+                            <div><strong>Nível de Desafio:</strong> 2 (450 XP)</div>
+                            <div><strong>Olfato Aguçado.</strong> O troll tem vantagem em testes de Sabedoria (Percepção) que dependam do olfato.</div>
+                            <div><strong>Regeneração.</strong> O sacerdote dragão recupera 5 pontos de vida no início do seu turno se tiver pelo menos 1 ponto de vida. Se sofrer dano de fogo ou ácido, essa característica não funcionará no início do próximo turno do sacerdote dragão.</div>
+                        </div>
+                        <div class="section-title">Ações</div>
+                        <div class="bullet-list">
+                            <div><strong>Mordida.</strong> <em>Ataque Corpo-a-Corpo com Arma:</em> +7 para atingir, alcance 1,5 m, um alvo. <em>Acerto:</em> 7 (1d6 + 4) de dano perfurante.</div>
+                            <div><strong>Garras.</strong> <em>Ataque Corpo-a-Corpo com Arma:</em> +7 para atingir, alcance 1,5 m, um alvo. <em>Acerto:</em> 11 (2d6 + 4) de dano cortante.</div>
+                        </div>
+                    </div>
+                    <div class="footer">Contos do Portal Bocejante</div>
+                </div>
+
+                <!-- 16. BUGBEAR -->
+                <div class="monster-card">
+                    <div class="header">
+                        <div class="title-block">
+                            <h1 class="title">Bugbear</h1>
+                            <span class="subtitle-en">Bugbear</span>
+                        </div>
+                        <div class="meta">
+                            <span>Humanoide Médio (goblinoide), caótico e mau</span><br>
+                            <strong>Classe de Armadura:</strong> 16 (gibão de peles, escudo) | <strong>Pontos de Vida:</strong> 27 (5d8 + 5)<br>
+                            <strong>Deslocamento:</strong> 9 m
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-box"><span class="stat-label">FOR</span><span class="stat-val">15 (+2)</span></div>
+                        <div class="stat-box"><span class="stat-label">DES</span><span class="stat-val">14 (+2)</span></div>
+                        <div class="stat-box"><span class="stat-label">CON</span><span class="stat-val">13 (+1)</span></div>
+                        <div class="stat-box"><span class="stat-label">INT</span><span class="stat-val">8 (-1)</span></div>
+                        <div class="stat-box"><span class="stat-label">SAB</span><span class="stat-val">11 (+0)</span></div>
+                        <div class="stat-box"><span class="stat-label">CAR</span><span class="stat-val">9 (-1)</span></div>
+                    </div>
+                    <div class="content">
+                        <div class="bullet-list">
+                            <div><strong>Perícias:</strong> Furtividade +6, Sobrevivência +2</div>
+                            <div><strong>Sentidos:</strong> visão no escuro 18 m, Percepção passiva 10</div>
+                            <div><strong>Idiomas:</strong> Comum, Goblin</div>
+                            <div><strong>Nível de Desafio:</strong> 1 (200 XP)</div>
+                            <div><strong>Ataque Surpresa.</strong> Se o bugbear surpreender uma criatura e atingi-la com um ataque durante a primeira rodada de combate, o alvo sofre 7 (2d6) de dano extra nesse ataque.</div>
+                            <div><strong>Brutamontes.</strong> Um ataque corpo-a-corpo com arma causa um dado extra de dano quando o bugbear atinge com ele (incluso no ataque).</div>
+                        </div>
+                        <div class="section-title">Ações</div>
+                        <div class="bullet-list">
+                            <div><strong>Maça Estrela.</strong> <em>Ataque Corpo-a-Corpo com Arma:</em> +4 para atingir, alcance 1,5 m, um alvo. <em>Acerto:</em> 11 (2d8 + 2) de dano perfurante.</div>
+                            <div><strong>Azagaia.</strong> <em>Ataque Corpo-a-Corpo ou à Distância com Arma:</em> +4 para atingir, alcance 1,5 m ou distância 9/36 m, um alvo. <em>Acerto:</em> 9 (2d6 + 2) de dano perfurante corpo-a-corpo ou 5 (1d6 + 2) de dano perfurante à distância.</div>
+                        </div>
+                    </div>
+                    <div class="footer">Manual dos Monstros</div>
+                </div>
+
+                <!-- 17. BELAK -->
+                <div class="monster-card">
+                    <div class="header">
+                        <div class="title-block">
+                            <h1 class="title">Belak</h1>
+                            <span class="subtitle-en">Belak the Outcast</span>
+                        </div>
+                        <div class="meta">
+                            <span>Humanoide Médio (humano), neutro e mau</span><br>
+                            <strong>Classe de Armadura:</strong> 12 (armadura de couro) | <strong>Pontos de Vida:</strong> 27 (5d8 + 5)<br>
+                            <strong>Deslocamento:</strong> 9 m
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-box"><span class="stat-label">FOR</span><span class="stat-val">10 (+0)</span></div>
+                        <div class="stat-box"><span class="stat-label">DES</span><span class="stat-val">12 (+1)</span></div>
+                        <div class="stat-box"><span class="stat-label">CON</span><span class="stat-val">13 (+1)</span></div>
+                        <div class="stat-box"><span class="stat-label">INT</span><span class="stat-val">12 (+1)</span></div>
+                        <div class="stat-box"><span class="stat-label">SAB</span><span class="stat-val">15 (+2)</span></div>
+                        <div class="stat-box"><span class="stat-label">CAR</span><span class="stat-val">11 (+0)</span></div>
+                    </div>
+                    <div class="content">
+                        <div class="bullet-list">
+                            <div><strong>Perícias:</strong> Medicina +4, Natureza +3</div>
+                            <div><strong>Sentidos:</strong> Percepção passiva 12</div>
+                            <div><strong>Idiomas:</strong> Comum, Druídico, Goblin</div>
+                            <div><strong>Nível de Desafio:</strong> 2 (450 XP)</div>
+                            <div><strong>Conjuração.</strong> Belak é um conjurador de 2º nível. Seu atributo de conjuração é a Sabedoria (CD 12 para evitar magia, +4 para acertar com ataques mágicos). Ele tem as seguintes magias de druida preparadas: Truques (à vontade): *arte druídica*, *bordão místico*, *rajada de veneno*; 1º círculo (4 espaços): *curar ferimentos*, *emaranhar*, *fogo das fadas*, *onda trovejante*; 2º círculo (3 espaços): *esfera flamejante*, *pele-casca*.</div>
+                        </div>
+                        <div class="section-title">Ações</div>
+                        <div class="bullet-list">
+                            <div><strong>Bordão Místico.</strong> <em>Ataque Corpo-a-Corpo com Arma:</em> +4 para atingir (com o truque ativo), alcance 1,5 m, um alvo. <em>Acerto:</em> 6 (1d6 + 2) de dano contundente ou 7 (1d8 + 2) de dano contundente se usado com as duas mãos.</div>
+                        </div>
+                    </div>
+                    <div class="footer">Contos do Portal Bocejante</div>
+                </div>
+
+                <!-- 18. SER BRAFORD -->
+                <div class="monster-card">
+                    <div class="header">
+                        <div class="title-block">
+                            <h1 class="title">Ser Braford</h1>
+                            <span class="subtitle-en">Sir Braford</span>
+                        </div>
+                        <div class="meta">
+                            <span>Humanoide Médio, neutro e mau</span><br>
+                            <strong>Classe de Armadura:</strong> 16 (pele-casca) | <strong>Pontos de Vida:</strong> 19 (3d8 + 6)<br>
+                            <strong>Deslocamento:</strong> 9 m
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-box"><span class="stat-label">FOR</span><span class="stat-val">14 (+2)</span></div>
+                        <div class="stat-box"><span class="stat-label">DES</span><span class="stat-val">10 (+0)</span></div>
+                        <div class="stat-box"><span class="stat-label">CON</span><span class="stat-val">14 (+2)</span></div>
+                        <div class="stat-box"><span class="stat-label">INT</span><span class="stat-val">10 (+0)</span></div>
+                        <div class="stat-box"><span class="stat-label">SAB</span><span class="stat-val">13 (+1)</span></div>
+                        <div class="stat-box"><span class="stat-label">CAR</span><span class="stat-val">12 (+1)</span></div>
+                    </div>
+                    <div class="content">
+                        <div class="bullet-list">
+                            <div><strong>Testes de Resistência:</strong> Sab +3, Car +3</div>
+                            <div><strong>Sentidos:</strong> Percepção passiva 11</div>
+                            <div><strong>Idiomas:</strong> Comum</div>
+                            <div><strong>Nível de Desafio:</strong> 1/2 (100 XP)</div>
+                            <div><strong>Pele-casca.</strong> A CA do servo não pode ser inferior a 16.</div>
+                            <div><strong>Servo da Árvore.</strong> Se a Árvore Gulthias morrer, o servo morre 24 horas depois. Uma vez que a vítima é completamente absorvida pela árvore, ela se torna serva da árvore e é expelida ao longo de 1 hora. Possui todas as suas habilidades anteriores e ganha as características descritas.</div>
+                        </div>
+                        <div class="section-title">Ações</div>
+                        <div class="bullet-list">
+                            <div><strong>Estilhaçadora (Shatterspike) (Espada Longa).</strong> <em>Ataque Corpo-a-Corpo com Arma:</em> +5 para atingir, alcance 1,5 m, um alvo. <em>Acerto:</em> 7 (1d8 + 3) de dano cortante. Se Ser Braford atingir um objeto com a Estilhaçadora, o ataque é considerado um acerto crítico automático.</div>
+                        </div>
+                    </div>
+                    <div class="footer">Contos do Portal Bocejante</div>
+                </div>
+
+                <!-- 19. SHARWYN HUCRELE -->
+                <div class="monster-card">
+                    <div class="header">
+                        <div class="title-block">
+                            <h1 class="title">Sharwyn Hucrele</h1>
+                            <span class="subtitle-en">Sharwyn Hucrele</span>
+                        </div>
+                        <div class="meta">
+                            <span>Humanoide Médio, neutro e mau</span><br>
+                            <strong>Classe de Armadura:</strong> 16 (pele-casca) | <strong>Pontos de Vida:</strong> 13 (3d8)<br>
+                            <strong>Deslocamento:</strong> 9 m
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-box"><span class="stat-label">FOR</span><span class="stat-val">9 (-1)</span></div>
+                        <div class="stat-box"><span class="stat-label">DES</span><span class="stat-val">12 (+1)</span></div>
+                        <div class="stat-box"><span class="stat-label">CON</span><span class="stat-val">11 (+0)</span></div>
+                        <div class="stat-box"><span class="stat-label">INT</span><span class="stat-val">14 (+2)</span></div>
+                        <div class="stat-box"><span class="stat-label">SAB</span><span class="stat-val">10 (+0)</span></div>
+                        <div class="stat-box"><span class="stat-label">CAR</span><span class="stat-val">13 (+1)</span></div>
+                    </div>
+                    <div class="content">
+                        <div class="bullet-list">
+                            <div><strong>Testes de Resistência:</strong> Int +4, Sab +2</div>
+                            <div><strong>Perícias:</strong> Arcanismo +4, Percepção +2</div>
+                            <div><strong>Sentidos:</strong> Percepção passiva 12</div>
+                            <div><strong>Idiomas:</strong> Comum, Dracônico, Élfico</div>
+                            <div><strong>Nível de Desafio:</strong> 1/2 (100 XP)</div>
+                            <div><strong>Pele-casca.</strong> A CA do servo não pode ser inferior a 16.</div>
+                            <div><strong>Servo da Árvore.</strong> Se a Árvore Gulthias morrer, o servo morre 24 horas depois.</div>
+                            <div><strong>Conjuração.</strong> Sharwyn é uma conjuradora de 1º nível. Seu atributo de conjuração é Inteligência (CD 12 para evitar magia, +4 para acertar com ataques mágicos). Ela tem as seguintes magias de mago preparadas: Truques (à vontade): *luz*, *mãos mágicas*, *raio de gelo* (+4 para acertar, 1d8 gélido); 1º círculo (3 espaços): *escudo arcano*, *mãos flamejantes* (3d6 dano de fogo, CD 12), *mísseis mágicos*.</div>
+                        </div>
+                        <div class="section-title">Ações</div>
+                        <div class="bullet-list">
+                            <div><strong>Adaga.</strong> <em>Ataque Corpo-a-Corpo ou à Distância com Arma:</em> +3 para atingir, alcance 1,5 m ou distância 6/18 m, um alvo. <em>Acerto:</em> 3 (1d4 + 1) de dano perfurante.</div>
+                        </div>
+                    </div>
+                    <div class="footer">Contos do Portal Bocejante</div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- BARRA LATERAL (ROLADOR DE DADOS GERAL) -->
+        <div class="sidebar">
+            <h3 style="margin: 0; color: var(--border-color); text-align: center;">🎲 Rolador de Dados</h3>
+            <div class="dice-grid">
+                <button class="dice-btn" onclick="rollDice(20)">d20</button>
+                <button class="dice-btn" onclick="rollDice(6)">d6</button>
+                <button class="dice-btn" onclick="rollDice(8)">d8</button>
+                <button class="dice-btn" onclick="rollDice(10)">d10</button>
+                <button class="dice-btn" onclick="rollDice(12)">d12</button>
+                <button class="dice-btn" onclick="rollDice(100)">d100</button>
+            </div>
+            <div id="dice-log">Logs de rolagem...</div>
+            <button class="xp-btn" style="width: 100%; padding: 8px;" onclick="clearLog()">Limpar Histórico</button>
+        </div>
+    </main>
+
+    <!-- Inclui a biblioteca do Firebase via CDN (Link direto do GitHub Pages) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        // CONFIGURAÇÃO DO SEU FIREBASE
+        // COLE AQUI A URL QUE VOCÊ COPIOU NO PASSO 1 DENTRO DAS ASPAS
+        const firebaseConfig = {
+            databaseURL: "https://escudodomestre-ba3ae-default-rtdb.firebaseio.com" 
+        };
+
+        // Inicializa o Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Variáveis globais de controle local
+        let totalXp = 0;
+        let hours = 0;
+
+        // ESCUTA A NUVEM EM TEMPO REAL
+        // Toda vez que QUALQUER aparelho mudar os dados no GitHub, este bloco roda em todas as telas abertas
+        const xpProgression = [
+            { level: 1, indTarget: 300, colTarget: 1200 },
+            { level: 2, indTarget: 900, colTarget: 3600 },
+            { level: 3, indTarget: 2700, colTarget: 10800 },
+            { level: 4, indTarget: 6500, colTarget: 26000 },
+            { level: 5, indTarget: 0, colTarget: 0 } // Patamar Máximo da masmorra
+        ];
+
+        // ESCUTA A NUVEM EM TEMPO REAL
+        db.ref('campanha/status').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                totalXp = data.xp || 0;
+                hours = data.tempo || 0;
+                
+                // Calcula o XP individual dividido por 4 jogadores
+                let indXp = Math.floor(totalXp / 4);
+                
+                // Determina o nível atual e os alvos com base no XP acumulado
+                let currentLevel = 1;
+                let indTarget = 300;
+                let colTarget = 1200;
+
+                for (let i = 0; i < xpProgression.length; i++) {
+                    if (indXp >= xpProgression[i].indTarget && xpProgression[i].indTarget !== 0) {
+                        currentLevel = xpProgression[i].level + 1;
+                        indTarget = xpProgression[i+1] ? xpProgression[i+1].indTarget : xpProgression[i].indTarget;
+                        colTarget = xpProgression[i+1] ? xpProgression[i+1].colTarget : xpProgression[i].colTarget;
+                    }
+                }
+
+                // Atualiza o visual dinamicamente de acordo com o progresso
+                document.getElementById('total-xp').innerText = totalXp;
+                document.getElementById('individual-xp').innerText = indXp;
+                document.getElementById('dungeon-time').innerText = hours;
+                
+                if (currentLevel <= 4) {
+                    document.getElementById('level-display').innerText = `Nível ${currentLevel}`;
+                    document.getElementById('next-target-ind').innerText = indTarget;
+                    document.getElementById('next-target-col').innerText = colTarget;
+                } else {
+                    document.getElementById('level-display').innerText = `Nível 5 (Máximo)`;
+                    document.getElementById('next-target-ind').innerText = "—";
+                    document.getElementById('next-target-col').innerText = "—";
+                }
+            }
+        });
+
+        // Escuta em tempo real quais monstros foram derrotados
+        db.ref('campanha/monstros').on('value', (snapshot) => {
+            const monstrosDerrotados = snapshot.val() || {};
+            const boxes = document.querySelectorAll('.encounter-box');
+            
+            boxes.forEach(box => {
+                const title = box.querySelector('span').innerText;
+                const button = box.querySelector('.xp-btn');
+                const amount = button.innerText.replace(/[^0-9]/g, '');
+                
+                if (monstrosDerrotados[title] === true) {
+                    button.classList.add('claimed');
+                    button.innerText = `Remover ${amount} XP`;
+                } else {
+                    button.classList.remove('claimed');
+                    button.innerText = `Adicionar ${amount} XP`;
+                }
+            });
+        });
+
+        function openTab(tabId) {
+            const panels = document.querySelectorAll('.panel');
+            const buttons = document.querySelectorAll('.tab-btn');
+            
+            panels.forEach(p => p.classList.remove('active'));
+            buttons.forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        function toggleEncounter(header) {
+            const content = header.nextElementSibling;
+            if (content.style.display === "block") {
+                content.style.display = "none";
+            } else {
+                content.style.display = "block";
+            }
+        }
+
+        // Sistema de XP sincronizado na Nuvem com Alertas de Evolução
+        function toggleXp(amount, button, event) {
+            event.stopPropagation(); 
+            const encounterId = button.closest('.encounter-box').querySelector('span').innerText;
+            const isClaimed = button.classList.contains('claimed');
+            
+            let novoXp = totalXp;
+            let xpAntigoInd = Math.floor(totalXp / 4);
+            
+            if (isClaimed) {
+                novoXp -= amount;
+                if (novoXp < 0) novoXp = 0;
+                db.ref('campanha/monstros/' + encounterId).remove();
+            } else {
+                novoXp += amount;
+                db.ref('campanha/monstros/' + encounterId).set(true);
+                
+                let xpNovoInd = Math.floor(novoXp / 4);
+                
+                // Dispara alertas assim que o limiar individual de corte é cruzado para cima
+                if (xpNovoInd >= 6500 && xpAntigoInd < 6500) alert("⚔️ MARCO ALCANÇADO! O grupo acumulou XP suficiente para o NÍVEL 5!");
+                else if (xpNovoInd >= 2700 && xpAntigoInd < 2700) alert("⚔️ MARCO ALCANÇADO! O grupo acumulou XP suficiente para o NÍVEL 4!");
+                else if (xpNovoInd >= 900 && xpAntigoInd < 900) alert("⚔️ MARCO ALCANÇADO! O grupo acumulou XP suficiente para o NÍVEL 3!");
+                else if (xpNovoInd >= 300 && xpAntigoInd < 300) alert("✨ MARCO ALCANÇADO! O grupo acumulou XP suficiente para o NÍVEL 2!");
+            }
+            
+            db.ref('campanha/status/xp').set(novoXp);
+        }
+
+        // Controle de Tempo sincronizado na Nuvem
+        function addTime() {
+            let novoTempo = hours + 1;
+            db.ref('campanha/status/tempo').set(novoTempo);
+            
+            if (novoTempo % 12 === 0) {
+                let check = Math.floor(Math.random() * 20) + 1;
+                const log = document.getElementById('dice-log');
+                if (check <= 6) {
+                    log.innerHTML = `<span style='color: #ff4d4d;'>⚠️ [FALHA 12H] Rolo: ${check} - UM ENCONTRO ALEATÓRIO OCORREU!</span><br>` + log.innerHTML;
+                    alert("⚠️ Teste de Encontro Aleatório disparou um monstro patrulheiro na masmorra!");
+                } else {
+                    log.innerHTML = `<span style='color: #4aff4a;'>⏳ [SUCESSO 12H] Rolo: ${check} - Corredores permanecem quietos.</span><br>` + log.innerHTML;
+                }
+            }
+        }
+
+        function removeTime() {
+            if (hours > 0) {
+                db.ref('campanha/status/tempo').set(hours - 1);
+            }
+        }
+
+        function rollDice(faces) {
+            const roll = Math.floor(Math.random() * faces) + 1;
+            const log = document.getElementById('dice-log');
+            log.innerHTML = `🎲 d${faces}: <strong>${roll}</strong><br>` + log.innerHTML;
+        }
+
+        function clearLog() {
+            document.getElementById('dice-log').innerHTML = "Logs limpos...";
+        }
+    </script>
+</body>
+</html>

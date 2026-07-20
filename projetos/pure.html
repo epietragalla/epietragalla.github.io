@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suíte Analítica PURE & Cálculo de Confiabilidade (IRR)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome para Ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js para Gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        .hint-tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+        .hint-tooltip .tooltip-text {
+            visibility: hidden;
+            width: 320px;
+            background-color: #1e293b;
+            color: #fff;
+            text-align: left;
+            border-radius: 8px;
+            padding: 14px;
+            position: absolute;
+            z-index: 50;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.2s;
+            font-size: 0.75rem;
+            line-height: 1.25rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+            border: 1px solid #334155;
+        }
+        .hint-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        .step-bar {
+            transition: height 0.3s ease, background-color 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans">
+
+    <!-- Header -->
+    <header class="bg-slate-800 border-b border-slate-700 py-6 px-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-3xl font-extrabold text-blue-400 flex items-center gap-3">
+                    <i class="fa-solid fa-gauge-high text-blue-500"></i> Analisador Psicométrico PURE UX
+                </h1>
+                <p class="text-slate-400 text-sm mt-1">
+                    Quantificação pragmática do atrito cognitivo e cálculo de Confiabilidade Interavaliadores por Krippendorff's Alpha.
+                </p>
+            </div>
+            <div class="flex items-center gap-2 text-xs bg-slate-700/50 p-2.5 rounded-lg border border-slate-600">
+                <span class="font-semibold text-slate-300">Normativa Básica:</span> CHI 2016 Case Study (Rohrer, Sauro et al.)
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+
+        <!-- Área de Upload e Formatação do CSV -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 bg-slate-800 rounded-2xl border border-slate-700 p-6 flex flex-col justify-between">
+                <div>
+                    <h2 class="text-lg font-bold text-white flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-file-csv text-blue-400"></i> Importar Matriz de Avaliação (.CSV)
+                    </h2>
+                    <p class="text-slate-400 text-xs leading-relaxed mb-4">
+                        O método PURE exige que 3 avaliadores especialistas analisem de forma independente e silenciosa os passos das tarefas essenciais utilizando a rubrica padrão de 1 a 3 pontos. Carregue as notas unificadas para processar os scores.
+                    </p>
+                </div>
+
+                <!-- Dropzone -->
+                <div class="border-2 border-dashed border-slate-600 hover:border-blue-500 rounded-xl p-8 text-center transition-colors cursor-pointer bg-slate-900/40" id="dropZone">
+                    <input type="file" id="fileInput" accept=".csv" class="hidden">
+                    <div class="space-y-2" id="uploadLabel">
+                        <i class="fa-solid fa-cloud-arrow-up text-4xl text-slate-500" id="uploadIcon"></i>
+                        <p class="text-sm font-medium text-slate-300" id="uploadText">Arraste seu arquivo CSV consolidado ou clique para buscar</p>
+                        <p class="text-xs text-slate-500">Separadores suportados: vírgula (,) ou ponto e vírgula (;)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manual de Formatação do CSV -->
+            <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6 space-y-4">
+                <h3 class="text-base font-bold text-white flex items-center gap-2 border-b border-slate-700 pb-2">
+                    <i class="fa-solid fa-book text-purple-400"></i> Como formatar seu CSV?
+                </h3>
+                <p class="text-xs text-slate-400 leading-relaxed">
+                    Sua planilha deve conter exatamente as seguintes colunas em ordem estrutural na primeira linha:
+                </p>
+                <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-700/60 font-mono text-[11px] text-blue-300 space-y-1">
+                    <p>Tarefa;Etapa;Descricao;Avaliador1;Avaliador2;Avaliador3</p>
+                    <p>Login;01;Inserir e-mail;1;1;2</p>
+                    <p>Login;02;Inserir senha;1;2;2</p>
+                    <p>Checkout;01;Digitar cartao;2;3;2</p>
+                </div>
+                <div class="text-[10px] text-slate-500 leading-normal italic">
+                    *Nota: As notas dos avaliadores devem respeitar estritamente os valores ordinais numéricos de 1, 2 ou 3 conforme a rubrica oficial.
+                </div>
+            </div>
+        </section>
+
+        <!-- Resultados e Quadro Geral PURE -->
+        <section id="resultsSection" class="space-y-8 hidden">
+            
+            <!-- Indicadores KPI Executivos -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <!-- Score de Atrito Total -->
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 text-center relative overflow-hidden">
+                    <div class="text-slate-400 text-xs font-semibold flex items-center justify-center gap-1.5">
+                        Score PURE Global
+                        <div class="hint-tooltip">
+                            <i class="fa-solid fa-circle-question text-blue-400"></i>
+                            <span class="tooltip-text">A soma cumulativa das notas decididas de todas as etapas de todas as tarefas fundamentais. Quanto menor o número, menor o atrito.</span>
+                        </div>
+                    </div>
+                    <div id="statPureScore" class="text-4xl font-black text-white mt-2">--</div>
+                    <div id="badgePureColor" class="text-[10px] uppercase font-bold px-2.5 py-0.5 rounded mt-2 inline-block">--</div>
+                </div>
+
+                <!-- Confiabilidade Interavaliadores IRR -->
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 text-center">
+                    <div class="text-slate-400 text-xs font-semibold flex items-center justify-center gap-1.5">
+                        Confiabilidade IRR (α)
+                        <div class="hint-tooltip">
+                            <i class="fa-solid fa-circle-question text-blue-400"></i>
+                            <span class="tooltip-text">Calculado via alfa de Krippendorff para dados ordinais. Valores ≥ 0.667 atestam consistência e alinhamento do comitê.</span>
+                        </div>
+                    </div>
+                    <div id="statIrr" class="text-4xl font-black text-blue-400 mt-2">--</div>
+                    <p id="badgeIrrStatus" class="text-[10px] text-slate-500 mt-2 font-medium">--</p>
+                </div>
+
+                <!-- Total de Tarefas -->
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 text-center">
+                    <div class="text-slate-400 text-xs font-semibold">Tarefas Mapeadas</div>
+                    <div id="statTasks" class="text-4xl font-black text-white mt-2">--</div>
+                    <p class="text-[10px] text-slate-500 mt-2.5">Processadas com sucesso</p>
+                </div>
+
+                <!-- Total de Etapas -->
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 text-center">
+                    <div class="text-slate-400 text-xs font-semibold">Total de Etapas (Passos)</div>
+                    <div id="statSteps" class="text-4xl font-black text-white mt-2">--</div>
+                    <p class="text-[10px] text-slate-500 mt-2.5">Decomposição linear total</p>
+                </div>
+            </div>
+
+            <!-- Gráfico Visual de Linha de Atrito por Passo -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 bg-slate-800 p-6 rounded-2xl border border-slate-700">
+                    <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-bar text-purple-400"></i> Mapa de Calor de Atrito Psicométrico por Passo
+                    </h3>
+                    
+                    <!-- Painel Dinâmico de Barras PURE (Inspirado no scorecard oficial do NN/g) -->
+                    <div id="pureScorecardContainer" class="space-y-6">
+                        <!-- Inserido dinamicamente via JS -->
+                    </div>
+                </div>
+
+                <!-- Quadro Teórico e Referências de Validação Científica -->
+                <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 space-y-4 text-xs text-slate-400">
+                    <h3 class="text-base font-bold text-white border-b border-slate-700 pb-2">Evidências e Validação</h3>
+                    <p class="leading-relaxed">
+                        O método <strong class="text-slate-300">PURE (Pragmatic Usability Rating by Experts)</strong> baseia-se em princípios consolidados de IHC que cruzam avaliações heurísticas com Modelagem em Nível de Teclas (KLM).
+                    </p>
+                    <div class="bg-slate-900/40 p-3 rounded-xl border border-slate-700/50 space-y-2">
+                        <strong class="text-slate-200 block">Fontes Bibliográficas de Validação:</strong>
+                        <ul class="space-y-1.5 list-disc list-inside text-[11px]">
+                            <li><span class="text-blue-400 font-medium">Rohrer, C., Sauro, J. et al. (CHI 2016).</span> "Practical Usability Rating by Experts (PURE): A Pragmatic Approach for Scoring Product Usability".</li>
+                            <li><span class="text-blue-400 font-medium">Nielsen Norman Group (2017).</span> "Quantifying and Comparing Ease of Use Without Breaking the Bank".</li>
+                        </ul>
+                    </div>
+                    <div class="bg-slate-900/20 p-3 rounded-lg border border-slate-700/40 text-[11px]">
+                        <span class="font-bold text-amber-400 block"><i class="fa-solid fa-triangle-exclamation"></i> Regra do Scorecard Cromático</span>
+                        <p class="mt-0.5 leading-normal">Segundo Rohrer (2017), uma única etapa classificada como vermelha (nota 3) mancha a tarefa inteira com a cor vermelha. A justificativa é que nenhum produto consolidado deve possuir uma etapa onde o usuário-alvo tenha risco iminente de falha catastrófica ou abandono.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabela de Auditoria Detalhada dos Comitês -->
+            <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6">
+                <h3 class="text-base font-bold text-white mb-2">Painel de Alinhamento e Notas do Comitê</h3>
+                <p class="text-xs text-slate-400 mb-4">Mapeamento granular dos inputs independentes fornecidos pelos três especialistas com cálculo de consenso deliberado.</p>
+                <div class="overflow-x-auto rounded-xl border border-slate-700">
+                    <table class="min-w-full divide-y divide-slate-700 text-xs text-left">
+                        <thead class="bg-slate-900 text-slate-400 uppercase text-[10px]">
+                            <tr>
+                                <th class="px-4 py-3 font-bold">Tarefa</th>
+                                <th class="px-4 py-3 font-bold text-center">Passo</th>
+                                <th class="px-4 py-3 font-bold">Descrição da Etapa</th>
+                                <th class="px-3 py-3 font-bold text-center">Exp. 1</th>
+                                <th class="px-3 py-3 font-bold text-center">Exp. 2</th>
+                                <th class="px-3 py-3 font-bold text-center">Exp. 3</th>
+                                <th class="px-4 py-3 font-bold text-center">Score Consenso</th>
+                                <th class="px-4 py-3 font-bold text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pureTableBody" class="divide-y divide-slate-700 bg-slate-800 text-slate-300">
+                            <!-- Inserido dinamicamente via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const uploadIcon = document.getElementById('uploadIcon');
+        const uploadText = document.getElementById('uploadText');
+
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-blue-500', 'bg-blue-950/20'); });
+        dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('border-blue-500', 'bg-blue-950/20'); });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-blue-500', 'bg-blue-950/20');
+            if (e.dataTransfer.files.length > 0) processarArquivo(e.dataTransfer.files[0]);
+        });
+        fileInput.addEventListener('change', (e) => { if (e.target.files.length > 0) processarArquivo(e.target.files[0]); });
+        dropZone.addEventListener('click', () => fileInput.click());
+
+       function processarArquivo(file) {
+            uploadIcon.className = "fa-solid fa-spinner fa-spin text-4xl text-blue-500";
+            uploadText.innerText = `Analisando integridade de dados do arquivo ${file.name}...`;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) { 
+                parsePURECSV(e.target.result); 
+            };
+            // AJUSTE CRÍTICO: Força o leitor a interpretar os bytes explicitamente como UTF-8
+            reader.readAsText(file, "UTF-8");
+        }
+
+        function parsePURECSV(text) {
+            // AJUSTE CRÍTICO: Remove o marcador BOM (\uFEFF) caso ele venha embutido do Excel antes de quebrar as linhas
+            let cleanText = text.replace(/^\uFEFF/, "");
+            
+            let delimiter = cleanText.split('\n')[0].includes(';') ? ';' : ',';
+            let rows = cleanText.split(/\r?\n/).map(line => line.split(delimiter).map(c => c.replace(/^"|"$/g, '').trim()));
+            
+            // Filtra linhas vazias
+            rows = rows.filter(r => r.length >= 6 && r[0] !== "");
+            
+            if (rows.length <= 1) {
+                alert("Erro: Arquivo CSV vazio ou sem dados suficientes mapeados.");
+                resetUploadUI();
+                return;
+            }
+
+            processarMetodologiaPure(rows.slice(1));
+        }
+        function resetUploadUI() {
+            uploadIcon.className = "fa-solid fa-cloud-arrow-up text-4xl text-slate-500";
+            uploadText.innerText = "Arraste seu arquivo CSV consolidado ou clique para buscar";
+        }
+
+        // Algoritmo Estatístico Avançado de Krippendorff's Alpha para Dados Ordinais (IRR)
+        function calcularKrippendorffAlpha(matrizNotas) {
+            // matrizNotas é um array de arrays: [[r11, r12, r13], [r21, r22, r23], ...]
+            const n = matrizNotas.length; // total de unidades (etapas)
+            const m = 3; // 3 avaliadores fixos
+            
+            let totalVotosValidos = n * m;
+            
+            // Frequência observada de coincidências coincidentes
+            let coincidenciasObservadas = { "1": {}, "2": {}, "3": {} };
+            for(let i=1; i<=3; i++) {
+                for(let j=1; j<=3; j++) coincidenciasObservadas[String(i)][String(j)] = 0;
+            }
+
+            let frequenciaValores = { "1": 0, "2": 0, "3": 0 };
+
+            matrizNotas.forEach(linha => {
+                linha.forEach(v => { frequenciaValores[String(v)]++; });
+                
+                for (let j = 0; j < m; j++) {
+                    for (let k = 0; k < m; k++) {
+                        if (j !== k) {
+                            let v1 = String(linha[j]);
+                            let v2 = String(linha[k]);
+                            coincidenciasObservadas[v1][v2] += 1 / (m - 1);
+                        }
+                    }
+                }
+            });
+
+            let De = 0; // Desacordo esperado
+            let Do = 0; // Desacordo observado
+
+            // Função de métrica de distância Ordinal
+            function distanciaOrdinal(v1, v2) {
+                return Math.pow(parseInt(v1) - parseInt(v2), 2);
+            }
+
+            // Cálculo do D_o (Observado)
+            for(let c in coincidenciasObservadas) {
+                for(let k in coincidenciasObservadas[c]) {
+                    Do += coincidenciasObservadas[c][k] * distanciaOrdinal(c, k);
+                }
+            }
+            Do = Do / totalVotosValidos;
+
+            // Cálculo do D_e (Esperado)
+            let somaFrequenciasCruzadas = 0;
+            for(let c in frequenciaValores) {
+                for(let k in frequenciaValores) {
+                    somaFrequenciasCruzadas += frequenciaValores[c] * frequenciaValores[k] * distanciaOrdinal(c, k);
+                }
+            }
+            De = somaFrequenciasCruzadas / (totalVotosValidos * (totalVotosValidos - 1));
+
+            if (De === 0) return 1.0;
+            let alpha = 1 - (Do / De);
+            return alpha;
+        }
+
+        function processarMetodologiaPure(dataRows) {
+            let dadosEtapas = [];
+            let matrizParaIrr = [];
+            let mapaTarefas = {};
+
+            for (let r = 0; r < dataRows.length; r++) {
+                let row = dataRows[r];
+                let tarefa = row[0];
+                let etapaId = row[1];
+                let descricao = row[2];
+                let exp1 = parseInt(row[3]);
+                let exp2 = parseInt(row[4]);
+                let exp3 = parseInt(row[5]);
+
+                if (isNaN(exp1) || isNaN(exp2) || isNaN(exp3)) continue;
+
+                // Regra de Consenso do PURE: Votação majoritária estruturada
+                let votos = [exp1, exp2, exp3];
+                let contagem = {};
+                votos.forEach(v => { contagem[v] = (contagem[v] || 0) + 1; });
+                
+                // Encontra o valor mais votado (Moda) para o score de consenso
+                let scoreConsenso = votos[0]; 
+                let maxVotos = 0;
+                for(let key in contagem) {
+                    if(contagem[key] > maxVotos) {
+                        maxVotos = contagem[key];
+                        scoreConsenso = parseInt(key);
+                    }
+                }
+                
+                // Desempate técnico se houver 3 notas distintas (1, 2 e 3): Adota-se a mediana/média conservadora (2)
+                if (maxVotos === 1) {
+                    scoreConsenso = 2;
+                }
+
+                let infoStep = { tarefa, etapaId, descricao, exp1, exp2, exp3, consenso: scoreConsenso };
+                dadosEtapas.push(infoStep);
+                matrizParaIrr.push(votos);
+
+                if (!mapaTarefas[tarefa]) {
+                    mapaTarefas[tarefa] = { nome: tarefa, etapas: [], scoreFriction: 0, piorCor: 'green' };
+                }
+                mapaTarefas[tarefa].etapas.push(infoStep);
+            }
+
+            if (dadosEtapas.length === 0) {
+                alert("Erro: Nenhum dado numérico válido de avaliadores (1 a 3) foi detectado.");
+                resetUploadUI();
+                return;
+            }
+
+            // Processamento cumulativo das tarefas de acordo com a rubrica oficial
+            let globalPureScore = 0;
+            let totalProductColor = 'green';
+
+            for (let key in mapaTarefas) {
+                let t = mapaTarefas[key];
+                let somaFriction = 0;
+                let temVermelho = false;
+                let temLaranja = false;
+
+                t.etapas.forEach(e => {
+                    somaFriction += e.consenso;
+                    if (e.consenso === 3) temVermelho = true;
+                    if (e.consenso === 2) temLaranja = true;
+                });
+
+                t.scoreFriction = somaFriction;
+                globalPureScore += somaFriction;
+
+                // Regra do teto de severidade: se houver uma nota 3 (Vermelho), a tarefa inteira é classificada como Vermelha
+                if (temVermelho) {
+                    t.piorCor = 'red';
+                    totalProductColor = 'red'; // Contamina a cor global do produto
+                } else if (temLaranja) {
+                    t.piorCor = 'orange';
+                    if (totalProductColor !== 'red') totalProductColor = 'orange';
+                }
+            }
+
+            let alphaIRR = calcularKrippendorffAlpha(matrizParaIrr);
+
+            // Atualiza KPI na Interface
+            document.getElementById('resultsSection').classList.remove('hidden');
+            document.getElementById('statPureScore').innerText = globalPureScore;
+            document.getElementById('statTasks').innerText = Object.keys(mapaTarefas).length;
+            document.getElementById('statSteps').innerText = dadosEtapas.length;
+            document.getElementById('statIrr').innerText = alphaIRR.toFixed(3);
+
+            const badgeColor = document.getElementById('badgePureColor');
+            if (totalProductColor === 'red') {
+                badgeColor.className = "text-[10px] uppercase font-bold px-2.5 py-0.5 rounded mt-2 inline-block bg-red-500/20 text-red-400 border border-red-500/30";
+                badgeColor.innerText = "Atrito Crítico (Catástrofe)";
+            } else if (totalProductColor === 'orange') {
+                badgeColor.className = "text-[10px] uppercase font-bold px-2.5 py-0.5 rounded mt-2 inline-block bg-orange-500/20 text-orange-400 border border-orange-500/30";
+                badgeColor.innerText = "Atrito Notável (Esforço Elevado)";
+            } else {
+                badgeColor.className = "text-[10px] uppercase font-bold px-2.5 py-0.5 rounded mt-2 inline-block bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+                badgeColor.innerText = "Atrito Fluido (Otimizado)";
+            }
+
+            const irrStatus = document.getElementById('badgeIrrStatus');
+            if (alphaIRR >= 0.800) {
+                irrStatus.className = "text-[10px] text-green-400 mt-2 font-bold";
+                irrStatus.innerText = "Concordância Forte (Dados Altamente Confiáveis)";
+            } else if (alphaIRR >= 0.667) {
+                irrStatus.className = "text-[10px] text-yellow-400 mt-2 font-bold";
+                irrStatus.innerText = "Concordância Aceitável (Margem Válida)";
+            } else {
+                irrStatus.className = "text-[10px] text-red-400 mt-2 font-bold";
+                irrStatus.innerText = "Alinhamento Fraco (Tratamento/Treinamento Necessário)";
+            }
+
+            renderizarScorecardVisualDeBarras(mapaTarefas);
+            renderizarTabelaDetalhada(dadosEtapas);
+            resetUploadUI();
+            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function renderizarScorecardVisualDeBarras(mapaTarefas) {
+            const container = document.getElementById('pureScorecardContainer');
+            container.innerHTML = '';
+
+            for (let key in mapaTarefas) {
+                let t = mapaTarefas[key];
+                
+                let badgeTaskColorClass = t.piorCor === 'red' ? 'bg-red-500/20 text-red-400 border-red-500/30' : t.piorCor === 'orange' ? 'bg-orange-500/20 text-orange-400 border-orange-500/30' : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+
+                let barrasHTML = t.etapas.map(e => {
+                    let corBarra = e.consenso === 3 ? 'bg-red-500' : e.consenso === 2 ? 'bg-orange-500' : 'bg-emerald-500';
+                    let hBarra = e.consenso === 3 ? 'h-12' : e.consenso === 2 ? 'h-8' : 'h-4';
+                    return `
+                        <div class="flex flex-col items-center group relative w-7">
+                            <div class="w-full ${corBarra} ${hBarra} rounded-t-sm step-bar cursor-help"></div>
+                            <span class="text-[9px] text-slate-500 font-bold mt-1 font-mono">${e.etapaId}</span>
+                            
+                            <!-- Tooltip por passo individual -->
+                            <div class="absolute bottom-full mb-2 hidden group-hover:block w-48 bg-slate-950 text-[11px] p-2.5 rounded-lg border border-slate-700 shadow-xl z-30 pointer-events-none">
+                                <strong class="text-white block">Passo ${e.etapaId}:</strong>
+                                <p class="text-slate-400 font-normal mt-0.5">${e.descricao}</p>
+                                <span class="text-[10px] font-bold block mt-1 text-slate-300">Atrito Individual: ${e.consenso}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                container.innerHTML += `
+                    <div class="bg-slate-900/40 p-4 rounded-xl border border-slate-700/60 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div class="space-y-1">
+                            <h4 class="text-xs font-bold text-white tracking-wide"><i class="fa-solid fa-list-check text-blue-400 mr-1.5"></i> ${t.nome}</h4>
+                            <p class="text-[10px] text-slate-500">Composição linear: ${t.etapas.length} etapas analisadas.</p>
+                        </div>
+                        
+                        <!-- Fileira de Barras Cromáticas PURE -->
+                        <div class="flex items-end gap-1 bg-slate-900/90 p-3 rounded-lg border border-slate-800/80 min-w-[200px] justify-center">
+                            ${barrasHTML}
+                        </div>
+
+                        <!-- Balão do Score da Tarefa -->
+                        <div class="flex items-center gap-2 min-w-[100px] justify-end">
+                            <span class="text-xs font-mono font-bold text-slate-400">Score:</span>
+                            <div class="w-9 h-9 rounded-full ${badgeTaskColorClass} border font-black text-xs flex items-center justify-center shadow-inner">${t.scoreFriction}</div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function renderizarTabelaDetalhada(dadosEtapas) {
+            const tbody = document.getElementById('pureTableBody');
+            tbody.innerHTML = '';
+
+            dadosEtapas.forEach(e => {
+                let badgeClass = e.consenso === 3 ? 'bg-red-500/20 text-red-400 border-red-500/30' : e.consenso === 2 ? 'bg-orange-500/20 text-orange-400 border-orange-500/30' : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+                let labelText = e.consenso === 3 ? '3 - Crítico' : e.consenso === 2 ? '2 - Notável' : '1 - Fluido';
+                
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-700/30 transition-colors">
+                        <td class="px-4 py-3 font-semibold text-slate-300">${e.tarefa}</td>
+                        <td class="px-4 py-3 text-center font-mono text-slate-500 font-bold">${e.etapaId}</td>
+                        <td class="px-4 py-3 text-slate-400 font-medium max-w-xs truncate">${e.descricao}</td>
+                        <td class="px-3 py-3 text-center font-mono text-slate-400">${e.exp1}</td>
+                        <td class="px-3 py-3 text-center font-mono text-slate-400">${e.exp2}</td>
+                        <td class="px-3 py-3 text-center font-mono text-slate-400">${e.exp3}</td>
+                        <td class="px-4 py-3 text-center font-mono font-black text-blue-400 text-sm">${e.consenso}</td>
+                        <td class="px-4 py-3 text-center">
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded border ${badgeClass}">${labelText}</span>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>
