@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,13 +11,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Chart.js para Gráficos -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+
     <style>
         .hint-tooltip {
             position: relative;
             display: inline-block;
             cursor: help;
         }
+
         .hint-tooltip .tooltip-text {
             visibility: hidden;
             width: 320px;
@@ -37,15 +39,18 @@
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
             border: 1px solid #334155;
         }
+
         .hint-tooltip:hover .tooltip-text {
             visibility: visible;
             opacity: 1;
         }
+
         .step-bar {
             transition: height 0.3s ease, background-color 0.3s ease;
         }
     </style>
 </head>
+
 <body class="bg-slate-900 text-slate-100 min-h-screen font-sans">
 
     <!-- Header -->
@@ -56,11 +61,13 @@
                     <i class="fa-solid fa-gauge-high text-blue-500"></i> Analisador Psicométrico PURE UX
                 </h1>
                 <p class="text-slate-400 text-sm mt-1">
-                    Quantificação pragmática do atrito cognitivo e cálculo de Confiabilidade Interavaliadores por Krippendorff's Alpha.
+                    Quantificação pragmática do atrito cognitivo e cálculo de Confiabilidade Interavaliadores por
+                    Krippendorff's Alpha.
                 </p>
             </div>
             <div class="flex items-center gap-2 text-xs bg-slate-700/50 p-2.5 rounded-lg border border-slate-600">
-                <span class="font-semibold text-slate-300">Normativa Básica:</span> CHI 2016 Case Study (Rohrer, Sauro et al.)
+                <span class="font-semibold text-slate-300">Normativa Básica:</span> CHI 2016 Case Study (Rohrer, Sauro
+                et al.)
             </div>
         </div>
     </header>
@@ -69,22 +76,27 @@
 
         <!-- Área de Upload e Formatação do CSV -->
         <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="lg:col-span-2 bg-slate-800 rounded-2xl border border-slate-700 p-6 flex flex-col justify-between">
+            <div
+                class="lg:col-span-2 bg-slate-800 rounded-2xl border border-slate-700 p-6 flex flex-col justify-between">
                 <div>
                     <h2 class="text-lg font-bold text-white flex items-center gap-2 mb-2">
                         <i class="fa-solid fa-file-csv text-blue-400"></i> Importar Matriz de Avaliação (.CSV)
                     </h2>
                     <p class="text-slate-400 text-xs leading-relaxed mb-4">
-                        O método PURE exige que 3 avaliadores especialistas analisem de forma independente e silenciosa os passos das tarefas essenciais utilizando a rubrica padrão de 1 a 3 pontos. Carregue as notas unificadas para processar os scores.
+                        O método PURE exige que 3 avaliadores especialistas analisem de forma independente e silenciosa
+                        os passos das tarefas essenciais utilizando a rubrica padrão de 1 a 3 pontos. Carregue as notas
+                        unificadas para processar os scores.
                     </p>
                 </div>
 
                 <!-- Dropzone -->
-                <div class="border-2 border-dashed border-slate-600 hover:border-blue-500 rounded-xl p-8 text-center transition-colors cursor-pointer bg-slate-900/40" id="dropZone">
+                <div class="border-2 border-dashed border-slate-600 hover:border-blue-500 rounded-xl p-8 text-center transition-colors cursor-pointer bg-slate-900/40"
+                    id="dropZone">
                     <input type="file" id="fileInput" accept=".csv" class="hidden">
                     <div class="space-y-2" id="uploadLabel">
                         <i class="fa-solid fa-cloud-arrow-up text-4xl text-slate-500" id="uploadIcon"></i>
-                        <p class="text-sm font-medium text-slate-300" id="uploadText">Arraste seu arquivo CSV consolidado ou clique para buscar</p>
+                        <p class="text-sm font-medium text-slate-300" id="uploadText">Arraste seu arquivo CSV
+                            consolidado ou clique para buscar</p>
                         <p class="text-xs text-slate-500">Separadores suportados: vírgula (,) ou ponto e vírgula (;)</p>
                     </div>
                 </div>
@@ -98,21 +110,24 @@
                 <p class="text-xs text-slate-400 leading-relaxed">
                     Sua planilha deve conter exatamente as seguintes colunas em ordem estrutural na primeira linha:
                 </p>
-                <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-700/60 font-mono text-[11px] text-blue-300 space-y-1">
-                    <p>Tarefa;Etapa;Descricao;Avaliador1;Avaliador2;Avaliador3</p>
+                <div
+                    class="bg-slate-900/60 p-3 rounded-xl border border-slate-700/60 font-mono text-[11px] text-blue-300 space-y-1">
+                    <p>Tarefa/Etapa/Descrição/Ava.1/Ava.2/Ava.3</p>
+                    <p>Ex:</p>
                     <p>Login;01;Inserir e-mail;1;1;2</p>
                     <p>Login;02;Inserir senha;1;2;2</p>
-                    <p>Checkout;01;Digitar cartao;2;3;2</p>
+
                 </div>
                 <div class="text-[10px] text-slate-500 leading-normal italic">
-                    *Nota: As notas dos avaliadores devem respeitar estritamente os valores ordinais numéricos de 1, 2 ou 3 conforme a rubrica oficial.
+                    *Nota: As notas dos avaliadores devem respeitar estritamente os valores ordinais numéricos de 1, 2
+                    ou 3 conforme a rubrica oficial.
                 </div>
             </div>
         </section>
 
         <!-- Resultados e Quadro Geral PURE -->
         <section id="resultsSection" class="space-y-8 hidden">
-            
+
             <!-- Indicadores KPI Executivos -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <!-- Score de Atrito Total -->
@@ -121,11 +136,13 @@
                         Score PURE Global
                         <div class="hint-tooltip">
                             <i class="fa-solid fa-circle-question text-blue-400"></i>
-                            <span class="tooltip-text">A soma cumulativa das notas decididas de todas as etapas de todas as tarefas fundamentais. Quanto menor o número, menor o atrito.</span>
+                            <span class="tooltip-text">A soma cumulativa das notas decididas de todas as etapas de todas
+                                as tarefas fundamentais. Quanto menor o número, menor o atrito.</span>
                         </div>
                     </div>
                     <div id="statPureScore" class="text-4xl font-black text-white mt-2">--</div>
-                    <div id="badgePureColor" class="text-[10px] uppercase font-bold px-2.5 py-0.5 rounded mt-2 inline-block">--</div>
+                    <div id="badgePureColor"
+                        class="text-[10px] uppercase font-bold px-2.5 py-0.5 rounded mt-2 inline-block">--</div>
                 </div>
 
                 <!-- Confiabilidade Interavaliadores IRR -->
@@ -134,7 +151,8 @@
                         Confiabilidade IRR (α)
                         <div class="hint-tooltip">
                             <i class="fa-solid fa-circle-question text-blue-400"></i>
-                            <span class="tooltip-text">Calculado via alfa de Krippendorff para dados ordinais. Valores ≥ 0.667 atestam consistência e alinhamento do comitê.</span>
+                            <span class="tooltip-text">Calculado via alfa de Krippendorff para dados ordinais. Valores ≥
+                                0.667 atestam consistência e alinhamento do comitê.</span>
                         </div>
                     </div>
                     <div id="statIrr" class="text-4xl font-black text-blue-400 mt-2">--</div>
@@ -160,9 +178,10 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="lg:col-span-2 bg-slate-800 p-6 rounded-2xl border border-slate-700">
                     <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-chart-bar text-purple-400"></i> Mapa de Calor de Atrito Psicométrico por Passo
+                        <i class="fa-solid fa-chart-bar text-purple-400"></i> Mapa de Calor de Atrito Psicométrico por
+                        Passo
                     </h3>
-                    
+
                     <!-- Painel Dinâmico de Barras PURE (Inspirado no scorecard oficial do NN/g) -->
                     <div id="pureScorecardContainer" class="space-y-6">
                         <!-- Inserido dinamicamente via JS -->
@@ -171,20 +190,40 @@
 
                 <!-- Quadro Teórico e Referências de Validação Científica -->
                 <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 space-y-4 text-xs text-slate-400">
-                    <h3 class="text-base font-bold text-white border-b border-slate-700 pb-2">Evidências e Validação</h3>
+                    <h3 class="text-base font-bold text-white border-b border-slate-700 pb-2">Evidências e Validação
+                    </h3>
                     <p class="leading-relaxed">
-                        O método <strong class="text-slate-300">PURE (Pragmatic Usability Rating by Experts)</strong> baseia-se em princípios consolidados de IHC que cruzam avaliações heurísticas com Modelagem em Nível de Teclas (KLM).
+                        O método <strong class="text-slate-300">PURE (Pragmatic Usability Rating by Experts)</strong>
+                        baseia-se em princípios consolidados de IHC que cruzam avaliações heurísticas com Modelagem em
+                        Nível de Teclas (KLM).
                     </p>
                     <div class="bg-slate-900/40 p-3 rounded-xl border border-slate-700/50 space-y-2">
                         <strong class="text-slate-200 block">Fontes Bibliográficas de Validação:</strong>
                         <ul class="space-y-1.5 list-disc list-inside text-[11px]">
-                            <li><span class="text-blue-400 font-medium">Rohrer, C., Sauro, J. et al. (CHI 2016).</span> "Practical Usability Rating by Experts (PURE): A Pragmatic Approach for Scoring Product Usability".</li>
-                            <li><span class="text-blue-400 font-medium">Nielsen Norman Group (2017).</span> "Quantifying and Comparing Ease of Use Without Breaking the Bank".</li>
+                            <li>
+                                <a href="https://dl.acm.org/doi/10.1145/2851581.2851607" target="_blank"
+                                    class="text-blue-400 font-medium hover:underline">
+                                    Rohrer, C., Sauro, J. et al. (CHI 2016).
+                                </a>
+                                "Practical Usability Rating by Experts (PURE): A Pragmatic Approach for Scoring Product
+                                Usability".
+                            </li>
+                            <li>
+                                <a href="https://www.nngroup.com/articles/pure-method/" target="_blank"
+                                    class="text-blue-400 font-medium hover:underline">
+                                    Nielsen Norman Group (2017).
+                                </a>
+                                "Quantifying and Comparing Ease of Use Without Breaking the Bank".
+                            </li>
                         </ul>
                     </div>
                     <div class="bg-slate-900/20 p-3 rounded-lg border border-slate-700/40 text-[11px]">
-                        <span class="font-bold text-amber-400 block"><i class="fa-solid fa-triangle-exclamation"></i> Regra do Scorecard Cromático</span>
-                        <p class="mt-0.5 leading-normal">Segundo Rohrer (2017), uma única etapa classificada como vermelha (nota 3) mancha a tarefa inteira com a cor vermelha. A justificativa é que nenhum produto consolidado deve possuir uma etapa onde o usuário-alvo tenha risco iminente de falha catastrófica ou abandono.</p>
+                        <span class="font-bold text-amber-400 block"><i class="fa-solid fa-triangle-exclamation"></i>
+                            Regra do Scorecard Cromático</span>
+                        <p class="mt-0.5 leading-normal">Segundo Rohrer (2017), uma única etapa classificada como
+                            vermelha (nota 3) mancha a tarefa inteira com a cor vermelha. A justificativa é que nenhum
+                            produto consolidado deve possuir uma etapa onde o usuário-alvo tenha risco iminente de falha
+                            catastrófica ou abandono.</p>
                     </div>
                 </div>
             </div>
@@ -192,7 +231,8 @@
             <!-- Tabela de Auditoria Detalhada dos Comitês -->
             <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6">
                 <h3 class="text-base font-bold text-white mb-2">Painel de Alinhamento e Notas do Comitê</h3>
-                <p class="text-xs text-slate-400 mb-4">Mapeamento granular dos inputs independentes fornecidos pelos três especialistas com cálculo de consenso deliberado.</p>
+                <p class="text-xs text-slate-400 mb-4">Mapeamento granular dos inputs independentes fornecidos pelos
+                    três especialistas com cálculo de consenso deliberado.</p>
                 <div class="overflow-x-auto rounded-xl border border-slate-700">
                     <table class="min-w-full divide-y divide-slate-700 text-xs text-left">
                         <thead class="bg-slate-900 text-slate-400 uppercase text-[10px]">
@@ -232,13 +272,13 @@
         fileInput.addEventListener('change', (e) => { if (e.target.files.length > 0) processarArquivo(e.target.files[0]); });
         dropZone.addEventListener('click', () => fileInput.click());
 
-       function processarArquivo(file) {
+        function processarArquivo(file) {
             uploadIcon.className = "fa-solid fa-spinner fa-spin text-4xl text-blue-500";
             uploadText.innerText = `Analisando integridade de dados do arquivo ${file.name}...`;
-            
+
             const reader = new FileReader();
-            reader.onload = function(e) { 
-                parsePURECSV(e.target.result); 
+            reader.onload = function (e) {
+                parsePURECSV(e.target.result);
             };
             // AJUSTE CRÍTICO: Força o leitor a interpretar os bytes explicitamente como UTF-8
             reader.readAsText(file, "UTF-8");
@@ -247,13 +287,13 @@
         function parsePURECSV(text) {
             // AJUSTE CRÍTICO: Remove o marcador BOM (\uFEFF) caso ele venha embutido do Excel antes de quebrar as linhas
             let cleanText = text.replace(/^\uFEFF/, "");
-            
+
             let delimiter = cleanText.split('\n')[0].includes(';') ? ';' : ',';
             let rows = cleanText.split(/\r?\n/).map(line => line.split(delimiter).map(c => c.replace(/^"|"$/g, '').trim()));
-            
+
             // Filtra linhas vazias
             rows = rows.filter(r => r.length >= 6 && r[0] !== "");
-            
+
             if (rows.length <= 1) {
                 alert("Erro: Arquivo CSV vazio ou sem dados suficientes mapeados.");
                 resetUploadUI();
@@ -272,20 +312,20 @@
             // matrizNotas é um array de arrays: [[r11, r12, r13], [r21, r22, r23], ...]
             const n = matrizNotas.length; // total de unidades (etapas)
             const m = 3; // 3 avaliadores fixos
-            
+
             let totalVotosValidos = n * m;
-            
+
             // Frequência observada de coincidências coincidentes
             let coincidenciasObservadas = { "1": {}, "2": {}, "3": {} };
-            for(let i=1; i<=3; i++) {
-                for(let j=1; j<=3; j++) coincidenciasObservadas[String(i)][String(j)] = 0;
+            for (let i = 1; i <= 3; i++) {
+                for (let j = 1; j <= 3; j++) coincidenciasObservadas[String(i)][String(j)] = 0;
             }
 
             let frequenciaValores = { "1": 0, "2": 0, "3": 0 };
 
             matrizNotas.forEach(linha => {
                 linha.forEach(v => { frequenciaValores[String(v)]++; });
-                
+
                 for (let j = 0; j < m; j++) {
                     for (let k = 0; k < m; k++) {
                         if (j !== k) {
@@ -306,8 +346,8 @@
             }
 
             // Cálculo do D_o (Observado)
-            for(let c in coincidenciasObservadas) {
-                for(let k in coincidenciasObservadas[c]) {
+            for (let c in coincidenciasObservadas) {
+                for (let k in coincidenciasObservadas[c]) {
                     Do += coincidenciasObservadas[c][k] * distanciaOrdinal(c, k);
                 }
             }
@@ -315,8 +355,8 @@
 
             // Cálculo do D_e (Esperado)
             let somaFrequenciasCruzadas = 0;
-            for(let c in frequenciaValores) {
-                for(let k in frequenciaValores) {
+            for (let c in frequenciaValores) {
+                for (let k in frequenciaValores) {
                     somaFrequenciasCruzadas += frequenciaValores[c] * frequenciaValores[k] * distanciaOrdinal(c, k);
                 }
             }
@@ -347,17 +387,17 @@
                 let votos = [exp1, exp2, exp3];
                 let contagem = {};
                 votos.forEach(v => { contagem[v] = (contagem[v] || 0) + 1; });
-                
+
                 // Encontra o valor mais votado (Moda) para o score de consenso
-                let scoreConsenso = votos[0]; 
+                let scoreConsenso = votos[0];
                 let maxVotos = 0;
-                for(let key in contagem) {
-                    if(contagem[key] > maxVotos) {
+                for (let key in contagem) {
+                    if (contagem[key] > maxVotos) {
                         maxVotos = contagem[key];
                         scoreConsenso = parseInt(key);
                     }
                 }
-                
+
                 // Desempate técnico se houver 3 notas distintas (1, 2 e 3): Adota-se a mediana/média conservadora (2)
                 if (maxVotos === 1) {
                     scoreConsenso = 2;
@@ -453,7 +493,7 @@
 
             for (let key in mapaTarefas) {
                 let t = mapaTarefas[key];
-                
+
                 let badgeTaskColorClass = t.piorCor === 'red' ? 'bg-red-500/20 text-red-400 border-red-500/30' : t.piorCor === 'orange' ? 'bg-orange-500/20 text-orange-400 border-orange-500/30' : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
 
                 let barrasHTML = t.etapas.map(e => {
@@ -503,7 +543,7 @@
             dadosEtapas.forEach(e => {
                 let badgeClass = e.consenso === 3 ? 'bg-red-500/20 text-red-400 border-red-500/30' : e.consenso === 2 ? 'bg-orange-500/20 text-orange-400 border-orange-500/30' : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
                 let labelText = e.consenso === 3 ? '3 - Crítico' : e.consenso === 2 ? '2 - Notável' : '1 - Fluido';
-                
+
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-700/30 transition-colors">
                         <td class="px-4 py-3 font-semibold text-slate-300">${e.tarefa}</td>
@@ -522,4 +562,5 @@
         }
     </script>
 </body>
+
 </html>
