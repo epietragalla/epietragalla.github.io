@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grimório Arcano - Componentes Materiais</title>
+
+    <!-- Fontes Mágicas -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=MedievalSharp&family=UnifrakturMaguntia&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --parchment-bg: #e6c896;
+            --parchment-dark: #8c5a2b;
+            --ink-color: #2b1a09;
+            --magic-cyan: #00f0ff;
+            --magic-purple: #bd00ff;
+            --gold-glow: #ffd700;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #dfb77c;
+            color: var(--ink-color);
+            font-family: 'MedievalSharp', cursive;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            user-select: none;
+            overflow: hidden; /* DESATIVAR QUALQUER SCROLL NA TELA */
+        }
+
+        /* Pergaminho Antigo Mágico ajustado sem estourar a tela */
+        .parchment {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: #dfb77c;
+            background-image:
+                radial-gradient(ellipse at center, rgba(255, 255, 255, 0.3) 0%, rgba(0, 0, 0, 0.4) 100%),
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.03) 2px, rgba(0, 0, 0, 0.03) 4px);
+            padding: 10px 40px; /* Reduzido padding vertical */
+            box-shadow: inset 0 0 100px rgba(74, 38, 10, 0.8), inset 0 0 30px rgba(0, 0, 0, 0.9);
+           
+            border-image: linear-gradient(to bottom right, #4a280f, #2b1304, #5c3818) 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* EVITA QUE O ELEMENTO FILHO CRIE ROLAGEM */
+        }
+
+        /* Brilho de Magia sutil nas bordas do pergaminho */
+        .parchment::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border: 1px solid var(--magic-cyan);
+            opacity: 0.3;
+            border-radius: 6px;
+            pointer-events: none;
+            animation: pulseGlow 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% {
+                box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+            }
+
+            100% {
+                box-shadow: 0 0 25px rgba(189, 0, 255, 0.5);
+            }
+        }
+
+        .header {
+            text-align: center;
+            padding-bottom: 15px;
+            margin-bottom: 10px;
+            /* Reduzido */
+            position: relative;
+        }
+
+        .sub-title {
+            font-family: 'Cinzel Decorative', 'MedievalSharp', serif;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #3b1e08;
+            margin-top: 5px;
+            margin-bottom: 0;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        /* Área do Puzzle */
+        .puzzle-area {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            width: 950px;
+            /* Largura total ampliada */
+            height: 520px;
+            margin: 0 auto;
+        }
+
+        /* Camada SVG dos Raios Mágicos */
+        .svg-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* Colunas */
+        .column {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 250px;
+            height: 100%;
+            z-index: 3;
+        }
+
+        .left-col {
+            text-align: right;
+            /* Magias alinhadas à direita */
+        }
+
+        .right-col {
+            text-align: left;
+            /* Componentes alinhados à esquerda */
+        }
+
+        /* Nós Interativos (Cartões de Tinta/Pergaminho) */
+        .node {
+            background: transparent;
+            border: none;
+            padding: 4px 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.05rem;
+            font-weight: bold;
+            color: var(--ink-color);
+            position: relative;
+            font-family: 'MedievalSharp', cursive;
+            text-transform: uppercase;
+            line-height: 1.2;
+        }
+
+        /* Estilo para imitar o "círculo" da imagem */
+        .node::after {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #5c3818;
+            background: #dfb77c;
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .left-col .node::after {
+            right: -18px;
+            /* Círculo colado à direita da palavra */
+        }
+
+        .right-col .node::after {
+            left: -18px;
+            /* Círculo colado à esquerda da palavra */
+        }
+
+        .node:hover {
+            color: #000;
+            text-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+        }
+
+        .node:hover::after {
+            border-color: var(--magic-cyan);
+            box-shadow: 0 0 10px var(--magic-cyan);
+        }
+
+        .node.selected {
+            color: var(--magic-cyan);
+            text-shadow: 0 0 8px var(--magic-cyan);
+        }
+
+        .node.selected::after {
+            border-color: var(--magic-cyan);
+            box-shadow: 0 0 12px var(--magic-cyan);
+            background: var(--magic-cyan);
+        }
+
+        .node.connected {
+            color: #1b5e20;
+            cursor: default;
+        }
+
+        .node.connected::after {
+            border-color: #27ae60;
+            background: #27ae60;
+        }
+
+        /* Matriz Central de Letras Rúnicas - AJUSTADA para imitar a imagem */
+        .center-letters {
+            position: relative;
+            width: 420px;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .rune {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #3b1e08;
+            position: absolute;
+            transform: translate(-50%, -50%);
+            transition: all 0.8s ease;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .rune::before {
+            content: '';
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            background: rgba(140, 90, 43, 0.12);
+            clip-path: polygon(50% 0%, 65% 35%, 100% 50%, 65% 65%, 50% 100%, 35% 65%, 0% 50%, 35% 35%);
+            z-index: -1;
+            transform: scale(1.3);
+        }
+
+        /* --- COORDENADAS RE-ALINHADAS PARA AS NOVAS CONEXÕES --- */
+
+        /* Topo: W (linha 1), P (PRESTO - P), A (linha 5/6) */
+        #letter-W {
+            top: 12%;
+            left: 16%;
+        }
+
+        #letter-P {
+            top: 18%;
+            left: 54%;
+        }
+
+        /* PRESTO - P */
+        #letter-A {
+            top: 20%;
+            left: 72%;
+        }
+
+        /* Superior Meio: T (linha 2), R (PRESTO - R) */
+        #letter-T {
+            top: 29%;
+            left: 24%;
+        }
+
+        #letter-R {
+            top: 30%;
+            left: 68%;
+        }
+
+        /* PRESTO - R */
+
+        /* Centro: E (PRESTO - E), U (linha 1 e 4), M (linha 3 - Olho -> Morcego) */
+        #letter-E {
+            top: 41%;
+            left: 34%;
+        }
+
+        /* PRESTO - E */
+        #letter-U {
+            top: 38%;
+            left: 47%;
+        }
+
+        #letter-M {
+            top: 49%;
+            left: 60%;
+        }
+
+        /* Meio Inferior: F (linha 6), L (linha 3 - Olho -> Morcego), E (linha 2 e 5) */
+        #letter-F {
+            top: 48%;
+            left: 26%;
+        }
+
+        #letter-L {
+            top: 57%;
+            left: 48%;
+        }
+
+        #letter-E-final {
+            top: 56%;
+            left: 74%;
+        }
+
+        /* Inferior: V (linha 7), S (PRESTO - S) */
+        #letter-V {
+            top: 62%;
+            left: 42%;
+        }
+
+        #letter-S {
+            top: 60%;
+            left: 60%;
+        }
+
+        /* PRESTO - S */
+
+        /* Base: K (linha 7), T (PRESTO - T) */
+        #letter-K {
+            top: 74%;
+            left: 18%;
+        }
+
+        #letter-T-mid {
+            top: 72%;
+            left: 52%;
+        }
+
+        /* PRESTO - T */
+
+        /* Fundo: O (PRESTO - O), E (linha 3 - Olho -> Morcego), A (linha 8) */
+        #letter-O {
+            top: 76%;
+            left: 28%;
+        }
+
+        /* PRESTO - O */
+        #letter-E-bot {
+            top: 78%;
+            left: 70%;
+        }
+
+        #letter-A-bot {
+            top: 91%;
+            left: 43%;
+        }
+
+        /* Resto dos estilos de letras rúnicas mantidos */
+     .rune.crossed {
+            /* Mantém a opacidade e o filtro idênticos ao estado normal */
+            opacity: 1;
+            filter: none;
+        }
+
+        .rune.revealed {
+            /* color: #857540; */
+            font-size: 1.5rem;
+            /* text-shadow:
+                0 0 6px rgba(255, 215, 0, 0.7),
+                0 0 12px rgba(212, 175, 55, 0.4); */
+            animation: floatRune 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatRune {
+            0% {
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+
+            100% {
+                transform: translate(-50%, -58%) scale(1.25);
+            }
+        }
+
+        /* Linhas SVG Mágicas */
+        .magic-line {
+            stroke: var(--magic-cyan);
+            stroke-width: 3.5;
+            stroke-linecap: round;
+            stroke-dasharray: 8;
+            animation: energyFlow 0.8s linear infinite;
+            filter: drop-shadow(0px 0px 8px var(--magic-cyan));
+        }
+
+        .magic-line.fixed {
+            stroke: #27ae60;
+            stroke-dasharray: none;
+            animation: none;
+            filter: drop-shadow(0px 0px 6px #2ecc71);
+        }
+
+        @keyframes energyFlow {
+            to {
+                stroke-dashoffset: -16;
+            }
+        }
+
+        /* Efeito de Partículas Soltas */
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            background: var(--magic-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--magic-cyan);
+            animation: fadeParticle 1s ease-out forwards;
+            z-index: 10;
+        }
+
+        @keyframes fadeParticle {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(3) translateY(-20px);
+            }
+        }
+
+        .magic-line.user-connected {
+            stroke: var(--magic-cyan);
+            stroke-dasharray: none;
+            animation: none;
+            filter: drop-shadow(0px 0px 6px var(--magic-cyan));
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="parchment" id="parchment">
+        <header class="header">
+            <!-- Títulos removidos[cite: 1] -->
+            <p class="sub-title">LEIA INTOCADO PARA GANHAR NOVAS MAGIAS</p>
+        </header>
+
+        <div class="puzzle-area">
+            <!-- Tela SVG -->
+            <svg id="svg-canvas" class="svg-layer"></svg>
+
+            <!-- Coluna Esquerda: Magias (Corrigidas) -->
+            <div class="column left-col">
+                <div class="node spell" data-id="armadura" data-target="couro">Armadura Arcana</div>
+                <div class="node spell" data-id="despedacar" data-target="mica">Despedaçar</div>
+                <div class="node spell" data-id="olho" data-target="morcego">Olho Arcano</div>
+                <div class="node spell" data-id="tranca" data-target="po">Tranca Arcana</div>
+                <div class="node spell" data-id="raio" data-target="lupa">Raio Solar</div>
+                <div class="node spell" data-id="imobilizar" data-target="ferro">Imobilizar Pessoa</div>
+                <div class="node spell" data-id="detectar" data-target="cobre">Detectar Pensamentos</div>
+                <div class="node spell" data-id="maremoto" data-target="agua">Maremoto</div>
+            </div>
+            <!-- Letras Rúnicas no Centro - Layout imitando imagem[cite: 1] -->
+            <div class="center-letters">
+                <span class="rune" id="letter-W">W</span>
+                <span class="rune secret-letter" id="letter-P">P</span>
+                <span class="rune" id="letter-A">A</span>
+
+                <span class="rune" id="letter-T">T</span>
+                <span class="rune secret-letter" id="letter-R">R</span>
+
+                <span class="rune secret-letter" id="letter-E">E</span>
+                <span class="rune" id="letter-U">U</span>
+                <span class="rune" id="letter-M">M</span>
+
+                <span class="rune" id="letter-F">F</span>
+                <span class="rune" id="letter-L">L</span>
+                <span class="rune" id="letter-E-final">E</span>
+
+                <span class="rune" id="letter-V">V</span>
+                <span class="rune secret-letter" id="letter-S">S</span>
+
+                <span class="rune" id="letter-K">K</span>
+                <span class="rune secret-letter" id="letter-T-mid">T</span>
+
+                <span class="rune secret-letter" id="letter-O">O</span>
+                <span class="rune" id="letter-E-bot">E</span>
+
+                <span class="rune" id="letter-A-bot">A</span>
+            </div>
+
+            <!-- Coluna Direita: Componentes -->
+            <div class="column right-col">
+                <!-- Título removido[cite: 1] -->
+                <div class="node component" data-id="ferro">Ferro</div>
+                <div class="node component" data-id="po">Pó de Ouro</div>
+                <div class="node component" data-id="cobre">Peça de Cobre</div>
+                <div class="node component" data-id="lupa">Lupa</div>
+                <div class="node component" data-id="couro">Couro Curtido</div>
+                <div class="node component" data-id="mica">Mica</div>
+                <div class="node component" data-id="agua">Água</div>
+                <div class="node component" data-id="morcego">Pelo de Morcego</div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <script>
+       document.addEventListener('DOMContentLoaded', () => {
+            const svgCanvas = document.getElementById('svg-canvas');
+            const spells = document.querySelectorAll('.node.spell');
+            const components = document.querySelectorAll('.node.component');
+            const parchment = document.getElementById('parchment');
+
+            let selectedSpell = null;
+            let activeLine = null;
+
+            // Mapeamento das conexões ativas do usuário: { spellId: { compId, lineElement } }
+            const userConnections = {};
+
+            // Solução Oficial do Livro (Correspondências Corretas)
+            const solution = {
+                armadura: 'couro',
+                despedacar: 'mica',
+                olho: 'morcego',
+                tranca: 'po',
+                raio: 'lupa',
+                imobilizar: 'ferro',
+                detectar: 'cobre',
+                maremoto: 'agua'
+            };
+
+            // Clique na Magia
+            spells.forEach(spell => {
+                spell.addEventListener('click', (e) => {
+                    const spellId = spell.dataset.id;
+
+                    // Se a magia já tem uma conexão, clicar nela desfaz a linha existente
+                    if (userConnections[spellId]) {
+                        removeConnection(spellId);
+                    }
+
+                    if (selectedSpell === spell) {
+                        deselectAll();
+                        return;
+                    }
+
+                    deselectAll();
+                    selectedSpell = spell;
+                    spell.classList.add('selected');
+
+                    // Linha guia interativa acompanhando o mouse
+                    activeLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    activeLine.setAttribute('class', 'magic-line');
+                    svgCanvas.appendChild(activeLine);
+                    updateActiveLine(e.clientX, e.clientY);
+                });
+            });
+
+            // Rastreia movimento do mouse para desenhar o raio
+            document.addEventListener('mousemove', (e) => {
+                if (selectedSpell && activeLine) {
+                    updateActiveLine(e.clientX, e.clientY);
+                    if (Math.random() < 0.2) createParticle(e.clientX, e.clientY, 'var(--magic-cyan)');
+                }
+            });
+
+            // Clique no Componente (Permite qualquer conexão!)
+            components.forEach(component => {
+                component.addEventListener('click', (e) => {
+                    if (!selectedSpell) return;
+
+                    const spellId = selectedSpell.dataset.id;
+                    const compId = component.dataset.id;
+
+                    // Cria a linha física na tela
+                    const line = createFixedLine(selectedSpell, component);
+
+                    // Salva a conexão feita pelo jogador
+                    userConnections[spellId] = {
+                        compId: compId,
+                        lineElement: line,
+                        spellEl: selectedSpell,
+                        compEl: component
+                    };
+
+                    selectedSpell.classList.remove('selected');
+                    selectedSpell.classList.add('connected');
+
+                    // Efeito visual ao conectar
+                    for (let i = 0; i < 8; i++) {
+                        createParticle(e.clientX, e.clientY, 'var(--magic-cyan)');
+                    }
+
+                    deselectAll();
+
+                    // Verifica se o puzzle foi completamente resolvido corretamente
+                    checkSolution();
+                });
+            });
+
+            function updateActiveLine(mouseX, mouseY) {
+                const spellRect = selectedSpell.getBoundingClientRect();
+                const svgRect = svgCanvas.getBoundingClientRect();
+
+                const x1 = spellRect.right + 18 - svgRect.left;
+                const y1 = spellRect.top + spellRect.height / 2 - svgRect.top;
+                const x2 = mouseX - svgRect.left;
+                const y2 = mouseY - svgRect.top;
+
+                activeLine.setAttribute('x1', x1);
+                activeLine.setAttribute('y1', y1);
+                activeLine.setAttribute('x2', x2);
+                activeLine.setAttribute('y2', y2);
+            }
+
+            function createFixedLine(spellEl, compEl) {
+                const spellRect = spellEl.getBoundingClientRect();
+                const compRect = compEl.getBoundingClientRect();
+                const svgRect = svgCanvas.getBoundingClientRect();
+
+                const x1 = spellRect.right + 18 - svgRect.left;
+                const y1 = spellRect.top + spellRect.height / 2 - svgRect.top;
+                const x2 = compRect.left - 18 - svgRect.left;
+                const y2 = compRect.top + compRect.height / 2 - svgRect.top;
+
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('class', 'magic-line user-connected');
+                line.setAttribute('x1', x1);
+                line.setAttribute('y1', y1);
+                line.setAttribute('x2', x2);
+                line.setAttribute('y2', y2);
+
+                svgCanvas.appendChild(line);
+                return line;
+            }
+
+            function removeConnection(spellId) {
+                if (userConnections[spellId]) {
+                    const conn = userConnections[spellId];
+                    svgCanvas.removeChild(conn.lineElement);
+                    conn.spellEl.classList.remove('connected');
+                    delete userConnections[spellId];
+                }
+            }
+
+            function deselectAll() {
+                if (selectedSpell) {
+                    selectedSpell.classList.remove('selected');
+                    selectedSpell = null;
+                }
+                if (activeLine) {
+                    svgCanvas.removeChild(activeLine);
+                    activeLine = null;
+                }
+            }
+
+            function checkSolution() {
+                const connectedSpells = Object.keys(userConnections);
+
+                // Precisa ter 8 conexões feitas
+                if (connectedSpells.length < 8) return;
+
+                // Valida se cada conexão bate com a solução
+                let isCorrect = true;
+                for (let spellId in solution) {
+                    if (!userConnections[spellId] || userConnections[spellId].compId !== solution[spellId]) {
+                        isCorrect = false;
+                        break;
+                    }
+                }
+
+                if (isCorrect) {
+                    // Muda a cor das linhas para verde indicando vitória
+                    Object.values(userConnections).forEach(conn => {
+                        conn.lineElement.setAttribute('class', 'magic-line fixed');
+                    });
+                    revealSecret();
+                }
+            }
+
+            function createParticle(x, y, color) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = `${x - 4}px`;
+                particle.style.top = `${y - 4}px`;
+                particle.style.width = `${Math.random() * 6 + 4}px`;
+                particle.style.height = particle.style.width;
+                particle.style.background = color;
+                particle.style.boxShadow = `0 0 10px ${color}`;
+
+                document.body.appendChild(particle);
+
+                setTimeout(() => {
+                    particle.remove();
+                }, 1000);
+            }
+
+           function revealSecret() {
+                // Adiciona a classe .revealed para ativar o CSS nas letras secretas (PRESTO)
+                const secretLetters = document.querySelectorAll('.secret-letter');
+                secretLetters.forEach(letter => {
+                    letter.classList.add('revealed');
+                });
+
+                // Adiciona a classe .crossed nas demais letras
+                const otherRunes = document.querySelectorAll('.rune:not(.secret-letter)');
+                otherRunes.forEach(rune => {
+                    rune.classList.add('crossed');
+                });
+
+                // Efeito de chuva de luz dourada ao resolver
+                for (let i = 0; i < 60; i++) {
+                    setTimeout(() => {
+                        const rect = parchment.getBoundingClientRect();
+                        const rx = rect.left + Math.random() * rect.width;
+                        const ry = rect.top + Math.random() * rect.height;
+                        createParticle(rx, ry, 'var(--gold-glow)');
+                    }, i * 30);
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

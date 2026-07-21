@@ -21,28 +21,30 @@
 
         .hint-tooltip .tooltip-text {
             visibility: hidden;
-            width: 320px;
-            background-color: #1e293b;
-            color: #fff;
+            width: 280px;
+            background-color: #0f172a;
+            color: #f8fafc;
             text-align: left;
             border-radius: 8px;
-            padding: 14px;
+            padding: 12px;
             position: absolute;
-            z-index: 50;
-            bottom: 125%;
+            z-index: 100;
+            bottom: 135%;
             left: 50%;
             transform: translateX(-50%);
             opacity: 0;
-            transition: opacity 0.2s;
+            transition: opacity 0.2s ease-in-out;
             font-size: 0.75rem;
             line-height: 1.25rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.6);
             border: 1px solid #334155;
+            pointer-events: none;
         }
 
         .hint-tooltip:hover .tooltip-text {
             visibility: visible;
             opacity: 1;
+            
         }
 
         .step-bar {
@@ -128,10 +130,54 @@
         <!-- Resultados e Quadro Geral PURE -->
         <section id="resultsSection" class="space-y-8 hidden">
 
+            <!-- Painel da Régua de Escala e Índice de Fricção (Novo) -->
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 space-y-4">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-700/80 pb-4">
+                    <div>
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-ruler-horizontal text-blue-400"></i> Termômetro de Fricção Cognitiva
+                        </h3>
+                        <p class="text-slate-400 text-xs mt-0.5">
+                            Posicionamento da interface no intervalo teórico entre o melhor cenário (sem atrito) e o pior cenário (atrito máximo).
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3 bg-slate-900/80 px-4 py-2 rounded-xl border border-slate-700">
+                        <span class="text-xs text-slate-400 font-semibold">Índice de Fricção:</span>
+                        <span id="statFrictionIndex" class="text-xl font-black text-blue-400 font-mono">0%</span>
+                    </div>
+                </div>
+
+                <!-- Barra Visual de Progresso no Espectro Min -> Max -->
+                <div class="space-y-2">
+                    <div class="flex justify-between text-xs font-mono font-bold text-slate-400">
+                        <span class="flex items-center gap-1.5 text-emerald-400">
+                            <i class="fa-solid fa-circle-check text-[10px]"></i> Mínimo Teórico: <span id="statMinScore" class="text-white">0</span>
+                        </span>
+                        <span id="statCurrentPositionLabel" class="text-blue-300 bg-blue-950/60 px-2 py-0.5 rounded border border-blue-800/50">
+                            Score Atual: <strong id="statCurrentInBar" class="text-white">0</strong>
+                        </span>
+                        <span class="flex items-center gap-1.5 text-red-400">
+                            Máximo Teórico: <span id="statMaxScore" class="text-white">0</span> <i class="fa-solid fa-triangle-exclamation text-[10px]"></i>
+                        </span>
+                    </div>
+
+                    <!-- Trilho da Barra de Progresso -->
+                    <div class="w-full bg-slate-900 h-4 rounded-full overflow-hidden p-0.5 border border-slate-700 relative">
+                        <!-- Preenchimento dinâmico -->
+                        <div id="frictionProgressBar" class="h-full bg-gradient-to-r from-emerald-500 via-yellow-500 to-red-500 rounded-full transition-all duration-500" style="width: 0%;"></div>
+                    </div>
+                    <div class="flex justify-between text-[10px] text-slate-500 font-medium">
+                        <span>0% Atrito (Interface Perfeita)</span>
+                        <span>50% Esforço Moderado</span>
+                        <span>100% Atrito Crítico (Bloqueio)</span>
+                    </div>
+                </div>
+            </div>
+
             <!-- Indicadores KPI Executivos -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <!-- Score de Atrito Total -->
-                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 text-center relative overflow-hidden">
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 text-center relative overflow-visible">
                     <div class="text-slate-400 text-xs font-semibold flex items-center justify-center gap-1.5">
                         Score PURE Global
                         <div class="hint-tooltip">
@@ -449,6 +495,26 @@
             }
 
             let alphaIRR = calcularKrippendorffAlpha(matrizParaIrr);
+
+            // --- CÁLCULO DA RÉGUA DE ESCALA E ÍNDICE DE FRICÇÃO (%) ---
+            let totalEtapas = dadosEtapas.length;
+            let minScoreTeorico = totalEtapas * 1;
+            let maxScoreTeorico = totalEtapas * 3;
+            
+            // Fórmula do Índice de Fricção Relativa (%)
+            let indiceFriccao = 0;
+            if (maxScoreTeorico > minScoreTeorico) {
+                indiceFriccao = ((globalPureScore - minScoreTeorico) / (maxScoreTeorico - minScoreTeorico)) * 100;
+            }
+
+            // Atualiza a Régua no DOM
+            document.getElementById('statMinScore').innerText = minScoreTeorico;
+            document.getElementById('statMaxScore').innerText = maxScoreTeorico;
+            document.getElementById('statCurrentInBar').innerText = globalPureScore;
+            document.getElementById('statFrictionIndex').innerText = `${indiceFriccao.toFixed(1)}%`;
+            
+            // Atualiza a largura da barra visual
+            document.getElementById('frictionProgressBar').style.width = `${Math.min(Math.max(indiceFriccao, 0), 100)}%`;
 
             // Atualiza KPI na Interface
             document.getElementById('resultsSection').classList.remove('hidden');
