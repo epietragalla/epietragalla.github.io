@@ -110,11 +110,11 @@
                     <i class="fa-solid fa-book text-purple-400"></i> Como formatar seu CSV?
                 </h3>
                 <p class="text-xs text-slate-400 leading-relaxed">
-                    Sua planilha deve conter exatamente as seguintes colunas em ordem estrutural na primeira linha:
+                    Sua planilha deve conter pelo menos as seguintes colunas nessa ordem:
                 </p>
                 <div
                     class="bg-slate-900/60 p-3 rounded-xl border border-slate-700/60 font-mono text-[11px] text-blue-300 space-y-1">
-                    <p>Tarefa/Etapa/Descrição/Ava.1/Ava.2/Ava.3</p>
+                    <p>Tarefa/Etapa/Descrição/Ava.1/Ava.2/Ava.3/Nota Cons.</p>
                     <p>Ex:</p>
                     <p>Login;01;Inserir e-mail;1;1;2</p>
                     <p>Login;02;Inserir senha;1;2;2</p>
@@ -444,14 +444,11 @@
         }
 
         function parsePURECSV(text) {
-            // AJUSTE CRÍTICO: Remove o marcador BOM (\uFEFF) caso ele venha embutido do Excel antes de quebrar as linhas
+            // Remove o marcador BOM (\uFEFF) caso ele venha embutido do Excel
             let cleanText = text.replace(/^\uFEFF/, "");
 
             let delimiter = cleanText.split('\n')[0].includes(';') ? ';' : ',';
             let rows = cleanText.split(/\r?\n/).map(line => line.split(delimiter).map(c => c.replace(/^"|"$/g, '').trim()));
-
-            // Filtra linhas vazias
-            rows = rows.filter(r => r.length >= 6 && r[0] !== "");
 
             if (rows.length <= 1) {
                 alert("Erro: Arquivo CSV vazio ou sem dados suficientes mapeados.");
@@ -459,8 +456,22 @@
                 return;
             }
 
-            processarMetodologiaPure(rows.slice(1));
+            // Valida se a coluna "Nota Consenso" existe no cabeçalho (Linha 0)
+            let header = rows[0].map(h => h.toLowerCase());
+            let indexConsenso = header.findIndex(h => h.includes('consenso'));
+
+            if (indexConsenso === -1) {
+                alert("Erro de Validação: A coluna 'Nota Consenso' não foi encontrada na sua planilha CSV.\n\nO sistema exige que a nota decidida pelo comitê esteja previamente preenchida na planilha para realizar os cálculos.");
+                resetUploadUI();
+                return;
+            }
+
+            // Filtra linhas válidas (deve conter pelo menos 7 colunas e o nome da tarefa)
+            rows = rows.filter(r => r.length >= 7 && r[0] !== "");
+
+            processarMetodologiaPure(rows.slice(1), indexConsenso);
         }
+
         function resetUploadUI() {
             uploadIcon.className = "fa-solid fa-cloud-arrow-up text-4xl text-slate-500";
             uploadText.innerText = "Arraste seu arquivo CSV consolidado ou clique para buscar";
@@ -526,7 +537,7 @@
             return alpha;
         }
 
-        function processarMetodologiaPure(dataRows) {
+        function processarMetodologiaPure(dataRows, indexConsenso) {
             let dadosEtapas = [];
             let matrizParaIrr = [];
             let mapaTarefas = {};
@@ -539,30 +550,22 @@
                 let exp1 = parseInt(row[3]);
                 let exp2 = parseInt(row[4]);
                 let exp3 = parseInt(row[5]);
+                
+                // Leitura direta da coluna Nota Consenso informada pelo usuário
+                let scoreConsenso = parseInt(row[indexConsenso]);
 
                 if (isNaN(exp1) || isNaN(exp2) || isNaN(exp3)) continue;
 
-                // Regra de Consenso do PURE: Votação majoritária estruturada
+                // Validação se a nota de consenso informada está no intervalo ordinal válido (1 a 3)
+                if (isNaN(scoreConsenso) || scoreConsenso < 1 || scoreConsenso > 3) {
+                    alert(`Erro na Linha ${r + 2}: A 'Nota Consenso' para o passo '${etapaId}' da tarefa '${tarefa}' é inválida ou está em branco. A nota deve ser 1, 2 ou 3.`);
+                    resetUploadUI();
+                    return;
+                }
+
                 let votos = [exp1, exp2, exp3];
-                let contagem = {};
-                votos.forEach(v => { contagem[v] = (contagem[v] || 0) + 1; });
-
-                // Encontra o valor mais votado (Moda) para o score de consenso
-                let scoreConsenso = votos[0];
-                let maxVotos = 0;
-                for (let key in contagem) {
-                    if (contagem[key] > maxVotos) {
-                        maxVotos = contagem[key];
-                        scoreConsenso = parseInt(key);
-                    }
-                }
-
-                // Desempate técnico se houver 3 notas distintas (1, 2 e 3): Adota-se a mediana/média conservadora (2)
-                if (maxVotos === 1) {
-                    scoreConsenso = 2;
-                }
-
                 let infoStep = { tarefa, etapaId, descricao, exp1, exp2, exp3, consenso: scoreConsenso };
+                
                 dadosEtapas.push(infoStep);
                 matrizParaIrr.push(votos);
 
