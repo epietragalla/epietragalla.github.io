@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Método PURE — Apresentação Interativa Completa</title>
+    <!-- Fonts & MathJax -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --card-inner: #0f172a;
+            --accent-cyan: #38bdf8;
+            --accent-blue: #3b82f6;
+            --accent-green: #34d399;
+            --accent-yellow: #f59e0b;
+            --accent-red: #ef4444;
+            --accent-purple: #c084fc;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --shadow-glow: 0 0 25px rgba(56, 189, 248, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+        }
+
+        /* Top Progress Bar */
+        .progress-bar-container {
+            width: 100%;
+            height: 4px;
+            background: #1e293b;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue));
+            width: 0%;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 10px var(--accent-cyan);
+        }
+
+        /* Header Navigation */
+        .top-bar {
+            height: 65px;
+            background-color: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            z-index: 10;
+        }
+
+        .brand-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--accent-cyan);
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-badge {
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: var(--accent-cyan);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .slide-counter {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-muted);
+            min-width: 90px;
+            text-align: center;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .btn {
+            background-color: #334155;
+            color: var(--text-main);
+            border: 1px solid transparent;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover:not(:disabled) {
+            background-color: #475569;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-blue), #2563eb);
+            color: #ffffff;
+            box-shadow: 0 2px 10px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.5);
+        }
+
+        .btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* Main Viewport Container */
+        .presentation-container {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 32px;
+            position: relative;
+        }
+
+        /* Slide Shell Design */
+        .slide {
+            display: none;
+            width: 100%;
+            max-width: 1240px;
+            height: 100%;
+            max-height: 700px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 44px 52px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            opacity: 0;
+            transform: scale(0.98) translateY(12px);
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .slide.active {
+            display: flex;
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+
+        /* Module Tags */
+        .module-tag {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 6px;
+        }
+
+        .tag-m1 { background: rgba(52, 211, 153, 0.12); color: var(--accent-green); border: 1px solid rgba(52, 211, 153, 0.25); }
+        .tag-m2 { background: rgba(245, 158, 11, 0.12); color: var(--accent-yellow); border: 1px solid rgba(245, 158, 11, 0.25); }
+        .tag-m3 { background: rgba(239, 68, 68, 0.12); color: var(--accent-red); border: 1px solid rgba(239, 68, 68, 0.25); }
+        .tag-m4 { background: rgba(56, 189, 248, 0.12); color: var(--accent-cyan); border: 1px solid rgba(56, 189, 248, 0.25); }
+        .tag-m5 { background: rgba(192, 132, 252, 0.12); color: var(--accent-purple); border: 1px solid rgba(192, 132, 252, 0.25); }
+
+        /* Slide Typography */
+        .slide-header {
+            margin-bottom: 20px;
+        }
+
+        .slide-title {
+            font-size: 30px;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+            line-height: 1.25;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            overflow-y: auto;
+            padding-right: 6px;
+        }
+
+        /* Custom Scrollbar */
+        .slide-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        .slide-content::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+
+        /* Interactive Grid & Cards */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background-color: var(--card-inner);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 22px;
+            transition: all 0.25s ease;
+            position: relative;
+        }
+
+        .card-interactive:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-cyan);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card p {
+            font-size: 14px;
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+
+        /* Cleaned List Styles (Single Bullet Only) */
+        ul {
+            list-style: none !important;
+            padding: 0;
+            margin: 0;
+        }
+
+        ul li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #cbd5e1;
+            line-height: 1.6;
+            list-style: none !important;
+        }
+
+        ul li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: var(--accent-cyan);
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .quote-box {
+            background: rgba(15, 23, 42, 0.7);
+            border-left: 4px solid var(--accent-cyan);
+            padding: 16px 20px;
+            border-radius: 0 12px 12px 0;
+            font-style: italic;
+            color: #e2e8f0;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-top: 10px;
+        }
+
+        /* Hero Cover Slide */
+        .slide-hero {
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+        }
+
+        .hero-h1 {
+            font-size: 48px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 12px;
+            letter-spacing: -1.5px;
+            background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            color: var(--accent-cyan);
+            margin-bottom: 32px;
+            font-weight: 700;
+        }
+
+        .hero-box {
+            background-color: var(--card-inner);
+            border: 1px solid var(--border-color);
+            padding: 24px 32px;
+            border-radius: 20px;
+            max-width: 860px;
+            text-align: left;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Interactive Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+
+        th, td {
+            padding: 10px 14px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: rgba(15, 23, 42, 0.9);
+            color: var(--accent-cyan);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+
+        tr {
+            transition: background 0.2s ease;
+        }
+
+        tr:hover {
+            background-color: rgba(56, 189, 248, 0.05);
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            display: inline-block;
+        }
+        .bg-green { background: rgba(52, 211, 153, 0.15); color: var(--accent-green); border: 1px solid var(--accent-green); }
+        .bg-yellow { background: rgba(245, 158, 11, 0.15); color: var(--accent-yellow); border: 1px solid var(--accent-yellow); }
+        .bg-red { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); border: 1px solid var(--accent-red); }
+
+        /* Ref Bibliography Styling */
+        .ref-list li {
+            margin-bottom: 12px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        /* Slide Footer */
+        .slide-footer {
+            margin-top: 20px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Printable PDF Styling */
+        @media print {
+            body {
+                overflow: visible;
+                height: auto;
+                background-color: #0f172a;
+            }
+            .top-bar, .progress-bar-container {
+                display: none;
+            }
+            .presentation-container {
+                padding: 0;
+                display: block;
+            }
+            .slide {
+                display: flex !important;
+                opacity: 1 !important;
+                transform: none !important;
+                page-break-after: always;
+                height: 100vh;
+                max-height: none;
+                max-width: none;
+                border: none;
+                box-shadow: none;
+                border-radius: 0;
+                background-color: #0f172a;
+                color: #f8fafc;
+            }
+        }
+        /* Container Principal da Capa */
+    .slide-cover-container {
+        width: 100%;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 40px 20px;
+   
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        box-sizing: border-box;
+    }
+
+    /* Pill Tag no Topo */
+    .pill-tag {
+        border: 1px solid #10b981;
+        background-color: rgba(16, 185, 129, 0.08);
+        color: #10b981;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 6px 18px;
+        border-radius: 20px;
+        letter-spacing: 0.8px;
+        margin-bottom: 24px;
+        display: inline-block;
+    }
+
+    /* Título Grande */
+    .cover-title {
+        color: #ffffff;
+        font-size: 52px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        margin: 0 0 12px 0;
+    }
+
+    /* Subtítulo Ciano */
+    .cover-subtitle {
+        color: #38bdf8;
+        font-size: 22px;
+        font-weight: 600;
+        margin: 0 0 24px 0;
+    }
+
+    /* Descrição Central */
+    .cover-description {
+        color: #94a3b8;
+        font-size: 16px;
+        line-height: 1.5;
+        margin: 0 0 40px 0;
+    }
+
+    /* Card Inferior de Tópicos */
+    .cover-topics-card {
+        width: 100%;
+        background-color: #111c33;
+        border: 1px solid #1e2d4a;
+        border-radius: 12px;
+        padding: 20px 28px;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 16px;
+        text-align: left;
+        box-sizing: border-box;
+    }
+
+    /* Cada Coluna */
+    .topic-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    /* Título das Colunas */
+    .topic-label {
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    /* Descrição das Colunas */
+    .topic-desc {
+        color: #ffffff;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 1.3;
+    }
+
+    /* Cores Específicas dos Marcadores */
+    .c-green  { color: #10b981; }
+    .c-yellow { color: #f59e0b; }
+    .c-blue   { color: #3b82f6; }
+    .c-purple { color: #a855f7; }
+    .c-pink   { color: #ec4899; }
+    </style>
+</head>
+<body>
+
+    <div class="progress-bar-container">
+        <div class="progress-bar-fill" id="progressBar"></div>
+    </div>
+
+    <div class="top-bar">
+        <div class="brand-title">
+           
+            <span class="brand-badge">Método PURE</span>
+        </div>
+        <div class="controls">
+            <button class="btn" id="prevBtn" onclick="changeSlide(-1)">❮ Anterior</button>
+            <div class="slide-counter" id="slideCounter">01 / 27</div>
+            <button class="btn btn-primary" id="nextBtn" onclick="changeSlide(1)">Próximo ❯</button>
+           
+
+        </div>
+    </div>
+
+    <div class="presentation-container">
+
+        <!-- SLIDE 1: Capa -->
+        <div class="slide slide-hero active">
+            <div class="slide-cover-container">
+    <!-- Tag Pill Superior -->
+    <div class="pill-tag">MÓDULO 1: VISÃO GERAL</div>
+
+    <!-- Título Principal -->
+    <h1 class="cover-title">Método PURE</h1>
+
+    <!-- Subtítulo Azul/Ciano -->
+    <h2 class="cover-subtitle">Pragmatic Usability Rating by Experts</h2>
+
+    <!-- Descrição Central -->
+    <p class="cover-description">
+        Quantificação da Fricção Cognitiva, Validação Científica, Dinâmica de<br>
+        Avaliação e Confiabilidade por Krippendorff's Alpha.
+    </p>
+
+    <!-- Card de 5 Colunas (Footer do Slide) -->
+    <div class="cover-topics-card">
+        <div class="topic-item">
+            <span class="topic-label c-green">1. Conceito</span>
+            <span class="topic-desc">Método analítico pragmático</span>
+        </div>
+        <div class="topic-item">
+            <span class="topic-label c-yellow">2. Validação</span>
+            <span class="topic-desc">CHI 2016, NN/g, arXiv</span>
+        </div>
+        <div class="topic-item">
+            <span class="topic-label c-blue">3. Dinâmica</span>
+            <span class="topic-desc">Piloto + Avaliadores</span>
+        </div>
+        <div class="topic-item">
+            <span class="topic-label c-purple">4. Estatística</span>
+            <span class="topic-desc">Alpha de Krippendorff</span>
+        </div>
+        <div class="topic-item">
+            <span class="topic-label c-pink">5. Métricas</span>
+            <span class="topic-desc">Régua &amp; Index %</span>
+        </div>
+    </div>
+</div>
+        </div>
+
+        <!-- SLIDE 2 -->
+        <div class="slide">
+            <div>
+                <span class="module-tag tag-m1">Módulo 1 — Introdução</span>
+                <div class="slide-header">
+                    <h2 class="slide-title">O Dilema da Medição de Usabilidade em UX</h2>
+                </div>
+                <div class="slide-content grid-2">
+                    <div class="card card-interactive">
+                        <div class="card-title">⚠️ O Desafio Corporativo & B2B</div>
+                        <ul>
+                            <li><strong>O Desafio Corporativo:</strong> Empresas exigem métricas numéricas objetivas para direcionar investimentos de produto, mas testes empíricos de laboratório exigem tempo, orçamento e logística complexa.</li>
+                            <li><strong>A Barreira dos Softwares B2B / Complexos:</strong> Dificuldade de recrutar públicos altamente especializados (ex: engenheiros de simulação, médicos, operadores de redes).</li>
+                        </ul>
+                    </div>
+                    <div class="card card-interactive">
+                        <div class="card-title">🛠️ As Limitações das Ferramentas Atuais</div>
+                        <ul>
+                            <li><strong>Analytics / Testes A/B:</strong> Medem o que o usuário fez (cliques, conversão), mas ignoram a carga cognitiva e o sofrimento do usuário.</li>
+                            <li><strong>Avaliações Heurísticas Tradicionais:</strong> Entregam listas qualitativas de problemas sem notas numéricas padronizadas para comparações históricas ou benchmarks.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="quote-box">
+                    "Muitos projetos chegam ao mercado sem nenhuma validação de usabilidade por falta de tempo ou verba. O PURE foi criado para cobrir essa lacuna, atuando como um 'termômetro de fricção' ágil, barato e cientificamente validado."
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Método PURE — Visão Geral</span>
+                <span>Slide 02 de 27</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 3 -->
+        <div class="slide">
+            <div>
+                <span class="module-tag tag-m1">Módulo 1 — Conceito</span>
+                <div class="slide-header">
+                    <h2 class="slide-title">O que é o Método PURE?</h2>
+                </div>
+                <div class="slide-content grid-2">
+                    <div class="card card-interactive">
+                        <div class="card-title">📌 Definição e Natureza</div>
+                        <ul>
+                            <li><strong>Definição:</strong> É uma metodologia analítica (não empírica) que quantifica o nível de atrito e a facilidade de uso de um produto digital.</li>
+                            <li>
+    <strong>Natureza Híbrida:</strong> Integra princípios das Revisões por Especialistas (Heurísticas) com a decomposição do 
+    <a href="https://www.homemmaquina.com.br/como-medir-interfaces-com-keystroke-level-model-klm/" target="_blank" rel="noopener noreferrer" style="color: #38bdf8; text-decoration: underline; font-weight: 600;">Keystroke Level Modeling (KLM)</a>.
+</li>
+                            <li><strong>Sem Usuários Finais ao Vivo:</strong> Não há recrutamento de usuários reais realizando tarefas na sessão; quem julga a interface é um painel de especialistas sob a ótica de uma persona.</li>
+                        </ul>
+                    </div>
+                    <div class="card card-interactive">
+                        <div class="card-title">🎁 Principais Entregáveis</div>
+                        <ul>
+                            <li><strong>Nota Numérica (Score):</strong> Permite acompanhar a evolução de versões (V1 vs. V2) ou comparar com a concorrência.</li>
+                            <li><strong>Sinalização Cromática (Verde, Amarelo, Vermelho):</strong> Identifica instantaneamente onde estão os pontos de bloqueio para desenvolvedores e stakeholders.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Método PURE — Conceito</span>
+                <span>Slide 03 de 27</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 4 -->
+        <div class="slide">
+            <div>
+                <span class="module-tag tag-m1">Módulo 1 — Origem</span>
+                <div class="slide-header">
+                    <h2 class="slide-title">Origem Histórica e Criadores</h2>
+                </div>
+                <div class="slide-content grid-2">
+                   <div class="card card-interactive">
+    <div class="card-title">🏢 Onde Nasceu</div>
+    <ul>
+        <li>
+            Desenvolvido no departamento de design da <strong>Intel Security</strong> em parceria com a consultoria de métricas estatísticas 
+            <a href="https://measuringu.com/ux-metrics-pure/" target="_blank" rel="noopener noreferrer" style="color: #38bdf8; text-decoration: underline; font-weight: 600;">MeasuringU</a>.
+        </li>
+        <li>
+            <strong>Lançamento Oficial:</strong> Publicado em 2016 na 
+            <a href="https://dl.acm.org/doi/10.1145/2851581.2851607" target="_blank" rel="noopener noreferrer" style="color: #38bdf8; text-decoration: underline; font-weight: 600;">CHI Conference on Human Factors in Computing Systems</a> 
+            (San Jose, Califórnia).
+        </li>
+        <li>
+            <strong>Estudo de Caso:</strong> Veja também o artigo de consolidação do método no 
+            <a href="https://www.nngroup.com/articles/pure-method/" target="_blank" rel="noopener noreferrer" style="color: #38bdf8; text-decoration: underline; font-weight: 600;">Nielsen Norman Group (NN/g)</a>.
+        </li>
+    </ul>
+</div>
+                    <div class="card card-interactive">
+                        <div class="card-title">👥 Os Autores Fundadores</div>
+                        <ul>
+                            <li><strong>Christian P. Rohrer:</strong> Chief Design Officer - Intel Security / ex-NN/g.</li>
+                            <li><strong>Jeff Sauro, PhD:</strong> Fundador da MeasuringU e autor referência em estatística de UX.</li>
+                            <li><strong>James Wendt, Frederick Boyle e Sara Cole:</strong> Pesquisadores seniores de UX.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="quote-box">
+                    "O método nasceu do desafio real da Intel Security de mensurar e comparar a usabilidade de dezenas de softwares em várias plataformas, onde a realização contínua de testes de laboratório era inviável."
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Método PURE — Origem</span>
+                <span>Slide 04 de 27</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 5 -->
+        <div class="slide">
+            <div>
+                <span class="module-tag tag-m1">Módulo 1 — Aplicação</span>
+                <div class="slide-header">
+                    <h2 class="slide-title">O PURE substitui os Testes de Usabilidade com Usuários?</h2>
+                </div>
+                <div class="slide-content grid-2">
+                    <div class="card card-interactive">
+                        <div class="card-title">💡 Não é um substituto total</div>
+                        <p style="margin-bottom: 12px;">O PURE é complementar; ele não elimina o valor de ouvir o usuário final para descobrir modelos mentais totalmente inesperados.</p>
+                        <ul>
+                            <li><strong>Vantagem em Eficiência:</strong> Um painel de especialistas audita a jornada completa de uma aplicação em poucos dias, reduzindo falsos positivos.</li>
+                        </ul>
+                    </div>
+                    <div class="card card-interactive">
+                        <div class="card-title">🎯 Casos de Uso Ideais para o PURE</div>
+                        <ul>
+                            <li>Quando não há tempo, orçamento ou logística para recrutar usuários reais.</li>
+                            <li>Em fases de prototipação (média/alta fidelidade) para eliminar barreiras graves antes que o código seja escrito.</li>
+                            <li>Para benchmarking competitivo e acompanhamento de dívida técnica de UX em produtos legados.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Método PURE — Casos de Uso</span>
+                <span>Slide 05 de 27</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 6 -->
+        <div class="slide">
+    <div>
+        <span class="module-tag tag-m1">Módulo 1 — Ciência</span>
+        <div class="slide-header">
+            <h2 class="slide-title">Validação Científica — O Paper Fundacional (CHI 2016)</h2>
+        </div>
+        <div class="slide-content grid-2">
+            <div class="card card-interactive">
+                <div class="card-title">🔬 O Estudo de Validação</div>
+                <p>Os autores rodaram o PURE e, simultaneamente, aplicaram testes empíricos reais de usabilidade (com 15 participantes moderados e 202 não moderados) nos mesmos sistemas para validar a precisão do método.</p>
+                
+                <p style="margin-top: 12px;">
+                    <strong>Poder Preditivo (\(R^2\)):</strong> A pontuação do PURE consegue prever e explicar entre <strong>25% e 36%</strong> de toda a variação na percepção de facilidade dos usuários reais. 
+                    Saiba mais na <a href="https://measuringu.com/pure/" target="_blank" rel="noopener noreferrer" style="color: #38bdf8; text-decoration: underline;">análise de validação da MeasuringU</a>.
+                </p>
+            </div>
+            
+           <div class="card card-interactive">
+    <div class="card-title">📈 Correlações Comprovadas na Prática</div>
+    <ul>
+        <li>
+            <strong>SEQ (Facilidade Pós-Tarefa):</strong> 
+            <span class="badge bg-green">Correlação Moderada</span>
+            <br>
+            <small style="color: #94a3b8;">
+                Mostra que a nota dada pelos especialistas no PURE acompanha de perto a facilidade real que o usuário sente ao concluir uma tarefa.
+            </small>
+        </li>
+        <li style="margin-top: 10px;">
+            <strong>SUS (Usabilidade Geral do Sistema):</strong> 
+            <span class="badge bg-green">Correlação Moderada</span>
+            <br>
+            <small style="color: #94a3b8;">
+                Valida que o acúmulo de atritos mapeados no PURE reflete fielmente a nota final de satisfação global do produto.
+            </small>
+        </li>
+        <li style="margin-top: 10px;">
+            <strong>SUPR-Q (Qualidade e Lealdade de UX):</strong> 
+            <span class="badge bg-green">Correlação Forte</span>
+            <br>
+            <small style="color: #94a3b8;">
+                Prova que um score ruim no PURE afeta diretamente a percepção de qualidade da marca e a disposição do cliente em recomendar o sistema.
+            </small>
+        </li>
+    </ul>
+</div>
+        </div>
+        
+        <!-- Box de Destaque / Citação Executiva -->
+        <div class="quote-box">
+            "Significa que, sem gastar tempo ou dinheiro recrutando um único usuário real, o PURE consegue prever com antecedência até 36% da frustração ou facilidade que esse usuário sentiria no laboratório. É como ter um termômetro que antecipa mais de 1/3 da experiência do cliente antes mesmo do código ir para o ar."
+        </div>
+    </div>
+    
+    <div class="slide-footer">
+        <span>Método PURE — Validação Científica</span>
+        <span>Slide 06 de 27</span>
+    </div>
+</div>
+        <!-- SLIDE 7 -->
+        <div class="slide">
+            <div>
+                <span class="module-tag tag-m1">Módulo 1 — Mercado</span>
+                <div class="slide-header">
+                    <h2 class="slide-title">Validação de Mercado (NN/g) e na Indústria (Siemens/arXiv)</h2>
+                </div>
+               <div class="slide-content grid-2">
+    <div class="card card-interactive">
+        <div class="card-title">🌐 Consolidação pela Nielsen Norman Group (Rohrer, 2017)</div>
+        <ul>
+            <li>
+                Apresentou o PURE no artigo do NN/g como o 
+                <a href="https://www.nngroup.com/articles/pure-method/" target="_blank" rel="noopener noreferrer" style="color: #38bdf8; text-decoration: underline; font-weight: 600;">"Tomatometer da Usabilidade"</a> 
+                (um índice pragmático de consenso para executivos).
+            </li>
+            <li>
+                Demonstrou a aplicação do PURE em grandes empresas (como a Capital One) para orientar decisões estratégicas e priorizar os roteiros de engenharia.
+            </li>
+        </ul>
+    </div>
+    
+    <div class="card card-interactive">
+        <div class="card-title">🏭 Validação Recente em Softwares de Engenharia CAE (Siemens / arXiv, 2026)</div>
+        <ul>
+            <li>
+                Estudo de caso publicado no 
+                <a href="https://arxiv.org/abs/2601.10232" target="_blank" rel="noopener noreferrer" style="color: #38bdf8; text-decoration: underline; font-weight: 600;">preprint arXiv (2026)</a> 
+                aplicou o PURE com 3 especialistas para comparar planilhas tabulares tradicionais contra protótipos em Diagramas de Sankey em simulações da Siemens.
+            </li>
+            <li>
+                <strong>Achados Práticos com PURE:</strong> Provou quantitativamente uma redução de 51% na carga cognitiva e 56% menos interações no novo design.
+            </li>
+        </ul>
+    </div>
+</div>
+            </div>
+            <div class="slide-footer">
+                <span>Método PURE — Casos de Sucesso</span>
+                <span>Slide 07 de 27</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 8 -->
+        <div class="slide">
+            <div>
+                <span class="module-tag tag-m2">Módulo 2 — Dinâmica</span>
+                <div class="slide-header">
+                    <h2 class="slide-title">A Dinâmica da Sessão — Como Funciona sem Usuários Reais?</h2>
+                </div>
+                <div class="slide-content grid-2">
+                    <div class="card card-interactive">
+                        <div class="card-title">👥 Quem são os atores da sessão?</div>
+                        <ul>
+                            <li><strong>O Piloto / Driver:</strong> Uma pessoa que conhece o sistema e navega pela tela.</li>
+                            <li><strong>O Painel de Especialistas:</strong> 2 a 3 avaliadores de UX/usabilidade e domínio.</li>
+                        </ul>
+                    </div>
+                    <div class="card card-interactive">
+                        <div class="card-title">🎥 Os Formatos Práticos de Execução</div>
+                        <ul>
+                            <li><strong>Formato com Piloto ao Vivo (Live Walkthrough):</strong> O piloto compartilha a tela e executa o fluxo passo a passo em tempo real enquanto os avaliadores assistem.</li>
+                            <li><strong>Formato por Gravação de Vídeo:</strong> Utiliza-se um vídeo gravado da navegação sem erros para que os especialistas assistam e pontuem assincronamente (como aplicado no estudo da Siemens).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Método PURE — Atores e Formatos</span>
+                <span>Slide 08 de 27</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 9 -->
+        <div class="slide">
+            <div>
+                <span class="module-tag tag-m2">Módulo 2 — O Piloto</span>
+                <div class="slide-header">
+                    <h2 class="slide-title">O Papel do Piloto (Driver) — Por que ele DEVE conhecer o sistema?</h2>
+                </div>
+                <div class="slide-content grid-2">
+                    <div class="card card-interactive">
+                        <div class="card-title">⚡ Funções do Piloto</div>
+                        <ul>
+                            <li><strong>Função Puramente Mecânica (Execução Perfeita):</strong> O piloto não simula a dúvida do usuário nem "tenta adivinhar" ações. Ele percorre o Happy Path sem erros.</li>
+                            <li><strong>Garantia de Padronização:</strong> Se o piloto fosse um leigo, ele hesitaria por conta própria, transformando o PURE em um teste empírico despadronizado.</li>
+                            <li><strong>Anúncio dos Limites do Passo:</strong> O piloto experiente conhece as fronteiras das etapas e sinaliza ao grupo: "Ação finalizada, podem pontuar o Passo 1".</li>
+                        </ul>
+                    </div>
+                    <div class="card card-interactive">
+                        <div class="card-title">🎭 Quem faz o papel do usuário leigo?</div>
+                        <div class="quote-box" style="margin-top: 0; border-left-color: var(--accent-yellow);">
+                            "São os 3 especialistas que estão assistindo! Enquanto o piloto navega sem falhas, o especialista olha para a interface e se pergunta: 'Se a nossa persona leiga estivesse diante dessa tela agora, o quão difícil seria para ela entender o que fazer?'"
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Método PURE — O Piloto</span>
+                <span>Slide 09 de 27</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 10 -->
+        <div class="slide">
+            <div>
+                <span class="module-tag tag-m2">Módulo 2 — Avaliadores</span>
+                <div class="slide-header">
+                    <h2 class="slide-title">O Papel dos Avaliadores — Roteiro e Controle na Planilha</h2>
+                </div>
+                <div class="slide-content">
+                    <div class="card card-interactive">
+                        <div class="card-title">📋 Diretrizes & O "Card/Gabarito" do Avaliador</div>
+                        <ul style="margin-bottom: 12px;">
+                            <li>Eles precisam conhecer o sistema a fundo? Não! Devem dominar princípios de UX e vestir a pele da persona. Se conhecerem atalhos demais do software, perdem a empatia com o leigo.</li>
+                            <li>Eles precisam decorar passos? Não! Ninguém decora nada.</li>
+                            <li><strong>O Roteiro Pré-Mapeado:</strong> Antes da sessão, o líder da pesquisa mapeia todas as tarefas e cadastra os passos em uma planilha compartilhada (ou software). Cada especialista acompanha com sua própria planilha contendo o roteiro sequencial:</li>
+                        </ul>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Tarefa</th>
+                                    <th>Nº Passo</th>
+                                    <th>Descrição do Roteiro</th>
+                                    <th>Nota (1-3)</th>
+                                    <th>Anotações do Avaliador</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Login</td>
+                                    <td>01</td>
+                                    <td>Localizar botão "Entrar"</td>
+                                    <td><span class="badge bg-green">1</span></td>
+                                    <td>Botão bem destacado.</td>
+                                </tr>
+                                <tr>
+                                    <td>Login</td>
+                                    <td>02</td>
+                                    <td>Preencher e-mail e prosseguir</td>
+                                    <td><span class="badge bg-yellow">2</span></td>
+                                    <td>Campo com rótulo apagado.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Método PURE — Avaliadores</span>
+                <span>Slide 10 de 27</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 11 -->
+        <div class="slide">
+            <div>
+                <span class="module-tag tag-m2">Módulo 2 — Persona</span>
+                <div class="slide-header">
+                    <h2 class="slide-title">Definição e Escolha da Persona (Usuário-Alvo)</h2>
+                </div>
+                <div class="slide-content grid-2">
+                    <div class="card card-interactive">
+                        <div class="card-title">🎯 Como e por quem é definida & Alinhamento</div>
+                        <ul>
+                            <li><strong>Como e por quem é definida:</strong> Decidida antes da sessão pelo Product Manager, Designer Líder ou comitê. Baseia-se nas personas reais da empresa (pesquisas de campo/mercado).</li>
+                            <li><strong>Alinhamento Obrigatoriamente Único:</strong> Todos os 3 avaliadores usam rigorosamente a MESMA persona na rodada.</li>
+                            <li><strong>Por que não variar a persona na mesma sessão?</strong> Se o Avaliador 1 pensar em um "Engenheiro Sênior" e o Avaliador 2 em um "Estagiário Leigo", os dados perdem a validade estatística.</li>
+                        </ul>
+                    </div>
+                    <div class="card card-interactive">
+                        <div class="card-title">👥 Múltiplos Públicos (ex: Aluno e Professor)</div>
+                        <ul>
+                            <li>Devem ser realizadas duas avaliações PURE totalmente separadas: Rodada 1 para a Persona A e Rodada 2 para a Persona B.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Método PURE — Persona</span>
+                <span>Slide 11 de 27</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 12 -->
+        <div class="slide">
+            <div>
+                <span class="module-tag tag-m3">Módulo 3 — Preparação</span>
+                <div class="slide-header">
+                    <h2 class="slide-title">Fase de Preparação — Tasks, Happy Path e Step Boundaries</h2>
+                </div>
+                <div class="slide-content grid-2">
+                    <div class="card card-interactive">
+                        <div class="card-title">📊 Seleção & Happy Path</div>
+                        <ul>
+                            <li><strong>1. Seleção das Tarefas Fundamentais:</strong> Foco nas 5 a 15 tarefas mais críticas para o negócio e para o usuário.</li>
+                            <li><strong>2. Mapeamento do Happy Path:</strong> O PURE avalia apenas o fluxo principal sem erros.</li>
+                        </ul>
+                    </div>
+                    <div class="card card-interactive">
+                        <div class="card-title">📐 3. Definição das Fronteiras do Passo (Step Boundaries)</div>
+                        <ul>
+                            <li><strong>Onde Começa:</strong> Quando o sistema apresenta à interface um novo conjunto de opções (a tela ou seção renderiza).</li>
+                            <li><strong>Onde Termina:</strong> Quando o usuário realiza uma ação e espera uma resposta significativa do sistema (ex: clicar em "Avançar", "Salvar", carregar dados).</li>
+                            <li><strong>Regra das Micro-interações:</strong> Preencher múltiplos campos em um formulário (Nome, CPF, Endereço) é considerado UM ÚNICO PASSO. O passo só encerra ao clicar no botão de submissão.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Método PURE — Preparação</span>
+                <span>Slide 12 de 27</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 13 -->
+        <div class="slide">
+            <div>
+                <span class="module-tag tag-m3">Módulo 3 — Pontuação</span>
+                <div class="slide-header">
+                    <h2 class="slide-title">A Rubrica de Pontuação de Fricção (Escala de 1 a 3)</h2>
+                </div>
+                <div class="slide-content grid-3">
+                    <div class="card card-interactive" style="border-top: 4px solid var(--accent-green);">
+                        <div class="card-title" style="color: var(--accent-green);">Nota 1 (Verde)</div>
+                        <p><strong>Atrito Baixo / Fluido:</strong> Etapa realizada facilmente. Carga cognitiva baixa ou padrão de interface amplamente dominado pelo mercado (ex: aceitar termos de serviço).</p>
+                    </div>
+                    <div class="card card-interactive" style="border-top: 4px solid var(--accent-yellow);">
+                        <div class="card-title" style="color: var(--accent-yellow);">Nota 2 (Amarelo)</div>
+                        <p><strong>Atrito Notável / Esforço Moderado:</strong> Exige esforço mental ou físico. O usuário hesita, precisa ler com atenção, procurar elementos ou fazer cliques adicionais, mas conclui a etapa.</p>
+                    </div>
+                    <div class="card card-interactive" style="border-top: 4px solid var(--accent-red);">
+                        <div class="card-title" style="color: var(--accent-red);">Nota 3 (Vermelho)</div>
+                        <p><strong>Atrito Crítico / Ponto de Falha:</strong> Etapa difícil, confusa ou fora dos padrões esperados. Alta probabilidade de a persona errar, ficar bloqueada ou abandonar a tarefa.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Método PURE — Rubrica</span>
+                <span>Slide 13 de 27</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 14 -->
+        <div class="slide">
+            <div>
+                <span class="module-tag tag-m3">Módulo 3 — Regras</span>
+                <div class="slide-header">
+                    <h2 class="slide-title">Regras de Pontuação: Soma e a Regra do Pior Caso (Worst-Case)</h2>
+                </div>
+                <div class="slide-content grid-2">
+                    <div class="card card-interactive">
+                        <div class="card-title">➕ Score da Tarefa (Soma Simples)</div>
+                        <p>Soma-se as notas dos passos.</p>
+                        <p style="margin-top: 10px; color: var(--accent-cyan); font-family: 'JetBrains Mono', monospace; font-size: 15px;">Exemplo: Passos [1, 2, 1, 1] ➔ Score da Tarefa = 5</p>
+                    </div>
+                    <div class="card card-interactive">
+                        <div class="card-title">🚨 A Cor da Tarefa (Regra do Pior Caso)</div>
+                        <p>A cor da tarefa é ditada pelo seu passo mais difícil (pior nota).</p>
+                        <div class="quote-box" style="margin-top: 10px; border-left-color: var(--accent-red);">
+                            "A Regra de Ouro: Se uma tarefa tiver 10 passos 'Verdes' (nota 1) e 1 único passo 'Vermelho' (nota 3), a cor final da tarefa é VERMELHA."
+                        </div>
+                        <p style="margin-top: 10px; font-size: 13px; color: var(--text-muted);"><strong>Fundamentação:</strong> Um produto maduro não pode ter pontos cegos onde o usuário corra o risco de falhar em uma jornada essencial.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Método PURE — Regras de Pontuação</span>
+                <span>Slide 14 de 27</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 15 -->
+        <div class="slide">
+            <div>
+                <span class="module-tag tag-m4">Módulo 4 — Estatística</span>
+                <div class="slide-header">
+                    <h2 class="slide-title">O que é a Confiabilidade Interavaliadores (IRR)?</h2>
+                </div>
+                <div class="slide-content grid-2">
+                    <div class="card card-interactive">
+                        <div class="card-title">📐 Definição de IRR</div>
+                        <p><strong>Definição de IRR (Inter-rater Reliability):</strong> Métrica estatística que avalia o grau de concordância entre os especialistas antes da reunião de consenso.</p>
+                    </div>
+                    <div class="card card-interactive">
+                        <div class="card-title">🛡️ Por que o IRR é fundamental no PURE?</div>
+                        <ul>
+                            <li>Confere solidez e rigor científico.</li>
+                            <li>Elimina o viés individual ("achismo" do designer).</li>
+                            <li>Prova aos executivos que a avaliação foi isenta e metodologicamente padronizada.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Método PURE — Confiabilidade</span>
+                <span>Slide 15 de 27</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 16 -->
+        <div class="slide">
+            <div>
+                <span class="module-tag tag-m4">Módulo 4 — História do Alpha</span>
+                <div class="slide-header">
+                    <h2 class="slide-title">Origem e História do Alpha de Krippendorff (α)</h2>
+                </div>
+                <div class="slide-content grid-2">
+                    <div class="card card-interactive">
+                        <div class="card-title">👨‍🔬 Criador & Origem</div>
+                        <ul>
+                            <li><strong>Criador:</strong> Klaus Krippendorff (Sociólogo e Professor da Annenberg School for Communication na Universidade da Pensilvânia).</li>
+                            <li><strong>Origem (Décadas de 1960 a 1980):</strong> Desenvolvido para a Análise de Conteúdo em ciências sociais, mídia e imprensa.</li>
+                        </ul>
+                    </div>
+                    <div class="card card-interactive">
+                        <div class="card-title">💡 O Problema Histórico Resolvido</div>
+                        <p>Pesquisadores precisavam transformar textos e discursos em dados quantitativos confiáveis, mas os coeficientes antigos (como Cohen e Fleiss) falhavam com múltiplos codificadores ou dados faltantes.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Método PURE — Alpha de Krippendorff</span>
+                <span>Slide 16 de 27</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 17 -->
+        <div class="slide">
+            <div>
+                <span class="module-tag tag-m4">Módulo 4 — Escolha Estatística</span>
+                <div class="slide-header">
+                    <h2 class="slide-title">Por que o Alpha de Krippendorff foi Escolhido para o PURE?</h2>
+                </div>
+                <div class="slide-content grid-2">
+                    <div class="card card-interactive">
+                        <div class="card-title">Motivos 1 e 2</div>
+                        <ul>
+                            <li><strong>Entende a Escala Ordinal (1, 2, 3):</strong> Aplica funções de distância. Entende que a divergência entre Nota 1 e Nota 3 é uma falha grave, penalizando-a mais do que a divergência entre 1 e 2.</li>
+                            <li><strong>Suporta Qualquer Número de Avaliadores:</strong> Funciona para 2, 3, 5 ou mais especialistas (o Kappa de Cohen clássico só aceita 2).</li>
+                        </ul>
+                    </div>
+                    <div class="card card-interactive">
+                        <div class="card-title">Motivos 3 e 4</div>
+                        <ul>
+                            <li><strong>Lida com Dados Ausentes:</strong> Não invalida o teste se um avaliador esquecer de preencher um campo.</li>
+                            <li><strong>Desconta o Acaso:</strong> Isola o acordo real da probabilidade de notas iguais "por sorte".</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Método PURE — Vantagens Estatísticas</span>
+                <span>Slide 17 de 27</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 18 -->
+        <div class="slide">
+            <div>
+                <span class="module-tag tag-m4">Módulo 4 — Matemática</span>
+                <div class="slide-header">
+                    <h2 class="slide-title">A Matemática do Alpha e a Distância Ordinal</h2>
+                </div>
+                <div class="slide-content grid-2">
+                    <div class="card card-interactive">
+                        <div class="card-title">🧮 A Fórmula Fundamental</div>
+                        <div style="font-size: 20px; font-weight: bold; color: var(--accent-blue); margin: 16px 0; text-align: center;">
+                            $$\alpha = 1 - \frac{D_o}{D_e}$$
+                        </div>
+                        <ul>
+                            <li>\(D_o\) (Discordância Observada): Erros e divergências reais cometidos na planilha.</li>
+                            <li>\(D_e\) (Discordância Esperada por Acaso): Divergências que ocorreriam por chutes aleatórios.</li>
+                        </ul>
+                    </div>
+                    <div class="card card-interactive">
+                        <div class="card-title">⚖️ Pesos da Distância Ordinal Elevada ao Quadrado</div>
+                        <ul>
+                            <li>\(\text{Nota 1 vs. Nota 1} \rightarrow \text{Distância} = 0\)  (Acordo Perfeito)</li>
+                            <li>\(\text{Nota 1 vs. Nota 2} \rightarrow \text{Distância} = (2-1)^2 = 1\) (Erro Leve)</li>
+                            <li>\(\text{Nota 1 vs. Nota 3} \rightarrow \text{Distância} = (3-1)^2 = 4\) (Erro Pesado / Penalização Alta)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Método PURE — Equações de Krippendorff</span>
+                <span>Slide 18 de 27</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 19 -->
+        <div class="slide">
+            <div>
+                <span class="module-tag tag-m4">Módulo 4 — Regras de Alpha</span>
+                <div class="slide-header">
+                    <h2 class="slide-title">Interpretação dos Valores de Alpha (α)</h2>
+                </div>
+                <div class="slide-content">
+                    <div class="card card-interactive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Valor de Alpha (α)</th>
+                                    <th>Nível de Confiabilidade</th>
+                                    <th>Interpretação / Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong style="color: var(--accent-green);">α = 1,0</strong></td>
+                                    <td>Concordância Perfeita</td>
+                                    <td>Todos os avaliadores deram a mesma nota.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong style="color: var(--accent-cyan);">α ≥ 0,800</strong></td>
+                                    <td>Alta Confiabilidade</td>
+                                    <td>Dados maduros, prontos para fundamentar decisões executivas.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong style="color: var(--accent-yellow);">α = 0,667 a 0,799</strong></td>
+                                    <td>Confiabilidade Mínima Aceitável</td>
+                                    <td>Limite padrão científico do PURE.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong style="color: var(--accent-red);">α &lt; 0,667</strong></td>
+                                    <td>Baixa Confiabilidade</td>
+                                    <td>Alinhamento fraco; a rodada deve ser tratada como treinamento/calibração.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Método PURE — Tabela de Alpha</span>
+                <span>Slide 19 de 27</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 20 -->
+        <div class="slide">
+            <div>
+                <span class="module-tag tag-m4">Módulo 4 — Evolução</span>
+                <div class="slide-header">
+                    <h2 class="slide-title">Por que o IRR começa BAIXO na 1ª rodada e como ele MELHORA?</h2>
+                </div>
+                <div class="slide-content grid-2">
+                    <div class="card card-interactive">
+                        <div class="card-title">📉 Por que começa baixo (entre 0,40 e 0,57)?</div>
+                        <ul>
+                            <li><strong>Projeção Abstrata da Persona:</strong> Cada especialista interpreta o "nível de leiguismo" da persona de forma levemente diferente no primeiro contato com a tela.</li>
+                            <li><strong>Sensibilidade da Escala:</strong> Avaliador "ranzinza" dá 3, enquanto o "otimista" dá 1 para o mesmo passo.</li>
+                            <li><strong>Fronteiras da Interface:</strong> Divergências sobre a clareza de clicar em menus/abas.</li>
+                        </ul>
+                    </div>
+                    <div class="card card-interactive">
+                        <div class="card-title">📈 O Papel do Consenso & A Evolução Prática</div>
+                        <ul>
+                            <li><strong>O Papel da Reunião de Consenso (Passo 7):</strong> Os avaliadores expõem os porquês de suas notas: "Dei 3 porque a persona não domina a sigla X" \(\rightarrow\) "Verdade! Eu tinha dado 1 porque eu já conheço a sigla, esqueci que a persona é leiga".</li>
+                            <li><strong>Rodada 1 (Sem treino):</strong> \(\text{IRR} \approx 0{,}50 \text{ a } 0{,}57\) (Sintoma normal de falta de calibração).</li>
+                            <li><strong>Rodadas 2 e 3 (Após Consenso):</strong> O cérebro da equipe se alinha. Nas avaliações seguintes, o \(\text{IRR}\) inicial salta para \(0{,}80 \text{ a } 1{,}0\).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Método PURE — Reunião de Consenso</span>
+                <span>Slide 20 de 27</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 21 -->
+        <div class="slide">
+            <div>
+                <span class="module-tag tag-m5">Módulo 5 — Métricas</span>
+                <div class="slide-header">
+                    <h2 class="slide-title">Régua de Escala e o Índice de Fricção Relativa (%)</h2>
+                </div>
+                <div class="slide-content grid-2">
+                    <div class="card card-interactive">
+                        <div class="card-title">📏 O Conceito da Régua</div>
+                        <p style="margin-bottom: 10px;">Define a amplitude teórica de esforço para aquele conjunto de passos.</p>
+                        <ul>
+                            <li>Score Mínimo = Total de Etapas x 1 (Cenário Ideal - Tudo Verde).</li>
+                            <li>Score Máximo = Total de Etapas x 3 (Cenário Crítico - Tudo Vermelho).</li>
+                        </ul>
+                    </div>
+                    <div class="card card-interactive">
+                        <div class="card-title">🧮 A Fórmula da Min-Max Normalization</div>
+                        <div style="font-size: 16px; font-weight: bold; color: var(--accent-purple); margin: 14px 0; text-align: center;">
+                            $$\text{Índice de Fricção (%)} = \frac{\text{Score Atual} - \text{Mínimo}}{\text{Máximo} - \text{Mínimo}} \times 100$$
+                        </div>
+                        <p><strong>Validade Estatística:</strong> Técnica padrão de ciência de dados utilizada para reescalar notas brutas em um intervalo percentual padronizado de 0% a 100%.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Método PURE — Normalização</span>
+                <span>Slide 21 de 27</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 22 -->
+        <div class="slide">
+            <div>
+                <span class="module-tag tag-m5">Módulo 5 — Inspirações</span>
+                <div class="slide-header">
+                    <h2 class="slide-title">Inspirações do Índice de Fricção (SUS, SEQ, NASA-TLX)</h2>
+                </div>
+                <div class="slide-content grid-3">
+                    <div class="card card-interactive">
+                        <div class="card-title">Inspirado no SUS</div>
+                        <p>O SUS converte 10 perguntas Likert em uma nota padronizada de 0 a 100. O Índice de Fricção faz o oposto do SUS: mede o atrito (onde 0% é o ideal).</p>
+                    </div>
+                    <div class="card card-interactive">
+                        <div class="card-title">Inspirado no SEQ</div>
+                        <p>Reescalonamento de perguntas de facilidade em porcentagens da dificuldade máxima.</p>
+                    </div>
+                    <div class="card card-interactive">
+                        <div class="card-title">Inspirado no NASA-TLX</div>
+                        <p>Traduz avaliações de esforço cognitivo em um índice de 0% a 100% de Carga de Trabalho (Workload).</p>
+                    </div>
+                </div>
+                <div class="quote-box">
+                    "Defesa Executiva: O Índice de Fricção (%) permite comparar a carga cognitiva entre versões do produto mesmo quando o número de etapas do fluxo é reduzido, facilitando a interpretação da diretoria."
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Método PURE — Fundamentação de Métricas</span>
+                <span>Slide 22 de 27</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 23 -->
+        <div class="slide">
+            <div>
+                <span class="module-tag tag-m5">Módulo 5 — Interpretação</span>
+                <div class="slide-header">
+                    <h2 class="slide-title">Como Interpretar o Score PURE Global de Forma Operacional</h2>
+                </div>
+                <div class="slide-content grid-2">
+                    <div class="card card-interactive">
+                        <div class="card-title">⛳ Lógica do Golfe & Índice Operacional</div>
+                        <ul>
+                            <li><strong>A Lógica do Golfe:</strong> A pontuação total é cumulativa. Quanto menor o número, melhor é a usabilidade. Não é uma nota de 0 a 100; depende da quantidade de tarefas e passos avaliados.</li>
+                            <li><strong>O PURE é um Índice Operacional:</strong> Diferente do NPS ou SUS (que apenas dizem que o sistema está ruim sem explicar onde), o PURE aponta exatamente em qual botão, formulário ou tela o atrito foi gerado, criando um roteiro de melhorias acionável.</li>
+                        </ul>
+                    </div>
+                    <div class="card card-interactive">
+                        <div class="card-title">🔄 A Regra de Ouro da Comparação</div>
+                        <ul>
+                            <li><strong>Não compare produtos diferentes:</strong> Um software de engenharia pesado tem um número bruto maior que um app simples.</li>
+                            <li><strong>Compare Versões (V1 vs V2):</strong> Ver a pontuação cair de 55 para 25 prova a simplificação da interface.</li>
+                            <li><strong>Benchmark Competitivo:</strong> Comparar com concorrentes sob a mesma persona e as mesmas tarefas.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Método PURE — Interpretação Executiva</span>
+                <span>Slide 23 de 27</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 24 -->
+        <div class="slide">
+            <div>
+                <span class="module-tag tag-m5">Módulo 5 — Diagnóstico</span>
+                <div class="slide-header">
+                    <h2 class="slide-title">Cenário Crítico: Score Baixo com Cor VERMELHA</h2>
+                </div>
+                <div class="slide-content grid-2">
+                    <div class="card card-interactive">
+                        <div class="card-title">⚠️ Como interpretar esse resultado?</div>
+                        <div class="quote-box" style="margin-top: 0; border-left-color: var(--accent-red);">
+                            "O fluxo é curto e eficiente na maior parte do tempo (baixo atrito acumulado), mas possui uma armadilha grave (nota 3) que pode fazer o usuário desistir."
+                        </div>
+                    </div>
+                    <div class="card card-interactive">
+                        <div class="card-title">🚀 A Utilidade para Priorização de Engenharia</div>
+                        <ul>
+                            <li>Não é necessário redesenhar o sistema inteiro!</li>
+                            <li>Se o time de desenvolvimento corrigir exclusivamente a única etapa vermelha, a tarefa inteira passa a ser VERDE.</li>
+                            <li><strong>Vantagem:</strong> Evita que médias matemáticas iludam a equipe escondendo problemas críticos.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Método PURE — Diagnósticos Críticos</span>
+                <span>Slide 24 de 27</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 25 -->
+        <div class="slide">
+            <div>
+                <span class="module-tag tag-m5">Módulo 5 — Isenção</span>
+                <div class="slide-header">
+                    <h2 class="slide-title">Composição do Painel e Regra de Neutralidade</h2>
+                </div>
+                <div class="slide-content grid-2">
+                    <div class="card card-interactive">
+                        <div class="card-title">🛡️ A Regra de Ouro da Isenção</div>
+                        <ul>
+                            <li><strong>A Regra de Ouro da Isenção:</strong> O designer ou Product Manager responsável por criar as telas NUNCA deve ser um dos 3 avaliadores oficiais.</li>
+                            <li><strong>O Motivo:</strong> Inviabilidade psicológica de manter a neutralidade ao julgar o próprio trabalho.</li>
+                            <li><strong>O Papel do Criador da Tela:</strong> Ele atua como o Piloto (Driver), compartilhando a tela e executando os cliques sem votar.</li>
+                        </ul>
+                    </div>
+                    <div class="card card-interactive">
+                        <div class="card-title">👥 Composição Ideal do Comitê (3 Especialistas)</div>
+                        <ul>
+                            <li>1 Especialista em UX / Usabilidade.</li>
+                            <li>1 Especialista no Domínio do Negócio / Engenharia.</li>
+                            <li>1 Pesquisador Neutro de UX.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Método PURE — Painel de Especialistas</span>
+                <span>Slide 25 de 27</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 26 -->
+        <div class="slide">
+            <div>
+                <span class="module-tag tag-m5">Módulo 5 — Conclusão</span>
+                <div class="slide-header">
+                    <h2 class="slide-title">Conclusão e Próximos Passos</h2>
+                </div>
+                <div class="slide-content grid-2">
+                    <div class="card card-interactive">
+                        <div class="card-title">💎 Síntese dos Benefícios do PURE</div>
+                        <ul>
+                            <li>Quantifica o atrito de forma rápida, barata e pragmática.</li>
+                            <li>Amparado pelo Alpha de Krippendorff e validado pela CHI e NN/g.</li>
+                            <li>Alinha a linguagem entre designers, desenvolvedores e executivos.</li>
+                        </ul>
+                    </div>
+                    <div class="card card-interactive">
+                        <div class="card-title">🚀 Roteiro de Implementação</div>
+                        <ul>
+                            <li>1. Formatar a planilha (.CSV) com as tarefas, passos e o roteiro.</li>
+                            <li>2. Realizar a sessão piloto (alinhamento da persona com o piloto e avaliadores).</li>
+                            <li>3. Rodar a avaliação silenciosa e calcular o IRR inicial.</li>
+                            <li>4. Conduzir a reunião de consenso e gerar os relatórios executivos.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Método PURE — Roteiro Final</span>
+                <span>Slide 26 de 27</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 27: REFERÊNCIAS BIBLIOGRÁFICAS COMPLETAS -->
+        <div class="slide">
+            <div>
+                <span class="module-tag tag-m5">Módulo 5 — Bibliografia</span>
+                <div class="slide-header">
+                    <h2 class="slide-title">📚 REFERÊNCIAS BIBLIOGRÁFICAS</h2>
+                </div>
+                <div class="slide-content">
+                    <div class="card card-interactive">
+                        <ul class="ref-list">
+                            <li><strong>Rohrer, C. P., Wendt, J., Sauro, J., Boyle, F., & Cole, S. M. (2016).</strong> Practical Usability Rating By Experts (PURE): A Pragmatic Approach for Scoring Product Usability. In Extended Abstracts of the 2016 CHI Conference on Human Factors in Computing Systems (pp. 786-795). ACM. [DOI: 10.1145/2851581.2851607]</li>
+                            <li><strong>Rohrer, C. (2017).</strong> Quantifying and Comparing Ease of Use Without Breaking the Bank. Nielsen Norman Group (NN/g). Disponível em: https://www.nngroup.com/articles/pure-method/</li>
+                            <li><strong>Ulan Uulu, C., Kulyabin, M., Zeiner, K. M., Joosten, J., Pacheco, N. M. M., Petridis, F., Johnson, R., Bosch, J., & Olsson, H. H. (2026).</strong> Tables or Sankey Diagrams? Investigating User Interaction with Different Representations of Simulation Parameters. arXiv preprint arXiv:2601.10232 [cs.HC].</li>
+                            <li><strong>Sauro, J., & Lewis, J. R. (2016).</strong> Quantifying the User Experience: Practical Statistics for User Research. Morgan Kaufmann / Elsevier.</li>
+                            <li><strong>Krippendorff, K. (2018).</strong> Content Analysis: An Introduction to Its Methodology (4th ed.). SAGE Publications.</li>
+                            <li><strong>Freelon, D. (2010).</strong> ReCal: Intercoder reliability calculation as a web service. International Journal of Internet Science, 5(1), 20-33. (Módulo ReCal OIR para Alpha de Krippendorff Ordinal).</li>
+                            <li><strong>Six, J. M., Hotard, B., & Wirtanen, A. (2021).</strong> Performing a UX Audit on an Existing Product. UXmatters.</li>
+                            <li><strong>Lima, L. (2018).</strong> UX e Métricas — O método PURE: Aprenda a quantificar a facilidade de uso do seu produto. UX Collective BR / Medium.</li>
+                            <li><strong>Borja, C. (2018).</strong> P.U.R.E — a user research analytical method. UX Collective / Medium.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Método PURE — Referências</span>
+                <span>Slide 27 de 27</span>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const slideCounter = document.getElementById('slideCounter');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const progressBar = document.getElementById('progressBar');
+
+        function updateSlide() {
+            slides.forEach((slide, index) => {
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+
+            // Update Progress Bar
+            const progress = ((currentSlide + 1) / slides.length) * 100;
+            progressBar.style.width = `${progress}%`;
+
+            // Counter formatting (e.g. 01 / 27)
+            const formattedCurrent = String(currentSlide + 1).padStart(2, '0');
+            const formattedTotal = String(slides.length).padStart(2, '0');
+            slideCounter.innerText = `${formattedCurrent} / ${formattedTotal}`;
+
+            // Buttons state
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === slides.length - 1;
+
+            // Trigger MathJax re-render safely
+            if (window.MathJax && MathJax.typesetPromise) {
+                MathJax.typesetPromise();
+            }
+        }
+
+        function changeSlide(direction) {
+            currentSlide += direction;
+            if (currentSlide < 0) currentSlide = 0;
+            if (currentSlide >= slides.length) currentSlide = slides.length - 1;
+            updateSlide();
+        }
+
+        // Keyboard Navigation (Left/Right Arrows & Space/PageUp/PageDown)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'Space' || e.key === 'PageDown') {
+                if (currentSlide < slides.length - 1) changeSlide(1);
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                if (currentSlide > 0) changeSlide(-1);
+            }
+        });
+
+        // Initialize presentation
+        updateSlide();
+    </script>
+</body>
+</html>
