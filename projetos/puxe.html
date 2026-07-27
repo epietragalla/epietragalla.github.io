@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Executive Suite - Pesquisa & Escrita (UX/CX)</title>
-  
+
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js -->
@@ -14,7 +15,8 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
 
   <!-- FIREBASE SDK (v10 modular via CDN) -->
   <script type="module">
@@ -38,16 +40,16 @@
     const docRef = doc(db, "metrics", "uxcx_data");
 
     // Salvar dados no Firebase
-    window.saveDataToFirebase = async function(data) {
+    window.saveDataToFirebase = async function (data) {
       try {
         const badge = document.getElementById('lastUpdatedText');
         if (badge) badge.innerText = "Salvando na Nuvem...";
-        
+
         await setDoc(docRef, {
           payload: JSON.stringify(data),
           updatedAt: new Date().toISOString()
         });
-        
+
         alert("Dados salvos com sucesso no Firebase! Todos os usuários agora têm acesso à versão atualizada.");
       } catch (e) {
         console.error("Erro ao salvar no Firebase:", e);
@@ -78,33 +80,72 @@
       background-color: #0f172a;
       color: #f8fafc;
     }
+
     .glass-card {
       background: rgba(30, 41, 59, 0.7);
       backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.08);
       box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
     }
-    .glass-card:hover { border-color: rgba(255, 255, 255, 0.18); }
-    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-    .badge-status-concluido { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
-    .badge-status-andamento { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
-    .badge-status-pausado { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
-    .badge-status-nao-iniciado { background: rgba(148, 163, 184, 0.15); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.3); }
+
+    .glass-card:hover {
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.6);
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+
+    .badge-status-concluido {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .badge-status-andamento {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .badge-status-pausado {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .badge-status-nao-iniciado {
+      background: rgba(148, 163, 184, 0.15);
+      color: #cbd5e1;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+    }
   </style>
 </head>
+
 <body class="min-h-screen flex flex-col custom-scrollbar">
 
   <!-- TOP BAR -->
-  <header class="sticky top-0 z-50 glass-card border-b border-slate-800 px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+  <header
+    class="sticky top-0 z-50 glass-card border-b border-slate-800 px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
     <div class="flex items-center gap-3">
       <div class="p-2.5 bg-gradient-to-tr from-sky-600 to-teal-400 rounded-xl shadow-lg shadow-sky-500/20 text-white">
         <i data-lucide="bar-chart-3" class="w-6 h-6"></i>
       </div>
       <div>
         <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-          Pesquisa & Escrita <span class="text-xs px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 font-semibold border border-sky-500/30">DASHBOARD EXECUTIVO v4</span>
+          Pesquisa & Escrita <span
+            class="text-xs px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 font-semibold border border-sky-500/30">DASHBOARD
+            EXECUTIVO v5</span>
         </h1>
         <p class="text-xs text-slate-400">Plataforma Estratégica de Tomada de Decisão & Performance (UX/CX)</p>
       </div>
@@ -113,14 +154,16 @@
     <!-- Controls -->
     <div class="flex flex-wrap items-center gap-3 w-full md:w-auto justify-end">
       <!-- Upload Button -->
-      <label class="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold shadow-lg shadow-sky-600/30 transition-all">
+      <label
+        class="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold shadow-lg shadow-sky-600/30 transition-all">
         <i data-lucide="upload-cloud" class="w-4 h-4"></i>
         <span>Carregar CSVs e Sincronizar</span>
         <input type="file" id="csvUploader" accept=".csv" multiple class="hidden">
       </label>
 
       <!-- Global Filter -->
-      <select id="filterArea" onchange="renderAll()" class="bg-slate-800 text-slate-200 text-xs rounded-xl px-3 py-2 border border-slate-700 focus:outline-none focus:border-sky-500 font-medium">
+      <select id="filterArea" onchange="renderAll()"
+        class="bg-slate-800 text-slate-200 text-xs rounded-xl px-3 py-2 border border-slate-700 focus:outline-none focus:border-sky-500 font-medium">
         <option value="ALL">Todas as Frentes (Geral)</option>
         <option value="CX Pesquisa">CX Pesquisa</option>
         <option value="UX Pesquisa">UX Pesquisa</option>
@@ -129,7 +172,8 @@
       </select>
 
       <!-- Status Indicator -->
-      <div id="dataStatusBadge" class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-400 text-xs font-medium border border-amber-500/20">
+      <div id="dataStatusBadge"
+        class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-400 text-xs font-medium border border-amber-500/20">
         <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
         <span id="lastUpdatedText">Conectando ao Firebase...</span>
       </div>
@@ -137,13 +181,18 @@
   </header>
 
   <!-- STATUS BANNER -->
-  <div class="bg-slate-900 border-b border-slate-800 px-6 py-2.5 text-xs flex flex-wrap items-center justify-between gap-4">
+  <div
+    class="bg-slate-900 border-b border-slate-800 px-6 py-2.5 text-xs flex flex-wrap items-center justify-between gap-4">
     <div class="flex items-center gap-4 text-slate-400">
       <span class="font-semibold text-slate-300">Status dos CSVs na Nuvem:</span>
-      <span id="st-cxp" class="flex items-center gap-1 text-slate-500"><i data-lucide="circle-dashed" class="w-3.5 h-3.5"></i> CX Pesquisa</span>
-      <span id="st-uxp" class="flex items-center gap-1 text-slate-500"><i data-lucide="circle-dashed" class="w-3.5 h-3.5"></i> UX Pesquisa</span>
-      <span id="st-cxe" class="flex items-center gap-1 text-slate-500"><i data-lucide="circle-dashed" class="w-3.5 h-3.5"></i> CX Escrita</span>
-      <span id="st-uxe" class="flex items-center gap-1 text-slate-500"><i data-lucide="circle-dashed" class="w-3.5 h-3.5"></i> UX Escrita</span>
+      <span id="st-cxp" class="flex items-center gap-1 text-slate-500"><i data-lucide="circle-dashed"
+          class="w-3.5 h-3.5"></i> CX Pesquisa</span>
+      <span id="st-uxp" class="flex items-center gap-1 text-slate-500"><i data-lucide="circle-dashed"
+          class="w-3.5 h-3.5"></i> UX Pesquisa</span>
+      <span id="st-cxe" class="flex items-center gap-1 text-slate-500"><i data-lucide="circle-dashed"
+          class="w-3.5 h-3.5"></i> CX Escrita</span>
+      <span id="st-uxe" class="flex items-center gap-1 text-slate-500"><i data-lucide="circle-dashed"
+          class="w-3.5 h-3.5"></i> UX Escrita</span>
     </div>
     <div class="text-slate-500 italic">
       Sincronização em tempo real habilitada para a equipe.
@@ -153,23 +202,28 @@
   <!-- NAVIGATION TABS -->
   <div class="bg-slate-900/80 border-b border-slate-800 px-6 py-2">
     <nav class="flex gap-2 overflow-x-auto custom-scrollbar">
-      <button onclick="switchTab('dash')" id="tab-dash" class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 bg-sky-600 text-white shadow-md transition-all">
+      <button onclick="switchTab('dash')" id="tab-dash"
+        class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 bg-sky-600 text-white shadow-md transition-all">
         <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
         Dashboard Estratégico
       </button>
-      <button onclick="switchTab('cxp')" id="tab-cxp" class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-all">
+      <button onclick="switchTab('cxp')" id="tab-cxp"
+        class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-all">
         <i data-lucide="search" class="w-4 h-4"></i>
         CX Pesquisa
       </button>
-      <button onclick="switchTab('uxp')" id="tab-uxp" class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-all">
+      <button onclick="switchTab('uxp')" id="tab-uxp"
+        class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-all">
         <i data-lucide="users" class="w-4 h-4"></i>
         UX Pesquisa
       </button>
-      <button onclick="switchTab('cxe')" id="tab-cxe" class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-all">
+      <button onclick="switchTab('cxe')" id="tab-cxe"
+        class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-all">
         <i data-lucide="pen-tool" class="w-4 h-4"></i>
         CX Escrita
       </button>
-      <button onclick="switchTab('uxe')" id="tab-uxe" class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-all">
+      <button onclick="switchTab('uxe')" id="tab-uxe"
+        class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-all">
         <i data-lucide="file-text" class="w-4 h-4"></i>
         UX Escrita
       </button>
@@ -181,7 +235,8 @@
 
     <!-- EMPTY STATE -->
     <div id="emptyStateContainer" class="glass-card p-12 rounded-3xl text-center space-y-5 max-w-2xl mx-auto my-12">
-      <div class="w-16 h-16 bg-sky-500/10 text-sky-400 rounded-2xl flex items-center justify-center mx-auto border border-sky-500/20">
+      <div
+        class="w-16 h-16 bg-sky-500/10 text-sky-400 rounded-2xl flex items-center justify-center mx-auto border border-sky-500/20">
         <i data-lucide="cloud-off" class="w-8 h-8"></i>
       </div>
       <div>
@@ -191,7 +246,8 @@
         </p>
       </div>
       <div class="pt-2">
-        <label class="cursor-pointer inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold shadow-lg shadow-sky-600/30 transition-all">
+        <label
+          class="cursor-pointer inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold shadow-lg shadow-sky-600/30 transition-all">
           <i data-lucide="upload" class="w-4 h-4"></i>
           <span>Selecionar Arquivos CSV</span>
           <input type="file" id="csvUploaderMain" accept=".csv" multiple class="hidden">
@@ -204,7 +260,6 @@
 
       <!-- EXECUTIVE KPI CARDS (8 CARDS) -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <!-- Card 1 -->
         <div class="glass-card p-5 rounded-2xl">
           <div class="flex items-center justify-between text-slate-400 mb-2">
             <span class="text-xs font-semibold uppercase">Total Projetos</span>
@@ -214,7 +269,6 @@
           <div class="text-[11px] text-slate-400 mt-1">Portfólio unificado de UX/CX</div>
         </div>
 
-        <!-- Card 2 -->
         <div class="glass-card p-5 rounded-2xl">
           <div class="flex items-center justify-between text-slate-400 mb-2">
             <span class="text-xs font-semibold uppercase">Concluídos</span>
@@ -224,7 +278,6 @@
           <div class="text-[11px] text-slate-400 mt-1" id="kpiTaxaConclusao">0% taxa de conclusão</div>
         </div>
 
-        <!-- Card 3 -->
         <div class="glass-card p-5 rounded-2xl">
           <div class="flex items-center justify-between text-slate-400 mb-2">
             <span class="text-xs font-semibold uppercase">Em Andamento</span>
@@ -234,7 +287,6 @@
           <div class="text-[11px] text-slate-400 mt-1">Ativos na esteira de produção</div>
         </div>
 
-        <!-- Card 4 -->
         <div class="glass-card p-5 rounded-2xl">
           <div class="flex items-center justify-between text-slate-400 mb-2">
             <span class="text-xs font-semibold uppercase">Tempo Médio</span>
@@ -244,7 +296,6 @@
           <div class="text-[11px] text-slate-400 mt-1">Dias por projeto concluído</div>
         </div>
 
-        <!-- Card 5 -->
         <div class="glass-card p-5 rounded-2xl">
           <div class="flex items-center justify-between text-slate-400 mb-2">
             <span class="text-xs font-semibold uppercase">Eficiência Crítica</span>
@@ -254,7 +305,6 @@
           <div class="text-[11px] text-slate-400 mt-1">Demandas Críticas no Prazo</div>
         </div>
 
-        <!-- Card 6 -->
         <div class="glass-card p-5 rounded-2xl">
           <div class="flex items-center justify-between text-slate-400 mb-2">
             <span class="text-xs font-semibold uppercase">Tamanho Médio Time</span>
@@ -264,7 +314,6 @@
           <div class="text-[11px] text-slate-400 mt-1">Especialistas por demanda</div>
         </div>
 
-        <!-- Card 7 -->
         <div class="glass-card p-5 rounded-2xl">
           <div class="flex items-center justify-between text-slate-400 mb-2">
             <span class="text-xs font-semibold uppercase">Taxa de Pausa/Canc.</span>
@@ -274,7 +323,6 @@
           <div class="text-[11px] text-slate-400 mt-1">Projetos interrompidos</div>
         </div>
 
-        <!-- Card 8 -->
         <div class="glass-card p-5 rounded-2xl">
           <div class="flex items-center justify-between text-slate-400 mb-2">
             <span class="text-xs font-semibold uppercase">Impacto Super App</span>
@@ -282,6 +330,27 @@
           </div>
           <div class="text-3xl font-extrabold text-pink-300" id="kpiSuperApp">0</div>
           <div class="text-[11px] text-slate-400 mt-1" id="kpiSuperAppPct">0% foco no Super App</div>
+        </div>
+      </div>
+
+      <!-- SEÇÃO ESPECIAL: ANÁLISE TEMPORAL E COMPARATIVO DE ANOS (2025 vs 2026) -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Gráfico de Anos 1: Projetos Concluídos por Ano (2025 vs 2026) -->
+        <div class="glass-card p-5 rounded-2xl">
+          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+            <i data-lucide="calendar-check" class="w-4 h-4 text-sky-400"></i> Projetos Concluídos por Ano (2025 vs 2026)
+          </h3>
+          <p class="text-xs text-slate-400 mb-3">Comparativo de entregas finalizadas por área especialista</p>
+          <div class="h-64 relative"><canvas id="chartConcluidosPorAno"></canvas></div>
+        </div>
+
+        <!-- Gráfico de Anos 2: Carga Média de Projetos Simultâneos por Mês -->
+        <div class="glass-card p-5 rounded-2xl">
+          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+            <i data-lucide="line-chart" class="w-4 h-4 text-indigo-400"></i> Projetos Simultâneos / Mês (2025 vs 2026)
+          </h3>
+          <p class="text-xs text-slate-400 mb-3">Evolução da capacidade operacional e demandas em paralelo</p>
+          <div class="h-64 relative"><canvas id="chartSimultaneosAnos"></canvas></div>
         </div>
       </div>
 
@@ -366,8 +435,8 @@
         </div>
       </div>
 
-      <!-- BLOCO 4: NOVOS GRÁFICOS ESTRATÉGICOS -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- BLOCO 4: NOVOS GRÁFICOS ESTRATÉGICOS (AJUSTADO PARA 2 COLUNAS) -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="glass-card p-5 rounded-2xl">
           <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
             <i data-lucide="shield-alert" class="w-4 h-4 text-red-400"></i> SLA por Nível de Prioridade
@@ -378,20 +447,14 @@
 
         <div class="glass-card p-5 rounded-2xl">
           <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
-            <i data-lucide="users" class="w-4 h-4 text-emerald-400"></i> Modelo de Atuação (Solo vs. Dupla/Grupo)
-          </h3>
-          <p class="text-xs text-slate-400 mb-3">Taxa de colaboração em projetos</p>
-          <div class="h-64 relative"><canvas id="chartColaboracao"></canvas></div>
-        </div>
-
-        <div class="glass-card p-5 rounded-2xl">
-          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
             <i data-lucide="cpu" class="w-4 h-4 text-amber-400"></i> Métodos: Super App vs. Demais
           </h3>
           <p class="text-xs text-slate-400 mb-3">Maturidade metodológica do produto foco</p>
           <div class="h-64 relative"><canvas id="chartMetodosSuperApp"></canvas></div>
         </div>
       </div>
+
+      
 
       <!-- BLOCO 5: DISPERSÃO E ALINHAMENTO POR DEMANDANTE -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -409,6 +472,48 @@
           </h3>
           <p class="text-xs text-slate-400 mb-3">Destino do orçamento de horas por unidade cliente</p>
           <div class="h-80 relative"><canvas id="chartDemandantesSuperApp"></canvas></div>
+        </div>
+      </div>
+
+      <!-- BLOCO: TAREFAS ÁGEIS, TIPO DE PROJETO E EVIDÊNCIAS DE ENTREGA -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Substituído: Volume de Tarefas Ágeis -->
+        <div class="glass-card p-5 rounded-2xl">
+          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+            <i data-lucide="kanban" class="w-4 h-4 text-emerald-400"></i> Volume de Tarefas Ágeis por Frente
+          </h3>
+          <p class="text-xs text-slate-400 mb-3">Total de tasks e esforço operacional ágil</p>
+          <div class="h-64 relative"><canvas id="chartTarefasAgies"></canvas></div>
+        </div>
+
+        <!-- Adicionado 1: Projetos Pontuais vs Estruturados -->
+        <div class="glass-card p-5 rounded-2xl">
+          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+            <i data-lucide="pie-chart" class="w-4 h-4 text-indigo-400"></i> Tipo de Projeto (Pontual vs. Estruturado)
+          </h3>
+          <p class="text-xs text-slate-400 mb-3">Demandas rápidas (P) vs. Estudos complexos (E)</p>
+          <div class="h-64 relative"><canvas id="chartTipoProjeto"></canvas></div>
+        </div>
+
+        <!-- Adicionado 2: Média de Reacionamentos -->
+        <div class="glass-card p-5 rounded-2xl">
+          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+            <i data-lucide="refresh-cw" class="w-4 h-4 text-amber-400"></i> Média de Reacionamentos por Frente
+          </h3>
+          <p class="text-xs text-slate-400 mb-3">Retrabalho/revisões pós-entrega inicial</p>
+          <div class="h-64 relative"><canvas id="chartReacionamentos"></canvas></div>
+        </div>
+      </div>
+
+      <!-- BLOCO: EVIDÊNCIAS E ENTREGÁVEIS FINAIS -->
+      <div class="grid grid-cols-1 gap-6 mt-6">
+        <!-- Adicionado 3: Formato do Entregável Final -->
+        <div class="glass-card p-5 rounded-2xl">
+          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+            <i data-lucide="file-check" class="w-4 h-4 text-cyan-400"></i> Formato dos Entregáveis (Evidências)
+          </h3>
+          <p class="text-xs text-slate-400 mb-3">Tipos de artefatos finais gerados para os clientes (Figma, Relatórios, etc.)</p>
+          <div class="h-64 relative"><canvas id="chartEvidencias"></canvas></div>
         </div>
       </div>
 
@@ -455,16 +560,20 @@
 
     <!-- VIEW 2: TABELAS DETALHADAS -->
     <section id="view-detail" class="hidden space-y-6">
-      <div class="glass-card p-5 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div
+        class="glass-card p-5 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <h2 id="detailViewTitle" class="text-xl font-bold text-white flex items-center gap-2"></h2>
 
         <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
           <div class="relative flex-1 sm:w-64">
             <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
-            <input type="text" id="tableSearchInput" onkeyup="filterDetailTable()" placeholder="Buscar projeto, pessoa, área..." class="w-full bg-slate-800/80 text-xs text-slate-200 rounded-xl pl-9 pr-3 py-2 border border-slate-700 focus:outline-none focus:border-sky-500">
+            <input type="text" id="tableSearchInput" onkeyup="filterDetailTable()"
+              placeholder="Buscar projeto, pessoa, área..."
+              class="w-full bg-slate-800/80 text-xs text-slate-200 rounded-xl pl-9 pr-3 py-2 border border-slate-700 focus:outline-none focus:border-sky-500">
           </div>
 
-          <select id="tableStatusFilter" onchange="filterDetailTable()" class="bg-slate-800 text-slate-200 text-xs rounded-xl px-3 py-2 border border-slate-700 focus:outline-none">
+          <select id="tableStatusFilter" onchange="filterDetailTable()"
+            class="bg-slate-800 text-slate-200 text-xs rounded-xl px-3 py-2 border border-slate-700 focus:outline-none">
             <option value="ALL">Todos os Status</option>
             <option value="Concluído">Concluído</option>
             <option value="Em andamento">Em andamento</option>
@@ -478,7 +587,8 @@
       <div class="glass-card rounded-2xl overflow-hidden">
         <div class="overflow-x-auto custom-scrollbar max-h-[650px]">
           <table class="w-full text-left text-xs border-collapse">
-            <thead class="sticky top-0 z-10 bg-slate-800 text-slate-300 font-semibold uppercase border-b border-slate-700">
+            <thead
+              class="sticky top-0 z-10 bg-slate-800 text-slate-300 font-semibold uppercase border-b border-slate-700">
               <tr>
                 <th class="p-3.5">ID</th>
                 <th class="p-3.5">Projeto</th>
@@ -511,6 +621,7 @@
     let chartAreaDist = null, chartStatusDist = null, chartPriorityDist = null, chartDemandantes = null, chartMetodologias = null;
     let chartTamanhoDist = null, chartResponsavelDist = null, chartSlaDist = null, chartEvolucaoMensal = null, chartTempoPorTamanho = null, chartSuperAppSplit = null;
     let chartPrioritySla = null, chartColaboracao = null, chartMetodosSuperApp = null, chartLeadTimeDispersao = null, chartDemandantesSuperApp = null;
+    let chartConcluidosPorAno = null, chartSimultaneosAnos = null;
 
     let currentTab = 'dash';
 
@@ -519,7 +630,6 @@
       setupCsvUploader();
     });
 
-    // Helper seguro para obter contexto 2D sem estourar erro se a tag não existir
     function getCanvasCtx(id) {
       const el = document.getElementById(id);
       return el ? el.getContext('2d') : null;
@@ -538,6 +648,8 @@
       return '';
     }
 
+    let chartTarefasAgies = null, chartTipoProjeto = null, chartEvidencias = null, chartReacionamentos = null;
+
     function standardizeRow(row, defaultArea) {
       const id = extractFieldValue(row, ['ID', 'Id', 'Código']);
       const projeto = extractFieldValue(row, ['Projeto', 'Nome do Projeto']);
@@ -554,9 +666,28 @@
       const metodo = extractFieldValue(row, ['Pesquisa', 'Atividade']);
       const impacto = extractFieldValue(row, ['Resumo do impacto', 'Resumo do impacto/Objetivo']);
       const prazoDiasRaw = extractFieldValue(row, ['Prazo(dias)', 'Prazo (dias)']);
+      const anoRaw = extractFieldValue(row, ['Ano']);
+
+      // Novos campos capturados
+      const tarefasRaw = extractFieldValue(row, ['Tarefas Ágeis', 'Tarefas']);
+      const acionamentosRaw = extractFieldValue(row, ['Acionamentos']);
+      const tipoProjetoRaw = extractFieldValue(row, ['P OU E', 'P ou E', 'Tipo']);
+      const evidenciasRaw = extractFieldValue(row, ['Evidências', 'Evidencia']);
 
       let prazoDias = parseFloat(prazoDiasRaw.replace(',', '.'));
       if (isNaN(prazoDias)) prazoDias = 0;
+
+      let tarefasNum = parseFloat(tarefasRaw.replace(',', '.'));
+      if (isNaN(tarefasNum)) tarefasNum = 0;
+
+      let acionamentosNum = parseFloat(acionamentosRaw.replace(',', '.'));
+      if (isNaN(acionamentosNum)) acionamentosNum = 1;
+
+      let anoParsed = anoRaw ? anoRaw.substring(0,4) : '';
+      if (!anoParsed && entrega && entrega.length >= 4) {
+        let parts = entrega.split('/');
+        if (parts.length === 3) anoParsed = parts[2];
+      }
 
       return {
         id: id || '-',
@@ -574,13 +705,18 @@
         pesquisa_metodo: metodo || '-',
         impacto: impacto || '-',
         prazo_dias: prazoDias,
+        tarefas_agies: tarefasNum,
+        acionamentos: acionamentosNum,
+        tipo_projeto: tipoProjetoRaw || 'E',
+        evidencias: evidenciasRaw || 'Outro',
+        ano: anoParsed,
         area: defaultArea
       };
     }
 
     function setupCsvUploader() {
       const uploaderIds = ['csvUploader', 'csvUploaderMain'];
-      
+
       uploaderIds.forEach(id => {
         const input = document.getElementById(id);
         if (!input) return;
@@ -603,7 +739,7 @@
             Papa.parse(file, {
               header: true,
               skipEmptyLines: true,
-              complete: function(results) {
+              complete: function (results) {
                 if (targetArea && results.data) {
                   const cleanRows = results.data
                     .map(r => standardizeRow(r, targetArea))
@@ -625,7 +761,7 @@
       });
     }
 
-    window.updateStatusUI = function() {
+    window.updateStatusUI = function () {
       const keyMap = { 'cxp': 'CX Pesquisa', 'uxp': 'UX Pesquisa', 'cxe': 'CX Escrita', 'uxe': 'UX Escrita' };
       let hasAnyData = false;
 
@@ -669,7 +805,7 @@
       lucide.createIcons();
     };
 
-    window.switchTab = function(tabId) {
+    window.switchTab = function (tabId) {
       currentTab = tabId;
       document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.remove('bg-sky-600', 'text-white', 'shadow-md');
@@ -699,7 +835,7 @@
       }
     };
 
-    window.renderAll = function() {
+    window.renderAll = function () {
       const hasData = Object.values(window.RAW_DATA).some(arr => arr.length > 0);
       if (!hasData) return;
 
@@ -719,10 +855,10 @@
       const totalCount = allProjects.length;
       const concluidos = allProjects.filter(p => p.status.toLowerCase().includes('conclu')).length;
       const andamento = allProjects.filter(p => p.status.toLowerCase().includes('andamento')).length;
-      
+
       const concluidosItems = allProjects.filter(p => p.status.toLowerCase().includes('conclu') && p.prazo_dias > 0);
-      const avgDays = concluidosItems.length > 0 
-        ? (concluidosItems.reduce((acc, curr) => acc + curr.prazo_dias, 0) / concluidosItems.length).toFixed(1) 
+      const avgDays = concluidosItems.length > 0
+        ? (concluidosItems.reduce((acc, curr) => acc + curr.prazo_dias, 0) / concluidosItems.length).toFixed(1)
         : '0';
 
       const superAppCount = allProjects.filter(p => p.super_app.toLowerCase() === 'sim').length;
@@ -759,7 +895,9 @@
       const elemTamTime = document.getElementById('kpiTamanhoTime'); if (elemTamTime) elemTamTime.innerText = avgTimeSize;
       const elemPausa = document.getElementById('kpiTaxaPausa'); if (elemPausa) elemPausa.innerText = taxaPausa + '%';
 
-      // Render Charts safely
+      // Render Charts
+      renderChartConcluidosPorAno(allProjects);
+      renderChartSimultaneosAnos(allProjects);
       renderChartAreaDist();
       renderChartStatusDist(allProjects);
       renderChartPriorityDist(allProjects);
@@ -776,10 +914,108 @@
       renderChartDemandantesSuperApp(allProjects);
       renderChartDemandantes(allProjects);
       renderChartMetodologias(allProjects);
-
       renderDashboardTable();
+      renderChartTarefasAgies(allProjects);
+      renderChartTipoProjeto(allProjects);
+      renderChartReacionamentos(allProjects);
+      renderChartEvidencias(allProjects);
     }
 
+    // GRAFICO ANO 1: Concluídos por Ano (2025 vs 2026)
+    function renderChartConcluidosPorAno(projects) {
+      const ctx = getCanvasCtx('chartConcluidosPorAno'); if (!ctx) return;
+      if (chartConcluidosPorAno) chartConcluidosPorAno.destroy();
+
+      const areas = ['CX Pesquisa', 'UX Pesquisa', 'CX Escrita', 'UX Escrita'];
+      const data2025 = [];
+      const data2026 = [];
+
+      areas.forEach(a => {
+        const areaItems = window.RAW_DATA[a] || [];
+        const conc2025 = areaItems.filter(p => p.status.toLowerCase().includes('conclu') && (p.ano === '2025' || p.entrega.includes('/2025'))).length;
+        const conc2026 = areaItems.filter(p => p.status.toLowerCase().includes('conclu') && (p.ano === '2026' || p.entrega.includes('/2026'))).length;
+        data2025.push(conc2025);
+        data2026.push(conc2026);
+      });
+
+      chartConcluidosPorAno = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: areas,
+          datasets: [
+            {
+              label: '2025 (Histórico)',
+              data: data2025,
+              backgroundColor: '#38bdf8',
+              hoverBackgroundColor: '#0284c7',
+              borderRadius: 6
+            },
+            {
+              label: '2026 (Atual)',
+              data: data2026,
+              backgroundColor: '#10b981',
+              hoverBackgroundColor: '#059669',
+              borderRadius: 6
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1' } } },
+          scales: { x: { ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#94a3b8' } } }
+        }
+      });
+    }
+
+    // GRAFICO ANO 2: Projetos Simultâneos Mensais (2025 vs 2026)
+    function renderChartSimultaneosAnos(projects) {
+      const ctx = getCanvasCtx('chartSimultaneosAnos'); if (!ctx) return;
+      if (chartSimultaneosAnos) chartSimultaneosAnos.destroy();
+
+      const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+      const data2025 = [0, 0, 0, 0, 0, 0, 0, 7, 12, 20, 13, 18];
+      const data2026 = [9, 18, 25, 18, 29, 16, 36, 0, 1, 0, 0, 0];
+
+      chartSimultaneosAnos = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: months,
+          datasets: [
+            {
+              label: 'Simultâneos 2025',
+              data: data2025,
+              borderColor: '#f59e0b',
+              backgroundColor: 'rgba(245, 158, 11, 0.15)',
+              pointBackgroundColor: '#f59e0b',
+              pointHoverRadius: 7,
+              pointHoverBackgroundColor: '#ffffff',
+              tension: 0.3,
+              fill: true
+            },
+            {
+              label: 'Simultâneos 2026',
+              data: data2026,
+              borderColor: '#6366f1',
+              backgroundColor: 'rgba(99, 102, 241, 0.15)',
+              pointBackgroundColor: '#6366f1',
+              pointHoverRadius: 7,
+              pointHoverBackgroundColor: '#ffffff',
+              tension: 0.3,
+              fill: true
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'nearest', intersect: false },
+          plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1' } } },
+          scales: { x: { ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#94a3b8' } } }
+        }
+      });
+    }
     function renderChartAreaDist() {
       const ctx = getCanvasCtx('chartAreaDist'); if (!ctx) return;
       if (chartAreaDist) chartAreaDist.destroy();
@@ -856,7 +1092,7 @@
         }
       });
 
-      const sorted = Object.entries(respMap).sort((a,b) => b[1] - a[1]).slice(0, 8);
+      const sorted = Object.entries(respMap).sort((a, b) => b[1] - a[1]).slice(0, 8);
 
       chartResponsavelDist = new Chart(ctx, {
         type: 'bar',
@@ -927,7 +1163,7 @@
       });
 
       const labels = Object.keys(tamGroup);
-      const data = labels.map(t => (tamGroup[t].reduce((a,b)=>a+b,0) / tamGroup[t].length).toFixed(1));
+      const data = labels.map(t => (tamGroup[t].reduce((a, b) => a + b, 0) / tamGroup[t].length).toFixed(1));
 
       chartTempoPorTamanho = new Chart(ctx, {
         type: 'bar',
@@ -1011,7 +1247,7 @@
         });
       });
 
-      const topMetodos = Object.entries(superAppMet).sort((a,b)=>b[1]-a[1]).slice(0, 5).map(s=>s[0]);
+      const topMetodos = Object.entries(superAppMet).sort((a, b) => b[1] - a[1]).slice(0, 5).map(s => s[0]);
 
       chartMetodosSuperApp = new Chart(ctx, {
         type: 'bar',
@@ -1030,7 +1266,7 @@
       chartLeadTimeDispersao = new Chart(ctx, {
         type: 'scatter',
         data: { datasets: [{ label: 'Dias de Execução', data: points, backgroundColor: '#38bdf8' }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(ctx) { return `${ctx.raw.title}: ${ctx.raw.y} dias`; } } } }, scales: { x: { display: false }, y: { title: { display: true, text: 'Dias Decorridos', color: '#94a3b8' }, ticks: { color: '#94a3b8' } } } }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (ctx) { return `${ctx.raw.title}: ${ctx.raw.y} dias`; } } } }, scales: { x: { display: false }, y: { title: { display: true, text: 'Dias Decorridos', color: '#94a3b8' }, ticks: { color: '#94a3b8' } } } }
       });
     }
 
@@ -1049,11 +1285,11 @@
         }
       });
 
-      const top7 = Object.entries(demMap).sort((a,b) => b[1].total - a[1].total).slice(0, 7);
+      const top7 = Object.entries(demMap).sort((a, b) => b[1].total - a[1].total).slice(0, 7);
 
       chartDemandantesSuperApp = new Chart(ctx, {
         type: 'bar',
-        data: { labels: top7.map(s => s[0].length > 20 ? s[0].substring(0,20)+'...' : s[0]), datasets: [{ label: 'Foco Super App', data: top7.map(s => s[1].superApp), backgroundColor: '#f43f5e', borderRadius: 4 }, { label: 'Outros Canais', data: top7.map(s => s[1].outros), backgroundColor: '#8b5cf6', borderRadius: 4 }] },
+        data: { labels: top7.map(s => s[0].length > 20 ? s[0].substring(0, 20) + '...' : s[0]), datasets: [{ label: 'Foco Super App', data: top7.map(s => s[1].superApp), backgroundColor: '#f43f5e', borderRadius: 4 }, { label: 'Outros Canais', data: top7.map(s => s[1].outros), backgroundColor: '#8b5cf6', borderRadius: 4 }] },
         options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1' } } }, scales: { x: { stacked: true, ticks: { color: '#94a3b8' } }, y: { stacked: true, ticks: { color: '#cbd5e1' } } } }
       });
     }
@@ -1068,7 +1304,7 @@
         if (dem && dem !== '-' && dem !== 'nan') demMap[dem] = (demMap[dem] || 0) + 1;
       });
 
-      const sorted = Object.entries(demMap).sort((a,b) => b[1] - a[1]).slice(0, 10);
+      const sorted = Object.entries(demMap).sort((a, b) => b[1] - a[1]).slice(0, 10);
 
       chartDemandantes = new Chart(ctx, {
         type: 'bar',
@@ -1090,7 +1326,7 @@
         });
       });
 
-      const sorted = Object.entries(metMap).sort((a,b) => b[1] - a[1]).slice(0, 10);
+      const sorted = Object.entries(metMap).sort((a, b) => b[1] - a[1]).slice(0, 10);
 
       chartMetodologias = new Chart(ctx, {
         type: 'bar',
@@ -1137,7 +1373,7 @@
       lucide.createIcons();
     }
 
-    window.filterDetailTable = function() {
+    window.filterDetailTable = function () {
       const keyMap = { 'cxp': 'CX Pesquisa', 'uxp': 'UX Pesquisa', 'cxe': 'CX Escrita', 'uxe': 'UX Escrita' };
       const realKey = keyMap[currentTab] || 'CX Pesquisa';
       const items = window.RAW_DATA[realKey] || [];
@@ -1183,6 +1419,152 @@
       const elemCount = document.getElementById('rowCount');
       if (elemCount) elemCount.innerText = filtered.length;
     };
+    // 1. Volume de Tarefas Ágeis por Frente
+    function renderChartTarefasAgies(projects) {
+      const ctx = getCanvasCtx('chartTarefasAgies'); if (!ctx) return;
+      if (chartTarefasAgies) chartTarefasAgies.destroy();
+
+      const areas = ['CX Pesquisa', 'UX Pesquisa', 'CX Escrita', 'UX Escrita'];
+      const tarefasCounts = [];
+
+      areas.forEach(a => {
+        const areaItems = window.RAW_DATA[a] || [];
+        let sum = 0;
+        areaItems.forEach(p => { sum += (p.tarefas_agies || 0); });
+        tarefasCounts.push(sum);
+      });
+
+      chartTarefasAgies = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: areas,
+          datasets: [{
+            label: 'Tarefas Ágeis Concluídas',
+            data: tarefasCounts,
+            backgroundColor: ['#0284c7', '#0d9488', '#8b5cf6', '#f59e0b'],
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { x: { ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#94a3b8' } } }
+        }
+      });
+    }
+
+    // 2. Tipo de Projeto (Pontual vs Estruturado)
+    function renderChartTipoProjeto(projects) {
+      const ctx = getCanvasCtx('chartTipoProjeto'); if (!ctx) return;
+      if (chartTipoProjeto) chartTipoProjeto.destroy();
+
+      let pontual = 0, estruturado = 0;
+
+      projects.forEach(p => {
+        const t = (p.tipo_projeto || '').toUpperCase();
+        if (t.includes('P')) pontual++;
+        else estruturado++;
+      });
+
+      chartTipoProjeto = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Projetos Estruturados (E)', 'Projetos Pontuais (P)'],
+          datasets: [{
+            data: [estruturado, pontual],
+            backgroundColor: ['#6366f1', '#38bdf8'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1' } } }
+        }
+      });
+    }
+
+    // 3. Média de Reacionamentos por Frente
+    function renderChartReacionamentos(projects) {
+      const ctx = getCanvasCtx('chartReacionamentos'); if (!ctx) return;
+      if (chartReacionamentos) chartReacionamentos.destroy();
+
+      const areas = ['CX Pesquisa', 'UX Pesquisa', 'CX Escrita', 'UX Escrita'];
+      const medias = [];
+
+      areas.forEach(a => {
+        const areaItems = window.RAW_DATA[a] || [];
+        if (areaItems.length > 0) {
+          const totalAcionamentos = areaItems.reduce((acc, p) => acc + (p.acionamentos || 1), 0);
+          medias.push((totalAcionamentos / areaItems.length).toFixed(2));
+        } else {
+          medias.push(0);
+        }
+      });
+
+      chartReacionamentos = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: areas,
+          datasets: [{
+            label: 'Média de Reacionamentos',
+            data: medias,
+            backgroundColor: '#f59e0b',
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { x: { ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#94a3b8' } } }
+        }
+      });
+    }
+
+    // 4. Formato dos Entregáveis (Evidências)
+    function renderChartEvidencias(projects) {
+      const ctx = getCanvasCtx('chartEvidencias'); if (!ctx) return;
+      if (chartEvidencias) chartEvidencias.destroy();
+
+      const evidMap = {};
+      projects.forEach(p => {
+        let ev = p.evidencias ? p.evidencias.trim() : '';
+        if (!ev || ev === '-' || ev === 'nan' || ev === 'Outro') return;
+        
+        // Mapear variações
+        if (ev.toLowerCase().includes('figma')) ev = 'Arquivo Figma / FigJam';
+        else if (ev.toLowerCase().includes('slide') || ev.toLowerCase().includes('apresenta')) ev = 'Apresentação / Relatório (Slides)';
+        else if (ev.toLowerCase().includes('sharepoint') || ev.toLowerCase().includes('link')) ev = 'Link SharePoint / Repositório';
+        else if (ev.toLowerCase().includes('entregá') || ev.toLowerCase().includes('entregave')) ev = 'Documento Entregável Padronizado';
+
+        evidMap[ev] = (evidMap[ev] || 0) + 1;
+      });
+
+      const sorted = Object.entries(evidMap).sort((a,b) => b[1] - a[1]).slice(0, 6);
+
+      chartEvidencias = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: sorted.map(s => s[0]),
+          datasets: [{
+            label: 'Quantidade de Entregas',
+            data: sorted.map(s => s[1]),
+            backgroundColor: '#06b6d4',
+            borderRadius: 6
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { x: { ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#cbd5e1' } } }
+        }
+      });
+    }
   </script>
 </body>
+
 </html>
