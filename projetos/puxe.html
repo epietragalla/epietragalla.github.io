@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Executive Dashboard - Pesquisa & Escrita (UX/CX)</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- PapaParse para parsing de CSV -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- FIREBASE SDK (v10 modular via CDN) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    // 🔴 SUBSTiTUA AQUI PELO SEU OBJETO DE CONFIGURAÇÃO DO FIREBASE (PASSO 1)
+const firebaseConfig = {
+  apiKey: "AIzaSyCk8Wl6zRbX55urJo2oy95xrqAVaX4o-5c",
+  authDomain: "dashboardpuxe.firebaseapp.com",
+  projectId: "dashboardpuxe",
+  storageBucket: "dashboardpuxe.firebasestorage.app",
+  messagingSenderId: "780646452716",
+  appId: "1:780646452716:web:49d1960fa7fe531f3444c9",
+  measurementId: "G-E6GKLHYTJV"
+};
+    // Inicializar Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const docRef = doc(db, "metrics", "uxcx_data");
+
+    // Tornar funções acessíveis globalmente no navegador
+    window.saveDataToFirebase = async function(data) {
+      try {
+        const badge = document.getElementById('lastUpdatedText');
+        if (badge) badge.innerText = "Salvando na Nuvem...";
+        
+        await setDoc(docRef, {
+          payload: JSON.stringify(data),
+          updatedAt: new Date().toISOString()
+        });
+        
+        alert("Dados salvos com sucesso na nuvem do Firebase! Todos os usuários do site agora verão os dados atualizados.");
+      } catch (e) {
+        console.error("Erro ao salvar no Firebase:", e);
+        alert("Erro ao salvar dados no Firebase. Verifique as regras do Firestore ou o console.");
+      }
+    };
+
+    // Ouvinte em tempo real (Sempre que o banco mudar, atualiza a tela de todos)
+    onSnapshot(docRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        if (data && data.payload) {
+          window.RAW_DATA = JSON.parse(data.payload);
+          if (window.updateStatusUI) window.updateStatusUI();
+          if (window.renderAll) window.renderAll();
+        }
+      } else {
+        console.log("Nenhum dado encontrado no Firestore ainda.");
+      }
+    }, (error) => {
+      console.error("Erro ao conectar no Firestore:", error);
+    });
+  </script>
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #0f172a;
+      color: #f8fafc;
+    }
+    .glass-card {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    .badge-status-concluido { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-status-andamento { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-status-pausado { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+    .badge-status-nao-iniciado { background: rgba(148, 163, 184, 0.15); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.3); }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col custom-scrollbar">
+
+  <!-- TOP BAR -->
+  <header class="sticky top-0 z-50 glass-card border-b border-slate-800 px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <div class="p-2.5 bg-gradient-to-tr from-sky-600 to-teal-400 rounded-xl shadow-lg shadow-sky-500/20 text-white">
+        <i data-lucide="bar-chart-3" class="w-6 h-6"></i>
+      </div>
+      <div>
+        <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+          Pesquisa & Escrita <span class="text-xs px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 font-semibold border border-sky-500/30">FIREBASE CLOUD</span>
+        </h1>
+        <p class="text-xs text-slate-400">Plataforma Estratégica de Tomada de Decisão (UX/CX)</p>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="flex flex-wrap items-center gap-3 w-full md:w-auto justify-end">
+      
+      <!-- Upload Button -->
+      <label class="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold shadow-lg shadow-sky-600/30 transition-all">
+        <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+        <span>Carregar CSVs e Salvar na Nuvem</span>
+        <input type="file" id="csvUploader" accept=".csv" multiple class="hidden">
+      </label>
+
+      <!-- Global Filter -->
+      <select id="filterArea" onchange="renderAll()" class="bg-slate-800 text-slate-200 text-xs rounded-xl px-3 py-2 border border-slate-700 focus:outline-none focus:border-sky-500 font-medium">
+        <option value="ALL">Todas as Frentes (Geral)</option>
+        <option value="CX Pesquisa">CX Pesquisa</option>
+        <option value="UX Pesquisa">UX Pesquisa</option>
+        <option value="CX Escrita">CX Escrita</option>
+        <option value="UX Escrita">UX Escrita</option>
+      </select>
+
+      <!-- Status Indicator -->
+      <div id="dataStatusBadge" class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-400 text-xs font-medium border border-amber-500/20">
+        <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+        <span id="lastUpdatedText">Conectando ao Firebase...</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- STATUS BANNER -->
+  <div class="bg-slate-900 border-b border-slate-800 px-6 py-2.5 text-xs flex flex-wrap items-center justify-between gap-4">
+    <div class="flex items-center gap-4 text-slate-400">
+      <span class="font-semibold text-slate-300">Status na Nuvem:</span>
+      <span id="st-cxp" class="flex items-center gap-1 text-slate-500"><i data-lucide="circle-dashed" class="w-3.5 h-3.5"></i> CX Pesquisa</span>
+      <span id="st-uxp" class="flex items-center gap-1 text-slate-500"><i data-lucide="circle-dashed" class="w-3.5 h-3.5"></i> UX Pesquisa</span>
+      <span id="st-cxe" class="flex items-center gap-1 text-slate-500"><i data-lucide="circle-dashed" class="w-3.5 h-3.5"></i> CX Escrita</span>
+      <span id="st-uxe" class="flex items-center gap-1 text-slate-500"><i data-lucide="circle-dashed" class="w-3.5 h-3.5"></i> UX Escrita</span>
+    </div>
+    <div class="text-slate-500 italic">
+      Sincronização automática em tempo real ativada.
+    </div>
+  </div>
+
+  <!-- NAVIGATION TABS -->
+  <div class="bg-slate-900/80 border-b border-slate-800 px-6 py-2">
+    <nav class="flex gap-2 overflow-x-auto custom-scrollbar">
+      <button onclick="switchTab('dash')" id="tab-dash" class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 bg-sky-600 text-white shadow-md transition-all">
+        <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+        Dashboard Estratégico
+      </button>
+      <button onclick="switchTab('cxp')" id="tab-cxp" class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-all">
+        <i data-lucide="search" class="w-4 h-4"></i>
+        CX Pesquisa
+      </button>
+      <button onclick="switchTab('uxp')" id="tab-uxp" class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-all">
+        <i data-lucide="users" class="w-4 h-4"></i>
+        UX Pesquisa
+      </button>
+      <button onclick="switchTab('cxe')" id="tab-cxe" class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-all">
+        <i data-lucide="pen-tool" class="w-4 h-4"></i>
+        CX Escrita
+      </button>
+      <button onclick="switchTab('uxe')" id="tab-uxe" class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-all">
+        <i data-lucide="file-text" class="w-4 h-4"></i>
+        UX Escrita
+      </button>
+    </nav>
+  </div>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 p-6 space-y-6 max-w-[1600px] mx-auto w-full">
+
+    <!-- EMPTY STATE -->
+    <div id="emptyStateContainer" class="glass-card p-12 rounded-3xl text-center space-y-5 max-w-2xl mx-auto my-12">
+      <div class="w-16 h-16 bg-sky-500/10 text-sky-400 rounded-2xl flex items-center justify-center mx-auto border border-sky-500/20">
+        <i data-lucide="cloud-off" class="w-8 h-8"></i>
+      </div>
+      <div>
+        <h2 class="text-xl font-bold text-white">Nenhum Dado Salvo no Firebase</h2>
+        <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+          Selecione os arquivos <strong>CSV de cada aba</strong> para carregar e salvar no banco de dados central na nuvem.
+        </p>
+      </div>
+      <div class="pt-2">
+        <label class="cursor-pointer inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold shadow-lg shadow-sky-600/30 transition-all">
+          <i data-lucide="upload" class="w-4 h-4"></i>
+          <span>Selecionar Arquivos CSV</span>
+          <input type="file" id="csvUploaderMain" accept=".csv" multiple class="hidden">
+        </label>
+      </div>
+    </div>
+
+    <!-- VIEW 1: DASHBOARD -->
+    <section id="view-dash" class="hidden space-y-6">
+
+      <!-- EXECUTIVE CARDS -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div class="glass-card p-5 rounded-2xl">
+          <div class="flex items-center justify-between text-slate-400 mb-2">
+            <span class="text-xs font-semibold uppercase">Total Projetos</span>
+            <i data-lucide="folder-kanban" class="w-5 h-5 text-sky-400"></i>
+          </div>
+          <div class="text-3xl font-extrabold text-white" id="kpiTotalProjetos">0</div>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl">
+          <div class="flex items-center justify-between text-slate-400 mb-2">
+            <span class="text-xs font-semibold uppercase">Concluídos</span>
+            <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-400"></i>
+          </div>
+          <div class="text-3xl font-extrabold text-emerald-400" id="kpiConcluidos">0</div>
+          <div class="text-[11px] text-slate-400 mt-1" id="kpiTaxaConclusao">0% taxa de conclusão</div>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl">
+          <div class="flex items-center justify-between text-slate-400 mb-2">
+            <span class="text-xs font-semibold uppercase">Em Andamento</span>
+            <i data-lucide="clock" class="w-5 h-5 text-amber-400"></i>
+          </div>
+          <div class="text-3xl font-extrabold text-amber-400" id="kpiAndamento">0</div>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl">
+          <div class="flex items-center justify-between text-slate-400 mb-2">
+            <span class="text-xs font-semibold uppercase">Tempo Médio</span>
+            <i data-lucide="timer" class="w-5 h-5 text-purple-400"></i>
+          </div>
+          <div class="text-3xl font-extrabold text-purple-300" id="kpiTempoMedio">0d</div>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl">
+          <div class="flex items-center justify-between text-slate-400 mb-2">
+            <span class="text-xs font-semibold uppercase">Impacto Super App</span>
+            <i data-lucide="smartphone" class="w-5 h-5 text-rose-400"></i>
+          </div>
+          <div class="text-3xl font-extrabold text-rose-300" id="kpiSuperApp">0</div>
+        </div>
+      </div>
+
+      <!-- CHARTS -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="glass-card p-5 rounded-2xl">
+          <h3 class="text-sm font-bold text-white mb-2 flex items-center gap-2">
+            <i data-lucide="pie-chart" class="w-4 h-4 text-sky-400"></i> Distribuição por Frente
+          </h3>
+          <div class="h-64 relative"><canvas id="chartAreaDist"></canvas></div>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl">
+          <h3 class="text-sm font-bold text-white mb-2 flex items-center gap-2">
+            <i data-lucide="bar-chart-2" class="w-4 h-4 text-teal-400"></i> Status Operacional
+          </h3>
+          <div class="h-64 relative"><canvas id="chartStatusDist"></canvas></div>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl">
+          <h3 class="text-sm font-bold text-white mb-2 flex items-center gap-2">
+            <i data-lucide="alert-circle" class="w-4 h-4 text-amber-400"></i> Prioridades
+          </h3>
+          <div class="h-64 relative"><canvas id="chartPriorityDist"></canvas></div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="glass-card p-5 rounded-2xl">
+          <h3 class="text-sm font-bold text-white mb-2 flex items-center gap-2">
+            <i data-lucide="building-2" class="w-4 h-4 text-amber-400"></i> Top Demandantes
+          </h3>
+          <div class="h-80 relative"><canvas id="chartDemandantes"></canvas></div>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl">
+          <h3 class="text-sm font-bold text-white mb-2 flex items-center gap-2">
+            <i data-lucide="wrench" class="w-4 h-4 text-emerald-400"></i> Top Metodologias
+          </h3>
+          <div class="h-80 relative"><canvas id="chartMetodologias"></canvas></div>
+        </div>
+      </div>
+
+      <!-- TABLE SUMMARY -->
+      <div class="glass-card p-5 rounded-2xl space-y-4">
+        <h3 class="text-base font-bold text-white flex items-center gap-2">
+          <i data-lucide="sliders" class="w-5 h-5 text-sky-400"></i> Resumo Consolidado por Frente
+        </h3>
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-slate-800/60 text-slate-300 font-semibold uppercase border-b border-slate-700">
+                <th class="p-3.5">Frente</th>
+                <th class="p-3.5 text-center">Total</th>
+                <th class="p-3.5 text-center">Concluídos</th>
+                <th class="p-3.5 text-center">Em Andamento</th>
+                <th class="p-3.5 text-center">Tempo Médio</th>
+                <th class="p-3.5 text-center">Super App</th>
+              </tr>
+            </thead>
+            <tbody id="dashTableBody" class="divide-y divide-slate-800 text-slate-200"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- VIEW 2: TABLES -->
+    <section id="view-detail" class="hidden space-y-6">
+      <div class="glass-card p-5 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <h2 id="detailViewTitle" class="text-xl font-bold text-white flex items-center gap-2"></h2>
+
+        <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+          <div class="relative flex-1 sm:w-64">
+            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
+            <input type="text" id="tableSearchInput" onkeyup="filterDetailTable()" placeholder="Buscar projeto, pessoa, área..." class="w-full bg-slate-800/80 text-xs text-slate-200 rounded-xl pl-9 pr-3 py-2 border border-slate-700 focus:outline-none focus:border-sky-500">
+          </div>
+
+          <select id="tableStatusFilter" onchange="filterDetailTable()" class="bg-slate-800 text-slate-200 text-xs rounded-xl px-3 py-2 border border-slate-700 focus:outline-none">
+            <option value="ALL">Todos os Status</option>
+            <option value="Concluído">Concluído</option>
+            <option value="Em andamento">Em andamento</option>
+            <option value="Não iniciado">Não iniciado</option>
+            <option value="Pausado">Pausado</option>
+            <option value="Cancelado">Cancelado</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto custom-scrollbar max-h-[650px]">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead class="sticky top-0 z-10 bg-slate-800 text-slate-300 font-semibold uppercase border-b border-slate-700">
+              <tr>
+                <th class="p-3.5">ID</th>
+                <th class="p-3.5">Projeto</th>
+                <th class="p-3.5">Status</th>
+                <th class="p-3.5">Prioridade</th>
+                <th class="p-3.5">Tam</th>
+                <th class="p-3.5">Responsável</th>
+                <th class="p-3.5">Demandante</th>
+                <th class="p-3.5 text-center">SuperApp</th>
+                <th class="p-3.5">Datas</th>
+                <th class="p-3.5">Metodologia</th>
+                <th class="p-3.5">Impacto</th>
+              </tr>
+            </thead>
+            <tbody id="detailTableBody" class="divide-y divide-slate-800 text-slate-300"></tbody>
+          </table>
+        </div>
+        <div class="p-4 border-t border-slate-800 text-xs text-slate-400">
+          Registros exibidos: <strong id="rowCount" class="text-white">0</strong>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    window.RAW_DATA = { 'CX Pesquisa': [], 'UX Pesquisa': [], 'CX Escrita': [], 'UX Escrita': [] };
+
+    let chartAreaDist = null, chartStatusDist = null, chartPriorityDist = null, chartDemandantes = null, chartMetodologias = null;
+    let currentTab = 'dash';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      setupCsvUploader();
+    });
+
+    function extractFieldValue(row, possibleKeys) {
+      if (!row) return '';
+      const rowKeys = Object.keys(row);
+      for (let pKey of possibleKeys) {
+        for (let rKey of rowKeys) {
+          if (rKey.trim().toLowerCase() === pKey.trim().toLowerCase()) {
+            return String(row[rKey] || '').trim();
+          }
+        }
+      }
+      return '';
+    }
+
+    function standardizeRow(row, defaultArea) {
+      const id = extractFieldValue(row, ['ID', 'Id', 'Código']);
+      const projeto = extractFieldValue(row, ['Projeto', 'Nome do Projeto']);
+      const status = extractFieldValue(row, ['Status', 'Situação']);
+      const inicio = extractFieldValue(row, ['Data de Início', 'Início']);
+      const prazo = extractFieldValue(row, ['Data Prazo', 'Prazo']);
+      const entrega = extractFieldValue(row, ['Data de Entrega', 'Entrega']);
+      const prioridade = extractFieldValue(row, ['Prioridade']);
+      const tamanho = extractFieldValue(row, ['Tamanho', 'Tam']);
+      const responsavel = extractFieldValue(row, ['Responsável']);
+      const demandante = extractFieldValue(row, ['Demandante', 'Demandante\n(sigla)', 'Demandante ']);
+      const superApp = extractFieldValue(row, ['Super App', 'Super App ']);
+      const metodo = extractFieldValue(row, ['Pesquisa', 'Atividade']);
+      const impacto = extractFieldValue(row, ['Resumo do impacto', 'Resumo do impacto/Objetivo']);
+      const prazoDiasRaw = extractFieldValue(row, ['Prazo(dias)', 'Prazo (dias)']);
+
+      let prazoDias = parseFloat(prazoDiasRaw.replace(',', '.'));
+      if (isNaN(prazoDias)) prazoDias = 0;
+
+      return {
+        id: id || '-',
+        projeto: projeto,
+        status: status || 'Não informado',
+        inicio: inicio || '-',
+        prazo: prazo || '-',
+        entrega: entrega || '-',
+        prioridade: prioridade || 'Normal',
+        tamanho: tamanho || '-',
+        responsavel: responsavel || 'Não definido',
+        demandante: demandante || '-',
+        super_app: superApp || 'Não',
+        pesquisa_metodo: metodo || '-',
+        impacto: impacto || '-',
+        prazo_dias: prazoDias,
+        area: defaultArea
+      };
+    }
+
+    function setupCsvUploader() {
+      const uploaderIds = ['csvUploader', 'csvUploaderMain'];
+      
+      uploaderIds.forEach(id => {
+        const input = document.getElementById(id);
+        if (!input) return;
+
+        input.addEventListener('change', (e) => {
+          const files = Array.from(e.target.files);
+          if (!files || files.length === 0) return;
+
+          let filesRead = 0;
+
+          files.forEach(file => {
+            const fname = file.name.toLowerCase();
+            let targetArea = '';
+
+            if (fname.includes('cx pesquisa')) targetArea = 'CX Pesquisa';
+            else if (fname.includes('ux pesquisa')) targetArea = 'UX Pesquisa';
+            else if (fname.includes('cx escrita')) targetArea = 'CX Escrita';
+            else if (fname.includes('ux escrita')) targetArea = 'UX Escrita';
+
+            Papa.parse(file, {
+              header: true,
+              skipEmptyLines: true,
+              complete: function(results) {
+                if (targetArea && results.data) {
+                  const cleanRows = results.data
+                    .map(r => standardizeRow(r, targetArea))
+                    .filter(r => r.projeto && r.projeto !== 'nan');
+
+                  window.RAW_DATA[targetArea] = cleanRows;
+                }
+
+                filesRead++;
+                if (filesRead === files.length) {
+                  if (window.saveDataToFirebase) {
+                    window.saveDataToFirebase(window.RAW_DATA);
+                  }
+                }
+              }
+            });
+          });
+        });
+      });
+    }
+
+    window.updateStatusUI = function() {
+      const keyMap = { 'cxp': 'CX Pesquisa', 'uxp': 'UX Pesquisa', 'cxe': 'CX Escrita', 'uxe': 'UX Escrita' };
+      let hasAnyData = false;
+
+      Object.keys(keyMap).forEach(k => {
+        const realName = keyMap[k];
+        const count = (window.RAW_DATA[realName] || []).length;
+        const elem = document.getElementById('st-' + k);
+
+        if (count > 0) {
+          hasAnyData = true;
+          elem.className = "flex items-center gap-1 text-emerald-400 font-semibold";
+          elem.innerHTML = `<i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> ${realName} (${count})`;
+        } else {
+          elem.className = "flex items-center gap-1 text-slate-500";
+          elem.innerHTML = `<i data-lucide="circle-dashed" class="w-3.5 h-3.5"></i> ${realName}`;
+        }
+      });
+
+      const badge = document.getElementById('dataStatusBadge');
+      const text = document.getElementById('lastUpdatedText');
+      const emptyState = document.getElementById('emptyStateContainer');
+      const viewDash = document.getElementById('view-dash');
+      const viewDetail = document.getElementById('view-detail');
+
+      if (hasAnyData) {
+        badge.className = "flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-400 text-xs font-medium border border-emerald-500/20";
+        text.innerText = "Sincronizado via Firebase";
+        emptyState.classList.add('hidden');
+        if (currentTab === 'dash') viewDash.classList.remove('hidden');
+        else viewDetail.classList.remove('hidden');
+      } else {
+        badge.className = "flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-400 text-xs font-medium border border-amber-500/20";
+        text.innerText = "Aguardando CSVs";
+        emptyState.classList.remove('hidden');
+        viewDash.classList.add('hidden');
+        viewDetail.classList.add('hidden');
+      }
+
+      lucide.createIcons();
+    };
+
+    window.switchTab = function(tabId) {
+      currentTab = tabId;
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-sky-600', 'text-white', 'shadow-md');
+        btn.classList.add('text-slate-400');
+      });
+
+      const activeBtn = document.getElementById('tab-' + tabId);
+      if (activeBtn) {
+        activeBtn.classList.remove('text-slate-400');
+        activeBtn.classList.add('bg-sky-600', 'text-white', 'shadow-md');
+      }
+
+      const viewDash = document.getElementById('view-dash');
+      const viewDetail = document.getElementById('view-detail');
+      const hasData = Object.values(window.RAW_DATA).some(arr => arr.length > 0);
+
+      if (!hasData) return;
+
+      if (tabId === 'dash') {
+        viewDash.classList.remove('hidden');
+        viewDetail.classList.add('hidden');
+        renderDashboard();
+      } else {
+        viewDash.classList.add('hidden');
+        viewDetail.classList.remove('hidden');
+        renderDetailView(tabId);
+      }
+    };
+
+    window.renderAll = function() {
+      const hasData = Object.values(window.RAW_DATA).some(arr => arr.length > 0);
+      if (!hasData) return;
+
+      if (currentTab === 'dash') renderDashboard();
+      else renderDetailView(currentTab);
+    };
+
+    function renderDashboard() {
+      const selectedArea = document.getElementById('filterArea').value;
+      let activeSheets = selectedArea === 'ALL' ? ['CX Pesquisa', 'UX Pesquisa', 'CX Escrita', 'UX Escrita'] : [selectedArea];
+
+      let allProjects = [];
+      activeSheets.forEach(sh => {
+        if (window.RAW_DATA[sh]) allProjects = allProjects.concat(window.RAW_DATA[sh]);
+      });
+
+      const totalCount = allProjects.length;
+      const concluidos = allProjects.filter(p => p.status.toLowerCase().includes('conclu')).length;
+      const andamento = allProjects.filter(p => p.status.toLowerCase().includes('andamento')).length;
+      
+      const concluidosItems = allProjects.filter(p => p.status.toLowerCase().includes('conclu') && p.prazo_dias > 0);
+      const avgDays = concluidosItems.length > 0 
+        ? (concluidosItems.reduce((acc, curr) => acc + curr.prazo_dias, 0) / concluidosItems.length).toFixed(1) 
+        : '0';
+
+      const superAppCount = allProjects.filter(p => p.super_app.toLowerCase() === 'sim').length;
+      const taxaConclusao = totalCount > 0 ? ((concluidos / totalCount) * 100).toFixed(1) : 0;
+
+      document.getElementById('kpiTotalProjetos').innerText = totalCount;
+      document.getElementById('kpiConcluidos').innerText = concluidos;
+      document.getElementById('kpiTaxaConclusao').innerText = taxaConclusao + '% taxa de conclusão';
+      document.getElementById('kpiAndamento').innerText = andamento;
+      document.getElementById('kpiTempoMedio').innerText = avgDays + 'd';
+      document.getElementById('kpiSuperApp').innerText = superAppCount;
+
+      renderChartAreaDist();
+      renderChartStatusDist(allProjects);
+      renderChartPriorityDist(allProjects);
+      renderChartDemandantes(allProjects);
+      renderChartMetodologias(allProjects);
+      renderDashboardTable();
+    }
+
+    function renderChartAreaDist() {
+      const ctx = document.getElementById('chartAreaDist').getContext('2d');
+      if (chartAreaDist) chartAreaDist.destroy();
+
+      const counts = [
+        (window.RAW_DATA['CX Pesquisa'] || []).length,
+        (window.RAW_DATA['UX Pesquisa'] || []).length,
+        (window.RAW_DATA['CX Escrita'] || []).length,
+        (window.RAW_DATA['UX Escrita'] || []).length,
+      ];
+
+      chartAreaDist = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['CX Pesquisa', 'UX Pesquisa', 'CX Escrita', 'UX Escrita'],
+          datasets: [{ data: counts, backgroundColor: ['#0284c7', '#0d9488', '#8b5cf6', '#f59e0b'], borderWidth: 0 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1' } } } }
+      });
+    }
+
+    function renderChartStatusDist(projects) {
+      const ctx = document.getElementById('chartStatusDist').getContext('2d');
+      if (chartStatusDist) chartStatusDist.destroy();
+
+      const statusMap = {};
+      projects.forEach(p => { statusMap[p.status] = (statusMap[p.status] || 0) + 1; });
+
+      chartStatusDist = new Chart(ctx, {
+        type: 'bar',
+        data: { labels: Object.keys(statusMap), datasets: [{ data: Object.values(statusMap), backgroundColor: '#0369a1', borderRadius: 6 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#94a3b8' } } } }
+      });
+    }
+
+    function renderChartPriorityDist(projects) {
+      const ctx = document.getElementById('chartPriorityDist').getContext('2d');
+      if (chartPriorityDist) chartPriorityDist.destroy();
+
+      const prioMap = {};
+      projects.forEach(p => { prioMap[p.prioridade] = (prioMap[p.prioridade] || 0) + 1; });
+
+      chartPriorityDist = new Chart(ctx, {
+        type: 'bar',
+        data: { labels: Object.keys(prioMap), datasets: [{ data: Object.values(prioMap), backgroundColor: '#8b5cf6', borderRadius: 6 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#94a3b8' } } } }
+      });
+    }
+
+    function renderChartDemandantes(projects) {
+      const ctx = document.getElementById('chartDemandantes').getContext('2d');
+      if (chartDemandantes) chartDemandantes.destroy();
+
+      const demMap = {};
+      projects.forEach(p => {
+        let dem = p.demandante.replace(/\n/g, ' ').trim();
+        if (dem && dem !== '-' && dem !== 'nan') demMap[dem] = (demMap[dem] || 0) + 1;
+      });
+
+      const sorted = Object.entries(demMap).sort((a,b) => b[1] - a[1]).slice(0, 7);
+
+      chartDemandantes = new Chart(ctx, {
+        type: 'bar',
+        data: { labels: sorted.map(s => s[0]), datasets: [{ data: sorted.map(s => s[1]), backgroundColor: '#f59e0b', borderRadius: 6 }] },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#cbd5e1' } } } }
+      });
+    }
+
+    function renderChartMetodologias(projects) {
+      const ctx = document.getElementById('chartMetodologias').getContext('2d');
+      if (chartMetodologias) chartMetodologias.destroy();
+
+      const metMap = {};
+      projects.forEach(p => {
+        if (!p.pesquisa_metodo || p.pesquisa_metodo === '-') return;
+        p.pesquisa_metodo.split(',').forEach(m => {
+          let c = m.trim();
+          if (c) metMap[c] = (metMap[c] || 0) + 1;
+        });
+      });
+
+      const sorted = Object.entries(metMap).sort((a,b) => b[1] - a[1]).slice(0, 7);
+
+      chartMetodologias = new Chart(ctx, {
+        type: 'bar',
+        data: { labels: sorted.map(s => s[0]), datasets: [{ data: sorted.map(s => s[1]), backgroundColor: '#10b981', borderRadius: 6 }] },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#cbd5e1' } } } }
+      });
+    }
+
+    function renderDashboardTable() {
+      const tbody = document.getElementById('dashTableBody');
+      tbody.innerHTML = '';
+
+      ['CX Pesquisa', 'UX Pesquisa', 'CX Escrita', 'UX Escrita'].forEach(sName => {
+        const items = window.RAW_DATA[sName] || [];
+        const total = items.length;
+        const conc = items.filter(p => p.status.toLowerCase().includes('conclu')).length;
+        const and = items.filter(p => p.status.toLowerCase().includes('andamento')).length;
+        const concItems = items.filter(p => p.status.toLowerCase().includes('conclu') && p.prazo_dias > 0);
+        const avg = concItems.length > 0 ? (concItems.reduce((acc, c) => acc + c.prazo_dias, 0) / concItems.length).toFixed(1) + 'd' : '-';
+        const superApp = items.filter(p => p.super_app.toLowerCase() === 'sim').length;
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-800/40";
+        tr.innerHTML = `
+          <td class="p-3.5 font-bold text-white">${sName}</td>
+          <td class="p-3.5 text-center">${total}</td>
+          <td class="p-3.5 text-center text-emerald-400 font-semibold">${conc}</td>
+          <td class="p-3.5 text-center text-amber-400 font-semibold">${and}</td>
+          <td class="p-3.5 text-center text-purple-300">${avg}</td>
+          <td class="p-3.5 text-center font-medium text-rose-300">${superApp}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderDetailView(sheetKey) {
+      const keyMap = { 'cxp': 'CX Pesquisa', 'uxp': 'UX Pesquisa', 'cxe': 'CX Escrita', 'uxe': 'UX Escrita' };
+      const realKey = keyMap[sheetKey] || 'CX Pesquisa';
+
+      document.getElementById('detailViewTitle').innerHTML = `<i data-lucide="table" class="w-5 h-5 text-sky-400"></i> Projetos de ${realKey}`;
+      filterDetailTable();
+      lucide.createIcons();
+    }
+
+    window.filterDetailTable = function() {
+      const keyMap = { 'cxp': 'CX Pesquisa', 'uxp': 'UX Pesquisa', 'cxe': 'CX Escrita', 'uxe': 'UX Escrita' };
+      const realKey = keyMap[currentTab] || 'CX Pesquisa';
+      const items = window.RAW_DATA[realKey] || [];
+
+      const query = (document.getElementById('tableSearchInput')?.value || '').toLowerCase();
+      const statusFilter = document.getElementById('tableStatusFilter')?.value || 'ALL';
+
+      const filtered = items.filter(item => {
+        const matchesQuery = item.projeto.toLowerCase().includes(query) || item.responsavel.toLowerCase().includes(query) || item.demandante.toLowerCase().includes(query) || item.id.toLowerCase().includes(query);
+        const matchesStatus = statusFilter === 'ALL' || item.status.toLowerCase().includes(statusFilter.toLowerCase());
+        return matchesQuery && matchesStatus;
+      });
+
+      const tbody = document.getElementById('detailTableBody');
+      tbody.innerHTML = '';
+
+      filtered.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-800/40";
+
+        let badgeClass = 'badge-status-nao-iniciado';
+        if (item.status.toLowerCase().includes('conclu')) badgeClass = 'badge-status-concluido';
+        else if (item.status.toLowerCase().includes('andamento')) badgeClass = 'badge-status-andamento';
+        else if (item.status.toLowerCase().includes('paus') || item.status.toLowerCase().includes('cancel')) badgeClass = 'badge-status-pausado';
+
+        tr.innerHTML = `
+          <td class="p-3.5 font-mono text-sky-400">${item.id}</td>
+          <td class="p-3.5 font-semibold text-white max-w-xs">${item.projeto}</td>
+          <td class="p-3.5"><span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase ${badgeClass}">${item.status}</span></td>
+          <td class="p-3.5">${item.prioridade}</td>
+          <td class="p-3.5 font-mono">${item.tamanho}</td>
+          <td class="p-3.5 font-medium">${item.responsavel}</td>
+          <td class="p-3.5 text-slate-400 text-[11px] max-w-xs truncate">${item.demandante}</td>
+          <td class="p-3.5 text-center">${item.super_app.toLowerCase() === 'sim' ? '<span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 text-[10px] font-bold">SIM</span>' : '<span class="text-slate-500 text-[10px]">NÃO</span>'}</td>
+          <td class="p-3.5 text-[11px] text-slate-400">Início: ${item.inicio}<br>Entrega: ${item.entrega}</td>
+          <td class="p-3.5 text-[11px] text-slate-300 max-w-xs truncate">${item.pesquisa_metodo}</td>
+          <td class="p-3.5 text-[11px] text-slate-400 max-w-xs truncate">${item.impacto}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('rowCount').innerText = filtered.length;
+    };
+  </script>
+</body>
+</html>
