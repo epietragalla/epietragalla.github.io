@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Executive Dashboard - Pesquisa & Escrita (UX/CX)</title>
+  <title>Executive Suite - Pesquisa & Escrita (UX/CX)</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -21,22 +21,23 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    // 🔴 SUBSTiTUA AQUI PELO SEU OBJETO DE CONFIGURAÇÃO DO FIREBASE (PASSO 1)
-const firebaseConfig = {
-  apiKey: "AIzaSyCk8Wl6zRbX55urJo2oy95xrqAVaX4o-5c",
-  authDomain: "dashboardpuxe.firebaseapp.com",
-  projectId: "dashboardpuxe",
-  storageBucket: "dashboardpuxe.firebasestorage.app",
-  messagingSenderId: "780646452716",
-  appId: "1:780646452716:web:49d1960fa7fe531f3444c9",
-  measurementId: "G-E6GKLHYTJV"
-};
+    // 🔴 SUAS CONFIGURAÇÕES DO FIREBASE MANTIDAS INTEGRALMENTE
+    const firebaseConfig = {
+      apiKey: "AIzaSyCk8Wl6zRbX55urJo2oy95xrqAVaX4o-5c",
+      authDomain: "dashboardpuxe.firebaseapp.com",
+      projectId: "dashboardpuxe",
+      storageBucket: "dashboardpuxe.firebasestorage.app",
+      messagingSenderId: "780646452716",
+      appId: "1:780646452716:web:49d1960fa7fe531f3444c9",
+      measurementId: "G-E6GKLHYTJV"
+    };
+
     // Inicializar Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const docRef = doc(db, "metrics", "uxcx_data");
 
-    // Tornar funções acessíveis globalmente no navegador
+    // Salvar dados no Firebase
     window.saveDataToFirebase = async function(data) {
       try {
         const badge = document.getElementById('lastUpdatedText');
@@ -47,14 +48,14 @@ const firebaseConfig = {
           updatedAt: new Date().toISOString()
         });
         
-        alert("Dados salvos com sucesso na nuvem do Firebase! Todos os usuários do site agora verão os dados atualizados.");
+        alert("Dados salvos com sucesso no Firebase! Todos os usuários agora têm acesso à versão atualizada.");
       } catch (e) {
         console.error("Erro ao salvar no Firebase:", e);
-        alert("Erro ao salvar dados no Firebase. Verifique as regras do Firestore ou o console.");
+        alert("Erro ao salvar dados no Firebase. Verifique as configurações ou permissões do Firestore.");
       }
     };
 
-    // Ouvinte em tempo real (Sempre que o banco mudar, atualiza a tela de todos)
+    // Ouvinte em tempo real
     onSnapshot(docRef, (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.data();
@@ -83,6 +84,7 @@ const firebaseConfig = {
       border: 1px solid rgba(255, 255, 255, 0.08);
       box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
     }
+    .glass-card:hover { border-color: rgba(255, 255, 255, 0.18); }
     .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
     .custom-scrollbar::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
@@ -102,19 +104,18 @@ const firebaseConfig = {
       </div>
       <div>
         <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-          Pesquisa & Escrita <span class="text-xs px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 font-semibold border border-sky-500/30">FIREBASE CLOUD</span>
+          Pesquisa & Escrita <span class="text-xs px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 font-semibold border border-sky-500/30">DASHBOARD EXECUTIVO v4</span>
         </h1>
-        <p class="text-xs text-slate-400">Plataforma Estratégica de Tomada de Decisão (UX/CX)</p>
+        <p class="text-xs text-slate-400">Plataforma Estratégica de Tomada de Decisão & Performance (UX/CX)</p>
       </div>
     </div>
 
     <!-- Controls -->
     <div class="flex flex-wrap items-center gap-3 w-full md:w-auto justify-end">
-      
       <!-- Upload Button -->
       <label class="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold shadow-lg shadow-sky-600/30 transition-all">
         <i data-lucide="upload-cloud" class="w-4 h-4"></i>
-        <span>Carregar CSVs e Salvar na Nuvem</span>
+        <span>Carregar CSVs e Sincronizar</span>
         <input type="file" id="csvUploader" accept=".csv" multiple class="hidden">
       </label>
 
@@ -138,14 +139,14 @@ const firebaseConfig = {
   <!-- STATUS BANNER -->
   <div class="bg-slate-900 border-b border-slate-800 px-6 py-2.5 text-xs flex flex-wrap items-center justify-between gap-4">
     <div class="flex items-center gap-4 text-slate-400">
-      <span class="font-semibold text-slate-300">Status na Nuvem:</span>
+      <span class="font-semibold text-slate-300">Status dos CSVs na Nuvem:</span>
       <span id="st-cxp" class="flex items-center gap-1 text-slate-500"><i data-lucide="circle-dashed" class="w-3.5 h-3.5"></i> CX Pesquisa</span>
       <span id="st-uxp" class="flex items-center gap-1 text-slate-500"><i data-lucide="circle-dashed" class="w-3.5 h-3.5"></i> UX Pesquisa</span>
       <span id="st-cxe" class="flex items-center gap-1 text-slate-500"><i data-lucide="circle-dashed" class="w-3.5 h-3.5"></i> CX Escrita</span>
       <span id="st-uxe" class="flex items-center gap-1 text-slate-500"><i data-lucide="circle-dashed" class="w-3.5 h-3.5"></i> UX Escrita</span>
     </div>
     <div class="text-slate-500 italic">
-      Sincronização automática em tempo real ativada.
+      Sincronização em tempo real habilitada para a equipe.
     </div>
   </div>
 
@@ -186,7 +187,7 @@ const firebaseConfig = {
       <div>
         <h2 class="text-xl font-bold text-white">Nenhum Dado Salvo no Firebase</h2>
         <p class="text-xs text-slate-400 mt-2 leading-relaxed">
-          Selecione os arquivos <strong>CSV de cada aba</strong> para carregar e salvar no banco de dados central na nuvem.
+          Selecione os arquivos <strong>CSV das abas</strong> para alimentar o banco de dados central na nuvem.
         </p>
       </div>
       <div class="pt-2">
@@ -198,19 +199,22 @@ const firebaseConfig = {
       </div>
     </div>
 
-    <!-- VIEW 1: DASHBOARD -->
+    <!-- VIEW 1: DASHBOARD ESTRATÉGICO COMPLETO -->
     <section id="view-dash" class="hidden space-y-6">
 
-      <!-- EXECUTIVE CARDS -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <!-- EXECUTIVE KPI CARDS (8 CARDS) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Card 1 -->
         <div class="glass-card p-5 rounded-2xl">
           <div class="flex items-center justify-between text-slate-400 mb-2">
             <span class="text-xs font-semibold uppercase">Total Projetos</span>
             <i data-lucide="folder-kanban" class="w-5 h-5 text-sky-400"></i>
           </div>
           <div class="text-3xl font-extrabold text-white" id="kpiTotalProjetos">0</div>
+          <div class="text-[11px] text-slate-400 mt-1">Portfólio unificado de UX/CX</div>
         </div>
 
+        <!-- Card 2 -->
         <div class="glass-card p-5 rounded-2xl">
           <div class="flex items-center justify-between text-slate-400 mb-2">
             <span class="text-xs font-semibold uppercase">Concluídos</span>
@@ -220,72 +224,212 @@ const firebaseConfig = {
           <div class="text-[11px] text-slate-400 mt-1" id="kpiTaxaConclusao">0% taxa de conclusão</div>
         </div>
 
+        <!-- Card 3 -->
         <div class="glass-card p-5 rounded-2xl">
           <div class="flex items-center justify-between text-slate-400 mb-2">
             <span class="text-xs font-semibold uppercase">Em Andamento</span>
             <i data-lucide="clock" class="w-5 h-5 text-amber-400"></i>
           </div>
           <div class="text-3xl font-extrabold text-amber-400" id="kpiAndamento">0</div>
+          <div class="text-[11px] text-slate-400 mt-1">Ativos na esteira de produção</div>
         </div>
 
+        <!-- Card 4 -->
         <div class="glass-card p-5 rounded-2xl">
           <div class="flex items-center justify-between text-slate-400 mb-2">
             <span class="text-xs font-semibold uppercase">Tempo Médio</span>
             <i data-lucide="timer" class="w-5 h-5 text-purple-400"></i>
           </div>
           <div class="text-3xl font-extrabold text-purple-300" id="kpiTempoMedio">0d</div>
+          <div class="text-[11px] text-slate-400 mt-1">Dias por projeto concluído</div>
         </div>
 
+        <!-- Card 5 -->
+        <div class="glass-card p-5 rounded-2xl">
+          <div class="flex items-center justify-between text-slate-400 mb-2">
+            <span class="text-xs font-semibold uppercase">Eficiência Crítica</span>
+            <i data-lucide="shield-check" class="w-5 h-5 text-teal-400"></i>
+          </div>
+          <div class="text-3xl font-extrabold text-teal-300" id="kpiEficienciaCritica">0%</div>
+          <div class="text-[11px] text-slate-400 mt-1">Demandas Críticas no Prazo</div>
+        </div>
+
+        <!-- Card 6 -->
+        <div class="glass-card p-5 rounded-2xl">
+          <div class="flex items-center justify-between text-slate-400 mb-2">
+            <span class="text-xs font-semibold uppercase">Tamanho Médio Time</span>
+            <i data-lucide="users-2" class="w-5 h-5 text-indigo-400"></i>
+          </div>
+          <div class="text-3xl font-extrabold text-indigo-300" id="kpiTamanhoTime">1.0</div>
+          <div class="text-[11px] text-slate-400 mt-1">Especialistas por demanda</div>
+        </div>
+
+        <!-- Card 7 -->
+        <div class="glass-card p-5 rounded-2xl">
+          <div class="flex items-center justify-between text-slate-400 mb-2">
+            <span class="text-xs font-semibold uppercase">Taxa de Pausa/Canc.</span>
+            <i data-lucide="alert-triangle" class="w-5 h-5 text-rose-400"></i>
+          </div>
+          <div class="text-3xl font-extrabold text-rose-300" id="kpiTaxaPausa">0%</div>
+          <div class="text-[11px] text-slate-400 mt-1">Projetos interrompidos</div>
+        </div>
+
+        <!-- Card 8 -->
         <div class="glass-card p-5 rounded-2xl">
           <div class="flex items-center justify-between text-slate-400 mb-2">
             <span class="text-xs font-semibold uppercase">Impacto Super App</span>
-            <i data-lucide="smartphone" class="w-5 h-5 text-rose-400"></i>
+            <i data-lucide="smartphone" class="w-5 h-5 text-pink-400"></i>
           </div>
-          <div class="text-3xl font-extrabold text-rose-300" id="kpiSuperApp">0</div>
+          <div class="text-3xl font-extrabold text-pink-300" id="kpiSuperApp">0</div>
+          <div class="text-[11px] text-slate-400 mt-1" id="kpiSuperAppPct">0% foco no Super App</div>
         </div>
       </div>
 
-      <!-- CHARTS -->
+      <!-- BLOCO 1: ESTRUTURA E OPERAÇÃO (3 GRÁFICOS) -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="glass-card p-5 rounded-2xl">
-          <h3 class="text-sm font-bold text-white mb-2 flex items-center gap-2">
+          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
             <i data-lucide="pie-chart" class="w-4 h-4 text-sky-400"></i> Distribuição por Frente
           </h3>
+          <p class="text-xs text-slate-400 mb-3">Volume de entregas por especialidade</p>
           <div class="h-64 relative"><canvas id="chartAreaDist"></canvas></div>
         </div>
 
         <div class="glass-card p-5 rounded-2xl">
-          <h3 class="text-sm font-bold text-white mb-2 flex items-center gap-2">
+          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
             <i data-lucide="bar-chart-2" class="w-4 h-4 text-teal-400"></i> Status Operacional
           </h3>
+          <p class="text-xs text-slate-400 mb-3">Situação atual dos projetos</p>
           <div class="h-64 relative"><canvas id="chartStatusDist"></canvas></div>
         </div>
 
         <div class="glass-card p-5 rounded-2xl">
-          <h3 class="text-sm font-bold text-white mb-2 flex items-center gap-2">
-            <i data-lucide="alert-circle" class="w-4 h-4 text-amber-400"></i> Prioridades
+          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+            <i data-lucide="alert-circle" class="w-4 h-4 text-amber-400"></i> Nível de Prioridade
           </h3>
+          <p class="text-xs text-slate-400 mb-3">Distribuição das prioridades</p>
           <div class="h-64 relative"><canvas id="chartPriorityDist"></canvas></div>
         </div>
       </div>
 
+      <!-- BLOCO 2: PORTE, PESSOAS E SLA (3 GRÁFICOS) -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="glass-card p-5 rounded-2xl">
+          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+            <i data-lucide="layers" class="w-4 h-4 text-indigo-400"></i> Porte e Complexidade (Tamanho)
+          </h3>
+          <p class="text-xs text-slate-400 mb-3">PP/P (Pontuais) vs. G/GG/GGG (Estruturados)</p>
+          <div class="h-64 relative"><canvas id="chartTamanhoDist"></canvas></div>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl">
+          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+            <i data-lucide="user-check" class="w-4 h-4 text-cyan-400"></i> Alocação por Responsável (Top 8)
+          </h3>
+          <p class="text-xs text-slate-400 mb-3">Projetos sob gestão por especialista</p>
+          <div class="h-64 relative"><canvas id="chartResponsavelDist"></canvas></div>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl">
+          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+            <i data-lucide="target" class="w-4 h-4 text-emerald-400"></i> Cumprimento de Prazos (SLA)
+          </h3>
+          <p class="text-xs text-slate-400 mb-3">Pontualidade na entrega dos projetos</p>
+          <div class="h-64 relative"><canvas id="chartSlaDist"></canvas></div>
+        </div>
+      </div>
+
+      <!-- BLOCO 3: EVOLUÇÃO, TEMPOS E FOCO (3 GRÁFICOS) -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="glass-card p-5 rounded-2xl">
+          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+            <i data-lucide="trending-up" class="w-4 h-4 text-purple-400"></i> Volume de Entregas por Mês
+          </h3>
+          <p class="text-xs text-slate-400 mb-3">Histórico de conclusão ao longo do tempo</p>
+          <div class="h-64 relative"><canvas id="chartEvolucaoMensal"></canvas></div>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl">
+          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+            <i data-lucide="clock-4" class="w-4 h-4 text-pink-400"></i> Tempo Médio (Dias) por Porte
+          </h3>
+          <p class="text-xs text-slate-400 mb-3">Média de dias para concluir por tamanho</p>
+          <div class="h-64 relative"><canvas id="chartTempoPorTamanho"></canvas></div>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl">
+          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+            <i data-lucide="smartphone" class="w-4 h-4 text-rose-400"></i> Foco Estratégico: Super App
+          </h3>
+          <p class="text-xs text-slate-400 mb-3">Proporção de esforço dedicada ao Super App</p>
+          <div class="h-64 relative"><canvas id="chartSuperAppSplit"></canvas></div>
+        </div>
+      </div>
+
+      <!-- BLOCO 4: NOVOS GRÁFICOS ESTRATÉGICOS -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="glass-card p-5 rounded-2xl">
+          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+            <i data-lucide="shield-alert" class="w-4 h-4 text-red-400"></i> SLA por Nível de Prioridade
+          </h3>
+          <p class="text-xs text-slate-400 mb-3">Cumprimento de prazo por criticidade</p>
+          <div class="h-64 relative"><canvas id="chartPrioritySla"></canvas></div>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl">
+          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+            <i data-lucide="users" class="w-4 h-4 text-emerald-400"></i> Modelo de Atuação (Solo vs. Dupla/Grupo)
+          </h3>
+          <p class="text-xs text-slate-400 mb-3">Taxa de colaboração em projetos</p>
+          <div class="h-64 relative"><canvas id="chartColaboracao"></canvas></div>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl">
+          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+            <i data-lucide="cpu" class="w-4 h-4 text-amber-400"></i> Métodos: Super App vs. Demais
+          </h3>
+          <p class="text-xs text-slate-400 mb-3">Maturidade metodológica do produto foco</p>
+          <div class="h-64 relative"><canvas id="chartMetodosSuperApp"></canvas></div>
+        </div>
+      </div>
+
+      <!-- BLOCO 5: DISPERSÃO E ALINHAMENTO POR DEMANDANTE -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="glass-card p-5 rounded-2xl">
+          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+            <i data-lucide="activity" class="w-4 h-4 text-sky-400"></i> Dispersão de Lead Time (Gargalos)
+          </h3>
+          <p class="text-xs text-slate-400 mb-3">Identificação de projetos que extrapolaram a duração esperada</p>
+          <div class="h-80 relative"><canvas id="chartLeadTimeDispersao"></canvas></div>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl">
+          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+            <i data-lucide="crosshair" class="w-4 h-4 text-purple-400"></i> Demandantes: Super App vs. Demais
+          </h3>
+          <p class="text-xs text-slate-400 mb-3">Destino do orçamento de horas por unidade cliente</p>
+          <div class="h-80 relative"><canvas id="chartDemandantesSuperApp"></canvas></div>
+        </div>
+      </div>
+
+      <!-- BLOCO 6: DEMANDANTES & METODOLOGIAS (RANKINGS COMPLETOS) -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="glass-card p-5 rounded-2xl">
           <h3 class="text-sm font-bold text-white mb-2 flex items-center gap-2">
-            <i data-lucide="building-2" class="w-4 h-4 text-amber-400"></i> Top Demandantes
+            <i data-lucide="building-2" class="w-4 h-4 text-amber-400"></i> Top 10 Demandantes (Áreas Clientes)
           </h3>
           <div class="h-80 relative"><canvas id="chartDemandantes"></canvas></div>
         </div>
 
         <div class="glass-card p-5 rounded-2xl">
           <h3 class="text-sm font-bold text-white mb-2 flex items-center gap-2">
-            <i data-lucide="wrench" class="w-4 h-4 text-emerald-400"></i> Top Metodologias
+            <i data-lucide="wrench" class="w-4 h-4 text-emerald-400"></i> Top 10 Metodologias & Atividades
           </h3>
           <div class="h-80 relative"><canvas id="chartMetodologias"></canvas></div>
         </div>
       </div>
 
-      <!-- TABLE SUMMARY -->
+      <!-- TABELA SUMÁRIO -->
       <div class="glass-card p-5 rounded-2xl space-y-4">
         <h3 class="text-base font-bold text-white flex items-center gap-2">
           <i data-lucide="sliders" class="w-5 h-5 text-sky-400"></i> Resumo Consolidado por Frente
@@ -309,7 +453,7 @@ const firebaseConfig = {
 
     </section>
 
-    <!-- VIEW 2: TABLES -->
+    <!-- VIEW 2: TABELAS DETALHADAS -->
     <section id="view-detail" class="hidden space-y-6">
       <div class="glass-card p-5 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <h2 id="detailViewTitle" class="text-xl font-bold text-white flex items-center gap-2"></h2>
@@ -363,13 +507,23 @@ const firebaseConfig = {
   <script>
     window.RAW_DATA = { 'CX Pesquisa': [], 'UX Pesquisa': [], 'CX Escrita': [], 'UX Escrita': [] };
 
+    // Instâncias de Gráficos
     let chartAreaDist = null, chartStatusDist = null, chartPriorityDist = null, chartDemandantes = null, chartMetodologias = null;
+    let chartTamanhoDist = null, chartResponsavelDist = null, chartSlaDist = null, chartEvolucaoMensal = null, chartTempoPorTamanho = null, chartSuperAppSplit = null;
+    let chartPrioritySla = null, chartColaboracao = null, chartMetodosSuperApp = null, chartLeadTimeDispersao = null, chartDemandantesSuperApp = null;
+
     let currentTab = 'dash';
 
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       setupCsvUploader();
     });
+
+    // Helper seguro para obter contexto 2D sem estourar erro se a tag não existir
+    function getCanvasCtx(id) {
+      const el = document.getElementById(id);
+      return el ? el.getContext('2d') : null;
+    }
 
     function extractFieldValue(row, possibleKeys) {
       if (!row) return '';
@@ -394,6 +548,7 @@ const firebaseConfig = {
       const prioridade = extractFieldValue(row, ['Prioridade']);
       const tamanho = extractFieldValue(row, ['Tamanho', 'Tam']);
       const responsavel = extractFieldValue(row, ['Responsável']);
+      const colaboradores = extractFieldValue(row, ['Colaboradores']);
       const demandante = extractFieldValue(row, ['Demandante', 'Demandante\n(sigla)', 'Demandante ']);
       const superApp = extractFieldValue(row, ['Super App', 'Super App ']);
       const metodo = extractFieldValue(row, ['Pesquisa', 'Atividade']);
@@ -413,6 +568,7 @@ const firebaseConfig = {
         prioridade: prioridade || 'Normal',
         tamanho: tamanho || '-',
         responsavel: responsavel || 'Não definido',
+        colaboradores: colaboradores || '',
         demandante: demandante || '-',
         super_app: superApp || 'Não',
         pesquisa_metodo: metodo || '-',
@@ -478,13 +634,15 @@ const firebaseConfig = {
         const count = (window.RAW_DATA[realName] || []).length;
         const elem = document.getElementById('st-' + k);
 
-        if (count > 0) {
-          hasAnyData = true;
-          elem.className = "flex items-center gap-1 text-emerald-400 font-semibold";
-          elem.innerHTML = `<i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> ${realName} (${count})`;
-        } else {
-          elem.className = "flex items-center gap-1 text-slate-500";
-          elem.innerHTML = `<i data-lucide="circle-dashed" class="w-3.5 h-3.5"></i> ${realName}`;
+        if (elem) {
+          if (count > 0) {
+            hasAnyData = true;
+            elem.className = "flex items-center gap-1 text-emerald-400 font-semibold";
+            elem.innerHTML = `<i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> ${realName} (${count})`;
+          } else {
+            elem.className = "flex items-center gap-1 text-slate-500";
+            elem.innerHTML = `<i data-lucide="circle-dashed" class="w-3.5 h-3.5"></i> ${realName}`;
+          }
         }
       });
 
@@ -495,17 +653,17 @@ const firebaseConfig = {
       const viewDetail = document.getElementById('view-detail');
 
       if (hasAnyData) {
-        badge.className = "flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-400 text-xs font-medium border border-emerald-500/20";
-        text.innerText = "Sincronizado via Firebase";
-        emptyState.classList.add('hidden');
-        if (currentTab === 'dash') viewDash.classList.remove('hidden');
-        else viewDetail.classList.remove('hidden');
+        if (badge) badge.className = "flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-400 text-xs font-medium border border-emerald-500/20";
+        if (text) text.innerText = "Sincronizado via Firebase";
+        if (emptyState) emptyState.classList.add('hidden');
+        if (currentTab === 'dash' && viewDash) viewDash.classList.remove('hidden');
+        else if (viewDetail) viewDetail.classList.remove('hidden');
       } else {
-        badge.className = "flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-400 text-xs font-medium border border-amber-500/20";
-        text.innerText = "Aguardando CSVs";
-        emptyState.classList.remove('hidden');
-        viewDash.classList.add('hidden');
-        viewDetail.classList.add('hidden');
+        if (badge) badge.className = "flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-400 text-xs font-medium border border-amber-500/20";
+        if (text) text.innerText = "Aguardando CSVs";
+        if (emptyState) emptyState.classList.remove('hidden');
+        if (viewDash) viewDash.classList.add('hidden');
+        if (viewDetail) viewDetail.classList.add('hidden');
       }
 
       lucide.createIcons();
@@ -531,12 +689,12 @@ const firebaseConfig = {
       if (!hasData) return;
 
       if (tabId === 'dash') {
-        viewDash.classList.remove('hidden');
-        viewDetail.classList.add('hidden');
+        if (viewDash) viewDash.classList.remove('hidden');
+        if (viewDetail) viewDetail.classList.add('hidden');
         renderDashboard();
       } else {
-        viewDash.classList.add('hidden');
-        viewDetail.classList.remove('hidden');
+        if (viewDash) viewDash.classList.add('hidden');
+        if (viewDetail) viewDetail.classList.remove('hidden');
         renderDetailView(tabId);
       }
     };
@@ -550,7 +708,7 @@ const firebaseConfig = {
     };
 
     function renderDashboard() {
-      const selectedArea = document.getElementById('filterArea').value;
+      const selectedArea = document.getElementById('filterArea')?.value || 'ALL';
       let activeSheets = selectedArea === 'ALL' ? ['CX Pesquisa', 'UX Pesquisa', 'CX Escrita', 'UX Escrita'] : [selectedArea];
 
       let allProjects = [];
@@ -568,25 +726,62 @@ const firebaseConfig = {
         : '0';
 
       const superAppCount = allProjects.filter(p => p.super_app.toLowerCase() === 'sim').length;
+      const superAppPct = totalCount > 0 ? ((superAppCount / totalCount) * 100).toFixed(1) : 0;
       const taxaConclusao = totalCount > 0 ? ((concluidos / totalCount) * 100).toFixed(1) : 0;
 
-      document.getElementById('kpiTotalProjetos').innerText = totalCount;
-      document.getElementById('kpiConcluidos').innerText = concluidos;
-      document.getElementById('kpiTaxaConclusao').innerText = taxaConclusao + '% taxa de conclusão';
-      document.getElementById('kpiAndamento').innerText = andamento;
-      document.getElementById('kpiTempoMedio').innerText = avgDays + 'd';
-      document.getElementById('kpiSuperApp').innerText = superAppCount;
+      // KPIs
+      const criticos = allProjects.filter(p => p.prioridade.toLowerCase().includes('crít') || p.prioridade.toLowerCase().includes('crit'));
+      const criticosNoPrazo = criticos.filter(p => p.status.toLowerCase().includes('conclu') && (p.entrega <= p.prazo || p.prazo === '-')).length;
+      const eficienciaCritica = criticos.length > 0 ? ((criticosNoPrazo / criticos.length) * 100).toFixed(1) : '100';
 
+      let totalPessoas = 0;
+      allProjects.forEach(p => {
+        let count = 1;
+        if (p.colaboradores && p.colaboradores !== '-' && p.colaboradores !== 'nan') {
+          count += p.colaboradores.split(',').length;
+        }
+        totalPessoas += count;
+      });
+      const avgTimeSize = totalCount > 0 ? (totalPessoas / totalCount).toFixed(1) : '1.0';
+
+      const pausadosCanc = allProjects.filter(p => p.status.toLowerCase().includes('paus') || p.status.toLowerCase().includes('canc')).length;
+      const taxaPausa = totalCount > 0 ? ((pausadosCanc / totalCount) * 100).toFixed(1) : 0;
+
+      // Update DOM
+      const elemTotal = document.getElementById('kpiTotalProjetos'); if (elemTotal) elemTotal.innerText = totalCount;
+      const elemConc = document.getElementById('kpiConcluidos'); if (elemConc) elemConc.innerText = concluidos;
+      const elemTaxaConc = document.getElementById('kpiTaxaConclusao'); if (elemTaxaConc) elemTaxaConc.innerText = taxaConclusao + '% taxa de conclusão';
+      const elemAnd = document.getElementById('kpiAndamento'); if (elemAnd) elemAnd.innerText = andamento;
+      const elemTempo = document.getElementById('kpiTempoMedio'); if (elemTempo) elemTempo.innerText = avgDays + 'd';
+      const elemSuper = document.getElementById('kpiSuperApp'); if (elemSuper) elemSuper.innerText = superAppCount;
+      const elemSuperPct = document.getElementById('kpiSuperAppPct'); if (elemSuperPct) elemSuperPct.innerText = superAppPct + '% foco no Super App';
+      const elemEfic = document.getElementById('kpiEficienciaCritica'); if (elemEfic) elemEfic.innerText = eficienciaCritica + '%';
+      const elemTamTime = document.getElementById('kpiTamanhoTime'); if (elemTamTime) elemTamTime.innerText = avgTimeSize;
+      const elemPausa = document.getElementById('kpiTaxaPausa'); if (elemPausa) elemPausa.innerText = taxaPausa + '%';
+
+      // Render Charts safely
       renderChartAreaDist();
       renderChartStatusDist(allProjects);
       renderChartPriorityDist(allProjects);
+      renderChartTamanhoDist(allProjects);
+      renderChartResponsavelDist(allProjects);
+      renderChartSlaDist(allProjects);
+      renderChartEvolucaoMensal(allProjects);
+      renderChartTempoPorTamanho(allProjects);
+      renderChartSuperAppSplit(allProjects);
+      renderChartPrioritySla(allProjects);
+      renderChartColaboracao(allProjects);
+      renderChartMetodosSuperApp(allProjects);
+      renderChartLeadTimeDispersao(allProjects);
+      renderChartDemandantesSuperApp(allProjects);
       renderChartDemandantes(allProjects);
       renderChartMetodologias(allProjects);
+
       renderDashboardTable();
     }
 
     function renderChartAreaDist() {
-      const ctx = document.getElementById('chartAreaDist').getContext('2d');
+      const ctx = getCanvasCtx('chartAreaDist'); if (!ctx) return;
       if (chartAreaDist) chartAreaDist.destroy();
 
       const counts = [
@@ -598,16 +793,13 @@ const firebaseConfig = {
 
       chartAreaDist = new Chart(ctx, {
         type: 'doughnut',
-        data: {
-          labels: ['CX Pesquisa', 'UX Pesquisa', 'CX Escrita', 'UX Escrita'],
-          datasets: [{ data: counts, backgroundColor: ['#0284c7', '#0d9488', '#8b5cf6', '#f59e0b'], borderWidth: 0 }]
-        },
+        data: { labels: ['CX Pesquisa', 'UX Pesquisa', 'CX Escrita', 'UX Escrita'], datasets: [{ data: counts, backgroundColor: ['#0284c7', '#0d9488', '#8b5cf6', '#f59e0b'], borderWidth: 0 }] },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1' } } } }
       });
     }
 
     function renderChartStatusDist(projects) {
-      const ctx = document.getElementById('chartStatusDist').getContext('2d');
+      const ctx = getCanvasCtx('chartStatusDist'); if (!ctx) return;
       if (chartStatusDist) chartStatusDist.destroy();
 
       const statusMap = {};
@@ -621,7 +813,7 @@ const firebaseConfig = {
     }
 
     function renderChartPriorityDist(projects) {
-      const ctx = document.getElementById('chartPriorityDist').getContext('2d');
+      const ctx = getCanvasCtx('chartPriorityDist'); if (!ctx) return;
       if (chartPriorityDist) chartPriorityDist.destroy();
 
       const prioMap = {};
@@ -634,8 +826,240 @@ const firebaseConfig = {
       });
     }
 
+    function renderChartTamanhoDist(projects) {
+      const ctx = getCanvasCtx('chartTamanhoDist'); if (!ctx) return;
+      if (chartTamanhoDist) chartTamanhoDist.destroy();
+
+      const tamMap = {};
+      projects.forEach(p => {
+        let t = p.tamanho.toUpperCase().trim();
+        if (!t || t === '-' || t === 'NAN') t = 'Outro';
+        tamMap[t] = (tamMap[t] || 0) + 1;
+      });
+
+      chartTamanhoDist = new Chart(ctx, {
+        type: 'doughnut',
+        data: { labels: Object.keys(tamMap), datasets: [{ data: Object.values(tamMap), backgroundColor: ['#6366f1', '#3b82f6', '#06b6d4', '#10b981', '#f59e0b', '#ec4899'] }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1' } } } }
+      });
+    }
+
+    function renderChartResponsavelDist(projects) {
+      const ctx = getCanvasCtx('chartResponsavelDist'); if (!ctx) return;
+      if (chartResponsavelDist) chartResponsavelDist.destroy();
+
+      const respMap = {};
+      projects.forEach(p => {
+        let resp = p.responsavel.split(',')[0].trim();
+        if (resp && resp !== '-' && resp !== 'Não definido' && resp !== 'nan') {
+          respMap[resp] = (respMap[resp] || 0) + 1;
+        }
+      });
+
+      const sorted = Object.entries(respMap).sort((a,b) => b[1] - a[1]).slice(0, 8);
+
+      chartResponsavelDist = new Chart(ctx, {
+        type: 'bar',
+        data: { labels: sorted.map(s => s[0]), datasets: [{ data: sorted.map(s => s[1]), backgroundColor: '#06b6d4', borderRadius: 6 }] },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#cbd5e1' } } } }
+      });
+    }
+
+    function renderChartSlaDist(projects) {
+      const ctx = getCanvasCtx('chartSlaDist'); if (!ctx) return;
+      if (chartSlaDist) chartSlaDist.destroy();
+
+      let noPrazo = 0, atrasados = 0, semPrazo = 0;
+
+      projects.forEach(p => {
+        if (p.status.toLowerCase().includes('conclu')) {
+          if (p.prazo !== '-' && p.entrega !== '-') {
+            if (p.entrega <= p.prazo) noPrazo++;
+            else atrasados++;
+          } else noPrazo++;
+        } else {
+          semPrazo++;
+        }
+      });
+
+      chartSlaDist = new Chart(ctx, {
+        type: 'pie',
+        data: { labels: ['No Prazo', 'Com Atraso', 'Em Andamento / Sem data'], datasets: [{ data: [noPrazo, atrasados, semPrazo], backgroundColor: ['#10b981', '#f43f5e', '#f59e0b'] }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1' } } } }
+      });
+    }
+
+    function renderChartEvolucaoMensal(projects) {
+      const ctx = getCanvasCtx('chartEvolucaoMensal'); if (!ctx) return;
+      if (chartEvolucaoMensal) chartEvolucaoMensal.destroy();
+
+      const mesMap = { '01': 0, '02': 0, '03': 0, '04': 0, '05': 0, '06': 0, '07': 0, '08': 0, '09': 0, '10': 0, '11': 0, '12': 0 };
+
+      projects.forEach(p => {
+        if (p.entrega && p.entrega.length >= 7) {
+          let parts = p.entrega.split('/');
+          if (parts.length === 3) {
+            let m = parts[1];
+            if (mesMap[m] !== undefined) mesMap[m]++;
+          }
+        }
+      });
+
+      chartEvolucaoMensal = new Chart(ctx, {
+        type: 'line',
+        data: { labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'], datasets: [{ label: 'Concluídos', data: Object.values(mesMap), borderColor: '#a855f7', backgroundColor: 'rgba(168, 85, 247, 0.1)', fill: true, tension: 0.3 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#94a3b8' } } } }
+      });
+    }
+
+    function renderChartTempoPorTamanho(projects) {
+      const ctx = getCanvasCtx('chartTempoPorTamanho'); if (!ctx) return;
+      if (chartTempoPorTamanho) chartTempoPorTamanho.destroy();
+
+      const tamGroup = {};
+      projects.forEach(p => {
+        if (p.status.toLowerCase().includes('conclu') && p.prazo_dias > 0) {
+          let t = p.tamanho.toUpperCase().trim();
+          if (!t || t === '-' || t === 'NAN') return;
+          if (!tamGroup[t]) tamGroup[t] = [];
+          tamGroup[t].push(p.prazo_dias);
+        }
+      });
+
+      const labels = Object.keys(tamGroup);
+      const data = labels.map(t => (tamGroup[t].reduce((a,b)=>a+b,0) / tamGroup[t].length).toFixed(1));
+
+      chartTempoPorTamanho = new Chart(ctx, {
+        type: 'bar',
+        data: { labels: labels, datasets: [{ label: 'Dias', data: data, backgroundColor: '#ec4899', borderRadius: 6 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#94a3b8' } } } }
+      });
+    }
+
+    function renderChartSuperAppSplit(projects) {
+      const ctx = getCanvasCtx('chartSuperAppSplit'); if (!ctx) return;
+      if (chartSuperAppSplit) chartSuperAppSplit.destroy();
+
+      let sim = 0, nao = 0;
+      projects.forEach(p => {
+        if (p.super_app.toLowerCase() === 'sim') sim++;
+        else nao++;
+      });
+
+      chartSuperAppSplit = new Chart(ctx, {
+        type: 'doughnut',
+        data: { labels: ['Super App', 'Outros Sistemas / Canais'], datasets: [{ data: [sim, nao], backgroundColor: ['#f43f5e', '#334155'], borderWidth: 0 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1' } } } }
+      });
+    }
+
+    function renderChartPrioritySla(projects) {
+      const ctx = getCanvasCtx('chartPrioritySla'); if (!ctx) return;
+      if (chartPrioritySla) chartPrioritySla.destroy();
+
+      const prios = ['Crítica', 'Alta', 'Normal', 'Baixa'];
+      const noPrazo = [0, 0, 0, 0];
+      const comAtraso = [0, 0, 0, 0];
+
+      projects.forEach(p => {
+        let idx = prios.findIndex(pr => p.prioridade.toLowerCase().includes(pr.toLowerCase()));
+        if (idx === -1) idx = 2;
+
+        if (p.status.toLowerCase().includes('conclu')) {
+          if (p.entrega !== '-' && p.prazo !== '-' && p.entrega > p.prazo) comAtraso[idx]++;
+          else noPrazo[idx]++;
+        }
+      });
+
+      chartPrioritySla = new Chart(ctx, {
+        type: 'bar',
+        data: { labels: prios, datasets: [{ label: 'No Prazo', data: noPrazo, backgroundColor: '#10b981', borderRadius: 4 }, { label: 'Com Atraso', data: comAtraso, backgroundColor: '#f43f5e', borderRadius: 4 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1' } } }, scales: { x: { stacked: true, ticks: { color: '#94a3b8' } }, y: { stacked: true, ticks: { color: '#94a3b8' } } } }
+      });
+    }
+
+    function renderChartColaboracao(projects) {
+      const ctx = getCanvasCtx('chartColaboracao'); if (!ctx) return;
+      if (chartColaboracao) chartColaboracao.destroy();
+
+      let solo = 0, colaborativo = 0;
+      projects.forEach(p => {
+        if (p.colaboradores && p.colaboradores !== '-' && p.colaboradores.length > 2 && p.colaboradores !== 'nan') colaborativo++;
+        else solo++;
+      });
+
+      chartColaboracao = new Chart(ctx, {
+        type: 'pie',
+        data: { labels: ['1 Responsável (Solo)', 'Múltiplos Colaboradores'], datasets: [{ data: [solo, colaborativo], backgroundColor: ['#0284c7', '#10b981'] }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1' } } } }
+      });
+    }
+
+    function renderChartMetodosSuperApp(projects) {
+      const ctx = getCanvasCtx('chartMetodosSuperApp'); if (!ctx) return;
+      if (chartMetodosSuperApp) chartMetodosSuperApp.destroy();
+
+      const superAppMet = {}, outrosMet = {};
+      projects.forEach(p => {
+        if (!p.pesquisa_metodo || p.pesquisa_metodo === '-') return;
+        const isSuper = p.super_app.toLowerCase() === 'sim';
+        p.pesquisa_metodo.split(',').forEach(m => {
+          let c = m.trim();
+          if (!c) return;
+          if (isSuper) superAppMet[c] = (superAppMet[c] || 0) + 1;
+          else outrosMet[c] = (outrosMet[c] || 0) + 1;
+        });
+      });
+
+      const topMetodos = Object.entries(superAppMet).sort((a,b)=>b[1]-a[1]).slice(0, 5).map(s=>s[0]);
+
+      chartMetodosSuperApp = new Chart(ctx, {
+        type: 'bar',
+        data: { labels: topMetodos, datasets: [{ label: 'Super App', data: topMetodos.map(m => superAppMet[m] || 0), backgroundColor: '#f43f5e', borderRadius: 4 }, { label: 'Outros Canais', data: topMetodos.map(m => outrosMet[m] || 0), backgroundColor: '#3b82f6', borderRadius: 4 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1' } } }, scales: { x: { ticks: { color: '#94a3b8', font: { size: 9 } } }, y: { ticks: { color: '#94a3b8' } } } }
+      });
+    }
+
+    function renderChartLeadTimeDispersao(projects) {
+      const ctx = getCanvasCtx('chartLeadTimeDispersao'); if (!ctx) return;
+      if (chartLeadTimeDispersao) chartLeadTimeDispersao.destroy();
+
+      const concluidos = projects.filter(p => p.status.toLowerCase().includes('conclu') && p.prazo_dias > 0);
+      const points = concluidos.map((p, idx) => ({ x: idx + 1, y: p.prazo_dias, title: p.projeto }));
+
+      chartLeadTimeDispersao = new Chart(ctx, {
+        type: 'scatter',
+        data: { datasets: [{ label: 'Dias de Execução', data: points, backgroundColor: '#38bdf8' }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(ctx) { return `${ctx.raw.title}: ${ctx.raw.y} dias`; } } } }, scales: { x: { display: false }, y: { title: { display: true, text: 'Dias Decorridos', color: '#94a3b8' }, ticks: { color: '#94a3b8' } } } }
+      });
+    }
+
+    function renderChartDemandantesSuperApp(projects) {
+      const ctx = getCanvasCtx('chartDemandantesSuperApp'); if (!ctx) return;
+      if (chartDemandantesSuperApp) chartDemandantesSuperApp.destroy();
+
+      const demMap = {};
+      projects.forEach(p => {
+        let dem = p.demandante.replace(/\n/g, ' ').trim();
+        if (dem && dem !== '-' && dem !== 'nan') {
+          if (!demMap[dem]) demMap[dem] = { superApp: 0, outros: 0, total: 0 };
+          if (p.super_app.toLowerCase() === 'sim') demMap[dem].superApp++;
+          else demMap[dem].outros++;
+          demMap[dem].total++;
+        }
+      });
+
+      const top7 = Object.entries(demMap).sort((a,b) => b[1].total - a[1].total).slice(0, 7);
+
+      chartDemandantesSuperApp = new Chart(ctx, {
+        type: 'bar',
+        data: { labels: top7.map(s => s[0].length > 20 ? s[0].substring(0,20)+'...' : s[0]), datasets: [{ label: 'Foco Super App', data: top7.map(s => s[1].superApp), backgroundColor: '#f43f5e', borderRadius: 4 }, { label: 'Outros Canais', data: top7.map(s => s[1].outros), backgroundColor: '#8b5cf6', borderRadius: 4 }] },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1' } } }, scales: { x: { stacked: true, ticks: { color: '#94a3b8' } }, y: { stacked: true, ticks: { color: '#cbd5e1' } } } }
+      });
+    }
+
     function renderChartDemandantes(projects) {
-      const ctx = document.getElementById('chartDemandantes').getContext('2d');
+      const ctx = getCanvasCtx('chartDemandantes'); if (!ctx) return;
       if (chartDemandantes) chartDemandantes.destroy();
 
       const demMap = {};
@@ -644,7 +1068,7 @@ const firebaseConfig = {
         if (dem && dem !== '-' && dem !== 'nan') demMap[dem] = (demMap[dem] || 0) + 1;
       });
 
-      const sorted = Object.entries(demMap).sort((a,b) => b[1] - a[1]).slice(0, 7);
+      const sorted = Object.entries(demMap).sort((a,b) => b[1] - a[1]).slice(0, 10);
 
       chartDemandantes = new Chart(ctx, {
         type: 'bar',
@@ -654,7 +1078,7 @@ const firebaseConfig = {
     }
 
     function renderChartMetodologias(projects) {
-      const ctx = document.getElementById('chartMetodologias').getContext('2d');
+      const ctx = getCanvasCtx('chartMetodologias'); if (!ctx) return;
       if (chartMetodologias) chartMetodologias.destroy();
 
       const metMap = {};
@@ -666,7 +1090,7 @@ const firebaseConfig = {
         });
       });
 
-      const sorted = Object.entries(metMap).sort((a,b) => b[1] - a[1]).slice(0, 7);
+      const sorted = Object.entries(metMap).sort((a,b) => b[1] - a[1]).slice(0, 10);
 
       chartMetodologias = new Chart(ctx, {
         type: 'bar',
@@ -677,6 +1101,7 @@ const firebaseConfig = {
 
     function renderDashboardTable() {
       const tbody = document.getElementById('dashTableBody');
+      if (!tbody) return;
       tbody.innerHTML = '';
 
       ['CX Pesquisa', 'UX Pesquisa', 'CX Escrita', 'UX Escrita'].forEach(sName => {
@@ -706,7 +1131,8 @@ const firebaseConfig = {
       const keyMap = { 'cxp': 'CX Pesquisa', 'uxp': 'UX Pesquisa', 'cxe': 'CX Escrita', 'uxe': 'UX Escrita' };
       const realKey = keyMap[sheetKey] || 'CX Pesquisa';
 
-      document.getElementById('detailViewTitle').innerHTML = `<i data-lucide="table" class="w-5 h-5 text-sky-400"></i> Projetos de ${realKey}`;
+      const elemTitle = document.getElementById('detailViewTitle');
+      if (elemTitle) elemTitle.innerHTML = `<i data-lucide="table" class="w-5 h-5 text-sky-400"></i> Projetos de ${realKey}`;
       filterDetailTable();
       lucide.createIcons();
     }
@@ -726,6 +1152,7 @@ const firebaseConfig = {
       });
 
       const tbody = document.getElementById('detailTableBody');
+      if (!tbody) return;
       tbody.innerHTML = '';
 
       filtered.forEach(item => {
@@ -753,7 +1180,8 @@ const firebaseConfig = {
         tbody.appendChild(tr);
       });
 
-      document.getElementById('rowCount').innerText = filtered.length;
+      const elemCount = document.getElementById('rowCount');
+      if (elemCount) elemCount.innerText = filtered.length;
     };
   </script>
 </body>
