@@ -147,7 +147,7 @@
             class="text-xs px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 font-semibold border border-sky-500/30">DASHBOARD
             EXECUTIVO v5</span>
         </h1>
-        <p class="text-xs text-slate-400">Plataforma Estratégica de Tomada de Decisão & Performance (UX/CX)</p>
+        <p class="text-xs text-slate-400">Plataforma Estratégica de Tomada de Decisão & Performance (UX/CX) - 2025/2026</p>
       </div>
     </div>
 
@@ -160,6 +160,12 @@
         <span>Carregar CSVs e Sincronizar</span>
         <input type="file" id="csvUploader" accept=".csv" multiple class="hidden">
       </label>
+      <!-- Botão de Sincronização Automática com o Google Sheets -->
+      <button onclick="syncFromGoogleSheets()"
+        class="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-lg shadow-emerald-600/30 transition-all">
+        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+        <span>Sincronizar com Google Sheets</span>
+      </button>
 
       <!-- Global Filter -->
       <select id="filterArea" onchange="renderAll()"
@@ -231,7 +237,7 @@
   </div>
 
   <!-- MAIN CONTAINER -->
-  <main class="flex-1 p-6 space-y-6 max-w-[1600px] mx-auto w-full">
+  <main class="flex-1 p-6 space-y-8 max-w-[1600px] mx-auto w-full">
 
     <!-- EMPTY STATE -->
     <div id="emptyStateContainer" class="glass-card p-12 rounded-3xl text-center space-y-5 max-w-2xl mx-auto my-12">
@@ -256,285 +262,706 @@
     </div>
 
     <!-- VIEW 1: DASHBOARD ESTRATÉGICO COMPLETO -->
-    <section id="view-dash" class="hidden space-y-6">
+    <section id="view-dash" class="hidden space-y-8">
 
-      <!-- EXECUTIVE KPI CARDS (8 CARDS) -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="glass-card p-5 rounded-2xl">
-          <div class="flex items-center justify-between text-slate-400 mb-2">
-            <span class="text-xs font-semibold uppercase">Total Projetos</span>
-            <i data-lucide="folder-kanban" class="w-5 h-5 text-sky-400"></i>
-          </div>
-          <div class="text-3xl font-extrabold text-white" id="kpiTotalProjetos">0</div>
-          <div class="text-[11px] text-slate-400 mt-1">Portfólio unificado de UX/CX</div>
+      <!-- ========================================== -->
+      <!-- SEÇÃO 1: INDICADORES ESTRATÉGICOS & VISÃO MACRO -->
+      <!-- ========================================== -->
+      <div class="space-y-4">
+        <div class="flex items-center gap-2 border-b border-slate-800 pb-2">
+          <i data-lucide="layout-dashboard" class="w-5 h-5 text-sky-400"></i>
+          <h2 class="text-base font-bold text-white uppercase tracking-wider">Visão Executiva & Resumo Unificado</h2>
         </div>
 
-        <div class="glass-card p-5 rounded-2xl">
-          <div class="flex items-center justify-between text-slate-400 mb-2">
-            <span class="text-xs font-semibold uppercase">Concluídos</span>
-            <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-400"></i>
-          </div>
-          <div class="text-3xl font-extrabold text-emerald-400" id="kpiConcluidos">0</div>
-          <div class="text-[11px] text-slate-400 mt-1" id="kpiTaxaConclusao">0% taxa de conclusão</div>
-        </div>
+        <!-- EXECUTIVE KPI CARDS REORGANIZADOS (12 CARDS EM 3 LINHAS LÓGICAS) -->
+        <div class="space-y-4">
 
-        <div class="glass-card p-5 rounded-2xl">
-          <div class="flex items-center justify-between text-slate-400 mb-2">
-            <span class="text-xs font-semibold uppercase">Em Andamento</span>
-            <i data-lucide="clock" class="w-5 h-5 text-amber-400"></i>
-          </div>
-          <div class="text-3xl font-extrabold text-amber-400" id="kpiAndamento">0</div>
-          <div class="text-[11px] text-slate-400 mt-1">Ativos na esteira de produção</div>
-        </div>
+          <!-- LINHA 1: VOLUME & ESTEIRA PRINCIPAL -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Card 1: Total -->
+            <div class="glass-card p-5 rounded-2xl">
+              <div class="flex items-center justify-between text-slate-400 mb-2">
+                <span class="text-xs font-semibold uppercase">Total Projetos</span>
+                <i data-lucide="folder-kanban" class="w-5 h-5 text-sky-400"></i>
+              </div>
+              <div class="text-3xl font-extrabold text-white" id="kpiTotalProjetos">0</div>
+              <div class="text-[11px] text-slate-400 mt-1">Portfólio unificado UX/CX</div>
+            </div>
 
-        <div class="glass-card p-5 rounded-2xl">
-          <div class="flex items-center justify-between text-slate-400 mb-2">
-            <span class="text-xs font-semibold uppercase">Tempo Médio</span>
-            <i data-lucide="timer" class="w-5 h-5 text-purple-400"></i>
-          </div>
-          <div class="text-3xl font-extrabold text-purple-300" id="kpiTempoMedio">0d</div>
-          <div class="text-[11px] text-slate-400 mt-1">Dias por projeto concluído</div>
-        </div>
+            <!-- Card 2: Concluídos -->
+            <div class="glass-card p-5 rounded-2xl">
+              <div class="flex items-center justify-between text-slate-400 mb-2">
+                <span class="text-xs font-semibold uppercase">Concluídos</span>
+                <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-400"></i>
+              </div>
+              <div class="text-3xl font-extrabold text-emerald-400" id="kpiConcluidos">0</div>
+              <div class="text-[11px] text-slate-400 mt-1" id="kpiTaxaConclusao">0% taxa de conclusão</div>
+            </div>
 
-        <div class="glass-card p-5 rounded-2xl">
-          <div class="flex items-center justify-between text-slate-400 mb-2">
-            <span class="text-xs font-semibold uppercase">Eficiência Crítica</span>
-            <i data-lucide="shield-check" class="w-5 h-5 text-teal-400"></i>
-          </div>
-          <div class="text-3xl font-extrabold text-teal-300" id="kpiEficienciaCritica">0%</div>
-          <div class="text-[11px] text-slate-400 mt-1">Demandas Críticas no Prazo</div>
-        </div>
+            <!-- Card 3: Em Andamento -->
+            <div class="glass-card p-5 rounded-2xl">
+              <div class="flex items-center justify-between text-slate-400 mb-2">
+                <span class="text-xs font-semibold uppercase">Em Andamento</span>
+                <i data-lucide="clock" class="w-5 h-5 text-amber-400"></i>
+              </div>
+              <div class="text-3xl font-extrabold text-amber-400" id="kpiAndamento">0</div>
+              <div class="text-[11px] text-slate-400 mt-1">Ativos na esteira</div>
+            </div>
 
-        <div class="glass-card p-5 rounded-2xl">
-          <div class="flex items-center justify-between text-slate-400 mb-2">
-            <span class="text-xs font-semibold uppercase">Tamanho Médio Time</span>
-            <i data-lucide="users-2" class="w-5 h-5 text-indigo-400"></i>
+            <!-- Card 4: Não Iniciados -->
+            <div class="glass-card p-5 rounded-2xl">
+              <div class="flex items-center justify-between text-slate-400 mb-2">
+                <span class="text-xs font-semibold uppercase">Não Iniciados</span>
+                <i data-lucide="circle-dashed" class="w-5 h-5 text-slate-400"></i>
+              </div>
+              <div class="text-3xl font-extrabold text-slate-300" id="kpiNaoIniciados">0</div>
+              <div class="text-[11px] text-slate-400 mt-1">Aguardando início no backlog</div>
+            </div>
           </div>
-          <div class="text-3xl font-extrabold text-indigo-300" id="kpiTamanhoTime">1.0</div>
-          <div class="text-[11px] text-slate-400 mt-1">Especialistas por demanda</div>
-        </div>
 
-        <div class="glass-card p-5 rounded-2xl">
-          <div class="flex items-center justify-between text-slate-400 mb-2">
-            <span class="text-xs font-semibold uppercase">Taxa de Pausa/Canc.</span>
-            <i data-lucide="alert-triangle" class="w-5 h-5 text-rose-400"></i>
-          </div>
-          <div class="text-3xl font-extrabold text-rose-300" id="kpiTaxaPausa">0%</div>
-          <div class="text-[11px] text-slate-400 mt-1">Projetos interrompidos</div>
-        </div>
+          <!-- LINHA 2: SAÚDE, IMPEDIMENTOS & CANCELAMENTOS -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Card 5: Com Impedimento -->
+            <div class="glass-card p-5 rounded-2xl">
+              <div class="flex items-center justify-between text-slate-400 mb-2">
+                <span class="text-xs font-semibold uppercase">Com Impedimento</span>
+                <i data-lucide="shield-alert" class="w-5 h-5 text-orange-400"></i>
+              </div>
+              <div class="text-3xl font-extrabold text-orange-400" id="kpiImpedimento">0</div>
+              <div class="text-[11px] text-slate-400 mt-1">Aguardando desbloqueio</div>
+            </div>
 
-        <div class="glass-card p-5 rounded-2xl">
-          <div class="flex items-center justify-between text-slate-400 mb-2">
-            <span class="text-xs font-semibold uppercase">Impacto Super App</span>
-            <i data-lucide="smartphone" class="w-5 h-5 text-pink-400"></i>
+            <!-- Card 6: Pausados -->
+            <div class="glass-card p-5 rounded-2xl">
+              <div class="flex items-center justify-between text-slate-400 mb-2">
+                <span class="text-xs font-semibold uppercase">Pausados</span>
+                <i data-lucide="pause-circle" class="w-5 h-5 text-yellow-400"></i>
+              </div>
+              <div class="text-3xl font-extrabold text-yellow-300" id="kpiPausados">0</div>
+              <div class="text-[11px] text-slate-400 mt-1">Temporariamente suspensos</div>
+            </div>
+
+            <!-- Card 7: Cancelados -->
+            <div class="glass-card p-5 rounded-2xl">
+              <div class="flex items-center justify-between text-slate-400 mb-2">
+                <span class="text-xs font-semibold uppercase">Cancelados</span>
+                <i data-lucide="x-circle" class="w-5 h-5 text-rose-500"></i>
+              </div>
+              <div class="text-3xl font-extrabold text-rose-400" id="kpiCancelados">0</div>
+              <div class="text-[11px] text-slate-400 mt-1">Descontinuados/encerrados</div>
+            </div>
+
+            <!-- Card 8: Taxa de Pausa/Canc. -->
+            <div class="glass-card p-5 rounded-2xl">
+              <div class="flex items-center justify-between text-slate-400 mb-2">
+                <span class="text-xs font-semibold uppercase">Taxa Pausa/Canc.</span>
+                <i data-lucide="alert-triangle" class="w-5 h-5 text-rose-400"></i>
+              </div>
+              <div class="text-3xl font-extrabold text-rose-300" id="kpiTaxaPausa">0%</div>
+              <div class="text-[11px] text-slate-400 mt-1">Índice de perda de escopo</div>
+            </div>
           </div>
-          <div class="text-3xl font-extrabold text-pink-300" id="kpiSuperApp">0</div>
-          <div class="text-[11px] text-slate-400 mt-1" id="kpiSuperAppPct">0% foco no Super App</div>
+
+          <!-- LINHA 3: EFICIÊNCIA, ALOCAÇÃO & ESTRATÉGIA -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Card 9: Tempo Médio -->
+            <div class="glass-card p-5 rounded-2xl">
+              <div class="flex items-center justify-between text-slate-400 mb-2">
+                <span class="text-xs font-semibold uppercase">Tempo Médio</span>
+                <i data-lucide="timer" class="w-5 h-5 text-purple-400"></i>
+              </div>
+              <div class="text-3xl font-extrabold text-purple-300" id="kpiTempoMedio">0d</div>
+              <div class="text-[11px] text-slate-400 mt-1">Dias por projeto concluído</div>
+            </div>
+
+            <!-- Card 10: Eficiência Crítica -->
+            <div class="glass-card p-5 rounded-2xl">
+              <div class="flex items-center justify-between text-slate-400 mb-2">
+                <span class="text-xs font-semibold uppercase">Eficiência Crítica</span>
+                <i data-lucide="shield-check" class="w-5 h-5 text-teal-400"></i>
+              </div>
+              <div class="text-3xl font-extrabold text-teal-300" id="kpiEficienciaCritica">0%</div>
+              <div class="text-[11px] text-slate-400 mt-1">Demandas Críticas no Prazo</div>
+            </div>
+
+            <!-- Card 11: Tamanho Médio Time -->
+            <div class="glass-card p-5 rounded-2xl">
+              <div class="flex items-center justify-between text-slate-400 mb-2">
+                <span class="text-xs font-semibold uppercase">Média Pessoas/Proj.</span>
+                <i data-lucide="users-2" class="w-5 h-5 text-indigo-400"></i>
+              </div>
+              <div class="text-3xl font-extrabold text-indigo-300" id="kpiTamanhoTime">1.0</div>
+              <div class="text-[11px] text-slate-400 mt-1">Especialistas por demanda</div>
+            </div>
+
+            <!-- Card 12: Impacto Super App -->
+            <div class="glass-card p-5 rounded-2xl">
+              <div class="flex items-center justify-between text-slate-400 mb-2">
+                <span class="text-xs font-semibold uppercase">Impacto Super App</span>
+                <i data-lucide="smartphone" class="w-5 h-5 text-pink-400"></i>
+              </div>
+              <div class="text-3xl font-extrabold text-pink-300" id="kpiSuperApp">0</div>
+              <div class="text-[11px] text-slate-400 mt-1" id="kpiSuperAppPct">0% foco no Super App</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- SEÇÃO ESPECIAL: ANÁLISE TEMPORAL E COMPARATIVO DE ANOS (2025 vs 2026) -->
+      <!-- PAINÉIS DE DESTAQUE: CONCLUÍDOS POR ANO & PROJETOS POR TAMANHO -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Gráfico de Anos 1: Projetos Concluídos por Ano (2025 vs 2026) -->
-        <div class="glass-card p-5 rounded-2xl">
-          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
-            <i data-lucide="calendar-check" class="w-4 h-4 text-sky-400"></i> Projetos Concluídos por Ano (2025 vs 2026)
-          </h3>
-          <p class="text-xs text-slate-400 mb-3">Comparativo de entregas finalizadas por área especialista</p>
-          <div class="h-64 relative"><canvas id="chartConcluidosPorAno"></canvas></div>
+  <!-- PAINEL DE PROJETOS CONCLUÍDOS POR ANO -->
+  <div class="glass-card p-6 rounded-2xl border border-slate-700/80 flex flex-col justify-between">
+    <div class="flex items-center justify-between border-b border-slate-700/60 pb-3 mb-4">
+      <div class="flex items-center gap-2">
+        <div class="p-2 bg-sky-500/10 text-sky-400 rounded-lg">
+          <i data-lucide="calendar-check-2" class="w-5 h-5"></i>
         </div>
+        <div>
+          <h3 class="text-sm font-bold text-white uppercase tracking-wider">Projetos Concluídos por Ano</h3>
+          <p class="text-[11px] text-slate-400">Evolução comparativa do volume de entregas finalizadas</p>
+        </div>
+      </div>
+    </div>
 
-        <!-- Gráfico de Anos 2: Carga Média de Projetos Simultâneos por Mês -->
-        <div class="glass-card p-5 rounded-2xl">
-          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
-            <i data-lucide="line-chart" class="w-4 h-4 text-indigo-400"></i> Projetos Simultâneos / Mês (2025 vs 2026)
-          </h3>
-          <p class="text-xs text-slate-400 mb-3">Evolução da capacidade operacional e demandas em paralelo</p>
-          <div class="h-64 relative"><canvas id="chartSimultaneosAnos"></canvas></div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
+      <!-- Card 2025 (com flex-1 e min-h ajustado para esticar) -->
+      <div
+        class="bg-gradient-to-br from-sky-950/40 via-slate-900/80 to-slate-900/60 p-5 rounded-xl border border-sky-500/30 flex flex-col justify-between h-full">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-bold uppercase tracking-wider text-sky-300 flex items-center gap-1.5">
+            <i data-lucide="history" class="w-4 h-4 text-sky-400"></i> Ano 2025
+          </span>
+          <span
+            class="text-[10px] bg-sky-500/20 text-sky-300 px-2.5 py-0.5 rounded-full font-semibold border border-sky-500/30">Histórico</span>
+        </div>
+        <div class="mt-auto">
+          <div class="text-3xl font-extrabold text-white" id="kpiConcluidos2025">0</div>
+          <div class="text-[11px] text-slate-400 mt-1">Projetos concluídos em 2025</div>
         </div>
       </div>
 
-      <!-- BLOCO 1: ESTRUTURA E OPERAÇÃO (3 GRÁFICOS) -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="glass-card p-5 rounded-2xl">
-          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
-            <i data-lucide="pie-chart" class="w-4 h-4 text-sky-400"></i> Distribuição por Frente
-          </h3>
-          <p class="text-xs text-slate-400 mb-3">Volume de entregas por especialidade</p>
-          <div class="h-64 relative"><canvas id="chartAreaDist"></canvas></div>
+      <!-- Card 2026 (com flex-1 e min-h ajustado para esticar) -->
+      <div
+        class="bg-gradient-to-br from-emerald-950/40 via-slate-900/80 to-slate-900/60 p-5 rounded-xl border border-emerald-500/30 flex flex-col justify-between h-full">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-bold uppercase tracking-wider text-emerald-300 flex items-center gap-1.5">
+            <i data-lucide="trending-up" class="w-4 h-4 text-emerald-400"></i> Ano 2026
+          </span>
+          <span
+            class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2.5 py-0.5 rounded-full font-semibold border border-emerald-500/30">Ano Atual</span>
+        </div>
+        <div class="mt-auto">
+          <div class="text-3xl font-extrabold text-emerald-300" id="kpiConcluidos2026">0</div>
+          <div class="text-[11px] text-slate-400 mt-1">Projetos concluídos em 2026</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAINEL DE COMPLEXIDADE: PROJETOS POR TAMANHO -->
+  <div class="glass-card p-6 rounded-2xl border border-slate-700/80 flex flex-col justify-between">
+    <div class="flex items-center justify-between border-b border-slate-700/60 pb-3 mb-4">
+      <div class="flex items-center gap-2">
+        <div class="p-2 bg-sky-500/10 text-sky-400 rounded-lg">
+          <i data-lucide="layers" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="text-sm font-bold text-white uppercase tracking-wider">Projetos por Tamanho & Esforço</h3>
+          <p class="text-[11px] text-slate-400">Comparativo entre Demandas Pontuais (P) e Estudos Estruturados (E)</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
+      <!-- PILAR 1: PROJETOS PONTUAIS -->
+      <div
+        class="bg-gradient-to-br from-sky-950/40 via-slate-900/80 to-slate-900/60 p-5 rounded-xl border border-sky-500/30 flex flex-col justify-between h-full">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-bold uppercase tracking-wider text-sky-300 flex items-center gap-1.5">
+            <i data-lucide="zap" class="w-4 h-4 text-sky-400"></i> Projetos Pontuais (P)
+          </span>
+          <span
+            class="text-[10px] bg-sky-500/20 text-sky-300 px-2 py-0.5 rounded-full font-semibold border border-sky-500/30">+ Rápido</span>
         </div>
 
-        <div class="glass-card p-5 rounded-2xl">
-          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
-            <i data-lucide="bar-chart-2" class="w-4 h-4 text-teal-400"></i> Status Operacional
-          </h3>
-          <p class="text-xs text-slate-400 mb-3">Situação atual dos projetos</p>
-          <div class="h-64 relative"><canvas id="chartStatusDist"></canvas></div>
-        </div>
+        <div class="flex items-end justify-between mt-auto pt-2">
+          <div>
+            <div class="text-3xl font-extrabold text-white" id="kpiPontualCount">0</div>
+            <div class="text-[11px] text-slate-400 mt-0.5">Total de Projetos Pontuais</div>
+          </div>
 
-        <div class="glass-card p-5 rounded-2xl">
-          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
-            <i data-lucide="alert-circle" class="w-4 h-4 text-amber-400"></i> Nível de Prioridade
-          </h3>
-          <p class="text-xs text-slate-400 mb-3">Distribuição das prioridades</p>
-          <div class="h-64 relative"><canvas id="chartPriorityDist"></canvas></div>
+          <div class="text-right bg-slate-800/80 px-3 py-2 rounded-lg border border-slate-700">
+            <div class="text-xs text-slate-400 flex items-center justify-end gap-1 mb-0.5">
+              <i data-lucide="clock" class="w-3.5 h-3.5 text-sky-400"></i> Tempo Médio
+            </div>
+            <div class="text-xl font-bold text-sky-300" id="kpiPontualAvg">0,0d</div>
+          </div>
         </div>
       </div>
 
-      <!-- BLOCO 2: PORTE, PESSOAS E SLA (3 GRÁFICOS) -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="glass-card p-5 rounded-2xl">
-          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
-            <i data-lucide="layers" class="w-4 h-4 text-indigo-400"></i> Porte e Complexidade (Tamanho)
-          </h3>
-          <p class="text-xs text-slate-400 mb-3">PP/P (Pontuais) vs. G/GG/GGG (Estruturados)</p>
-          <div class="h-64 relative"><canvas id="chartTamanhoDist"></canvas></div>
+      <!-- PILAR 2: PROJETOS ESTRUTURADOS -->
+      <div
+        class="bg-gradient-to-br from-amber-950/40 via-slate-900/80 to-slate-900/60 p-5 rounded-xl border border-amber-500/30 flex flex-col justify-between h-full">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-bold uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
+            <i data-lucide="boxes" class="w-4 h-4 text-amber-400"></i> Projetos Estruturados (E)
+          </span>
+          <span
+            class="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full font-semibold border border-amber-500/30">+ Complexo</span>
         </div>
 
-        <div class="glass-card p-5 rounded-2xl">
-          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
-            <i data-lucide="user-check" class="w-4 h-4 text-cyan-400"></i> Alocação por Responsável (Top 8)
-          </h3>
-          <p class="text-xs text-slate-400 mb-3">Projetos sob gestão por especialista</p>
-          <div class="h-64 relative"><canvas id="chartResponsavelDist"></canvas></div>
+        <div class="flex items-end justify-between mt-auto pt-2">
+          <div>
+            <div class="text-3xl font-extrabold text-white" id="kpiEstruturadoCount">0</div>
+            <div class="text-[11px] text-slate-400 mt-0.5">Total de Projetos Estruturados</div>
+          </div>
+
+          <div class="text-right bg-slate-800/80 px-3 py-2 rounded-lg border border-slate-700">
+            <div class="text-xs text-slate-400 flex items-center justify-end gap-1 mb-0.5">
+              <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-400"></i> Tempo Médio
+            </div>
+            <div class="text-xl font-bold text-amber-300" id="kpiEstruturadoAvg">0,0d</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      <!-- ========================================== -->
+      <!-- SEÇÃO 2: SAÚDE OPERACIONAL & FLUXO DE ENTREGAS -->
+      <!-- ========================================== -->
+      <div class="space-y-4">
+        <div class="flex items-center gap-2 border-b border-slate-800 pb-2 pt-2">
+          <i data-lucide="activity" class="w-5 h-5 text-emerald-400"></i>
+          <h2 class="text-base font-bold text-white uppercase tracking-wider">Saúde Operacional & Prazos</h2>
         </div>
 
-        <div class="glass-card p-5 rounded-2xl">
-          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
-            <i data-lucide="target" class="w-4 h-4 text-emerald-400"></i> Cumprimento de Prazos (SLA)
-          </h3>
-          <p class="text-xs text-slate-400 mb-3">Pontualidade na entrega dos projetos</p>
-          <div class="h-64 relative"><canvas id="chartSlaDist"></canvas></div>
+        <!-- PAINEL DE CONTROLE DE PRAZOS & SLA DOS PROJETOS -->
+        <div class="glass-card p-6 rounded-2xl border border-slate-700/80 space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-700/60 pb-3">
+            <div class="flex items-center gap-2">
+              <div class="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg">
+                <i data-lucide="calendar-clock" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h3 class="text-sm font-bold text-white uppercase tracking-wider">Prazo dos Projetos (SLA)</h3>
+                <p class="text-[11px] text-slate-400">Monitoramento de pontualidade nas entregas e saúde das demandas em
+                  andamento</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Card 1: Entregue Dentro do Prazo -->
+            <div
+              class="bg-gradient-to-br from-emerald-950/40 via-slate-900/80 to-slate-900/60 p-4 rounded-xl border border-emerald-500/30 flex flex-col justify-between">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-emerald-300 flex items-center gap-1.5">
+                  <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i> Entregue no Prazo
+                </span>
+                <span class="text-sm">✅</span>
+              </div>
+              <div class="mt-1">
+                <div class="text-3xl font-extrabold text-white" id="kpiEntregueNoPrazo">0</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">Concluídos dentro do SLA</div>
+              </div>
+            </div>
+
+            <!-- Card 2: Entregue Fora do Prazo -->
+            <div
+              class="bg-gradient-to-br from-rose-950/40 via-slate-900/80 to-slate-900/60 p-4 rounded-xl border border-rose-500/30 flex flex-col justify-between">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-rose-300 flex items-center gap-1.5">
+                  <i data-lucide="alert-octagon" class="w-4 h-4 text-rose-400"></i> Entregue com Atraso
+                </span>
+                <span class="text-sm">‼️</span>
+              </div>
+              <div class="mt-1">
+                <div class="text-3xl font-extrabold text-rose-400" id="kpiEntregueForaPrazo">0</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">Concluídos fora do SLA</div>
+              </div>
+            </div>
+
+            <!-- Card 3: Em Andamento Dentro do Prazo -->
+            <div
+              class="bg-gradient-to-br from-sky-950/40 via-slate-900/80 to-slate-900/60 p-4 rounded-xl border border-sky-500/30 flex flex-col justify-between">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-sky-300 flex items-center gap-1.5">
+                  <i data-lucide="clock" class="w-4 h-4 text-sky-400"></i> Ativos no Prazo
+                </span>
+                <span class="text-sm">➡️</span>
+              </div>
+              <div class="mt-1">
+                <div class="text-3xl font-extrabold text-sky-300" id="kpiAndamentoNoPrazo">0</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">Em andamento sem atraso</div>
+              </div>
+            </div>
+
+            <!-- Card 4: Em Andamento Fora do Prazo -->
+            <div
+              class="bg-gradient-to-br from-amber-950/40 via-slate-900/80 to-slate-900/60 p-4 rounded-xl border border-amber-500/30 flex flex-col justify-between">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
+                  <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400"></i> Ativos Atrasados
+                </span>
+                <span class="text-sm">⚠️</span>
+              </div>
+              <div class="mt-1">
+                <div class="text-3xl font-extrabold text-amber-400" id="kpiAndamentoForaPrazo">0</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">Em andamento estourados</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PAINEL DE ACIONAMENTOS E TAREFAS -->
+        <div class="glass-card p-6 rounded-2xl border border-slate-700/80 space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-700/60 pb-3">
+            <div class="flex items-center gap-2">
+              <div class="p-2 bg-purple-500/10 text-purple-400 rounded-lg">
+                <i data-lucide="kanban" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h3 class="text-sm font-bold text-white uppercase tracking-wider">Acionamentos e Tarefas</h3>
+                <p class="text-[11px] text-slate-400">Volume de solicitações (Acionamentos) e esforço granular (Tarefas
+                  Ágeis)</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <!-- LINHA 1: TOTALIZADORES GERAIS -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div
+                class="bg-gradient-to-br from-purple-950/40 via-slate-900/80 to-slate-900/60 p-5 rounded-xl border border-purple-500/30 flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold uppercase tracking-wider text-purple-300 flex items-center gap-1.5">
+                    <i data-lucide="refresh-cw" class="w-4 h-4 text-purple-400"></i> TOTAL ACIONAMENTOS
+                  </span>
+                  <span
+                    class="text-[10px] bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full font-semibold border border-purple-500/30">Revisões
+                    / Demandas</span>
+                </div>
+                <div class="mt-1">
+                  <div class="text-3xl font-extrabold text-white" id="kpiTotalAcionamentos">0</div>
+                  <div class="text-[11px] text-slate-400 mt-0.5">Soma total de acionamentos no portfólio</div>
+                </div>
+              </div>
+
+              <div
+                class="bg-gradient-to-br from-indigo-950/40 via-slate-900/80 to-slate-900/60 p-5 rounded-xl border border-indigo-500/30 flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold uppercase tracking-wider text-indigo-300 flex items-center gap-1.5">
+                    <i data-lucide="list-checks" class="w-4 h-4 text-indigo-400"></i> TOTAL TAREFAS
+                  </span>
+                  <span
+                    class="text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full font-semibold border border-indigo-500/30">Sprints
+                    / Tasks</span>
+                </div>
+                <div class="mt-1">
+                  <div class="text-3xl font-extrabold text-indigo-300" id="kpiTotalTarefas">0</div>
+                  <div class="text-[11px] text-slate-400 mt-0.5">Soma total de tarefas ágeis executadas</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- LINHA 2: DETALHAMENTO POR TIPO DE PROJETO -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <!-- Card 1: A - Projetos Pontuais -->
+              <div
+                class="bg-gradient-to-br from-sky-950/40 via-slate-900/80 to-slate-900/60 p-4 rounded-xl border border-sky-500/30 flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold uppercase tracking-wider text-sky-300 flex items-center gap-1.5">
+                    <i data-lucide="zap" class="w-3.5 h-3.5 text-sky-400"></i> A - Projetos Pontuais
+                  </span>
+                </div>
+                <div class="mt-1">
+                  <div class="text-2xl font-extrabold text-sky-300" id="kpiAcionamentosPontuais">0</div>
+                  <div class="text-[10px] text-slate-400 mt-0.5">Acionamentos em demandas rápidas</div>
+                </div>
+              </div>
+
+              <!-- Card 3: A - Projetos Estruturados -->
+              <div
+                class="bg-gradient-to-br from-amber-950/40 via-slate-900/80 to-slate-900/60 p-4 rounded-xl border border-amber-500/30 flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
+                    <i data-lucide="boxes" class="w-3.5 h-3.5 text-amber-400"></i> A - Projetos Estruturados
+                  </span>
+                </div>
+                <div class="mt-1">
+                  <div class="text-2xl font-extrabold text-amber-300" id="kpiAcionamentosEstruturados">0</div>
+                  <div class="text-[10px] text-slate-400 mt-0.5">Acionamentos em estudos complexos</div>
+                </div>
+              </div>
+
+              <!-- Card 2: T - Projetos Pontuais -->
+              <div
+                class="bg-gradient-to-br from-teal-950/40 via-slate-900/80 to-slate-900/60 p-4 rounded-xl border border-teal-500/30 flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold uppercase tracking-wider text-teal-300 flex items-center gap-1.5">
+                    <i data-lucide="check-square" class="w-3.5 h-3.5 text-teal-400"></i> T - Projetos Pontuais
+                  </span>
+                </div>
+                <div class="mt-1">
+                  <div class="text-2xl font-extrabold text-teal-300" id="kpiTarefasPontuais">0</div>
+                  <div class="text-[10px] text-slate-400 mt-0.5">Tarefas em demandas rápidas</div>
+                </div>
+              </div>
+
+              <!-- Card 4: T - Projetos Estruturados -->
+              <div
+                class="bg-gradient-to-br from-orange-950/40 via-slate-900/80 to-slate-900/60 p-4 rounded-xl border border-orange-500/30 flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold uppercase tracking-wider text-orange-300 flex items-center gap-1.5">
+                    <i data-lucide="layers" class="w-3.5 h-3.5 text-orange-400"></i> T - Projetos Estruturados
+                  </span>
+                </div>
+                <div class="mt-1">
+                  <div class="text-2xl font-extrabold text-orange-300" id="kpiTarefasEstruturadas">0</div>
+                  <div class="text-[10px] text-slate-400 mt-0.5">Tarefas em estudos complexos</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ANÁLISE TEMPORAL COMPARATIVA DOS GRÁFICOS (2025 vs 2026) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Gráfico de Anos 1: Projetos Concluídos por Ano (2025 vs 2026) -->
+          <div class="glass-card p-5 rounded-2xl">
+            <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+              <i data-lucide="calendar-check" class="w-4 h-4 text-sky-400"></i> Projetos Concluídos por Ano (2025 vs 2026)
+            </h3>
+            <p class="text-xs text-slate-400 mb-3">Comparativo de entregas finalizadas por área especialista</p>
+            <div class="h-64 relative"><canvas id="chartConcluidosPorAno"></canvas></div>
+          </div>
+
+          <!-- Gráfico de Anos 2: Carga Média de Projetos Simultâneos por Mês -->
+          <div class="glass-card p-5 rounded-2xl">
+            <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+              <i data-lucide="line-chart" class="w-4 h-4 text-indigo-400"></i> Projetos Simultâneos / Mês (2025 vs 2026)
+            </h3>
+            <p class="text-xs text-slate-400 mb-3">Evolução da capacidade operacional e demandas em paralelo</p>
+            <div class="h-64 relative"><canvas id="chartSimultaneosAnos"></canvas></div>
+          </div>
         </div>
       </div>
 
-      <!-- BLOCO 3: EVOLUÇÃO, TEMPOS E FOCO (3 GRÁFICOS) -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="glass-card p-5 rounded-2xl">
-          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
-            <i data-lucide="trending-up" class="w-4 h-4 text-purple-400"></i> Volume de Entregas por Mês
-          </h3>
-          <p class="text-xs text-slate-400 mb-3">Histórico de conclusão ao longo do tempo</p>
-          <div class="h-64 relative"><canvas id="chartEvolucaoMensal"></canvas></div>
+      <!-- ========================================== -->
+      <!-- SEÇÃO 3: DISTRIBUIÇÃO, PORTE & CAPACIDADE DO TIME -->
+      <!-- ========================================== -->
+      <div class="space-y-4">
+        <div class="flex items-center gap-2 border-b border-slate-800 pb-2 pt-2">
+          <i data-lucide="pie-chart" class="w-5 h-5 text-indigo-400"></i>
+          <h2 class="text-base font-bold text-white uppercase tracking-wider">Estrutura de Portfólio & Alocação</h2>
         </div>
 
-        <div class="glass-card p-5 rounded-2xl">
-          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
-            <i data-lucide="clock-4" class="w-4 h-4 text-pink-400"></i> Tempo Médio (Dias) por Porte
-          </h3>
-          <p class="text-xs text-slate-400 mb-3">Média de dias para concluir por tamanho</p>
-          <div class="h-64 relative"><canvas id="chartTempoPorTamanho"></canvas></div>
+        <!-- BLOCO 1: ESTRUTURA E OPERAÇÃO (3 GRÁFICOS) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="glass-card p-5 rounded-2xl">
+            <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+              <i data-lucide="pie-chart" class="w-4 h-4 text-sky-400"></i> Distribuição por Frente
+            </h3>
+            <p class="text-xs text-slate-400 mb-3">Volume de entregas por especialidade</p>
+            <div class="h-64 relative"><canvas id="chartAreaDist"></canvas></div>
+          </div>
+
+          <div class="glass-card p-5 rounded-2xl">
+            <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+              <i data-lucide="bar-chart-2" class="w-4 h-4 text-teal-400"></i> Status Operacional
+            </h3>
+            <p class="text-xs text-slate-400 mb-3">Situação atual dos projetos</p>
+            <div class="h-64 relative"><canvas id="chartStatusDist"></canvas></div>
+          </div>
+
+          <div class="glass-card p-5 rounded-2xl">
+            <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+              <i data-lucide="alert-circle" class="w-4 h-4 text-amber-400"></i> Nível de Prioridade
+            </h3>
+            <p class="text-xs text-slate-400 mb-3">Distribuição das prioridades</p>
+            <div class="h-64 relative"><canvas id="chartPriorityDist"></canvas></div>
+          </div>
         </div>
 
-        <div class="glass-card p-5 rounded-2xl">
-          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
-            <i data-lucide="smartphone" class="w-4 h-4 text-rose-400"></i> Foco Estratégico: Super App
-          </h3>
-          <p class="text-xs text-slate-400 mb-3">Proporção de esforço dedicada ao Super App</p>
-          <div class="h-64 relative"><canvas id="chartSuperAppSplit"></canvas></div>
-        </div>
-      </div>
+        <!-- BLOCO 2: PORTE, PESSOAS E SLA (3 GRÁFICOS) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="glass-card p-5 rounded-2xl">
+            <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+              <i data-lucide="layers" class="w-4 h-4 text-indigo-400"></i> Porte e Complexidade (Tamanho)
+            </h3>
+            <p class="text-xs text-slate-400 mb-3">PP/P (Pontuais) vs. G/GG/GGG (Estruturados)</p>
+            <div class="h-64 relative"><canvas id="chartTamanhoDist"></canvas></div>
+          </div>
 
-    <!-- BLOCO 4: NOVOS GRÁFICOS ESTRATÉGICOS (AJUSTADO PARA 2 COLUNAS) -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="glass-card p-5 rounded-2xl">
-          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
-            <i data-lucide="shield-alert" class="w-4 h-4 text-red-400"></i> SLA por Nível de Prioridade
-          </h3>
-          <p class="text-xs text-slate-400 mb-3">Cumprimento de prazo por criticidade</p>
-          <div class="h-64 relative"><canvas id="chartPrioritySla"></canvas></div>
-        </div>
+          <div class="glass-card p-5 rounded-2xl">
+            <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+              <i data-lucide="user-check" class="w-4 h-4 text-cyan-400"></i> Alocação por Responsável (Top 8)
+            </h3>
+            <p class="text-xs text-slate-400 mb-3">Projetos sob gestão por especialista</p>
+            <div class="h-64 relative"><canvas id="chartResponsavelDist"></canvas></div>
+          </div>
 
-        <div class="glass-card p-5 rounded-2xl">
-          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
-            <i data-lucide="cpu" class="w-4 h-4 text-amber-400"></i> Métodos: Super App vs. Demais
-          </h3>
-          <p class="text-xs text-slate-400 mb-3">Maturidade metodológica do produto foco</p>
-          <div class="h-64 relative"><canvas id="chartMetodosSuperApp"></canvas></div>
-        </div>
-      </div>
-
-      
-
-      <!-- BLOCO 5: DISPERSÃO E ALINHAMENTO POR DEMANDANTE -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="glass-card p-5 rounded-2xl">
-          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
-            <i data-lucide="activity" class="w-4 h-4 text-sky-400"></i> Dispersão de Lead Time (Gargalos)
-          </h3>
-          <p class="text-xs text-slate-400 mb-3">Identificação de projetos que extrapolaram a duração esperada</p>
-          <div class="h-80 relative"><canvas id="chartLeadTimeDispersao"></canvas></div>
+          <div class="glass-card p-5 rounded-2xl">
+            <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+              <i data-lucide="target" class="w-4 h-4 text-emerald-400"></i> Cumprimento de Prazos (SLA)
+            </h3>
+            <p class="text-xs text-slate-400 mb-3">Pontualidade na entrega dos projetos</p>
+            <div class="h-64 relative"><canvas id="chartSlaDist"></canvas></div>
+          </div>
         </div>
 
-        <div class="glass-card p-5 rounded-2xl">
-          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
-            <i data-lucide="crosshair" class="w-4 h-4 text-purple-400"></i> Demandantes: Super App vs. Demais
-          </h3>
-          <p class="text-xs text-slate-400 mb-3">Destino do orçamento de horas por unidade cliente</p>
-          <div class="h-80 relative"><canvas id="chartDemandantesSuperApp"></canvas></div>
-        </div>
-      </div>
+        <!-- BLOCO 3: EVOLUÇÃO, TEMPOS E TIPO DE PROJETO (3 GRÁFICOS) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="glass-card p-5 rounded-2xl">
+            <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+              <i data-lucide="trending-up" class="w-4 h-4 text-purple-400"></i> Volume de Entregas em 2026
+            </h3>
+            <p class="text-xs text-slate-400 mb-3">Histórico de conclusão ao longo do tempo</p>
+            <div class="h-64 relative"><canvas id="chartEvolucaoMensal"></canvas></div>
+          </div>
 
-      <!-- BLOCO: TAREFAS ÁGEIS, TIPO DE PROJETO E EVIDÊNCIAS DE ENTREGA -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Substituído: Volume de Tarefas Ágeis -->
-        <div class="glass-card p-5 rounded-2xl">
-          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
-            <i data-lucide="kanban" class="w-4 h-4 text-emerald-400"></i> Volume de Tarefas Ágeis por Frente
-          </h3>
-          <p class="text-xs text-slate-400 mb-3">Total de tasks e esforço operacional ágil</p>
-          <div class="h-64 relative"><canvas id="chartTarefasAgies"></canvas></div>
-        </div>
+          <div class="glass-card p-5 rounded-2xl">
+            <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+              <i data-lucide="clock-4" class="w-4 h-4 text-pink-400"></i> Tempo Médio (Dias) por Porte
+            </h3>
+            <p class="text-xs text-slate-400 mb-3">Média de dias para concluir por tamanho</p>
+            <div class="h-64 relative"><canvas id="chartTempoPorTamanho"></canvas></div>
+          </div>
 
-        <!-- Adicionado 1: Projetos Pontuais vs Estruturados -->
-        <div class="glass-card p-5 rounded-2xl">
-          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
-            <i data-lucide="pie-chart" class="w-4 h-4 text-indigo-400"></i> Tipo de Projeto (Pontual vs. Estruturado)
-          </h3>
-          <p class="text-xs text-slate-400 mb-3">Demandas rápidas (P) vs. Estudos complexos (E)</p>
-          <div class="h-64 relative"><canvas id="chartTipoProjeto"></canvas></div>
-        </div>
-
-        <!-- Adicionado 2: Média de Reacionamentos -->
-        <div class="glass-card p-5 rounded-2xl">
-          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
-            <i data-lucide="refresh-cw" class="w-4 h-4 text-amber-400"></i> Média de Reacionamentos por Frente
-          </h3>
-          <p class="text-xs text-slate-400 mb-3">Retrabalho/revisões pós-entrega inicial</p>
-          <div class="h-64 relative"><canvas id="chartReacionamentos"></canvas></div>
+          <div class="glass-card p-5 rounded-2xl">
+            <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+              <i data-lucide="pie-chart" class="w-4 h-4 text-indigo-400"></i> Tipo de Projeto (Pontual vs. Estruturado)
+            </h3>
+            <p class="text-xs text-slate-400 mb-3">Demandas rápidas (P) vs. Estudos complexos (E)</p>
+            <div class="h-64 relative"><canvas id="chartTipoProjeto"></canvas></div>
+          </div>
         </div>
       </div>
 
-      <!-- BLOCO: EVIDÊNCIAS E ENTREGÁVEIS FINAIS -->
-      <div class="grid grid-cols-1 gap-6 mt-6">
-        <!-- Adicionado 3: Formato do Entregável Final -->
-        <div class="glass-card p-5 rounded-2xl">
-          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
-            <i data-lucide="file-check" class="w-4 h-4 text-cyan-400"></i> Formato dos Entregáveis (Evidências)
-          </h3>
-          <p class="text-xs text-slate-400 mb-3">Tipos de artefatos finais gerados para os clientes (Figma, Relatórios, etc.)</p>
-          <div class="h-64 relative"><canvas id="chartEvidencias"></canvas></div>
+      <!-- ========================================== -->
+      <!-- SEÇÃO 4: FOCO ESTRATÉGICO SUPER APP & EFICIÊNCIA -->
+      <!-- ========================================== -->
+      <div class="space-y-4">
+        <div class="flex items-center gap-2 border-b border-slate-800 pb-2 pt-2">
+          <i data-lucide="smartphone" class="w-5 h-5 text-pink-400"></i>
+          <h2 class="text-base font-bold text-white uppercase tracking-wider">Foco Estratégico: Super App & Performance</h2>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="glass-card p-5 rounded-2xl">
+            <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+              <i data-lucide="smartphone" class="w-4 h-4 text-rose-400"></i> Proporção: Super App
+            </h3>
+            <p class="text-xs text-slate-400 mb-3">Proporção de esforço dedicada ao Super App</p>
+            <div class="h-64 relative"><canvas id="chartSuperAppSplit"></canvas></div>
+          </div>
+
+          <div class="glass-card p-5 rounded-2xl">
+            <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+              <i data-lucide="shield-alert" class="w-4 h-4 text-red-400"></i> SLA por Nível de Prioridade
+            </h3>
+            <p class="text-xs text-slate-400 mb-3">Cumprimento de prazo por criticidade</p>
+            <div class="h-64 relative"><canvas id="chartPrioritySla"></canvas></div>
+          </div>
+
+          <div class="glass-card p-5 rounded-2xl">
+            <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+              <i data-lucide="cpu" class="w-4 h-4 text-amber-400"></i> Métodos: Super App vs. Demais
+            </h3>
+            <p class="text-xs text-slate-400 mb-3">Maturidade metodológica do produto foco</p>
+            <div class="h-64 relative"><canvas id="chartMetodosSuperApp"></canvas></div>
+          </div>
+        </div>
+
+        <!-- LINHA 1: DISPERSÃO DE LEAD TIME (ISOLADO E OCUPANDO A LINHA INTEIRA) -->
+        <div class="grid grid-cols-1 gap-6">
+          <div class="glass-card p-5 rounded-2xl">
+            <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+              <i data-lucide="activity" class="w-4 h-4 text-sky-400"></i> Dispersão de Lead Time (Gargalos)
+            </h3>
+            <p class="text-xs text-slate-400 mb-3">Identificação de projetos que extrapolaram a duração esperada</p>
+            <div class="h-64 relative"><canvas id="chartLeadTimeDispersao"></canvas></div>
+          </div>
+        </div>
+
+        <!-- LINHA 2: DEMANDANTES E TAREFAS ÁGEIS (LADO A LADO 50% / 50%) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Demandantes: Super App vs. Demais -->
+          <div class="glass-card p-5 rounded-2xl">
+            <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+              <i data-lucide="crosshair" class="w-4 h-4 text-purple-400"></i> Demandantes: Super App vs. Demais
+            </h3>
+            <p class="text-xs text-slate-400 mb-3">Destino do orçamento de horas por unidade cliente</p>
+            <div class="h-64 relative"><canvas id="chartDemandantesSuperApp"></canvas></div>
+          </div>
+
+          <!-- Volume de Tarefas Ágeis por Frente -->
+          <div class="glass-card p-5 rounded-2xl">
+            <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+              <i data-lucide="kanban" class="w-4 h-4 text-emerald-400"></i> Volume de Tarefas Ágeis por Frente
+            </h3>
+            <p class="text-xs text-slate-400 mb-3">Total de tasks e esforço operacional ágil</p>
+            <div class="h-64 relative"><canvas id="chartTarefasAgies"></canvas></div>
+          </div>
+        </div>
+
+      <!-- ========================================== -->
+      <!-- SEÇÃO 5: ANÁLISE DE DEMANDANTES, METODOLOGIAS & ENTREGÁVEIS -->
+      <!-- ========================================== -->
+      <div class="space-y-4">
+        <div class="flex items-center gap-2 border-b border-slate-800 pb-2 pt-2">
+          <i data-lucide="building-2" class="w-5 h-5 text-amber-400"></i>
+          <h2 class="text-base font-bold text-white uppercase tracking-wider">Demandantes, Metodologias & Artefatos Finais</h2>
+        </div>
+
+        <!-- BLOCO TOP 20 DEMANDANTES E TOP 20 METODOLOGIAS -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Top 20 Demandantes -->
+          <div class="glass-card p-5 rounded-2xl">
+            <h3 class="text-sm font-bold text-white mb-2 flex items-center gap-2">
+              <i data-lucide="building-2" class="w-4 h-4 text-amber-400"></i> Top 20 Demandantes (Áreas Clientes)
+            </h3>
+            <p class="text-xs text-slate-400 mb-3">Principais áreas e unidades solicitantes de projetos</p>
+            <div class="h-[500px] relative"><canvas id="chartDemandantes"></canvas></div>
+          </div>
+
+          <!-- Top 20 Metodologias & Atividades -->
+          <div class="glass-card p-5 rounded-2xl">
+            <h3 class="text-sm font-bold text-white mb-2 flex items-center gap-2">
+              <i data-lucide="wrench" class="w-4 h-4 text-emerald-400"></i> Top 20 Metodologias & Atividades
+            </h3>
+            <p class="text-xs text-slate-400 mb-3">Técnicas de UX/CX e entregáveis mais acionados</p>
+            <div class="h-[500px] relative"><canvas id="chartMetodologias"></canvas></div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Média de Reacionamentos -->
+          <div class="glass-card p-5 rounded-2xl">
+            <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+              <i data-lucide="refresh-cw" class="w-4 h-4 text-amber-400"></i> Média de Reacionamentos por Frente
+            </h3>
+            <p class="text-xs text-slate-400 mb-3">Retrabalho/revisões pós-entrega inicial</p>
+            <div class="h-64 relative"><canvas id="chartReacionamentos"></canvas></div>
+          </div>
+
+          <!-- Formato do Entregável Final -->
+          <div class="glass-card p-5 rounded-2xl">
+            <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+              <i data-lucide="file-check" class="w-4 h-4 text-cyan-400"></i> Formato dos Entregáveis (Evidências)
+            </h3>
+            <p class="text-xs text-slate-400 mb-3">Tipos de artefatos finais gerados para os clientes (Figma, Relatórios,
+              etc.)</p>
+            <div class="h-64 relative"><canvas id="chartEvidencias"></canvas></div>
+          </div>
         </div>
       </div>
 
-      <!-- BLOCO 6: DEMANDANTES & METODOLOGIAS (RANKINGS COMPLETOS) -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="glass-card p-5 rounded-2xl">
-          <h3 class="text-sm font-bold text-white mb-2 flex items-center gap-2">
-            <i data-lucide="building-2" class="w-4 h-4 text-amber-400"></i> Top 10 Demandantes (Áreas Clientes)
-          </h3>
-          <div class="h-80 relative"><canvas id="chartDemandantes"></canvas></div>
-        </div>
-
-        <div class="glass-card p-5 rounded-2xl">
-          <h3 class="text-sm font-bold text-white mb-2 flex items-center gap-2">
-            <i data-lucide="wrench" class="w-4 h-4 text-emerald-400"></i> Top 10 Metodologias & Atividades
-          </h3>
-          <div class="h-80 relative"><canvas id="chartMetodologias"></canvas></div>
-        </div>
-      </div>
-
-      <!-- TABELA SUMÁRIO -->
+      <!-- ========================================== -->
+      <!-- SEÇÃO 6: RESUMO CONSOLIDADO EM TABELA -->
+      <!-- ========================================== -->
       <div class="glass-card p-5 rounded-2xl space-y-4">
         <h3 class="text-base font-bold text-white flex items-center gap-2">
           <i data-lucide="sliders" class="w-5 h-5 text-sky-400"></i> Resumo Consolidado por Frente
@@ -674,6 +1101,7 @@
       const tipoProjetoRaw = extractFieldValue(row, ['P OU E', 'P ou E', 'Tipo']);
       const evidenciasRaw = extractFieldValue(row, ['Evidências', 'Evidencia']);
 
+
       let prazoDias = parseFloat(prazoDiasRaw.replace(',', '.'));
       if (isNaN(prazoDias)) prazoDias = 0;
 
@@ -683,7 +1111,7 @@
       let acionamentosNum = parseFloat(acionamentosRaw.replace(',', '.'));
       if (isNaN(acionamentosNum)) acionamentosNum = 1;
 
-      let anoParsed = anoRaw ? anoRaw.substring(0,4) : '';
+      let anoParsed = anoRaw ? anoRaw.substring(0, 4) : '';
       if (!anoParsed && entrega && entrega.length >= 4) {
         let parts = entrega.split('/');
         if (parts.length === 3) anoParsed = parts[2];
@@ -738,20 +1166,25 @@
 
             Papa.parse(file, {
               header: true,
-              skipEmptyLines: true,
+              skipEmptyLines: 'greedy',
+              dynamicTyping: false,
               complete: function (results) {
                 if (targetArea && results.data) {
                   const cleanRows = results.data
                     .map(r => standardizeRow(r, targetArea))
-                    .filter(r => r.projeto && r.projeto !== 'nan');
+                    .filter(r => r.projeto && r.projeto !== 'nan' && r.projeto !== '-' && r.projeto !== '' && r.projeto.toLowerCase() !== 'projeto');
 
                   window.RAW_DATA[targetArea] = cleanRows;
+                  console.log(`✅ ${targetArea} lido localmente: ${cleanRows.length} projetos.`);
                 }
 
                 filesRead++;
                 if (filesRead === files.length) {
                   if (window.saveDataToFirebase) {
                     window.saveDataToFirebase(window.RAW_DATA);
+                  } else {
+                    window.updateStatusUI();
+                    window.renderAll();
                   }
                 }
               }
@@ -852,10 +1285,18 @@
         if (window.RAW_DATA[sh]) allProjects = allProjects.concat(window.RAW_DATA[sh]);
       });
 
+      // 1. CÁLCULO DOS KPIS PRINCIPAIS
       const totalCount = allProjects.length;
+
+      // Status Individuais
       const concluidos = allProjects.filter(p => p.status.toLowerCase().includes('conclu')).length;
       const andamento = allProjects.filter(p => p.status.toLowerCase().includes('andamento')).length;
+      const naoIniciados = allProjects.filter(p => p.status.toLowerCase().includes('não iniciado') || p.status.toLowerCase().includes('nao iniciado')).length;
+      const impedimentos = allProjects.filter(p => p.status.toLowerCase().includes('impedi')).length;
+      const pausados = allProjects.filter(p => p.status.toLowerCase().includes('paus')).length;
+      const cancelados = allProjects.filter(p => p.status.toLowerCase().includes('canc')).length;
 
+      // Tempos e Taxas
       const concluidosItems = allProjects.filter(p => p.status.toLowerCase().includes('conclu') && p.prazo_dias > 0);
       const avgDays = concluidosItems.length > 0
         ? (concluidosItems.reduce((acc, curr) => acc + curr.prazo_dias, 0) / concluidosItems.length).toFixed(1)
@@ -865,7 +1306,6 @@
       const superAppPct = totalCount > 0 ? ((superAppCount / totalCount) * 100).toFixed(1) : 0;
       const taxaConclusao = totalCount > 0 ? ((concluidos / totalCount) * 100).toFixed(1) : 0;
 
-      // KPIs
       const criticos = allProjects.filter(p => p.prioridade.toLowerCase().includes('crít') || p.prioridade.toLowerCase().includes('crit'));
       const criticosNoPrazo = criticos.filter(p => p.status.toLowerCase().includes('conclu') && (p.entrega <= p.prazo || p.prazo === '-')).length;
       const eficienciaCritica = criticos.length > 0 ? ((criticosNoPrazo / criticos.length) * 100).toFixed(1) : '100';
@@ -880,14 +1320,107 @@
       });
       const avgTimeSize = totalCount > 0 ? (totalPessoas / totalCount).toFixed(1) : '1.0';
 
-      const pausadosCanc = allProjects.filter(p => p.status.toLowerCase().includes('paus') || p.status.toLowerCase().includes('canc')).length;
+      const pausadosCanc = pausados + cancelados;
       const taxaPausa = totalCount > 0 ? ((pausadosCanc / totalCount) * 100).toFixed(1) : 0;
 
-      // Update DOM
+      // 2. CÁLCULO DE PROJETOS POR TAMANHO (PONTUAL vs ESTRUTURADO)
+      const projetosPontuais = allProjects.filter(p => (p.tipo_projeto || '').toUpperCase().includes('P'));
+      const projetosEstruturados = allProjects.filter(p => (p.tipo_projeto || '').toUpperCase().includes('E') || !(p.tipo_projeto || '').toUpperCase().includes('P'));
+
+      const pontualCount = projetosPontuais.length;
+      const estruturadoCount = projetosEstruturados.length;
+
+      const pontualConc = projetosPontuais.filter(p => p.status.toLowerCase().includes('conclu') && p.prazo_dias > 0);
+      const pontualAvg = pontualConc.length > 0
+        ? (pontualConc.reduce((acc, p) => acc + p.prazo_dias, 0) / pontualConc.length).toFixed(1)
+        : '0.0';
+
+      const estruturadoConc = projetosEstruturados.filter(p => p.status.toLowerCase().includes('conclu') && p.prazo_dias > 0);
+      const estruturadoAvg = estruturadoConc.length > 0
+        ? (estruturadoConc.reduce((acc, p) => acc + p.prazo_dias, 0) / estruturadoConc.length).toFixed(1)
+        : '0.0';
+
+      // 3. CÁLCULO DE PRAZOS DOS PROJETOS (SLA)
+      let entregueNoPrazo = 0;
+      let entregueForaPrazo = 0;
+      let andamentoNoPrazo = 0;
+      let andamentoForaPrazo = 0;
+
+      allProjects.forEach(p => {
+        if (!p.prazo || p.prazo === '-' || p.prazo === 'nan') return;
+
+        const isConcluido = p.status.toLowerCase().includes('conclu');
+        const isAndamento = p.status.toLowerCase().includes('andamento');
+
+        if (isConcluido) {
+          if (p.entrega !== '-' && p.entrega > p.prazo) {
+            entregueForaPrazo++;
+          } else {
+            entregueNoPrazo++;
+          }
+        } else if (isAndamento) {
+          const atrasado = (p.prazo_contagem !== undefined && p.prazo_contagem < 0) || (p.prazo_em_andamento > p.prazo_dias && p.prazo_dias > 0);
+          if (atrasado) {
+            andamentoForaPrazo++;
+          } else {
+            andamentoNoPrazo++;
+          }
+        }
+      });
+
+      // 4. CÁLCULO DE ACIONAMENTOS E TAREFAS
+      let totalAcionamentos = 0;
+      let totalTarefas = 0;
+      let acionamentosPontuais = 0;
+      let tarefasPontuais = 0;
+      let acionamentosEstruturados = 0;
+      let tarefasEstruturadas = 0;
+
+      allProjects.forEach(p => {
+        const ac = p.acionamentos || 1;
+        const tf = p.tarefas_agies || 0;
+        const isP = (p.tipo_projeto || '').toUpperCase().includes('P');
+
+        totalAcionamentos += ac;
+        totalTarefas += tf;
+
+        if (isP) {
+          acionamentosPontuais += ac;
+          tarefasPontuais += tf;
+        } else {
+          acionamentosEstruturados += ac;
+          tarefasEstruturadas += tf;
+        }
+      });
+
+      // 5. CÁLCULO DE PROJETOS CONCLUÍDOS POR ANO (2025 vs 2026)
+      let concluidos2025 = 0;
+      let concluidos2026 = 0;
+
+      allProjects.forEach(p => {
+        if (p.status.toLowerCase().includes('conclu')) {
+          const anoStr = String(p.ano || '');
+          const entregaStr = String(p.entrega || '');
+
+          if (anoStr === '2025' || entregaStr.includes('/2025') || entregaStr.includes('-2025')) {
+            concluidos2025++;
+          } else if (anoStr === '2026' || entregaStr.includes('/2026') || entregaStr.includes('-2026')) {
+            concluidos2026++;
+          }
+        }
+      });
+
+      // 6. ATUALIZAÇÃO DOS KPIS PRINCIPAIS NO DOM
       const elemTotal = document.getElementById('kpiTotalProjetos'); if (elemTotal) elemTotal.innerText = totalCount;
       const elemConc = document.getElementById('kpiConcluidos'); if (elemConc) elemConc.innerText = concluidos;
       const elemTaxaConc = document.getElementById('kpiTaxaConclusao'); if (elemTaxaConc) elemTaxaConc.innerText = taxaConclusao + '% taxa de conclusão';
       const elemAnd = document.getElementById('kpiAndamento'); if (elemAnd) elemAnd.innerText = andamento;
+
+      const elemNaoIni = document.getElementById('kpiNaoIniciados'); if (elemNaoIni) elemNaoIni.innerText = naoIniciados;
+      const elemImp = document.getElementById('kpiImpedimento'); if (elemImp) elemImp.innerText = impedimentos;
+      const elemPaus = document.getElementById('kpiPausados'); if (elemPaus) elemPaus.innerText = pausados;
+      const elemCanc = document.getElementById('kpiCancelados'); if (elemCanc) elemCanc.innerText = cancelados;
+
       const elemTempo = document.getElementById('kpiTempoMedio'); if (elemTempo) elemTempo.innerText = avgDays + 'd';
       const elemSuper = document.getElementById('kpiSuperApp'); if (elemSuper) elemSuper.innerText = superAppCount;
       const elemSuperPct = document.getElementById('kpiSuperAppPct'); if (elemSuperPct) elemSuperPct.innerText = superAppPct + '% foco no Super App';
@@ -895,7 +1428,32 @@
       const elemTamTime = document.getElementById('kpiTamanhoTime'); if (elemTamTime) elemTamTime.innerText = avgTimeSize;
       const elemPausa = document.getElementById('kpiTaxaPausa'); if (elemPausa) elemPausa.innerText = taxaPausa + '%';
 
-      // Render Charts
+      // 7. ATUALIZAÇÃO DO PAINEL DE TAMANHO NO DOM
+      const elemPCount = document.getElementById('kpiPontualCount'); if (elemPCount) elemPCount.innerText = pontualCount;
+      const elemPAvg = document.getElementById('kpiPontualAvg'); if (elemPAvg) elemPAvg.innerText = pontualAvg.replace('.', ',') + 'd';
+
+      const elemECount = document.getElementById('kpiEstruturadoCount'); if (elemECount) elemECount.innerText = estruturadoCount;
+      const elemEAvg = document.getElementById('kpiEstruturadoAvg'); if (elemEAvg) elemEAvg.innerText = estruturadoAvg.replace('.', ',') + 'd';
+
+      // 8. ATUALIZAÇÃO DO PAINEL DE PRAZOS NO DOM
+      const elemENP = document.getElementById('kpiEntregueNoPrazo'); if (elemENP) elemENP.innerText = entregueNoPrazo;
+      const elemEFP = document.getElementById('kpiEntregueForaPrazo'); if (elemEFP) elemEFP.innerText = entregueForaPrazo;
+      const elemANP = document.getElementById('kpiAndamentoNoPrazo'); if (elemANP) elemANP.innerText = andamentoNoPrazo;
+      const elemAFP = document.getElementById('kpiAndamentoForaPrazo'); if (elemAFP) elemAFP.innerText = andamentoForaPrazo;
+
+      // 9. ATUALIZAÇÃO DO PAINEL DE ACIONAMENTOS E TAREFAS NO DOM
+      const elemTA = document.getElementById('kpiTotalAcionamentos'); if (elemTA) elemTA.innerText = totalAcionamentos;
+      const elemTT = document.getElementById('kpiTotalTarefas'); if (elemTT) elemTT.innerText = totalTarefas;
+      const elemAP = document.getElementById('kpiAcionamentosPontuais'); if (elemAP) elemAP.innerText = acionamentosPontuais;
+      const elemTP = document.getElementById('kpiTarefasPontuais'); if (elemTP) elemTP.innerText = tarefasPontuais;
+      const elemAE = document.getElementById('kpiAcionamentosEstruturados'); if (elemAE) elemAE.innerText = acionamentosEstruturados;
+      const elemTE = document.getElementById('kpiTarefasEstruturadas'); if (elemTE) elemTE.innerText = tarefasEstruturadas;
+
+      // 10. ATUALIZAÇÃO DO PAINEL DE CONCLUÍDOS POR ANO NO DOM
+      const elemC2025 = document.getElementById('kpiConcluidos2025'); if (elemC2025) elemC2025.innerText = concluidos2025;
+      const elemC2026 = document.getElementById('kpiConcluidos2026'); if (elemC2026) elemC2026.innerText = concluidos2026;
+
+      // 11. RENDERIZAR TODOS OS GRÁFICOS
       renderChartConcluidosPorAno(allProjects);
       renderChartSimultaneosAnos(allProjects);
       renderChartAreaDist();
@@ -908,129 +1466,319 @@
       renderChartTempoPorTamanho(allProjects);
       renderChartSuperAppSplit(allProjects);
       renderChartPrioritySla(allProjects);
-      renderChartColaboracao(allProjects);
+      renderChartTarefasAgies(allProjects);
+      renderChartTipoProjeto(allProjects);
+      renderChartReacionamentos(allProjects);
+      renderChartEvidencias(allProjects);
       renderChartMetodosSuperApp(allProjects);
       renderChartLeadTimeDispersao(allProjects);
       renderChartDemandantesSuperApp(allProjects);
       renderChartDemandantes(allProjects);
       renderChartMetodologias(allProjects);
       renderDashboardTable();
-      renderChartTarefasAgies(allProjects);
-      renderChartTipoProjeto(allProjects);
-      renderChartReacionamentos(allProjects);
-      renderChartEvidencias(allProjects);
     }
 
     // GRAFICO ANO 1: Concluídos por Ano (2025 vs 2026)
     function renderChartConcluidosPorAno(projects) {
-      const ctx = getCanvasCtx('chartConcluidosPorAno'); if (!ctx) return;
-      if (chartConcluidosPorAno) chartConcluidosPorAno.destroy();
+      const ctx = document.getElementById('chartConcluidosPorAno');
+      if (!ctx) return;
 
-      const areas = ['CX Pesquisa', 'UX Pesquisa', 'CX Escrita', 'UX Escrita'];
-      const data2025 = [];
-      const data2026 = [];
+      const selectedArea = document.getElementById('filterArea')?.value || 'ALL';
 
-      areas.forEach(a => {
-        const areaItems = window.RAW_DATA[a] || [];
-        const conc2025 = areaItems.filter(p => p.status.toLowerCase().includes('conclu') && (p.ano === '2025' || p.entrega.includes('/2025'))).length;
-        const conc2026 = areaItems.filter(p => p.status.toLowerCase().includes('conclu') && (p.ano === '2026' || p.entrega.includes('/2026'))).length;
-        data2025.push(conc2025);
-        data2026.push(conc2026);
-      });
+      if (window.charts && window.charts.concluidosPorAno) {
+        window.charts.concluidosPorAno.destroy();
+      }
+      window.charts = window.charts || {};
 
-      chartConcluidosPorAno = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: areas,
-          datasets: [
-            {
-              label: '2025 (Histórico)',
-              data: data2025,
-              backgroundColor: '#38bdf8',
-              hoverBackgroundColor: '#0284c7',
-              borderRadius: 6
-            },
-            {
-              label: '2026 (Atual)',
-              data: data2026,
-              backgroundColor: '#10b981',
-              hoverBackgroundColor: '#059669',
-              borderRadius: 6
+      // CASO 1: "Todas as Frentes" selecionado -> Mostrar as 4 frentes no mesmo gráfico
+      if (selectedArea === 'ALL') {
+        const sheets = ['CX Pesquisa', 'UX Pesquisa', 'CX Escrita', 'UX Escrita'];
+        const data2025 = [0, 0, 0, 0];
+        const data2026 = [0, 0, 0, 0];
+
+        sheets.forEach((sh, idx) => {
+          const list = window.RAW_DATA[sh] || [];
+          list.forEach(p => {
+            const isConcluido = p.status && p.status.toLowerCase().includes('conclu');
+            if (!isConcluido) return;
+
+            const anoStr = String(p.ano || '');
+            const entregaStr = String(p.entrega || '');
+
+            if (anoStr === '2025' || entregaStr.includes('/2025') || entregaStr.includes('-2025')) {
+              data2025[idx]++;
+            } else if (anoStr === '2026' || entregaStr.includes('/2026') || entregaStr.includes('-2026')) {
+              data2026[idx]++;
             }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          interaction: { mode: 'index', intersect: false },
-          plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1' } } },
-          scales: { x: { ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#94a3b8' } } }
-        }
-      });
+          });
+        });
+
+        window.charts.concluidosPorAno = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: sheets,
+            datasets: [
+              {
+                label: 'Concluídos 2025',
+                data: data2025,
+                backgroundColor: 'rgba(56, 189, 248, 0.75)',
+                borderColor: '#38bdf8',
+                borderWidth: 1.5,
+                borderRadius: 6
+              },
+              {
+                label: 'Concluídos 2026',
+                data: data2026,
+                backgroundColor: 'rgba(52, 211, 153, 0.75)',
+                borderColor: '#34d399',
+                borderWidth: 1.5,
+                borderRadius: 6
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: true,
+                position: 'top',
+                labels: { color: '#cbd5e1', font: { size: 11 } }
+              },
+              tooltip: {
+                callbacks: {
+                  label: (ctx) => `${ctx.dataset.label}: ${ctx.raw} projetos`
+                }
+              }
+            },
+            scales: {
+              x: {
+                grid: { display: false },
+                ticks: { color: '#e2e8f0', font: { size: 11, weight: 'bold' } }
+              },
+              y: {
+                beginAtZero: true,
+                grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                ticks: { color: '#94a3b8', precision: 0 }
+              }
+            }
+          }
+        });
+
+      } else {
+        // CASO 2: Grupo específico selecionado -> Mostrar comparativo de anos do grupo ativo
+        let conc2025 = 0;
+        let conc2026 = 0;
+
+        projects.forEach(p => {
+          const isConcluido = p.status && p.status.toLowerCase().includes('conclu');
+          if (!isConcluido) return;
+
+          const anoStr = String(p.ano || '');
+          const entregaStr = String(p.entrega || '');
+
+          if (anoStr === '2025' || entregaStr.includes('/2025') || entregaStr.includes('-2025')) {
+            conc2025++;
+          } else if (anoStr === '2026' || entregaStr.includes('/2026') || entregaStr.includes('-2026')) {
+            conc2026++;
+          }
+        });
+
+        window.charts.concluidosPorAno = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['Ano 2025', 'Ano 2026'],
+            datasets: [{
+              label: `Concluídos (${selectedArea})`,
+              data: [conc2025, conc2026],
+              backgroundColor: ['rgba(56, 189, 248, 0.75)', 'rgba(52, 211, 153, 0.75)'],
+              borderColor: ['#38bdf8', '#34d399'],
+              borderWidth: 1.5,
+              borderRadius: 8
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: (ctx) => `${ctx.raw} projetos entregues`
+                }
+              }
+            },
+            scales: {
+              x: {
+                grid: { display: false },
+                ticks: { color: '#e2e8f0', font: { weight: 'bold' } }
+              },
+              y: {
+                beginAtZero: true,
+                grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                ticks: { color: '#94a3b8', precision: 0 }
+              }
+            }
+          }
+        });
+      }
     }
 
     // GRAFICO ANO 2: Projetos Simultâneos Mensais (2025 vs 2026)
     function renderChartSimultaneosAnos(projects) {
-      const ctx = getCanvasCtx('chartSimultaneosAnos'); if (!ctx) return;
-      if (chartSimultaneosAnos) chartSimultaneosAnos.destroy();
+      const ctx = document.getElementById('chartSimultaneosAnos');
+      if (!ctx) return;
 
-      const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-      const data2025 = [0, 0, 0, 0, 0, 0, 0, 7, 12, 20, 13, 18];
-      const data2026 = [9, 18, 25, 18, 29, 16, 36, 0, 1, 0, 0, 0];
+      const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+      const simultaneos2025 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+      const simultaneos2026 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
-      chartSimultaneosAnos = new Chart(ctx, {
+      // Filtra usando apenas os projetos do grupo ativo selecionado
+      projects.forEach(p => {
+        const anoStr = String(p.ano || '');
+        const entregaStr = String(p.entrega || '');
+        let mesIndex = -1;
+
+        if (entregaStr.includes('/')) {
+          const partes = entregaStr.split('/');
+          if (partes.length === 3) mesIndex = parseInt(partes[1], 10) - 1;
+        } else if (entregaStr.includes('-')) {
+          const partes = entregaStr.split('-');
+          if (partes.length === 3) mesIndex = parseInt(partes[1], 10) - 1;
+        }
+
+        if (mesIndex >= 0 && mesIndex < 12) {
+          if (anoStr === '2025' || entregaStr.includes('/2025') || entregaStr.includes('-2025')) {
+            simultaneos2025[mesIndex]++;
+          } else if (anoStr === '2026' || entregaStr.includes('/2026') || entregaStr.includes('-2026')) {
+            simultaneos2026[mesIndex]++;
+          }
+        }
+      });
+
+      if (window.charts && window.charts.simultaneosAnos) {
+        window.charts.simultaneosAnos.destroy();
+      }
+
+      window.charts = window.charts || {};
+      window.charts.simultaneosAnos = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: months,
+          labels: meses,
           datasets: [
             {
-              label: 'Simultâneos 2025',
-              data: data2025,
-              borderColor: '#f59e0b',
-              backgroundColor: 'rgba(245, 158, 11, 0.15)',
-              pointBackgroundColor: '#f59e0b',
-              pointHoverRadius: 7,
-              pointHoverBackgroundColor: '#ffffff',
+              label: 'Ano 2025',
+              data: simultaneos2025,
+              borderColor: '#818cf8',
+              backgroundColor: 'rgba(129, 140, 248, 0.1)',
+              borderWidth: 2,
+              fill: true,
               tension: 0.3,
-              fill: true
+              pointRadius: 3
             },
             {
-              label: 'Simultâneos 2026',
-              data: data2026,
-              borderColor: '#6366f1',
-              backgroundColor: 'rgba(99, 102, 241, 0.15)',
-              pointBackgroundColor: '#6366f1',
-              pointHoverRadius: 7,
-              pointHoverBackgroundColor: '#ffffff',
+              label: 'Ano 2026',
+              data: simultaneos2026,
+              borderColor: '#38bdf8',
+              backgroundColor: 'rgba(56, 189, 248, 0.15)',
+              borderWidth: 3,
+              fill: true,
               tension: 0.3,
-              fill: true
+              pointRadius: 4
             }
           ]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          interaction: { mode: 'nearest', intersect: false },
-          plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1' } } },
-          scales: { x: { ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#94a3b8' } } }
+          plugins: {
+            legend: {
+              display: true,
+              position: 'top',
+              labels: { color: '#cbd5e1', font: { size: 11 } }
+            },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => `${ctx.dataset.label}: ${ctx.raw} projetos`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { color: '#94a3b8', font: { size: 10 } }
+            },
+            y: {
+              beginAtZero: true,
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#94a3b8', precision: 0 }
+            }
+          }
         }
       });
     }
+
     function renderChartAreaDist() {
-      const ctx = getCanvasCtx('chartAreaDist'); if (!ctx) return;
-      if (chartAreaDist) chartAreaDist.destroy();
+      const ctx = document.getElementById('chartAreaDist');
+      if (!ctx) return;
 
-      const counts = [
-        (window.RAW_DATA['CX Pesquisa'] || []).length,
-        (window.RAW_DATA['UX Pesquisa'] || []).length,
-        (window.RAW_DATA['CX Escrita'] || []).length,
-        (window.RAW_DATA['UX Escrita'] || []).length,
-      ];
+      const sheets = ['CX Pesquisa', 'UX Pesquisa', 'CX Escrita', 'UX Escrita'];
+      const counts = sheets.map(sh => (window.RAW_DATA[sh] || []).length);
 
-      chartAreaDist = new Chart(ctx, {
+      if (window.charts && window.charts.areaDist) {
+        window.charts.areaDist.destroy();
+      }
+
+      window.charts = window.charts || {};
+      window.charts.areaDist = new Chart(ctx, {
         type: 'doughnut',
-        data: { labels: ['CX Pesquisa', 'UX Pesquisa', 'CX Escrita', 'UX Escrita'], datasets: [{ data: counts, backgroundColor: ['#0284c7', '#0d9488', '#8b5cf6', '#f59e0b'], borderWidth: 0 }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1' } } } }
+        data: {
+          labels: sheets,
+          datasets: [{
+            data: counts,
+            backgroundColor: [
+              '#0284c7', // CX Pesquisa (Azul)
+              '#0d9488', // UX Pesquisa (Verde Água/Teal)
+              '#9333ea', // CX Escrita (Roxo)
+              '#d97706'  // UX Escrita (Laranja/Âmbar)
+            ],
+            borderColor: '#0f172a',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '60%',
+          layout: {
+            padding: {
+              left: 15,
+              right: 15,
+              bottom: 5
+            }
+          },
+          plugins: {
+            legend: {
+              display: true,
+              position: 'bottom',
+              labels: {
+                color: '#cbd5e1',
+                boxWidth: 12,     // Reduz a largura do quadradinho de cor
+                boxHeight: 12,
+                padding: 14,      // Aumenta a distância entre os itens da legenda
+                font: {
+                  size: 10,       // Ajuste sutil no tamanho da fonte para quebrar 2x2 perfeitamente
+                  weight: '500'
+                }
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => ` ${ctx.label}: ${ctx.raw} projetos`
+              }
+            }
+          }
+        }
       });
     }
 
@@ -1063,20 +1811,76 @@
     }
 
     function renderChartTamanhoDist(projects) {
-      const ctx = getCanvasCtx('chartTamanhoDist'); if (!ctx) return;
-      if (chartTamanhoDist) chartTamanhoDist.destroy();
+      const ctx = document.getElementById('chartTamanhoDist');
+      if (!ctx) return;
 
-      const tamMap = {};
+      const counts = {};
       projects.forEach(p => {
-        let t = p.tamanho.toUpperCase().trim();
-        if (!t || t === '-' || t === 'NAN') t = 'Outro';
-        tamMap[t] = (tamMap[t] || 0) + 1;
+        let tam = (p.tamanho || 'Não Informado').trim();
+        if (tam && tam !== '-') {
+          counts[tam] = (counts[tam] || 0) + 1;
+        }
       });
 
-      chartTamanhoDist = new Chart(ctx, {
+      const labels = Object.keys(counts);
+      const data = Object.values(counts);
+
+      if (window.charts && window.charts.tamanhoDist) {
+        window.charts.tamanhoDist.destroy();
+      }
+
+      window.charts = window.charts || {};
+      window.charts.tamanhoDist = new Chart(ctx, {
         type: 'doughnut',
-        data: { labels: Object.keys(tamMap), datasets: [{ data: Object.values(tamMap), backgroundColor: ['#6366f1', '#3b82f6', '#06b6d4', '#10b981', '#f59e0b', '#ec4899'] }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1' } } } }
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor: [
+              '#38bdf8', // Sky
+              '#818cf8', // Indigo
+              '#fbbf24', // Amber
+              '#34d399', // Emerald
+              '#f43f5e', // Rose
+              '#a855f7'  // Purple
+            ],
+            borderColor: '#0f172a',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '60%',
+          layout: {
+            padding: {
+              left: 15,
+              right: 15,
+              bottom: 5
+            }
+          },
+          plugins: {
+            legend: {
+              display: true,
+              position: 'bottom',
+              labels: {
+                color: '#cbd5e1',
+                boxWidth: 12,    // Reduz a largura do quadradinho indicador
+                boxHeight: 12,
+                padding: 12,     // Espaçamento equilibrado entre os itens
+                font: {
+                  size: 10,      // Ajuste sutil no tamanho da fonte para quebrar linhas simetricamente
+                  weight: '500'
+                }
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => ` ${ctx.label}: ${ctx.raw} projetos`
+              }
+            }
+          }
+        }
       });
     }
 
@@ -1102,49 +1906,178 @@
     }
 
     function renderChartSlaDist(projects) {
-      const ctx = getCanvasCtx('chartSlaDist'); if (!ctx) return;
-      if (chartSlaDist) chartSlaDist.destroy();
+      const ctx = document.getElementById('chartSlaDist');
+      if (!ctx) return;
 
-      let noPrazo = 0, atrasados = 0, semPrazo = 0;
+      let noPrazo = 0;
+      let comAtraso = 0;
+      let semPrazo = 0;
 
       projects.forEach(p => {
-        if (p.status.toLowerCase().includes('conclu')) {
-          if (p.prazo !== '-' && p.entrega !== '-') {
-            if (p.entrega <= p.prazo) noPrazo++;
-            else atrasados++;
-          } else noPrazo++;
-        } else {
+        if (!p.prazo || p.prazo === '-' || p.prazo === 'nan') {
           semPrazo++;
+          return;
         }
-      });
 
-      chartSlaDist = new Chart(ctx, {
-        type: 'pie',
-        data: { labels: ['No Prazo', 'Com Atraso', 'Em Andamento / Sem data'], datasets: [{ data: [noPrazo, atrasados, semPrazo], backgroundColor: ['#10b981', '#f43f5e', '#f59e0b'] }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1' } } } }
-      });
-    }
-
-    function renderChartEvolucaoMensal(projects) {
-      const ctx = getCanvasCtx('chartEvolucaoMensal'); if (!ctx) return;
-      if (chartEvolucaoMensal) chartEvolucaoMensal.destroy();
-
-      const mesMap = { '01': 0, '02': 0, '03': 0, '04': 0, '05': 0, '06': 0, '07': 0, '08': 0, '09': 0, '10': 0, '11': 0, '12': 0 };
-
-      projects.forEach(p => {
-        if (p.entrega && p.entrega.length >= 7) {
-          let parts = p.entrega.split('/');
-          if (parts.length === 3) {
-            let m = parts[1];
-            if (mesMap[m] !== undefined) mesMap[m]++;
+        const isConcluido = p.status && p.status.toLowerCase().includes('conclu');
+        if (isConcluido) {
+          if (p.entrega !== '-' && p.entrega > p.prazo) {
+            comAtraso++;
+          } else {
+            noPrazo++;
+          }
+        } else {
+          // Projetos em andamento ou outros status
+          const atrasado = (p.prazo_contagem !== undefined && p.prazo_contagem < 0) || (p.prazo_em_andamento > p.prazo_dias && p.prazo_dias > 0);
+          if (atrasado) {
+            comAtraso++;
+          } else {
+            noPrazo++;
           }
         }
       });
 
-      chartEvolucaoMensal = new Chart(ctx, {
+      if (window.charts && window.charts.slaDist) {
+        window.charts.slaDist.destroy();
+      }
+
+      window.charts = window.charts || {};
+      window.charts.slaDist = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['No Prazo', 'Com Atraso', 'Sem Prazo'],
+          datasets: [{
+            data: [noPrazo, comAtraso, semPrazo],
+            backgroundColor: [
+              '#10b981', // Emerald (No Prazo)
+              '#f43f5e', // Rose/Vermelho (Com Atraso)
+              '#64748b'  // Slate/Cinza (Sem Prazo)
+            ],
+            borderColor: '#0f172a',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '60%',
+          layout: {
+            padding: {
+              left: 15,
+              right: 15,
+              bottom: 5
+            }
+          },
+          plugins: {
+            legend: {
+              display: true,
+              position: 'bottom',
+              labels: {
+                color: '#cbd5e1',
+                boxWidth: 12,    // Padronizado com os demais
+                boxHeight: 12,
+                padding: 12,     // Espaçamento equilibrado entre itens
+                font: {
+                  size: 10,      // Tamanho padronizado para quebra limpa
+                  weight: '500'
+                }
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => ` ${ctx.label}: ${ctx.raw} projetos`
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function renderChartEvolucaoMensal(projects) {
+      const ctx = document.getElementById('chartEvolucaoMensal');
+      if (!ctx) return;
+
+      // Lista dos meses do ano atual (Limitado até Julho/2026 - Mês Atual)
+      const mesesRotulos = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul'];
+      const contagemMeses = [0, 0, 0, 0, 0, 0, 0];
+
+      projects.forEach(p => {
+        // Considerar apenas entregas concluídas em 2026
+        const isConcluido = p.status && p.status.toLowerCase().includes('conclu');
+        if (!isConcluido) return;
+
+        const anoStr = String(p.ano || '');
+        const entregaStr = String(p.entrega || '');
+
+        // Filtrar apenas projetos do ano de 2026
+        if (anoStr === '2026' || entregaStr.includes('/2026') || entregaStr.includes('-2026')) {
+          let mesIndex = -1;
+
+          // Se houver data de entrega formatada (ex: DD/MM/YYYY ou YYYY-MM-DD)
+          if (entregaStr.includes('/')) {
+            const partes = entregaStr.split('/');
+            if (partes.length === 3) mesIndex = parseInt(partes[1], 10) - 1;
+          } else if (entregaStr.includes('-')) {
+            const partes = entregaStr.split('-');
+            if (partes.length === 3) mesIndex = parseInt(partes[1], 10) - 1;
+          } else if (p.mes_ano) {
+            const partes = String(p.mes_ano).split('/');
+            if (partes.length >= 1) mesIndex = parseInt(partes[0], 10) - 1;
+          }
+
+          // Se o mês for válido e estiver até Julho (índice 0 a 6)
+          if (mesIndex >= 0 && mesIndex < 7) {
+            contagemMeses[mesIndex]++;
+          }
+        }
+      });
+
+      // Destruir gráfico anterior para evitar sobreposição
+      if (window.charts && window.charts.evolucaoMensal) {
+        window.charts.evolucaoMensal.destroy();
+      }
+
+      window.charts = window.charts || {};
+      window.charts.evolucaoMensal = new Chart(ctx, {
         type: 'line',
-        data: { labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'], datasets: [{ label: 'Concluídos', data: Object.values(mesMap), borderColor: '#a855f7', backgroundColor: 'rgba(168, 85, 247, 0.1)', fill: true, tension: 0.3 }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#94a3b8' } } } }
+        data: {
+          labels: mesesRotulos,
+          datasets: [{
+            label: 'Entregas Concluídas (2026)',
+            data: contagemMeses,
+            borderColor: '#a855f7',
+            backgroundColor: 'rgba(168, 85, 247, 0.15)',
+            borderWidth: 3,
+            fill: true,
+            tension: 0.35,
+            pointBackgroundColor: '#c084fc',
+            pointRadius: 5,
+            pointHoverRadius: 7
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => `${ctx.raw} projetos entregues`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { color: '#94a3b8', font: { size: 11 } }
+            },
+            y: {
+              beginAtZero: true,
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#94a3b8', precision: 0 }
+            }
+          }
+        }
       });
     }
 
@@ -1173,22 +2106,75 @@
     }
 
     function renderChartSuperAppSplit(projects) {
-      const ctx = getCanvasCtx('chartSuperAppSplit'); if (!ctx) return;
-      if (chartSuperAppSplit) chartSuperAppSplit.destroy();
+      const ctx = document.getElementById('chartSuperAppSplit');
+      if (!ctx) return;
 
-      let sim = 0, nao = 0;
+      let superApp = 0;
+      let demais = 0;
+
       projects.forEach(p => {
-        if (p.super_app.toLowerCase() === 'sim') sim++;
-        else nao++;
+        const isSuperApp = String(p.super_app || '').toLowerCase() === 'sim';
+        if (isSuperApp) {
+          superApp++;
+        } else {
+          demais++;
+        }
       });
 
-      chartSuperAppSplit = new Chart(ctx, {
+      if (window.charts && window.charts.superAppSplit) {
+        window.charts.superAppSplit.destroy();
+      }
+
+      window.charts = window.charts || {};
+      window.charts.superAppSplit = new Chart(ctx, {
         type: 'doughnut',
-        data: { labels: ['Super App', 'Outros Sistemas / Canais'], datasets: [{ data: [sim, nao], backgroundColor: ['#f43f5e', '#334155'], borderWidth: 0 }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1' } } } }
+        data: {
+          labels: ['Super App', 'Demais Canais/Projetos'],
+          datasets: [{
+            data: [superApp, demais],
+            backgroundColor: [
+              '#f43f5e', // Rosa / Carmim (Cores originais mantidas)
+              '#64748b'  // Slate / Cinza
+            ],
+            borderColor: '#0f172a',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '60%',
+          layout: {
+            padding: {
+              left: 15,
+              right: 15,
+              bottom: 5
+            }
+          },
+          plugins: {
+            legend: {
+              display: true,
+              position: 'bottom',
+              labels: {
+                color: '#cbd5e1',
+                boxWidth: 12,    // Padronizado com os demais gráficos
+                boxHeight: 12,
+                padding: 12,     // Espaçamento equilibrado entre itens
+                font: {
+                  size: 10,      // Fonte e quebra simétrica das legendas
+                  weight: '500'
+                }
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => ` ${ctx.label}: ${ctx.raw} projetos`
+              }
+            }
+          }
+        }
       });
     }
-
     function renderChartPrioritySla(projects) {
       const ctx = getCanvasCtx('chartPrioritySla'); if (!ctx) return;
       if (chartPrioritySla) chartPrioritySla.destroy();
@@ -1271,67 +2257,252 @@
     }
 
     function renderChartDemandantesSuperApp(projects) {
-      const ctx = getCanvasCtx('chartDemandantesSuperApp'); if (!ctx) return;
-      if (chartDemandantesSuperApp) chartDemandantesSuperApp.destroy();
+      const ctx = document.getElementById('chartDemandantesSuperApp');
+      if (!ctx) return;
 
       const demMap = {};
+
       projects.forEach(p => {
-        let dem = p.demandante.replace(/\n/g, ' ').trim();
+        let dem = (p.demandante || '').replace(/\n/g, ' ').trim();
         if (dem && dem !== '-' && dem !== 'nan') {
           if (!demMap[dem]) demMap[dem] = { superApp: 0, outros: 0, total: 0 };
-          if (p.super_app.toLowerCase() === 'sim') demMap[dem].superApp++;
-          else demMap[dem].outros++;
+          
+          const isSuperApp = String(p.super_app || '').toLowerCase() === 'sim';
+          if (isSuperApp) {
+            demMap[dem].superApp++;
+          } else {
+            demMap[dem].outros++;
+          }
           demMap[dem].total++;
         }
       });
 
-      const top7 = Object.entries(demMap).sort((a, b) => b[1].total - a[1].total).slice(0, 7);
+      // Pega o Top 7 exatamente como na função original
+      const top7 = Object.entries(demMap)
+        .sort((a, b) => b[1].total - a[1].total)
+        .slice(0, 7);
 
-      chartDemandantesSuperApp = new Chart(ctx, {
+      const labels = top7.map(s => s[0]);
+      const dataSuperApp = top7.map(s => s[1].superApp);
+      const dataOutros = top7.map(s => s[1].outros);
+
+      if (window.charts && window.charts.demandantesSuperApp) {
+        window.charts.demandantesSuperApp.destroy();
+      }
+
+      window.charts = window.charts || {};
+      window.charts.demandantesSuperApp = new Chart(ctx, {
         type: 'bar',
-        data: { labels: top7.map(s => s[0].length > 20 ? s[0].substring(0, 20) + '...' : s[0]), datasets: [{ label: 'Foco Super App', data: top7.map(s => s[1].superApp), backgroundColor: '#f43f5e', borderRadius: 4 }, { label: 'Outros Canais', data: top7.map(s => s[1].outros), backgroundColor: '#8b5cf6', borderRadius: 4 }] },
-        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1' } } }, scales: { x: { stacked: true, ticks: { color: '#94a3b8' } }, y: { stacked: true, ticks: { color: '#cbd5e1' } } } }
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Foco Super App',
+              data: dataSuperApp,
+              backgroundColor: '#f43f5e', // Rosa / Rose original
+              borderRadius: 4
+            },
+            {
+              label: 'Outros Canais',
+              data: dataOutros,
+              backgroundColor: '#8b5cf6', // Roxo / Violet original
+              borderRadius: 4
+            }
+          ]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          layout: {
+            padding: {
+              left: 10,
+              right: 15
+            }
+          },
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { color: '#cbd5e1', font: { size: 11 } }
+            },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => `${ctx.dataset.label}: ${ctx.raw} projetos`
+              }
+            }
+          },
+          scales: {
+            x: {
+              stacked: true,
+              beginAtZero: true,
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#94a3b8', precision: 0 }
+            },
+            y: {
+              stacked: true,
+              grid: { display: false },
+              ticks: {
+                color: '#cbd5e1',
+                font: { size: 10, weight: '500' },
+                callback: function(value) {
+                  const label = this.getLabelForValue(value);
+                  if (label.length > 22) {
+                    return label.substring(0, 20) + '...';
+                  }
+                  return label;
+                }
+              }
+            }
+          }
+        }
       });
     }
 
+    // 1. Gráfico Top 20 Demandantes
     function renderChartDemandantes(projects) {
-      const ctx = getCanvasCtx('chartDemandantes'); if (!ctx) return;
-      if (chartDemandantes) chartDemandantes.destroy();
+      const ctx = document.getElementById('chartDemandantes');
+      if (!ctx) return;
 
-      const demMap = {};
+      const counts = {};
       projects.forEach(p => {
-        let dem = p.demandante.replace(/\n/g, ' ').trim();
-        if (dem && dem !== '-' && dem !== 'nan') demMap[dem] = (demMap[dem] || 0) + 1;
+        let dem = p.demandante || 'Não Informado';
+        dem = dem.trim();
+        if (dem && dem !== '-' && dem !== 'nan') {
+          counts[dem] = (counts[dem] || 0) + 1;
+        }
       });
 
-      const sorted = Object.entries(demMap).sort((a, b) => b[1] - a[1]).slice(0, 10);
+      // Ordenar e pegar os TOP 20
+      const sorted = Object.entries(counts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 20);
 
-      chartDemandantes = new Chart(ctx, {
+      const labels = sorted.map(i => i[0]);
+      const data = sorted.map(i => i[1]);
+
+      if (window.charts && window.charts.demandantes) {
+        window.charts.demandantes.destroy();
+      }
+
+      window.charts = window.charts || {};
+      window.charts.demandantes = new Chart(ctx, {
         type: 'bar',
-        data: { labels: sorted.map(s => s[0]), datasets: [{ data: sorted.map(s => s[1]), backgroundColor: '#f59e0b', borderRadius: 6 }] },
-        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#cbd5e1' } } } }
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Total de Projetos Demandados',
+            data: data,
+            backgroundColor: 'rgba(251, 191, 36, 0.75)',
+            borderColor: '#fbbf24',
+            borderWidth: 1.5,
+            borderRadius: 6
+          }]
+        },
+        options: {
+          indexAxis: 'y', // Barra horizontal para leitura confortável de 20 itens
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => `${ctx.raw} projetos solicitados`
+              }
+            }
+          },
+          scales: {
+            x: {
+              beginAtZero: true,
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#94a3b8', precision: 0 }
+            },
+            y: {
+              grid: { display: false },
+              ticks: { color: '#e2e8f0', font: { size: 10 } }
+            }
+          }
+        }
       });
     }
 
+    // Função Ajustada: Top 20 Metodologias & Atividades
     function renderChartMetodologias(projects) {
-      const ctx = getCanvasCtx('chartMetodologias'); if (!ctx) return;
-      if (chartMetodologias) chartMetodologias.destroy();
+      const ctx = document.getElementById('chartMetodologias');
+      if (!ctx) return;
 
-      const metMap = {};
+      const counts = {};
+
       projects.forEach(p => {
-        if (!p.pesquisa_metodo || p.pesquisa_metodo === '-') return;
-        p.pesquisa_metodo.split(',').forEach(m => {
-          let c = m.trim();
-          if (c) metMap[c] = (metMap[c] || 0) + 1;
+        // Busca exatamente o campo padronizado na sua standardizeRow
+        const campo = p.pesquisa_metodo || p.pesquisa || p.atividade || '';
+
+        if (!campo || campo === '-' || campo === 'nan' || campo === 'null' || campo === 'undefined') return;
+
+        // Separa metodologias por vírgula (quando há mais de uma por projeto)
+        const metodos = String(campo).split(',');
+
+        metodos.forEach(m => {
+          let nome = m.trim();
+          // Limpa aspas soltas ou caracteres especiais
+          nome = nome.replace(/^["'“]+|["'”]+$/g, '').trim();
+
+          if (nome && nome !== '-' && nome !== 'nan' && nome.toLowerCase() !== 'null') {
+            counts[nome] = (counts[nome] || 0) + 1;
+          }
         });
       });
 
-      const sorted = Object.entries(metMap).sort((a, b) => b[1] - a[1]).slice(0, 10);
+      // Ordena do maior para o menor e seleciona os TOP 20
+      const sorted = Object.entries(counts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 20);
 
-      chartMetodologias = new Chart(ctx, {
+      const labels = sorted.map(i => i[0]);
+      const data = sorted.map(i => i[1]);
+
+      // Destrói instância anterior para renderização limpa
+      if (window.charts && window.charts.metodologias) {
+        window.charts.metodologias.destroy();
+      }
+
+      window.charts = window.charts || {};
+      window.charts.metodologias = new Chart(ctx, {
         type: 'bar',
-        data: { labels: sorted.map(s => s[0]), datasets: [{ data: sorted.map(s => s[1]), backgroundColor: '#10b981', borderRadius: 6 }] },
-        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#cbd5e1' } } } }
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Ocorrências nas Demandas',
+            data: data,
+            backgroundColor: 'rgba(52, 211, 153, 0.75)',
+            borderColor: '#34d399',
+            borderWidth: 1.5,
+            borderRadius: 6
+          }]
+        },
+        options: {
+          indexAxis: 'y', // Barra horizontal para leitura confortável dos 20 itens
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => `Aplicada em ${ctx.raw} projetos`
+              }
+            }
+          },
+          scales: {
+            x: {
+              beginAtZero: true,
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#94a3b8', precision: 0 }
+            },
+            y: {
+              grid: { display: false },
+              ticks: { color: '#e2e8f0', font: { size: 10 } }
+            }
+          }
+        }
       });
     }
 
@@ -1421,66 +2592,190 @@
     };
     // 1. Volume de Tarefas Ágeis por Frente
     function renderChartTarefasAgies(projects) {
-      const ctx = getCanvasCtx('chartTarefasAgies'); if (!ctx) return;
-      if (chartTarefasAgies) chartTarefasAgies.destroy();
+      const ctx = document.getElementById('chartTarefasAgies');
+      if (!ctx) return;
 
-      const areas = ['CX Pesquisa', 'UX Pesquisa', 'CX Escrita', 'UX Escrita'];
-      const tarefasCounts = [];
+      const selectedArea = document.getElementById('filterArea')?.value || 'ALL';
 
-      areas.forEach(a => {
-        const areaItems = window.RAW_DATA[a] || [];
-        let sum = 0;
-        areaItems.forEach(p => { sum += (p.tarefas_agies || 0); });
-        tarefasCounts.push(sum);
-      });
+      // Destruir instância anterior para evitar sobreposição
+      if (window.charts && window.charts.tarefasAgies) {
+        window.charts.tarefasAgies.destroy();
+      }
+      window.charts = window.charts || {};
 
-      chartTarefasAgies = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: areas,
-          datasets: [{
-            label: 'Tarefas Ágeis Concluídas',
-            data: tarefasCounts,
-            backgroundColor: ['#0284c7', '#0d9488', '#8b5cf6', '#f59e0b'],
-            borderRadius: 6
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: { x: { ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#94a3b8' } } }
-        }
-      });
+      // CASO 1: "Todas as Frentes" selecionado (ALL) -> Exibe a comparação das 4 frentes
+      if (selectedArea === 'ALL') {
+        const sheets = ['CX Pesquisa', 'UX Pesquisa', 'CX Escrita', 'UX Escrita'];
+        const totalTarefasPorFrente = [0, 0, 0, 0];
+
+        sheets.forEach((sh, idx) => {
+          const list = window.RAW_DATA[sh] || [];
+          let sum = 0;
+          list.forEach(p => {
+            sum += (p.tarefas_agies || 0);
+          });
+          totalTarefasPorFrente[idx] = sum;
+        });
+
+        window.charts.tarefasAgies = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: sheets,
+            datasets: [{
+              label: 'Total de Tarefas Ágeis',
+              data: totalTarefasPorFrente,
+              backgroundColor: [
+                'rgba(56, 189, 248, 0.75)',  // CX Pesquisa (Sky)
+                'rgba(168, 85, 247, 0.75)',  // UX Pesquisa (Purple)
+                'rgba(251, 191, 36, 0.75)',  // CX Escrita (Amber)
+                'rgba(52, 211, 153, 0.75)'   // UX Escrita (Emerald)
+              ],
+              borderColor: ['#38bdf8', '#a855f7', '#fbbf24', '#34d399'],
+              borderWidth: 1.5,
+              borderRadius: 8
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: (ctx) => `${ctx.raw} tarefas ágeis executadas`
+                }
+              }
+            },
+            scales: {
+              x: {
+                grid: { display: false },
+                ticks: { color: '#e2e8f0', font: { size: 11, weight: 'bold' } }
+              },
+              y: {
+                beginAtZero: true,
+                grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                ticks: { color: '#94a3b8', precision: 0 }
+              }
+            }
+          }
+        });
+
+      } else {
+        // CASO 2: Frente específica selecionada -> Exibe apenas os dados da frente escolhida
+        let sumTarefas = 0;
+        projects.forEach(p => {
+          sumTarefas += (p.tarefas_agies || 0);
+        });
+
+        window.charts.tarefasAgies = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: [selectedArea],
+            datasets: [{
+              label: `Tarefas Ágeis (${selectedArea})`,
+              data: [sumTarefas],
+              backgroundColor: 'rgba(52, 211, 153, 0.75)',
+              borderColor: '#34d399',
+              borderWidth: 1.5,
+              borderRadius: 8,
+              barThickness: 60
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: (ctx) => `${ctx.raw} tarefas ágeis executadas`
+                }
+              }
+            },
+            scales: {
+              x: {
+                grid: { display: false },
+                ticks: { color: '#e2e8f0', font: { size: 11, weight: 'bold' } }
+              },
+              y: {
+                beginAtZero: true,
+                grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                ticks: { color: '#94a3b8', precision: 0 }
+              }
+            }
+          }
+        });
+      }
     }
 
     // 2. Tipo de Projeto (Pontual vs Estruturado)
     function renderChartTipoProjeto(projects) {
-      const ctx = getCanvasCtx('chartTipoProjeto'); if (!ctx) return;
-      if (chartTipoProjeto) chartTipoProjeto.destroy();
+      const ctx = document.getElementById('chartTipoProjeto');
+      if (!ctx) return;
 
-      let pontual = 0, estruturado = 0;
+      let pontual = 0;
+      let estruturado = 0;
 
       projects.forEach(p => {
-        const t = (p.tipo_projeto || '').toUpperCase();
-        if (t.includes('P')) pontual++;
-        else estruturado++;
+        const tipo = (p.tipo_projeto || '').toUpperCase();
+        if (tipo.includes('P')) {
+          pontual++;
+        } else {
+          estruturado++;
+        }
       });
 
-      chartTipoProjeto = new Chart(ctx, {
+      if (window.charts && window.charts.tipoProjeto) {
+        window.charts.tipoProjeto.destroy();
+      }
+
+      window.charts = window.charts || {};
+      window.charts.tipoProjeto = new Chart(ctx, {
         type: 'doughnut',
         data: {
-          labels: ['Projetos Estruturados (E)', 'Projetos Pontuais (P)'],
+          labels: ['Projetos Pontuais (P)', 'Projetos Estruturados (E)'],
           datasets: [{
-            data: [estruturado, pontual],
-            backgroundColor: ['#6366f1', '#38bdf8'],
-            borderWidth: 0
+            data: [pontual, estruturado],
+            backgroundColor: [
+              '#38bdf8', // Sky (Pontual)
+              '#f59e0b'  // Amber (Estruturado)
+            ],
+            borderColor: '#0f172a',
+            borderWidth: 2
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1' } } }
+          cutout: '60%',
+          layout: {
+            padding: {
+              left: 15,
+              right: 15,
+              bottom: 5
+            }
+          },
+          plugins: {
+            legend: {
+              display: true,
+              position: 'bottom',
+              labels: {
+                color: '#cbd5e1',
+                boxWidth: 12,    // Padronizado com os demais
+                boxHeight: 12,
+                padding: 12,     // Espaçamento equilibrado entre itens
+                font: {
+                  size: 10,      // Fonte e quebra simétrica
+                  weight: '500'
+                }
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => ` ${ctx.label}: ${ctx.raw} projetos`
+              }
+            }
+          }
         }
       });
     }
@@ -1532,7 +2827,7 @@
       projects.forEach(p => {
         let ev = p.evidencias ? p.evidencias.trim() : '';
         if (!ev || ev === '-' || ev === 'nan' || ev === 'Outro') return;
-        
+
         // Mapear variações
         if (ev.toLowerCase().includes('figma')) ev = 'Arquivo Figma / FigJam';
         else if (ev.toLowerCase().includes('slide') || ev.toLowerCase().includes('apresenta')) ev = 'Apresentação / Relatório (Slides)';
@@ -1542,7 +2837,7 @@
         evidMap[ev] = (evidMap[ev] || 0) + 1;
       });
 
-      const sorted = Object.entries(evidMap).sort((a,b) => b[1] - a[1]).slice(0, 6);
+      const sorted = Object.entries(evidMap).sort((a, b) => b[1] - a[1]).slice(0, 6);
 
       chartEvidencias = new Chart(ctx, {
         type: 'bar',
@@ -1564,6 +2859,59 @@
         }
       });
     }
+    window.syncFromGoogleSheets = async function () {
+      const SHEET_ID = '1FFNBDdO_gQS5Q13fb5vlBjDC0DWni11DtLoG01hdae4';
+      //  const SHEET_ID = '1G0hjwGubD7UmCgKixzicFmcXRvpbUlzOAdv7TbVLZBE';
+      const sheets = ['CX Pesquisa', 'UX Pesquisa', 'CX Escrita', 'UX Escrita'];
+
+      const badge = document.getElementById('lastUpdatedText');
+      if (badge) badge.innerText = "Buscando dados no Google Sheets...";
+
+      let successCount = 0;
+
+      for (let sheetName of sheets) {
+        // Query com tq=SELECT * e range A1:Z300 para garantir que nenhuma linha fique de fora
+        const fetchUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&tq=${encodeURIComponent("SELECT *")}&range=A1:Z300&sheet=${encodeURIComponent(sheetName)}`;
+
+        try {
+          const response = await fetch(fetchUrl);
+          if (!response.ok) throw new Error(`Status HTTP: ${response.status}`);
+
+          const csvText = await response.text();
+
+          Papa.parse(csvText, {
+            header: true,
+            skipEmptyLines: 'greedy',
+            dynamicTyping: false,
+            complete: function (results) {
+              if (results.data) {
+                const cleanRows = results.data
+                  .map(r => standardizeRow(r, sheetName))
+                  .filter(r => r.projeto && r.projeto !== 'nan' && r.projeto !== '-' && r.projeto !== '' && r.projeto.toLowerCase() !== 'projeto');
+
+                window.RAW_DATA[sheetName] = cleanRows;
+                successCount++;
+
+                console.log(`✅ Aba '${sheetName}' lida da nuvem: ${cleanRows.length} projetos.`);
+
+                if (successCount === sheets.length) {
+                  if (window.saveDataToFirebase) {
+                    window.saveDataToFirebase(window.RAW_DATA);
+                  } else {
+                    window.updateStatusUI();
+                    window.renderAll();
+                  }
+                }
+              }
+            }
+          });
+        } catch (error) {
+          console.error(`Erro ao buscar aba ${sheetName}:`, error);
+          alert(`Erro na aba '${sheetName}'. Verifique se a planilha está compartilhada para 'Qualquer pessoa com o link'.`);
+          if (badge) badge.innerText = "Erro ao Sincronizar";
+        }
+      }
+    };
   </script>
 </body>
 
