@@ -811,13 +811,32 @@
             <div class="h-64 relative"><canvas id="chartTamanhoDist"></canvas></div>
           </div>
 
-          <div class="glass-card p-5 rounded-2xl">
-            <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
-              <i data-lucide="user-check" class="w-4 h-4 text-cyan-400"></i> Alocação por Responsável (Top 8)
-            </h3>
-            <p class="text-xs text-slate-400 mb-3">Projetos sob gestão por especialista</p>
-            <div class="h-64 relative"><canvas id="chartResponsavelDist"></canvas></div>
-          </div>
+          <!-- Alocação por Pessoa (Top 10) -->
+<div class="glass-card p-5 rounded-2xl flex flex-col justify-between">
+  <div>
+    <!-- Cabeçalho com Botões de Alternância -->
+    <div class="flex items-start justify-between gap-2 mb-1">
+      <div>
+        <h3 class="text-sm font-bold text-white flex items-center gap-2" id="titleAlocacaoPessoas">
+          <i data-lucide="user-check" class="w-4 h-4 text-cyan-400"></i> Alocação por Responsável (Top 10)
+        </h3>
+        <p class="text-xs text-slate-400 mt-0.5" id="descAlocacaoPessoas">Projetos sob gestão por especialista</p>
+      </div>
+
+      <!-- Botões Segmentados (Tabs Pequenas) -->
+      <div class="flex items-center bg-slate-800/80 p-0.5 rounded-lg border border-slate-700/80 text-[10px] font-semibold shrink-0">
+        <button type="button" onclick="setAlocacaoMode('resp')" id="btnAllocResp" 
+          class="px-2 py-1 rounded-md bg-cyan-600 text-white transition-all">Resp.</button>
+        <button type="button" onclick="setAlocacaoMode('colab')" id="btnAllocColab" 
+          class="px-2 py-1 rounded-md text-slate-400 hover:text-white transition-all">Colab.</button>
+        <button type="button" onclick="setAlocacaoMode('total')" id="btnAllocTotal" 
+          class="px-2 py-1 rounded-md text-slate-400 hover:text-white transition-all">Soma</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="h-64 relative mt-2"><canvas id="chartResponsavelDist"></canvas></div>
+</div>
 
           <div class="glass-card p-5 rounded-2xl">
             <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
@@ -956,14 +975,14 @@
           </div>
 
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Média de Reacionamentos -->
-            <div class="glass-card p-5 rounded-2xl">
-              <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
-                <i data-lucide="refresh-cw" class="w-4 h-4 text-amber-400"></i> Média de Reacionamentos por Frente
-              </h3>
-              <p class="text-xs text-slate-400 mb-3">Retrabalho/revisões pós-entrega inicial</p>
-              <div class="h-64 relative"><canvas id="chartReacionamentos"></canvas></div>
-            </div>
+            <!-- Média de Metodologias/Técnicas por Projeto (NOVO) -->
+<div class="glass-card p-5 rounded-2xl">
+  <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+    <i data-lucide="wrench" class="w-4 h-4 text-emerald-400"></i> Média de Métodos por Projeto
+  </h3>
+  <p class="text-xs text-slate-400 mb-3">Maturidade técnica e profundidade de pesquisa por demanda</p>
+  <div class="h-64 relative"><canvas id="chartMetodosPorProjeto"></canvas></div>
+</div>
 
             <!-- Formato do Entregável Final -->
             <div class="glass-card p-5 rounded-2xl">
@@ -1094,7 +1113,7 @@
       return '';
     }
 
-    let chartTarefasAgies = null, chartTipoProjeto = null, chartEvidencias = null, chartReacionamentos = null;
+    let chartTarefasAgies = null, chartTipoProjeto = null, chartEvidencias = null;
 
     function standardizeRow(row, defaultArea) {
       const id = extractFieldValue(row, ['ID', 'Id', 'Código']);
@@ -1473,6 +1492,7 @@
       const elemC2026 = document.getElementById('kpiConcluidos2026'); if (elemC2026) elemC2026.innerText = concluidos2026;
 
       // 11. RENDERIZAR TODOS OS GRÁFICOS
+      
       renderChartConcluidosPorAno(allProjects);
       renderChartSimultaneosAnos(allProjects);
       renderChartAreaDist();
@@ -1487,7 +1507,6 @@
       renderChartPrioritySla(allProjects);
       renderChartTarefasAgies(allProjects);
       renderChartTipoProjeto(allProjects);
-      renderChartReacionamentos(allProjects);
       renderChartEvidencias(allProjects);
       renderChartMetodosSuperApp(allProjects);
       renderChartLeadTimeDispersao(allProjects);
@@ -1495,6 +1514,7 @@
       renderChartDemandantes(allProjects);
       renderChartMetodologias(allProjects);
       renderDashboardTable();
+      renderChartMetodosPorProjeto(allProjects);
     }
 
     // GRAFICO ANO 1: Concluídos por Ano (2025 vs 2026)
@@ -1903,24 +1923,133 @@
       });
     }
 
-    function renderChartResponsavelDist(projects) {
-      const ctx = getCanvasCtx('chartResponsavelDist'); if (!ctx) return;
-      if (chartResponsavelDist) chartResponsavelDist.destroy();
+    // Variável global para armazenar o modo ativo ('resp', 'colab', 'total')
+    window.currentAlocacaoMode = window.currentAlocacaoMode || 'resp';
 
-      const respMap = {};
+    function setAlocacaoMode(mode) {
+      window.currentAlocacaoMode = mode;
+
+      // Estilização dos botões
+      const btnResp = document.getElementById('btnAllocResp');
+      const btnColab = document.getElementById('btnAllocColab');
+      const btnTotal = document.getElementById('btnAllocTotal');
+
+      [btnResp, btnColab, btnTotal].forEach(btn => {
+        if (btn) btn.className = 'px-2 py-1 rounded-md text-slate-400 hover:text-white transition-all';
+      });
+
+      if (mode === 'resp' && btnResp) btnResp.className = 'px-2 py-1 rounded-md bg-cyan-600 text-white transition-all';
+      if (mode === 'colab' && btnColab) btnColab.className = 'px-2 py-1 rounded-md bg-cyan-600 text-white transition-all';
+      if (mode === 'total' && btnTotal) btnTotal.className = 'px-2 py-1 rounded-md bg-cyan-600 text-white transition-all';
+
+      // Atualiza textos do cabeçalho
+      const title = document.getElementById('titleAlocacaoPessoas');
+      const desc = document.getElementById('descAlocacaoPessoas');
+
+      if (title && desc) {
+        if (mode === 'resp') {
+          title.innerHTML = `<i data-lucide="user-check" class="w-4 h-4 text-cyan-400"></i> Alocação por Responsável (Top 10)`;
+          desc.innerText = 'Projetos sob gestão por especialista';
+        } else if (mode === 'colab') {
+          title.innerHTML = `<i data-lucide="users" class="w-4 h-4 text-cyan-400"></i> Alocação por Colaborador (Top 10)`;
+          desc.innerText = 'Participações em colaboração por especialista';
+        } else {
+          title.innerHTML = `<i data-lucide="layers" class="w-4 h-4 text-cyan-400"></i> Atuação Total: Resp. + Colab. (Top 10)`;
+          desc.innerText = 'Soma total de projetos envolvidos por especialista';
+        }
+        lucide.createIcons();
+      }
+
+      // Re-renderiza o gráfico com os projetos atuais filtrados
+      window.renderAll();
+    }
+
+    function renderChartResponsavelDist(projects) {
+      const ctx = document.getElementById('chartResponsavelDist');
+      if (!ctx) return;
+
+      const mode = window.currentAlocacaoMode || 'resp';
+      const personMap = {};
+
       projects.forEach(p => {
-        let resp = p.responsavel.split(',')[0].trim();
-        if (resp && resp !== '-' && resp !== 'Não definido' && resp !== 'nan') {
-          respMap[resp] = (respMap[resp] || 0) + 1;
+        // 1. Extração de Responsáveis
+        const resps = (p.responsavel || '')
+          .split(/[,;]/)
+          .map(r => r.trim())
+          .filter(r => r && r !== '-' && r !== 'Não definido' && r !== 'nan');
+
+        // 2. Extração de Colaboradores
+        const colabs = (p.colaboradores || '')
+          .split(/[,;]/)
+          .map(c => c.trim())
+          .filter(c => c && c !== '-' && c !== 'nan');
+
+        if (mode === 'resp') {
+          resps.forEach(r => { personMap[r] = (personMap[r] || 0) + 1; });
+        } else if (mode === 'colab') {
+          colabs.forEach(c => { personMap[c] = (personMap[c] || 0) + 1; });
+        } else { // Mode 'total'
+          // Une sem duplicar no mesmo projeto caso a pessoa seja Resp e Colab no mesmo card
+          const todosNoProjeto = Array.from(new Set([...resps, ...colabs]));
+          todosNoProjeto.forEach(pessoa => { personMap[pessoa] = (personMap[pessoa] || 0) + 1; });
         }
       });
 
-      const sorted = Object.entries(respMap).sort((a, b) => b[1] - a[1]).slice(0, 8);
+      // Ordena do maior para o menor e pega o Top 10
+      const sorted = Object.entries(personMap)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10);
 
-      chartResponsavelDist = new Chart(ctx, {
+      const labels = sorted.map(s => s[0]);
+      const data = sorted.map(s => s[1]);
+
+      if (window.charts && window.charts.responsavelDist) {
+        window.charts.responsavelDist.destroy();
+      }
+
+      window.charts = window.charts || {};
+      window.charts.responsavelDist = new Chart(ctx, {
         type: 'bar',
-        data: { labels: sorted.map(s => s[0]), datasets: [{ data: sorted.map(s => s[1]), backgroundColor: '#06b6d4', borderRadius: 6 }] },
-        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#cbd5e1' } } } }
+        data: {
+          labels: labels,
+          datasets: [{
+            label: mode === 'resp' ? 'Projetos como Responsável' : (mode === 'colab' ? 'Projetos como Colaborador' : 'Total de Envolvimentos'),
+            data: data,
+            backgroundColor: '#06b6d4',
+            borderRadius: 5
+          }]
+        },
+        options: {
+          indexAxis: 'y', // Barra Horizontal
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => ` ${ctx.raw} projetos`
+              }
+            }
+          },
+          scales: {
+            x: {
+              beginAtZero: true,
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#94a3b8', precision: 0 }
+            },
+            y: {
+              grid: { display: false },
+              ticks: {
+                color: '#cbd5e1',
+                font: { size: 10 },
+                callback: function(value) {
+                  const label = this.getLabelForValue(value);
+                  return label.length > 18 ? label.substring(0, 16) + '...' : label;
+                }
+              }
+            }
+          }
+        }
       });
     }
 
@@ -2799,43 +2928,7 @@
       });
     }
 
-    // 3. Média de Reacionamentos por Frente
-    function renderChartReacionamentos(projects) {
-      const ctx = getCanvasCtx('chartReacionamentos'); if (!ctx) return;
-      if (chartReacionamentos) chartReacionamentos.destroy();
-
-      const areas = ['CX Pesquisa', 'UX Pesquisa', 'CX Escrita', 'UX Escrita'];
-      const medias = [];
-
-      areas.forEach(a => {
-        const areaItems = window.RAW_DATA[a] || [];
-        if (areaItems.length > 0) {
-          const totalAcionamentos = areaItems.reduce((acc, p) => acc + (p.acionamentos || 1), 0);
-          medias.push((totalAcionamentos / areaItems.length).toFixed(2));
-        } else {
-          medias.push(0);
-        }
-      });
-
-      chartReacionamentos = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: areas,
-          datasets: [{
-            label: 'Média de Reacionamentos',
-            data: medias,
-            backgroundColor: '#f59e0b',
-            borderRadius: 6
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: { x: { ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#94a3b8' } } }
-        }
-      });
-    }
+    
 
     // 4. Formato dos Entregáveis (Evidências)
     function renderChartEvidencias(projects) {
@@ -2878,9 +2971,132 @@
         }
       });
     }
+
+function renderChartMetodosPorProjeto(projects) {
+  const ctx = document.getElementById('chartMetodosPorProjeto');
+  if (!ctx) return;
+
+  const selectedArea = document.getElementById('filterArea')?.value || 'ALL';
+  const sheets = ['CX Pesquisa', 'UX Pesquisa', 'CX Escrita', 'UX Escrita'];
+
+  if (window.charts && window.charts.metodosPorProjeto) {
+    window.charts.metodosPorProjeto.destroy();
+  }
+  window.charts = window.charts || {};
+
+  const contarMetodos = (p) => {
+    const metodosStr = String(p.pesquisa_metodo || '').trim();
+    if (!metodosStr || metodosStr === '-' || metodosStr.toLowerCase() === 'nan') {
+      return 1;
+    }
+    const arr = metodosStr.split(/[,;/|\n]/).filter(m => m.trim().length > 0);
+    return arr.length > 0 ? arr.length : 1;
+  };
+
+  if (selectedArea === 'ALL') {
+    const mediamMetodos = sheets.map(sh => {
+      const list = (window.RAW_DATA && window.RAW_DATA[sh]) ? window.RAW_DATA[sh] : [];
+      if (!list.length) return 0;
+
+      let totalMetodos = 0;
+      list.forEach(p => { totalMetodos += contarMetodos(p); });
+
+      return parseFloat((totalMetodos / list.length).toFixed(1));
+    });
+
+    window.charts.metodosPorProjeto = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: sheets,
+        datasets: [{
+          label: 'Média de Métodos / Projeto',
+          data: mediamMetodos,
+          backgroundColor: [
+            'rgba(56, 189, 248, 0.75)',
+            'rgba(168, 85, 247, 0.75)',
+            'rgba(251, 191, 36, 0.75)',
+            'rgba(52, 211, 153, 0.75)'
+          ],
+          borderColor: ['#38bdf8', '#a855f7', '#fbbf24', '#34d399'],
+          borderWidth: 1.5,
+          borderRadius: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => `Média: ${ctx.raw} métodos por projeto`
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { color: '#e2e8f0', font: { size: 11, weight: 'bold' } }
+          },
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+            ticks: { color: '#94a3b8', precision: 1 }
+          }
+        }
+      }
+    });
+
+  } else {
+    const list = projects || [];
+    let totalMetodos = 0;
+    list.forEach(p => { totalMetodos += contarMetodos(p); });
+
+    const avg = list.length ? parseFloat((totalMetodos / list.length).toFixed(1)) : 0;
+
+    window.charts.metodosPorProjeto = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: [selectedArea],
+        datasets: [{
+          label: `Média (${selectedArea})`,
+          data: [avg],
+          backgroundColor: 'rgba(52, 211, 153, 0.75)',
+          borderColor: '#34d399',
+          borderWidth: 1.5,
+          borderRadius: 8,
+          barThickness: 60
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => `Média: ${ctx.raw} métodos por projeto`
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { color: '#e2e8f0', font: { size: 11, weight: 'bold' } }
+          },
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+            ticks: { color: '#94a3b8', precision: 1 }
+          }
+        }
+      }
+    });
+  }
+}
+
     window.syncFromGoogleSheets = async function () {
-      const SHEET_ID = '1FFNBDdO_gQS5Q13fb5vlBjDC0DWni11DtLoG01hdae4';
-      //  const SHEET_ID = '1G0hjwGubD7UmCgKixzicFmcXRvpbUlzOAdv7TbVLZBE';
+       const SHEET_ID = '1G0hjwGubD7UmCgKixzicFmcXRvpbUlzOAdv7TbVLZBE';
       const sheets = ['CX Pesquisa', 'UX Pesquisa', 'CX Escrita', 'UX Escrita'];
 
       const badge = document.getElementById('lastUpdatedText');
