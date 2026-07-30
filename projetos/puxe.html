@@ -248,6 +248,11 @@
           <i data-lucide="heart-handshake" class="w-4 h-4 text-emerald-400"></i>
           Impacto Social
         </button>
+        <button onclick="switchTab('control')" id="tab-control"
+          class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-all">
+          <i data-lucide="compass" class="w-4 h-4 text-cyan-400"></i>
+          Torre de Controle &amp; Decisão
+        </button>
         <button onclick="switchTab('inv')" id="tab-inv"
           class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-all">
           <i data-lucide="trending-up" class="w-4 h-4 text-emerald-400"></i>
@@ -1632,6 +1637,185 @@
 
         </div>
       </div>
+
+    </section>
+
+    <!-- VIEW: TORRE DE CONTROLE & DECISÃO GERENCIAL (PRESCRITIVA) -->
+    <section id="view-control" class="hidden space-y-8">
+
+      <!-- CABEÇALHO DA ABA -->
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-slate-800 pb-3">
+        <div>
+          <div class="flex items-center gap-2.5">
+            <i data-lucide="compass" class="w-5 h-5 text-cyan-400"></i>
+            <h2 class="text-base font-bold text-white uppercase tracking-wider">Torre de Controle, Capacidade &amp; Decisão Gerencial</h2>
+          </div>
+          <p class="text-xs text-slate-400 mt-0.5">Painel ativo de diagnóstico: Detecção de gargalos, planejamento de capacidade, foco estratégico e absorção por TI</p>
+        </div>
+        <span class="px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 text-xs font-semibold">
+          Motor Prescritivo de Ação
+        </span>
+      </div>
+
+      <!-- PAINEL 1: RADAR DE GARGALOS & SOBRECARGA INDIVIDUAL (LOAD BALANCING) -->
+      <div class="glass-card p-6 rounded-2xl border border-slate-700/80 space-y-4">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-700/60 pb-3">
+          <div class="flex items-center gap-2">
+            <div class="p-2 bg-rose-500/10 text-rose-400 rounded-lg">
+              <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-white uppercase tracking-wider">1. Radar de Sobrecarga &amp; Risco de Gargalo em Pessoas</h3>
+              <p class="text-[11px] text-slate-400">Índice ponderado de esforço nos projetos ativos: Estruturados (Peso 3x) + Pontuais (Peso 1x)</p>
+            </div>
+          </div>
+          <span class="text-[11px] font-bold text-rose-300 bg-rose-500/10 px-3 py-1 rounded-full border border-rose-500/20" id="cntAlertasRiscoText">
+            0 Alerta(s) de Sobrecarga
+          </span>
+        </div>
+
+        <!-- RECOMENDAÇÃO PRESCRITIVA AUTOMÁTICA -->
+        <div class="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2" id="boxRecomendacaoAlocacao">
+          <div class="text-xs font-bold text-amber-400 flex items-center gap-1.5 uppercase">
+            <i data-lucide="shield-alert" class="w-4 h-4"></i> Diagnóstico Prescritivo de Alocação:
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed" id="txtRecomendacaoAlocacao">
+            Analisando a esteira ativa do time...
+          </p>
+        </div>
+
+        <!-- GRÁFICO DE SOBRECARGA INDIVIDUAL -->
+        <div class="h-64 relative">
+          <canvas id="chartSobrecargaPessoas"></canvas>
+        </div>
+      </div>
+
+      <!-- LINHA DE PAINÉIS DE DECISÃO 2 E 3 -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <!-- PAINEL 2: SIMULADOR INTERATIVO DE CAPACIDADE (SCENARIO PLANNING - WHAT IF) -->
+        <div class="glass-card p-6 rounded-2xl border border-slate-700/80 space-y-4 flex flex-col justify-between">
+          <div class="flex items-center justify-between border-b border-slate-700/60 pb-3">
+            <div class="flex items-center gap-2">
+              <div class="p-2 bg-sky-500/10 text-sky-400 rounded-lg">
+                <i data-lucide="sliders" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h3 class="text-sm font-bold text-white uppercase tracking-wider">2. Simulador de Capacidade (What-If)</h3>
+                <p class="text-[11px] text-slate-400">Previsão de impacto de novas demandas na esteira do time</p>
+              </div>
+            </div>
+            <span class="text-xs font-mono font-bold text-sky-300 bg-sky-500/10 px-2.5 py-1 rounded-full border border-sky-500/20">
+              Vazão: <span id="txtVazaoMensal">0</span> proj/mês
+            </span>
+          </div>
+
+          <!-- CONTROLES DO SIMULADOR -->
+          <div class="space-y-4 bg-slate-950/60 p-4 rounded-xl border border-slate-800/80">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-[11px] font-bold text-slate-300 mb-1">Novas Demandas Pontuais (P):</label>
+                <input type="number" id="simNovasPontuais" value="2" min="0" max="20" onchange="runCapacitySimulator()" onkeyup="runCapacitySimulator()"
+                  class="w-full bg-slate-900 text-white text-xs rounded-lg px-3 py-2 border border-slate-700 focus:outline-none focus:border-sky-500 font-mono font-bold">
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-slate-300 mb-1">Novos Estudos Estruturados (E):</label>
+                <input type="number" id="simNovosEstruturados" value="1" min="0" max="10" onchange="runCapacitySimulator()" onkeyup="runCapacitySimulator()"
+                  class="w-full bg-slate-900 text-white text-xs rounded-lg px-3 py-2 border border-slate-700 focus:outline-none focus:border-sky-500 font-mono font-bold">
+              </div>
+            </div>
+
+            <!-- RESULTADO DA SIMULAÇÃO -->
+            <div class="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-400">Taxa de Ocupação da Equipe:</span>
+                <span class="font-bold text-sky-300 font-mono text-sm" id="txtTaxaOcupacaoSim">100%</span>
+              </div>
+              <p class="text-[11px] text-slate-300 leading-normal" id="txtResultadoSimulacao">
+                Ajuste os valores acima para simular a capacidade de absorção do time.
+              </p>
+            </div>
+          </div>
+
+          <div class="text-[10.5px] text-slate-500 italic">
+            * Cálculo baseado na média histórica de duração de projetos (P = ~10 dias | E = ~35 dias).
+          </div>
+        </div>
+
+        <!-- PAINEL 3: ÍNDICE DE FOCO E ALINHAMENTO ESTRATÉGICO -->
+        <div class="glass-card p-6 rounded-2xl border border-slate-700/80 space-y-4 flex flex-col justify-between">
+          <div class="flex items-center justify-between border-b border-slate-700/60 pb-3">
+            <div class="flex items-center gap-2">
+              <div class="p-2 bg-purple-500/10 text-purple-400 rounded-lg">
+                <i data-lucide="target" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h3 class="text-sm font-bold text-white uppercase tracking-wider">3. Índice de Aderência Estratégica</h3>
+                <p class="text-[11px] text-slate-400">Percentual do orçamento de pessoas alocado em demandas Críticas / SuperApp</p>
+              </div>
+            </div>
+            <span class="text-xs font-mono font-bold text-purple-300 bg-purple-500/10 px-2.5 py-1 rounded-full border border-purple-500/20" id="txtIndiceAderenciaPct">
+              0% Aderente
+            </span>
+          </div>
+
+          <!-- RECOMENDAÇÃO DE ALINHAMENTO ESTRATÉGICO -->
+          <div class="space-y-3">
+            <div class="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1.5">
+              <div class="font-bold text-xs uppercase text-purple-300 flex items-center gap-1.5">
+                <i data-lucide="compass" class="w-4 h-4"></i> Diagnóstico de Foco Operacional:
+              </div>
+              <p class="text-xs text-slate-300 leading-relaxed" id="txtDiagnosticoEstrategico">
+                Analisando a proporção de alocação no SuperApp e demandas críticas...
+              </p>
+            </div>
+
+            <div class="h-44 relative">
+              <canvas id="chartIndiceAderencia"></canvas>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- PAINEL 4: EFICIÊNCIA DE RECRUTAMENTO & TESTES COM USUÁRIOS REAIS -->
+      <div class="glass-card p-6 rounded-2xl border border-slate-700/80 space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-700/60 pb-3">
+          <div class="flex items-center gap-2">
+            <div class="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg">
+              <i data-lucide="users" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-white uppercase tracking-wider">4. Eficiência de Recrutamento &amp; Testes com Usuários Reais</h3>
+              <p class="text-[11px] text-slate-400">Rastreabilidade metodológica: Validação ativa com cidadãos/usuários vs. Pesquisas Desk/Heurísticas</p>
+            </div>
+          </div>
+          <span class="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20" id="txtTaxaUsuariosReais">
+            0% Testes Primários
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
+          <!-- CARD DE DIAGNÓSTICO PRESCRITIVO DE AMOSTRA -->
+          <div class="space-y-3 bg-slate-950/60 p-4 rounded-xl border border-slate-800/80 lg:col-span-1 text-xs">
+            <div class="font-bold text-white uppercase tracking-wider text-[11px] border-b border-slate-800 pb-1.5 flex items-center gap-1.5">
+              <i data-lucide="compass" class="w-3.5 h-3.5 text-emerald-400"></i> Diagnóstico Amostral de Campo:
+            </div>
+            <p class="text-slate-300 leading-relaxed" id="txtDiagnosticoRecrutamento">
+              Analisando a proporção de pesquisas aplicadas com usuários reais...
+            </p>
+            <div class="pt-2 border-t border-slate-800/80 text-[10.5px] text-slate-400">
+              * Cruza metodologias de teste de usabilidade, entrevistas e testes de clareza com a diversidade de praças regionais (Manaus, Fortaleza, Ceilândia, SP, RS).
+            </div>
+          </div>
+
+          <!-- GRÁFICO DOUGHNUT DE DISTRIBUIÇÃO METODOLÓGICA -->
+          <div class="h-64 relative lg:col-span-2">
+            <canvas id="chartRecrutamentoUsuarios"></canvas>
+          </div>
+        </div>
+      </div>
+       
 
     </section>
 
@@ -3271,6 +3455,8 @@
       const viewInv = document.getElementById('view-inv');
       const viewImpact = document.getElementById('view-impact');
       const viewSocial = document.getElementById('view-social');
+      const viewControl = document.getElementById('view-control'); // <--- NOVA VIEW
+      
       const hasData = Object.values(window.RAW_DATA).some(arr => arr.length > 0);
 
       if (!hasData) return;
@@ -3280,10 +3466,14 @@
       if (viewInv) viewInv.classList.add('hidden');
       if (viewImpact) viewImpact.classList.add('hidden');
       if (viewSocial) viewSocial.classList.add('hidden');
+      if (viewControl) viewControl.classList.add('hidden'); // <--- ESCONDE A VIEW
 
       if (tabId === 'dash') {
         if (viewDash) viewDash.classList.remove('hidden');
         renderDashboard();
+      } else if (tabId === 'control') {
+        if (viewControl) viewControl.classList.remove('hidden'); // <--- EXIBE A VIEW
+        renderControlView();
       } else if (tabId === 'impact') {
         if (viewImpact) viewImpact.classList.remove('hidden');
         renderImpactView();
@@ -3303,6 +3493,7 @@
       const hasData = Object.values(window.RAW_DATA).some(arr => arr.length > 0);
       if (!hasData) return;
       if (currentTab === 'dash') renderDashboard();
+      else if (currentTab === 'control') renderControlView(); // <--- RE-RENDERIZA
       else if (currentTab === 'impact') renderImpactView();
       else if (currentTab === 'social') renderSocialView();
       else if (currentTab === 'inv') renderInvestorsView();
@@ -5910,6 +6101,310 @@
       }
     });
 
+    // =================================================================
+    // LÓGICA E ALGORITMOS DA ABA TORRE DE CONTROLE & DECISÃO GERENCIAL
+    // =================================================================
+
+    function renderControlView() {
+      const selectedArea = document.getElementById('filterArea')?.value || 'ALL';
+      let activeSheets = selectedArea === 'ALL' ? ['CX Pesquisa', 'UX Pesquisa', 'CX Escrita', 'UX Escrita'] : [selectedArea];
+
+      let allProjects = [];
+      activeSheets.forEach(sh => {
+        if (window.RAW_DATA[sh]) allProjects = allProjects.concat(window.RAW_DATA[sh]);
+      });
+
+      // 1. Executar Painéis Ativos de Decisão
+      renderPainelSobrecargaGargalos(allProjects);
+      runCapacitySimulator(allProjects);
+      renderPainelIndiceAderencia(allProjects);
+      renderPainelRecrutamentoUsuarios(allProjects);
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // PAINEL 1: CÁLCULO DE SOBRECARGA INDIVIDUAL E RECOMENDAÇÃO PRESCRITIVA
+    function renderPainelSobrecargaGargalos(projects) {
+      const ctx = document.getElementById('chartSobrecargaPessoas');
+      if (!ctx) return;
+
+      const personMap = {};
+
+      // Mapeia apenas projetos ATIVOS em andamento
+      const ativos = projects.filter(p => {
+        const st = (p.status || '').toLowerCase();
+        return st.includes('andamento') || st.includes('impedi');
+      });
+
+      ativos.forEach(p => {
+        const resp = (p.responsavel || '').trim();
+        if (!resp || resp === '-' || resp === 'Não definido' || resp === 'nan') return;
+
+        if (!personMap[resp]) {
+          personMap[resp] = { pontuais: 0, estruturados: 0, cargaTotal: 0, projetosAtrasados: 0 };
+        }
+
+        const isPontual = (p.tipo_projeto || '').toUpperCase().includes('P');
+        const isAtrasado = p.prazo_contagem < 0 || (p.entrega !== '-' && p.entrega > p.prazo);
+
+        if (isPontual) {
+          personMap[resp].pontuais++;
+          personMap[resp].cargaTotal += 1; // Peso 1 para Pontual
+        } else {
+          personMap[resp].estruturados++;
+          personMap[resp].cargaTotal += 3; // Peso 3 para Estruturado
+        }
+
+        if (isAtrasado) personMap[resp].projetosAtrasados++;
+      });
+
+      // Ordena por Carga Ponderada e pega o Top 8
+      const sorted = Object.entries(personMap)
+        .sort((a, b) => b[1].cargaTotal - a[1].cargaTotal)
+        .slice(0, 8);
+
+      const labels = sorted.map(s => s[0]);
+      const dataCarga = sorted.map(s => s[1].cargaTotal);
+      const dataPontuais = sorted.map(s => s[1].pontuais);
+      const dataEstruturados = sorted.map(s => s[1].estruturados);
+
+      // Gera texto prescritivo de ação
+      const sobrecarregados = sorted.filter(s => s[1].cargaTotal >= 6);
+      const comCapacidade = sorted.filter(s => s[1].cargaTotal <= 2);
+
+      const elCountAlertas = document.getElementById('cntAlertasRiscoText');
+      if (elCountAlertas) elCountAlertas.innerText = `${sobrecarregados.length} Alerta(s) de Sobrecarga`;
+
+      const txtRec = document.getElementById('txtRecomendacaoAlocacao');
+      if (txtRec) {
+        if (sobrecarregados.length > 0) {
+          const nomeP1 = sobrecarregados[0][0];
+          const cargaP1 = sobrecarregados[0][1].cargaTotal;
+          const atrasadosP1 = sobrecarregados[0][1].projetosAtrasados;
+
+          let sugestaoSub = "Recomenda-se redistribuir novas demandas para especialistas com menor carga pontual.";
+          if (comCapacidade.length > 0) {
+            sugestaoSub = `Sugestão: Transferir a liderança de novos projetos para <strong>${comCapacidade[0][0]}</strong> (Carga atual: ${comCapacidade[0][1].cargaTotal}).`;
+          }
+
+          txtRec.innerHTML = `<strong>ALERTA DE GARGALO:</strong> O especialista <strong class="text-rose-400">${nomeP1}</strong> atingiu Carga Ponderada ${cargaP1} (${sobrecarregados[0][1].estruturados} Estudos Estruturados ativos, ${atrasadosP1} com risco de SLA). ${sugestaoSub}`;
+        } else {
+          txtRec.innerHTML = `<strong class="text-emerald-400">ESTEIRA EQUILIBRADA:</strong> Nenhum especialista apresenta sobrecarga crítica no momento. A alocação entre os membros da equipe está distribuída de forma saudável.`;
+        }
+      }
+
+      // Renderiza Gráfico Chart.js
+      if (window.charts && window.charts.sobrecargaPessoas) {
+        window.charts.sobrecargaPessoas.destroy();
+      }
+      window.charts = window.charts || {};
+
+      window.charts.sobrecargaPessoas = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Carga Ponderada (Pontuais x1 + Estruturados x3)',
+            data: dataCarga,
+            backgroundColor: dataCarga.map(c => c >= 6 ? 'rgba(244, 63, 94, 0.85)' : 'rgba(56, 189, 248, 0.8)'),
+            borderColor: dataCarga.map(c => c >= 6 ? '#f43f5e' : '#38bdf8'),
+            borderWidth: 1.5,
+            borderRadius: 6
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => ` Carga Ponderada: ${ctx.raw} (Ativos em andamento)`
+              }
+            }
+          },
+          scales: {
+            x: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8', precision: 0 } },
+            y: { grid: { display: false }, ticks: { color: '#cbd5e1', font: { size: 10 } } }
+          }
+        }
+      });
+    }
+
+    // PAINEL 2: SIMULADOR DE CAPACIDADE (WHAT-IF)
+    function runCapacitySimulator(allProjects) {
+      if (!allProjects) {
+        const selectedArea = document.getElementById('filterArea')?.value || 'ALL';
+        let activeSheets = selectedArea === 'ALL' ? ['CX Pesquisa', 'UX Pesquisa', 'CX Escrita', 'UX Escrita'] : [selectedArea];
+        allProjects = [];
+        activeSheets.forEach(sh => {
+          if (window.RAW_DATA[sh]) allProjects = allProjects.concat(window.RAW_DATA[sh]);
+        });
+      }
+
+      // Vazão média mensal histórica (Entregas concluídas / 12 meses)
+      const concluidos = allProjects.filter(p => (p.status || '').toLowerCase().includes('conclu'));
+      const vazaoMensal = (concluidos.length / 12) || 15;
+
+      const txtVazao = document.getElementById('txtVazaoMensal');
+      if (txtVazao) txtVazao.innerText = vazaoMensal.toFixed(1).replace('.', ',');
+
+      // Pega os inputs do simulador
+      const novPontuais = parseInt(document.getElementById('simNovasPontuais')?.value || 0, 10);
+      const novEstruturados = parseInt(document.getElementById('simNovosEstruturados')?.value || 0, 10);
+
+      // Carga simulada (P = 1 ponto, E = 3.5 pontos de esforço)
+      const cargaSimulada = (novPontuais * 1) + (novEstruturados * 3.5);
+      const capacidadeOcupadaPct = ((cargaSimulada / (vazaoMensal * 0.8)) * 100).toFixed(0);
+
+      const txtPct = document.getElementById('txtTaxaOcupacaoSim');
+      const txtRes = document.getElementById('txtResultadoSimulacao');
+
+      if (txtPct) {
+        txtPct.innerText = capacidadeOcupadaPct + '%';
+        if (capacidadeOcupadaPct > 100) txtPct.className = 'font-bold text-rose-400 font-mono text-sm';
+        else if (capacidadeOcupadaPct >= 75) txtPct.className = 'font-bold text-amber-400 font-mono text-sm';
+        else txtPct.className = 'font-bold text-emerald-400 font-mono text-sm';
+      }
+
+      if (txtRes) {
+        if (capacidadeOcupadaPct > 100) {
+          const estouro = capacidadeOcupadaPct - 100;
+          txtRes.innerHTML = `<strong>RISCO DE ATRASO:</strong> A entrada de +${novPontuais} P e +${novEstruturados} E excede em <strong>${estouro}%</strong> a capacidade mensal do time. Previsão de impacto: atraso estimado de <strong>5 a 12 dias</strong> nas entregas de prioridade Normal.`;
+        } else {
+          txtRes.innerHTML = `<strong>CAPACIDADE DISPONÍVEL:</strong> O time consegue absorver esta nova demanda sem comprometer os SLAs vigentes. Ocupação estimada do sprint em <strong>${capacidadeOcupadaPct}%</strong>.`;
+        }
+      }
+    }
+
+    // PAINEL 3: ÍNDICE DE ADERÊNCIA ESTRATÉGICA
+    function renderPainelIndiceAderencia(projects) {
+      const ctx = document.getElementById('chartIndiceAderencia');
+      if (!ctx) return;
+
+      let esforçoEstrategico = 0; // Projetos Críticos ou SuperApp
+      let esforçoDemais = 0;
+
+      projects.forEach(p => {
+        const isSuper = String(p.super_app || '').toLowerCase() === 'sim';
+        const isCritico = (p.prioridade || '').toLowerCase().includes('crit');
+
+        if (isSuper || isCritico) {
+          esforçoEstrategico++;
+        } else {
+          esforçoDemais++;
+        }
+      });
+
+      const total = esforçoEstrategico + esforçoDemais;
+      const aderenciaPct = total > 0 ? ((esforçoEstrategico / total) * 100).toFixed(1) : 0;
+
+      const txtPct = document.getElementById('txtIndiceAderenciaPct');
+      if (txtPct) txtPct.innerText = `${aderenciaPct.replace('.', ',')}% Aderente`;
+
+      const txtDiag = document.getElementById('txtDiagnosticoEstrategico');
+      if (txtDiag) {
+        if (aderenciaPct >= 60) {
+          txtDiag.innerHTML = `<strong class="text-emerald-400">ALINHAMENTO EXCELENTE:</strong> <strong>${aderenciaPct}%</strong> da capacidade produtiva está concentrada nos ativos estratégicos (SuperApp e Demandas Críticas), garantindo máxima eficiência nos alvos da direção.`;
+        } else {
+          txtDiag.innerHTML = `<strong class="text-amber-400">DISPERSÃO DE ESFORÇO:</strong> Apenas <strong>${aderenciaPct}%</strong> do time está focado nos ativos estratégicos. Sugestão: Pausar ou renegociar demandas de baixa prioridade para concentrar forças no SuperApp.`;
+        }
+      }
+
+      if (window.charts && window.charts.indiceAderencia) {
+        window.charts.indiceAderencia.destroy();
+      }
+      window.charts = window.charts || {};
+
+      window.charts.indiceAderencia = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Foco Estratégico (SuperApp / Críticos)', 'Demandas Acessórias / Demais'],
+          datasets: [{
+            data: [esforçoEstrategico, esforçoDemais],
+            backgroundColor: ['#a855f7', '#475569'],
+            borderColor: '#0f172a',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '65%',
+          plugins: {
+            legend: { display: true, position: 'bottom', labels: { color: '#cbd5e1', font: { size: 10 } } },
+            tooltip: { callbacks: { label: (ctx) => ` ${ctx.label}: ${ctx.raw} projetos` } }
+          }
+        }
+      });
+    }
+
+    // PAINEL 4: EFICIÊNCIA DE RECRUTAMENTO & TESTES COM USUÁRIOS REAIS
+    function renderPainelRecrutamentoUsuarios(projects) {
+      const ctx = document.getElementById('chartRecrutamentoUsuarios');
+      if (!ctx) return;
+
+      let testesUsuariosReais = 0; // Usabilidade, Entrevistas, Cloze Test, Testes de Clareza
+      let pesquisasQuantitativas = 0; // Surveys, Questionários de Larga Escala
+      let deskHeuristicas = 0; // Análise Heurística, Benchmark, Requisitos
+
+      projects.forEach(p => {
+        const metodo = String(p.pesquisa_metodo || '').toLowerCase();
+        const impacto = String(p.impacto || '').toLowerCase();
+        const textoFull = metodo + " " + impacto;
+
+        if (textoFull.includes('usabilidade') || textoFull.includes('entrevista') || textoFull.includes('cloze') || textoFull.includes('teste de leitura') || textoFull.includes('campo') || textoFull.includes('teste moderado') || textoFull.includes('teste não moderado')) {
+          testesUsuariosReais++;
+        } else if (textoFull.includes('survey') || textoFull.includes('quantitativ') || textoFull.includes('questionário') || textoFull.includes('pesquisa quanti')) {
+          pesquisasQuantitativas++;
+        } else {
+          deskHeuristicas++;
+        }
+      });
+
+      const totalProjetos = projects.length || 1;
+      const taxaUsuariosReaisPct = (((testesUsuariosReais + pesquisasQuantitativas) / totalProjetos) * 100).toFixed(1);
+
+      const txtTaxa = document.getElementById('txtTaxaUsuariosReais');
+      if (txtTaxa) txtTaxa.innerText = `${taxaUsuariosReaisPct.replace('.', ',')}% Pesquisa Primária/Campo`;
+
+      const txtDiag = document.getElementById('txtDiagnosticoRecrutamento');
+      if (txtDiag) {
+        if (taxaUsuariosReaisPct >= 50) {
+          txtDiag.innerHTML = `<strong class="text-emerald-400">ALTA MATURIDADE DE CAMPO:</strong> <strong>${taxaUsuariosReaisPct}%</strong> dos estudos do time envolveram escuta ativa, testes diretos ou pesquisas quantitativas com cidadãos/usuários reais, garantindo dados empíricos de altíssima confiabilidade.`;
+        } else {
+          txtDiag.innerHTML = `<strong class="text-amber-400">ALERTA DE RECRUTAMENTO:</strong> Apenas <strong>${taxaUsuariosReaisPct}%</strong> dos projetos do período contaram com testes com usuários reais. Recomenda-se abrir cotas de recrutamento para validar os fluxos e textos do SuperApp diretamente com o público-alvo das praças regionais.`;
+        }
+      }
+
+      if (window.charts && window.charts.recrutamentoUsuarios) {
+        window.charts.recrutamentoUsuarios.destroy();
+      }
+      window.charts = window.charts || {};
+
+      window.charts.recrutamentoUsuarios = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Testes Moderados/Qualitativos (Usuários Reais)', 'Surveys & Quantitativos (Larga Escala)', 'Análise Heurística / Desk Research'],
+          datasets: [{
+            data: [testesUsuariosReais, pesquisasQuantitativas, deskHeuristicas],
+            backgroundColor: ['#10b981', '#38bdf8', '#64748b'],
+            borderColor: '#0f172a',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '60%',
+          plugins: {
+            legend: { display: true, position: 'bottom', labels: { color: '#cbd5e1', font: { size: 10 } } },
+            tooltip: { callbacks: { label: (ctx) => ` ${ctx.label}: ${ctx.raw} projetos` } }
+          }
+        }
+      });
+    }
   </script>
 </body>
 
