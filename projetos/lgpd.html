@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,26 +11,163 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- jsPDF para Geração de PDF no Cliente -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        /* ==========================================================================
+           VARIÁVEIS DE COR E TEMA NATIVO APPLE (DARK MODE)
+           ========================================================================== */
+        :root {
+            --apple-bg: #000000;
+            --apple-card-bg: rgba(28, 28, 30, 0.75);
+            --apple-inset-bg: rgba(44, 44, 46, 0.6);
+            --apple-header-bg: rgba(22, 22, 24, 0.8);
+            --apple-border: rgba(255, 255, 255, 0.12);
+            --apple-border-light: rgba(255, 255, 255, 0.08);
+            --apple-blue: #0a84ff;
+            --apple-blue-hover: #409cff;
+            --apple-green: #30d158;
+            --apple-red: #ff453a;
+            --apple-orange: #ff9f0a;
+            --apple-purple: #bf5af2;
+            --apple-text-main: #f5f5f7;
+            --apple-text-muted: #8e8e93;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--apple-bg);
+            color: var(--apple-text-main);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ==========================================================================
+           CLASSES REUTILIZÁVEIS APPLE GLASSMORPHISM & SURFACES
+           ========================================================================== */
+        .apple-dark-card {
+            background: var(--apple-card-bg);
+            backdrop-filter: blur(30px) saturate(190%);
+            -webkit-backdrop-filter: blur(30px) saturate(190%);
+            border: 1px solid var(--apple-border);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .apple-dark-card-inset {
+            background: var(--apple-inset-bg);
+            border: 1px solid var(--apple-border-light);
+            border-radius: 14px;
+        }
+
+        .apple-dark-btn {
+            background: var(--apple-blue);
+            color: #ffffff;
+            border-radius: 980px;
+            font-weight: 600;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 0 16px rgba(10, 132, 255, 0.3);
+        }
+
+        .apple-dark-btn:hover {
+            background: var(--apple-blue-hover);
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(10, 132, 255, 0.45);
+        }
+
+        .apple-dark-btn:active {
+            transform: scale(0.97);
+        }
+
+        .apple-dark-btn-green {
+            background: var(--apple-green);
+            color: #ffffff;
+            border-radius: 980px;
+            font-weight: 600;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 0 16px rgba(48, 209, 88, 0.3);
+        }
+
+        .apple-dark-btn-green:hover {
+            background: #32e061;
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(48, 209, 88, 0.45);
+        }
+
+        .apple-dark-btn-green:active {
+            transform: scale(0.97);
+        }
+
+        .header-bar {
+            background: var(--apple-header-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--apple-border-light);
+        }
+
+        .tab-container {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--apple-border-light);
+            border-radius: 14px;
+            padding: 4px;
+        }
+
+        .tab-btn-active {
+            background-color: var(--apple-blue);
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(10, 132, 255, 0.3);
+        }
+
+        .tab-btn-inactive {
+            color: var(--apple-text-muted);
+        }
+
+        .tab-btn-inactive:hover {
+            color: var(--apple-text-main);
+        }
+
+        .apple-input {
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--apple-border-light);
+            border-radius: 12px;
+            color: var(--apple-text-main);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .apple-input:focus {
+            outline: none;
+            border-color: var(--apple-blue);
+            box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.25);
+        }
+
+        .canvas-box {
+            background-color: #ffffff;
+            border: 1px solid var(--apple-border);
+            border-radius: 14px;
+            height: 180px;
+        }
+    </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen font-sans">
+
+<body class="min-h-screen">
 
     <!-- Header -->
-    <header class="bg-slate-800 border-b border-slate-700 py-6 px-4">
+    <header class="header-bar py-6 px-4">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
-                <h1 class="text-3xl font-extrabold text-blue-400 flex items-center gap-3">
-                    <i class="fa-solid fa-user-shield text-blue-500"></i> Suíte de Privacidade UX Research
+                <h1 class="text-3xl font-extrabold text-[#0a84ff] flex items-center gap-3">
+                    <i class="fa-solid fa-user-shield text-[#0a84ff]"></i> Suíte de Privacidade UX Research
                 </h1>
-                <p class="text-slate-400 text-sm mt-1">
+                <p class="text-gray-400 text-sm mt-1">
                     Mecanismo autônomo para conformidade com a LGPD: Emissão de TCLE com assinatura digital e higienização de bases de dados.
                 </p>
             </div>
             <!-- Navegação por Abas -->
-            <div class="flex bg-slate-900 p-1.5 rounded-xl border border-slate-700">
-                <button onclick="alternarAba('tcle')" id="btnAbaTcle" class="px-4 py-2 text-xs font-bold rounded-lg transition-all bg-blue-600 text-white shadow">
+            <div class="flex tab-container">
+                <button onclick="alternarAba('tcle')" id="btnAbaTcle" class="px-4 py-2 text-xs font-bold rounded-lg transition-all tab-btn-active">
                     <i class="fa-solid fa-pen-nib mr-1.5"></i> 1. Gerador de TCLE
                 </button>
-                <button onclick="alternarAba('anon')" id="btnAbaAnon" class="px-4 py-2 text-xs font-bold rounded-lg transition-all text-slate-400 hover:text-slate-200 ml-1">
+                <button onclick="alternarAba('anon')" id="btnAbaAnon" class="px-4 py-2 text-xs font-bold rounded-lg transition-all tab-btn-inactive ml-1">
                     <i class="fa-solid fa-mask mr-1.5"></i> 2. Anonimizador de Dados
                 </button>
             </div>
@@ -41,56 +179,56 @@
         <!-- SECTION 1: GERADOR DE TCLE -->
         <section id="sectionTcle" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Formulário do Participante -->
-            <div class="lg:col-span-1 bg-slate-800 rounded-2xl border border-slate-700 p-6 space-y-5">
-                <h2 class="text-lg font-bold text-white flex items-center gap-2 border-b border-slate-700 pb-2">
-                    <i class="fa-solid fa-id-card text-blue-400"></i> Dados do Participante
+            <div class="lg:col-span-1 apple-dark-card p-6 space-y-5">
+                <h2 class="text-lg font-bold text-white flex items-center gap-2 border-b border-white/10 pb-2">
+                    <i class="fa-solid fa-id-card text-[#0a84ff]"></i> Dados do Participante
                 </h2>
                 
                 <div class="space-y-1">
-                    <label class="text-xs font-semibold text-slate-400">Nome Completo</label>
-                    <input type="text" id="partNome" placeholder="Ex: João Silva de Souza" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-sm text-slate-100 focus:outline-none focus:border-blue-500">
+                    <label class="text-xs font-semibold text-gray-400">Nome Completo</label>
+                    <input type="text" id="partNome" placeholder="Ex: João Silva de Souza" class="w-full apple-input p-2.5 text-sm">
                 </div>
 
                 <div class="space-y-1">
-                    <label class="text-xs font-semibold text-slate-400">Documento de Identidade (CPF ou RG)</label>
-                    <input type="text" id="partDoc" placeholder="Ex: 000.000.000-00" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-sm text-slate-100 focus:outline-none focus:border-blue-500">
+                    <label class="text-xs font-semibold text-gray-400">Documento de Identidade (CPF ou RG)</label>
+                    <input type="text" id="partDoc" placeholder="Ex: 000.000.000-00" class="w-full apple-input p-2.5 text-sm">
                 </div>
 
                 <div class="space-y-1">
-                    <label class="text-xs font-semibold text-slate-400">E-mail de Contato</label>
-                    <input type="email" id="partEmail" placeholder="joao.silva@email.com" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-sm text-slate-100 focus:outline-none focus:border-blue-500">
+                    <label class="text-xs font-semibold text-gray-400">E-mail de Contato</label>
+                    <input type="email" id="partEmail" placeholder="joao.silva@email.com" class="w-full apple-input p-2.5 text-sm">
                 </div>
 
                 <!-- Consentimentos de Mídia -->
                 <div class="space-y-3 pt-2">
-                    <label class="text-xs font-semibold text-slate-400 block border-b border-slate-700 pb-1">Cláusulas de Captura de Mídia</label>
+                    <label class="text-xs font-semibold text-gray-400 block border-b border-white/10 pb-1">Cláusulas de Captura de Mídia</label>
                     
-                    <div class="flex items-center justify-between p-2.5 bg-slate-900/40 border border-slate-700 rounded-xl">
-                        <span class="text-xs text-slate-300 font-medium"><i class="fa-solid fa-microphone text-blue-400 mr-1.5"></i> Gravação de Áudio/Voz</span>
-                        <input type="checkbox" id="checkAudio" checked class="w-4 h-4 text-blue-600 bg-slate-900 border-slate-700 rounded focus:ring-blue-500">
+                    <div class="flex items-center justify-between p-2.5 apple-dark-card-inset">
+                        <span class="text-xs text-gray-300 font-medium"><i class="fa-solid fa-microphone text-[#0a84ff] mr-1.5"></i> Gravação de Áudio/Voz</span>
+                        <input type="checkbox" id="checkAudio" checked class="w-4 h-4 text-[#0a84ff] bg-black border-white/20 rounded focus:ring-[#0a84ff]">
                     </div>
 
-                    <div class="flex items-center justify-between p-2.5 bg-slate-900/40 border border-slate-700 rounded-xl">
-                        <span class="text-xs text-slate-300 font-medium"><i class="fa-solid fa-video text-blue-400 mr-1.5"></i> Registro de Vídeo/Rosto</span>
-                        <input type="checkbox" id="checkVideo" checked class="w-4 h-4 text-blue-600 bg-slate-900 border-slate-700 rounded focus:ring-blue-500">
+                    <div class="flex items-center justify-between p-2.5 apple-dark-card-inset">
+                        <span class="text-xs text-gray-300 font-medium"><i class="fa-solid fa-video text-[#0a84ff] mr-1.5"></i> Registro de Vídeo/Rosto</span>
+                        <input type="checkbox" id="checkVideo" checked class="w-4 h-4 text-[#0a84ff] bg-black border-white/20 rounded focus:ring-[#0a84ff]">
                     </div>
 
-                    <div class="flex items-center justify-between p-2.5 bg-slate-900/40 border border-slate-700 rounded-xl">
-                        <span class="text-xs text-slate-300 font-medium"><i class="fa-solid fa-desktop text-blue-400 mr-1.5"></i> Captura de Tela (Interação)</span>
-                        <input type="checkbox" id="checkTela" checked class="w-4 h-4 text-blue-600 bg-slate-900 border-slate-700 rounded focus:ring-blue-500">
+                    <div class="flex items-center justify-between p-2.5 apple-dark-card-inset">
+                        <span class="text-xs text-gray-300 font-medium"><i class="fa-solid fa-desktop text-[#0a84ff] mr-1.5"></i> Captura de Tela (Interação)</span>
+                        <input type="checkbox" id="checkTela" checked class="w-4 h-4 text-[#0a84ff] bg-black border-white/20 rounded focus:ring-[#0a84ff]">
                     </div>
                 </div>
             </div>
 
             <!-- Quadro de Visualização de Minuta e Assinatura -->
-            <div class="lg:col-span-2 bg-slate-800 rounded-2xl border border-slate-700 p-6 flex flex-col justify-between">
+            <div class="lg:col-span-2 apple-dark-card p-6 flex flex-col justify-between">
                 <div>
-                    <h2 class="text-lg font-bold text-white mb-3 flex items-center gap-2 border-b border-slate-700 pb-2">
-                        <i class="fa-solid fa-file-signature text-purple-400"></i> Termo de Consentimento e Assinatura Digital
+                    <h2 class="text-lg font-bold text-white mb-3 flex items-center gap-2 border-b border-white/10 pb-2">
+                        <i class="fa-solid fa-file-signature text-[#bf5af2]"></i> Termo de Consentimento e Assinatura Digital
                     </h2>
                     <!-- Pré-visualização Jurídica do Termo -->
-                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 max-h-60 overflow-y-auto text-xs text-slate-400 leading-relaxed space-y-3 mb-5">
-                        <h3 class="font-bold text-center text-slate-200 text-sm">TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO (TCLE) — UX RESEARCH</h3>
+                    <div class="apple-dark-card-inset p-4 max-h-60 overflow-y-auto text-xs text-gray-400 leading-relaxed space-y-3 mb-5">
+                        <h3 class="font-bold text-center text-gray-200 text-sm">TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO (TCLE) — UX RESEARCH</h3>
                         <p>Por meio deste instrumento, em conformidade estrita com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018 - LGPD), eu declaro que autorizo de forma livre, informada e inequívoca o tratamento dos meus dados pessoais fornecidos e coletados voluntariamente durante este teste de usabilidade.</p>
                         <p><strong>Finalidade do Tratamento:</strong> Os dados e mídias coletados destinam-se única e exclusivamente à análise de usabilidade, mapeamento de melhorias de interface, fluxos e validação de soluções digitais corporativas desenvolvidas pelo time de design.</p>
                         <p><strong>Direitos e Confidencialidade:</strong> Fica garantido que minha identidade será mantida sob sigilo absoluto perante terceiros externos através de mecanismos de anonimização ou mascaramento. Entendo que posso revogar este consentimento ou solicitar a exclusão das minhas gravações a qualquer momento, enviando uma solicitação ao time de pesquisa.</p>
@@ -100,20 +238,20 @@
                 <!-- Canvas de Assinatura -->
                 <div class="space-y-3">
                     <div class="flex justify-between items-center">
-                        <label class="text-xs font-bold text-purple-400 flex items-center gap-1.5">
+                        <label class="text-xs font-bold text-[#bf5af2] flex items-center gap-1.5">
                             <i class="fa-solid fa-hand-pointer animate-pulse"></i> Assine com o Mouse ou o Dedo no quadro abaixo:
                         </label>
-                        <button onclick="limparCanvas()" class="text-slate-400 hover:text-red-400 text-xs font-semibold transition-colors flex items-center gap-1">
+                        <button onclick="limparCanvas()" class="text-gray-400 hover:text-[#ff453a] text-xs font-semibold transition-colors flex items-center gap-1">
                             <i class="fa-solid fa-eraser"></i> Limpar Quadro
                         </button>
                     </div>
                     
-                    <div class="bg-white rounded-xl border border-slate-600 overflow-hidden shadow-inner relative" style="height: 180px;">
+                    <div class="canvas-box overflow-hidden shadow-inner relative">
                         <canvas id="signatureCanvas" class="w-full h-full block cursor-crosshair"></canvas>
                     </div>
 
                     <div class="pt-2 flex justify-end">
-                        <button onclick="gerarPdfTcle()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 text-sm shadow-lg transition-colors">
+                        <button onclick="gerarPdfTcle()" class="apple-dark-btn font-bold py-3 px-6 flex items-center gap-2 text-sm shadow-lg">
                             <i class="fa-solid fa-file-pdf text-base"></i> Gerar e Baixar Termo Assinado (PDF)
                         </button>
                     </div>
@@ -121,49 +259,49 @@
             </div>
         </section>
 
-       <!-- SECTION 2: MOTOR DE DESIDENTIFICAÇÃO -->
+        <!-- SECTION 2: MOTOR DE DESIDENTIFICAÇÃO -->
         <section id="sectionAnon" class="space-y-6 hidden">
-            <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6">
+            <div class="apple-dark-card p-6">
                 <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
-                    <i class="fa-solid fa-mask text-emerald-400"></i> Mecanismo de Desidentificação e Mascaramento de Bases
+                    <i class="fa-solid fa-mask text-[#30d158]"></i> Mecanismo de Desidentificação e Mascaramento de Bases
                 </h2>
-                <p class="text-xs text-slate-400 leading-relaxed mb-4">
-                    Copie as linhas da sua tabela direto do Excel ou do Google Sheets e cole na caixa abaixo. O sistema analisará as colunas e substituirá nomes, e-mails e CPFs de participantes por códigos seguros (<strong class="text-slate-300">U01, U02...</strong>), gerando uma base protegida para download.
+                <p class="text-xs text-gray-400 leading-relaxed mb-4">
+                    Copie as linhas da sua tabela direto do Excel ou do Google Sheets e cole na caixa abaixo. O sistema analisará as colunas e substituirá nomes, e-mails e CPFs de participantes por códigos seguros (<strong class="text-gray-300">U01, U02...</strong>), gerando uma base protegida para download.
                 </p>
 
                 <!-- Input de Colagem -->
                 <div class="space-y-2">
-                    <textarea id="rawTsvInput" rows="6" placeholder="Cole aqui os dados copiados da sua planilha (linhas e colunas)..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-4 text-xs font-mono text-slate-300 focus:outline-none focus:border-emerald-500 placeholder-slate-600"></textarea>
+                    <textarea id="rawTsvInput" rows="6" placeholder="Cole aqui os dados copiados da sua planilha (linhas e colunas)..." class="w-full apple-input p-4 text-xs font-mono placeholder-gray-600 focus:border-[#30d158]"></textarea>
                 </div>
 
                 <div class="mt-4 flex gap-3">
-                    <button onclick="processarDesidentificacao()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2.5 px-5 rounded-xl flex items-center gap-2 transition-colors shadow">
+                    <button onclick="processarDesidentificacao()" class="apple-dark-btn-green text-xs py-2.5 px-5 flex items-center gap-2 shadow">
                         <i class="fa-solid fa-wand-magic-sparkles"></i> Desidentificar Dados da Tabela
                     </button>
                 </div>
             </div>
 
             <!-- Tabela e Resultado Protegido -->
-            <div id="wrapperResultadosAnon" class="bg-slate-800 rounded-2xl border border-slate-700 p-6 hidden space-y-4">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 pb-3 border-b border-slate-700">
+            <div id="wrapperResultadosAnon" class="apple-dark-card p-6 hidden space-y-4">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 pb-3 border-b border-white/10">
                     <div>
                         <h3 class="text-base font-bold text-white">Visualização dos Dados Protegidos</h3>
-                        <p class="text-xs text-slate-400">Todos os dados sensíveis foram ofuscados localmente conforme as diretrizes de privacidade da LGPD.</p>
+                        <p class="text-xs text-gray-400">Todos os dados sensíveis foram ofuscados localmente conforme as diretrizes de privacidade da LGPD.</p>
                     </div>
-                    <button onclick="baixarCsvProtegido()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 px-4 rounded-xl flex items-center gap-2 transition-colors">
+                    <button onclick="baixarCsvProtegido()" class="apple-dark-btn text-xs font-bold py-2 px-4 flex items-center gap-2">
                         <i class="fa-solid fa-download"></i> Baixar Tabela Protegida (.CSV)
                     </button>
                 </div>
 
                 <!-- Tabela Responsiva -->
-                <div class="overflow-x-auto rounded-xl border border-slate-700">
-                    <table class="min-w-full divide-y divide-slate-700 text-xs text-left">
-                        <thead class="bg-slate-900 text-slate-400">
+                <div class="overflow-x-auto rounded-xl border border-white/10">
+                    <table class="min-w-full divide-y divide-white/10 text-xs text-left">
+                        <thead class="bg-white/5 text-gray-400">
                             <tr id="anonTableHeader">
                                 <!-- Dinâmico -->
                             </tr>
                         </thead>
-                        <tbody id="anonTableBody" class="divide-y divide-slate-700 bg-slate-800 text-slate-300">
+                        <tbody id="anonTableBody" class="divide-y divide-white/10 bg-transparent text-gray-300">
                             <!-- Dinâmico -->
                         </tbody>
                     </table>
@@ -184,41 +322,36 @@
             if (aba === 'tcle') {
                 tcleSec.classList.remove('hidden');
                 anonSec.classList.add('hidden');
-                btnTcle.className = "px-4 py-2 text-xs font-bold rounded-lg transition-all bg-blue-600 text-white shadow";
-                btnAnon.className = "px-4 py-2 text-xs font-bold rounded-lg transition-all text-slate-400 hover:text-slate-200 ml-1";
+                btnTcle.className = "px-4 py-2 text-xs font-bold rounded-lg transition-all tab-btn-active";
+                btnAnon.className = "px-4 py-2 text-xs font-bold rounded-lg transition-all tab-btn-inactive ml-1";
             } else {
                 tcleSec.classList.add('hidden');
                 anonSec.classList.remove('hidden');
-                btnTcle.className = "px-4 py-2 text-xs font-bold rounded-lg transition-all text-slate-400 hover:text-slate-200";
-                btnAnon.className = "px-4 py-2 text-xs font-bold rounded-lg transition-all bg-blue-600 text-white shadow ml-1";
+                btnTcle.className = "px-4 py-2 text-xs font-bold rounded-lg transition-all tab-btn-inactive";
+                btnAnon.className = "px-4 py-2 text-xs font-bold rounded-lg transition-all tab-btn-active ml-1";
                 setTimeout(redimensionarCanvas, 100);
             }
         }
 
-       // --- MÓDULO CANVAS DE ASSINATURA ---
+        // --- MÓDULO CANVAS DE ASSINATURA ---
         const canvas = document.getElementById('signatureCanvas');
         const ctx = canvas.getContext('2d');
         let desenhando = false;
 
         function redimensionarCanvas() {
-            // Define o tamanho interno do canvas exatamente igual ao tamanho visual dele na tela
             canvas.width = canvas.offsetWidth;
             canvas.height = canvas.offsetHeight;
             
-            // Configurações da caneta (precisam ser reaplicadas após mudar o tamanho)
             ctx.lineWidth = 3;
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
-            ctx.strokeStyle = '#1e293b'; // Azul escuro profissional
+            ctx.strokeStyle = '#1c1c1e';
         }
 
-        // Garante que o canvas se adapte ao layout assim que a página terminar de carregar totalmente
         window.addEventListener('load', redimensionarCanvas);
         window.addEventListener('resize', redimensionarCanvas);
-        // Executa uma checagem de segurança rápida para garantir o tamanho correto
         setTimeout(redimensionarCanvas, 300);
 
-        // Função auxiliar para descobrir a coordenada exata do clique/toque na tela
         function obterCoordenadas(e) {
             const rect = canvas.getBoundingClientRect();
             if (e.touches && e.touches.length > 0) {
@@ -234,7 +367,6 @@
             }
         }
 
-        // Ouvintes de Eventos de Mouse (Desktop)
         canvas.addEventListener('mousedown', (e) => {
             desenhando = true;
             const pos = obterCoordenadas(e);
@@ -252,13 +384,12 @@
         canvas.addEventListener('mouseup', () => desenhando = false);
         canvas.addEventListener('mouseleave', () => desenhando = false);
 
-        // Ouvintes de Eventos Touch (Celulares, Tablets e Telas de Toque)
         canvas.addEventListener('touchstart', (e) => {
             desenhando = true;
             const pos = obterCoordenadas(e);
             ctx.beginPath();
             ctx.moveTo(pos.x, pos.y);
-            e.preventDefault(); // Impede que a tela role enquanto você assina
+            e.preventDefault();
         }, { passive: false });
 
         canvas.addEventListener('touchmove', (e) => {
@@ -266,7 +397,7 @@
             const pos = obterCoordenadas(e);
             ctx.lineTo(pos.x, pos.y);
             ctx.stroke();
-            e.preventDefault(); // Impede o scroll do navegador
+            e.preventDefault();
         }, { passive: false });
 
         canvas.addEventListener('touchend', () => desenhando = false);
@@ -274,6 +405,7 @@
         function limparCanvas() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
+
         // --- EXPORTADOR EM PDF DO TCLE ---
         function gerarPdfTcle() {
             const { jsPDF } = window.jspdf;
@@ -288,8 +420,7 @@
 
             const docPdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
             
-            // Layout Estilizado do PDF
-            docPdf.setFillColor(30, 41, 59); // Cabeçalho Dark Slate
+            docPdf.setFillColor(28, 28, 30);
             docPdf.rect(0, 0, 210, 35, 'F');
             
             docPdf.setTextColor(255, 255, 255);
@@ -300,7 +431,6 @@
             docPdf.setFont('Helvetica', 'normal');
             docPdf.text("Conformidade Estrita com a Lei Geral de Proteção de Dados (LGPD)", 15, 22);
 
-            // Dados do Respondente
             docPdf.setFillColor(241, 245, 249);
             docPdf.rect(15, 45, 180, 25, 'F');
             docPdf.setTextColor(51, 65, 85);
@@ -310,7 +440,6 @@
             docPdf.text(`Nome: ${nome}`, 20, 58);
             docPdf.text(`Documento: ${doc}   |   E-mail: ${email || 'Não informado'}`, 20, 64);
 
-            // Corpo do Termo Jurídico
             docPdf.setFontSize(10);
             docPdf.setTextColor(71, 85, 105);
             
@@ -321,14 +450,12 @@
             let splitTexto = docPdf.splitTextToSize(textoLegal, 180);
             docPdf.text(splitTexto, 15, 80);
 
-            // Caixa de Seleção de Itens Autorizados
             let yMedia = 120;
             docPdf.setFont('Helvetica', 'bold');
             docPdf.text(`[ ${document.getElementById('checkAudio').checked ? 'SIM' : 'NÃO'} ] Gravação de Voz/Áudio em Sessão`, 20, yMedia);
             docPdf.text(`[ ${document.getElementById('checkVideo').checked ? 'SIM' : 'NÃO'} ] Registro de Imagem e Expressão Facial`, 20, yMedia + 7);
             docPdf.text(`[ ${document.getElementById('checkTela').checked ? 'SIM' : 'NÃO'} ] Captura e Gravação de Telas de Interação`, 20, yMedia + 14);
 
-            // Rodapé e Assinatura
             let yAssinatura = 165;
             docPdf.setFont('Helvetica', 'normal');
             const dataAtual = new Date().toLocaleDateString('pt-BR');
@@ -338,7 +465,6 @@
             docPdf.setFontSize(9);
             docPdf.text("Assinatura Eletrônica do Titular", 130, yAssinatura + 20);
 
-            // Inserir Desenho do Canvas no PDF
             try {
                 const imgData = canvas.toDataURL('image/png');
                 docPdf.addImage(imgData, 'PNG', 125, yAssinatura - 5, 60, 18);
@@ -347,26 +473,23 @@
             docPdf.save(`TCLE_LGPD_${nome.replace(/\s+/g, '_')}.pdf`);
         }
 
-       // --- MÓDULO 2: AUTOMATIZADOR DE DESIDENTIFICAÇÃO ---
+        // --- MÓDULO 2: AUTOMATIZADOR DE DESIDENTIFICAÇÃO ---
         let baseTabelaAnonimizada = [];
 
         function processarDesidentificacao() {
             const rawText = document.getElementById('rawTsvInput').value;
             if (!rawText.trim()) { alert("Cole dados de uma tabela para aplicar as máscaras de proteção."); return; }
 
-            // Identifica se a separação da colagem do Excel é por Tabulações (\t) ou ponto e vírgula
             let rows = rawText.split('\n').map(line => {
                 if (line.includes('\t')) return line.split('\t');
                 return line.split(';');
             });
 
-            // Filtra linhas vazias
             rows = rows.filter(r => r.length > 0 && r.some(c => c.trim() !== ""));
             if (rows.length === 0) return;
 
             const headers = rows[0].map(h => h.trim());
             
-            // Identifica colunas sensíveis por palavras-chave no cabeçalho
             let colIndicesParaMascarar = [];
             headers.forEach((h, idx) => {
                 let text = h.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -375,17 +498,15 @@
                 }
             });
 
-            // Montagem da tabela protegida
             baseTabelaAnonimizada = [headers];
             let userCounter = 1;
 
             for (let r = 1; r < rows.length; r++) {
                 let currentRow = [...rows[r]].map(c => c.trim());
-                if (currentRow.length !== headers.length) continue; // Pula linhas desalinhadas
+                if (currentRow.length !== headers.length) continue;
 
                 let userId = "U" + String(userCounter).padStart(2, '0');
                 
-                // Substitui campos sensíveis mapeados por dados protegidos
                 colIndicesParaMascarar.forEach(colIdx => {
                     if (currentRow[colIdx] !== "") {
                         let headerName = headers[colIdx].toLowerCase();
@@ -417,18 +538,16 @@
             head.innerHTML = '';
             body.innerHTML = '';
 
-            // Renderiza Cabeçalho
             baseTabelaAnonimizada[0].forEach(h => {
-                head.innerHTML += `<th class="px-4 py-3 font-bold border-b border-slate-700">${h}</th>`;
+                head.innerHTML += `<th class="px-4 py-3 font-bold border-b border-white/10">${h}</th>`;
             });
 
-            // Renderiza Linhas Mascaradas
             for (let r = 1; r < baseTabelaAnonimizada.length; r++) {
-                let rowHTML = `<tr class="hover:bg-slate-700/40 transition-colors">`;
+                let rowHTML = `<tr class="hover:bg-white/5 transition-colors">`;
                 baseTabelaAnonimizada[r].forEach((cell, idx) => {
                     let isMasked = cell.includes("U" + String(r).padStart(2, '0')) || cell.includes("Participante");
-                    let textClass = isMasked ? "text-emerald-400 font-semibold" : "text-slate-400";
-                    rowHTML += `<td class="px-4 py-2.5 border-b border-slate-700/50 ${textClass}">${cell}</td>`;
+                    let textClass = isMasked ? "text-[#30d158] font-semibold" : "text-gray-400";
+                    rowHTML += `<td class="px-4 py-2.5 border-b border-white/10 ${textClass}">${cell}</td>`;
                 });
                 rowHTML += `</tr>`;
                 body.innerHTML += rowHTML;
@@ -438,7 +557,6 @@
         function baixarCsvProtegido() {
             if (baseTabelaAnonimizada.length === 0) return;
             
-            // Une a matriz em texto separado por ponto e vírgula
             let csvContent = "data:text/csv;charset=utf-8,";
             baseTabelaAnonimizada.forEach(row => {
                 csvContent += row.map(c => `"${c.replace(/"/g, '""')}"`).join(";") + "\n";

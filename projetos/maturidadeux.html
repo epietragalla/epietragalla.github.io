@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="dark">
 
 <head>
     <meta charset="UTF-8">
@@ -13,6 +13,143 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
+        /* ==========================================================================
+           VARIÁVEIS DE COR E TEMA NATIVO APPLE (DARK MODE)
+           ========================================================================== */
+        :root {
+            --apple-bg: #000000;
+            --apple-card-bg: rgba(28, 28, 30, 0.75);
+            --apple-inset-bg: rgba(44, 44, 46, 0.6);
+            --apple-header-bg: rgba(22, 22, 24, 0.8);
+            --apple-border: rgba(255, 255, 255, 0.12);
+            --apple-border-light: rgba(255, 255, 255, 0.08);
+            --apple-blue: #0a84ff;
+            --apple-blue-hover: #409cff;
+            --apple-green: #30d158;
+            --apple-red: #ff453a;
+            --apple-orange: #ff9f0a;
+            --apple-purple: #bf5af2;
+            --apple-text-main: #f5f5f7;
+            --apple-text-muted: #8e8e93;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--apple-bg);
+            color: var(--apple-text-main);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ==========================================================================
+           CLASSES REUTILIZÁVEIS APPLE GLASSMORPHISM & SURFACES
+           ========================================================================== */
+        .apple-dark-card {
+            background: var(--apple-card-bg);
+            backdrop-filter: blur(30px) saturate(190%);
+            -webkit-backdrop-filter: blur(30px) saturate(190%);
+            border: 1px solid var(--apple-border);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .apple-dark-card-inset {
+            background: var(--apple-inset-bg);
+            border: 1px solid var(--apple-border-light);
+            border-radius: 14px;
+        }
+
+        .apple-dark-btn {
+            background: var(--apple-blue);
+            color: #ffffff;
+            border-radius: 980px;
+            font-weight: 600;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 0 16px rgba(10, 132, 255, 0.3);
+        }
+
+        .apple-dark-btn:hover {
+            background: var(--apple-blue-hover);
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(10, 132, 255, 0.45);
+        }
+
+        .apple-dark-btn:active {
+            transform: scale(0.97);
+        }
+
+        .apple-dark-btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--apple-text-main);
+            border: 1px solid var(--apple-border);
+            border-radius: 980px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .apple-dark-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--apple-red);
+            border-color: rgba(255, 69, 58, 0.4);
+        }
+
+        .header-bar {
+            background: var(--apple-header-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--apple-border-light);
+        }
+
+        /* ==========================================================================
+           ELEMENTOS DO QUIZ & SLIDERS
+           ========================================================================== */
+        .quiz-card {
+            background-color: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--apple-border-light);
+            border-radius: 14px;
+        }
+
+        .quiz-btn {
+            background-color: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--apple-border-light);
+            border-radius: 10px;
+            color: var(--apple-text-muted);
+            transition: all 0.2s ease;
+        }
+
+        .quiz-btn:hover {
+            border-color: var(--apple-border);
+            color: var(--apple-text-main);
+        }
+
+        .banner-maturidade {
+            background: linear-gradient(135deg, rgba(10, 132, 255, 0.12), rgba(28, 28, 30, 0.85), rgba(191, 90, 242, 0.12));
+            border: 2px solid var(--apple-blue);
+            border-radius: 20px;
+        }
+
+        .score-pill {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--apple-border);
+            border-radius: 14px;
+        }
+
+        .gap-alert {
+            background-color: rgba(255, 159, 10, 0.12);
+            border: 1px solid rgba(255, 159, 10, 0.25);
+            color: var(--apple-orange);
+            border-radius: 14px;
+        }
+
+        .sim-slider {
+            accent-color: var(--apple-blue);
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        /* ==========================================================================
+           POPOVER TOOLTIP ESTILO macOS/iOS
+           ========================================================================== */
         .hint-tooltip {
             position: relative;
             display: inline-block;
@@ -22,51 +159,93 @@
         .hint-tooltip .tooltip-text {
             visibility: hidden;
             width: 280px;
-            background-color: #1e293b;
-            color: #fff;
+            background-color: rgba(30, 30, 32, 0.95);
+            backdrop-filter: blur(30px) saturate(200%);
+            -webkit-backdrop-filter: blur(30px) saturate(200%);
+            color: var(--apple-text-main);
             text-align: left;
-            border-radius: 8px;
-            padding: 12px;
+            border-radius: 16px;
+            padding: 14px 16px;
             position: absolute;
             z-index: 50;
             bottom: 125%;
             left: 50%;
             transform: translateX(-50%);
             opacity: 0;
-            transition: opacity 0.2s;
+            transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
             font-size: 0.75rem;
             line-height: 1.15rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
-            border: 1px solid #334155;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 2px 6px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            pointer-events: none;
         }
 
         .hint-tooltip:hover .tooltip-text {
             visibility: visible;
             opacity: 1;
         }
+
+        /* ==========================================================================
+           LEGENDA GUIA DA ESCALA LIKERT (1 A 5)
+           ========================================================================== */
+        .likert-guide-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 6px 4px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border: 1px solid var(--apple-border-light);
+        }
+
+        .likert-badge {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            font-size: 11px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid;
+            margin-bottom: 4px;
+        }
+
+        .likert-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--apple-text-main);
+            line-height: 1.1;
+        }
+
+        .likert-sub {
+            font-size: 9px;
+            color: var(--apple-text-muted);
+            margin-top: 2px;
+        }
     </style>
 </head>
 
-<body class="bg-slate-900 text-slate-100 min-h-screen font-sans">
+<body class="min-h-screen">
 
     <!-- Header -->
-    <header class="bg-slate-800 border-b border-slate-700 py-6 px-4 print:hidden">
+    <header class="header-bar py-6 px-4 print:hidden">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
-                <h1 class="text-3xl font-extrabold text-blue-400 flex items-center gap-3">
-                    <i class="fa-solid fa-graduation-cap text-blue-500"></i> Auditoria de Maturidade UX (NN/g)
+                <h1 class="text-3xl font-extrabold text-[#0a84ff] flex items-center gap-3">
+                    <i class="fa-solid fa-graduation-cap text-[#0a84ff]"></i> Auditoria de Maturidade UX (NN/g)
                 </h1>
-                <p class="text-slate-400 text-sm mt-1">
+                <p class="text-gray-400 text-sm mt-1">
                     Análise diagnóstica baseada nos 4 pilares e nos 6 estágios de evolução do Nielsen Norman Group.
                 </p>
             </div>
             <div class="flex gap-2">
                 <button onclick="limparHistorico()"
-                    class="bg-slate-700/50 hover:bg-red-950/40 text-slate-400 hover:text-red-400 font-bold text-xs py-2.5 px-4 rounded-xl border border-slate-600 transition-colors">
+                    class="apple-dark-btn-secondary text-xs py-2.5 px-4">
                     <i class="fa-solid fa-trash-can"></i> Limpar Histórico
                 </button>
                 <button onclick="window.print()"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl flex items-center gap-2 transition-colors shadow">
+                    class="apple-dark-btn text-xs py-2.5 px-4 flex items-center gap-2">
                     <i class="fa-solid fa-print"></i> Exportar Relatório PDF
                 </button>
             </div>
@@ -78,14 +257,56 @@
         <!-- INTRODUÇÃO E FORMULÁRIO -->
         <section class="grid grid-cols-1 lg:grid-cols-3 gap-8 print:hidden">
             <!-- Coluna do Form (2/3) -->
-            <div class="lg:col-span-2 bg-slate-800 rounded-2xl border border-slate-700 p-6 space-y-6">
-                <div class="border-b border-slate-700 pb-3 flex justify-between items-center">
+            <!-- Coluna do Form (2/3) -->
+            <div class="lg:col-span-2 apple-dark-card p-6 space-y-6">
+                <div class="border-b border-white/10 pb-3 flex justify-between items-center">
                     <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-clipboard-list text-blue-400"></i> Questionário Multidisciplinar de
-                        Pilares
+                        <i class="fa-solid fa-clipboard-list text-[#0a84ff]"></i> Questionário Multidisciplinar de Pilares
                     </h2>
-                    <span id="progressText" class="text-xs text-slate-400 font-medium">Progresso: 0 / 16</span>
+                    <span id="progressText" class="text-xs text-gray-400 font-medium">Progresso: 0 / 16</span>
                 </div>
+
+                <!-- ========================================================================== -->
+                <!-- NOVO: BARRA DE LEGENDA EXPLICATIVA DA ESCALA 1 A 5 (ESTILO APPLE)          -->
+                <!-- ========================================================================== -->
+                <div class="apple-dark-card-inset p-4 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-white flex items-center gap-1.5">
+                            <i class="fa-solid fa-circle-info text-[#0a84ff]"></i> Como avaliar cada afirmação (Escala de 1 a 5):
+                        </span>
+                        <span class="text-[10px] text-gray-400">Escolha a nota que reflete a realidade atual da sua empresa</span>
+                    </div>
+
+                    <!-- Régua Visual das Notas -->
+                    <div class="grid grid-cols-5 gap-2 text-center pt-1">
+                        <div class="likert-guide-item">
+                            <span class="likert-badge bg-rose-500/20 text-[#ff453a] border-rose-500/30">1</span>
+                            <span class="likert-label">Discordo Totalmente</span>
+                            <span class="likert-sub">Não ocorre / Inexistente</span>
+                        </div>
+                        <div class="likert-guide-item">
+                            <span class="likert-badge bg-orange-500/20 text-[#ff9f0a] border-orange-500/30">2</span>
+                            <span class="likert-label">Discordo Parcialmente</span>
+                            <span class="likert-sub">Raro / Ad hoc</span>
+                        </div>
+                        <div class="likert-guide-item">
+                            <span class="likert-badge bg-white/10 text-gray-300 border-white/10">3</span>
+                            <span class="likert-label">Neutro / Indiferente</span>
+                            <span class="likert-sub">Às vezes / Em partes</span>
+                        </div>
+                        <div class="likert-guide-item">
+                            <span class="likert-badge bg-blue-500/20 text-[#0a84ff] border-blue-500/30">4</span>
+                            <span class="likert-label">Concordo Parcialmente</span>
+                            <span class="likert-sub">Frequente / Em expansão</span>
+                        </div>
+                        <div class="likert-guide-item">
+                            <span class="likert-badge bg-emerald-500/20 text-[#30d158] border-emerald-500/30">5</span>
+                            <span class="likert-label">Concordo Totalmente</span>
+                            <span class="likert-sub">Padrão / Consolidação</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- ========================================================================== -->
 
                 <!-- Form Real das Perguntas -->
                 <div id="quizContainer" class="space-y-4 max-h-[500px] overflow-y-auto pr-2">
@@ -94,33 +315,33 @@
 
                 <div class="pt-2 flex justify-end">
                     <button onclick="calcularMaturidadeFinal()"
-                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm py-3 px-6 rounded-xl flex items-center gap-2 transition-colors shadow-lg">
+                        class="apple-dark-btn text-sm py-3 px-6 flex items-center gap-2">
                         <i class="fa-solid fa-wand-magic-sparkles"></i> Calcular Diagnóstico de Maturidade
                     </button>
                 </div>
             </div>
 
             <!-- Coluna de Contexto Metodológico (1/3) -->
-            <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6 flex flex-col justify-between">
+            <div class="apple-dark-card p-6 flex flex-col justify-between">
                 <div class="space-y-4">
-                    <h3 class="text-base font-bold text-white flex items-center gap-2 border-b border-slate-700 pb-2">
-                        <i class="fa-solid fa-circle-nodes text-purple-400"></i> Estrutura de Pilares NN/g
+                    <h3 class="text-base font-bold text-white flex items-center gap-2 border-b border-white/10 pb-2">
+                        <i class="fa-solid fa-circle-nodes text-[#bf5af2]"></i> Estrutura de Pilares NN/g
                     </h3>
-                    <p class="text-xs text-slate-400 leading-relaxed">
+                    <p class="text-xs text-gray-400 leading-relaxed">
                         A maturidade em UX passa por 4 fatores essenciais: <strong>Estratégia</strong> (orçamento e
                         metas), <strong>Cultura</strong> (empatia externa), <strong>Processo</strong> (métodos de
                         pesquisa) e <strong>Resultados</strong> (impacto e ROI).
                     </p>
                     <div
-                        class="bg-slate-900/40 p-3 rounded-xl border border-slate-700/60 text-[11px] text-slate-300 space-y-2">
-                        <strong class="text-purple-400 block"><i class="fa-solid fa-triangle-exclamation"></i> Análise
+                        class="apple-dark-card-inset p-3 text-[11px] text-gray-300 space-y-2">
+                        <strong class="text-[#bf5af2] block"><i class="fa-solid fa-triangle-exclamation"></i> Análise
                             de Inconsistência</strong>
-                        <p class="text-slate-400 leading-normal">O robô cruza dados para detectar se os seus processos
+                        <p class="text-gray-400 leading-normal">O robô cruza dados para detectar se os seus processos
                             técnicos estão isolados e sem suporte financeiro/executivo das lideranças da empresa.</p>
                     </div>
                 </div>
                 <div
-                    class="bg-slate-900/60 p-3 rounded-xl border border-slate-700/50 text-[11px] text-slate-400 italic">
+                    class="apple-dark-card-inset p-3 text-[11px] text-gray-400 italic">
                     Avalie o cenário sincero da sua organização de 1 (Discordo Totalmente) a 5 (Concordo Totalmente).
                 </div>
             </div>
@@ -131,36 +352,36 @@
 
             <!-- Banner do Estágio Calculado -->
             <div
-                class="bg-gradient-to-r from-blue-950/50 via-slate-800 to-purple-950/50 border-2 border-blue-600 rounded-2xl p-6">
+                class="banner-maturidade p-6">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                        <span class="text-blue-400 text-xs font-bold tracking-wider uppercase block">Diagnóstico de
+                        <span class="text-[#0a84ff] text-xs font-bold tracking-wider uppercase block">Diagnóstico de
                             Maturidade Consolidado</span>
                         <h2 id="resultEstagioTitle" class="text-3xl font-black text-white mt-1">--</h2>
-                        <p id="resultEstagioDesc" class="text-slate-300 text-xs mt-1.5 max-w-3xl leading-relaxed">--</p>
+                        <p id="resultEstagioDesc" class="text-gray-300 text-xs mt-1.5 max-w-3xl leading-relaxed">--</p>
                     </div>
                     <div
-                        class="bg-slate-900/80 px-5 py-3 rounded-xl border border-slate-700 text-center min-w-[150px] shrink-0">
-                        <span class="text-slate-400 text-[10px] font-bold uppercase block tracking-wider">Score
+                        class="score-pill px-5 py-3 text-center min-w-[150px] shrink-0">
+                        <span class="text-gray-400 text-[10px] font-bold uppercase block tracking-wider">Score
                             Geral</span>
-                        <div id="resultScoreMedio" class="text-3xl font-black text-blue-400 mt-0.5">0.0 / 100</div>
+                        <div id="resultScoreMedio" class="text-3xl font-black text-[#0a84ff] mt-0.5">0.0 / 100</div>
                     </div>
                 </div>
                 <!-- Barra de Evolução -->
-                <div class="mt-6 pt-4 border-t border-slate-700/60">
-                    <div class="flex justify-between text-[11px] text-slate-400 mb-1.5">
+                <div class="mt-6 pt-4 border-t border-white/10">
+                    <div class="flex justify-between text-[11px] text-gray-400 mb-1.5">
                         <span>Evolução Interna do Estágio</span>
                         <span id="evolutionPercentage">0% para o próximo nível</span>
                     </div>
-                    <div class="w-full bg-slate-900 rounded-full h-2.5 overflow-hidden border border-slate-700">
-                        <div id="evolutionBar" class="bg-blue-500 h-full transition-all duration-500" style="width: 0%">
+                    <div class="w-full bg-black/60 rounded-full h-2.5 overflow-hidden border border-white/10">
+                        <div id="evolutionBar" class="bg-[#0a84ff] h-full transition-all duration-500" style="width: 0%">
                         </div>
                     </div>
                 </div>
 
                 <!-- Alerta de Gap de Consistência Corporativa -->
                 <div id="gapAlertBox"
-                    class="mt-4 p-3 bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-xl text-xs hidden flex items-start gap-2">
+                    class="gap-alert mt-4 p-3 text-xs hidden flex items-start gap-2">
                     <i class="fa-solid fa-circle-exclamation mt-0.5 text-base shrink-0"></i>
                     <div>
                         <strong class="block text-amber-300">Aviso de Desalinhamento (Gap Técnico):</strong>
@@ -173,13 +394,13 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <!-- Gráfico de Radar Histórico -->
                 <div
-                    class="lg:col-span-1 bg-slate-800 p-6 rounded-2xl border border-slate-700 flex flex-col justify-between">
+                    class="lg:col-span-1 apple-dark-card p-6 flex flex-col justify-between">
                     <div>
                         <h3
-                            class="text-sm font-bold text-white mb-1 flex items-center gap-2 border-b border-slate-700 pb-2">
-                            <i class="fa-solid fa-chart-radar text-purple-400"></i> Desbalanço de Pilares (Radar)
+                            class="text-sm font-bold text-white mb-1 flex items-center gap-2 border-b border-white/10 pb-2">
+                            <i class="fa-solid fa-chart-radar text-[#bf5af2]"></i> Desbalanço de Pilares (Radar)
                         </h3>
-                        <p class="text-[10px] text-slate-400 mb-2">Compara sua auditoria atual com os registros passados
+                        <p class="text-[10px] text-gray-400 mb-2">Compara sua auditoria atual com os registros passados
                             salvos localmente.</p>
                     </div>
                     <div class="relative h-64 w-full flex items-center justify-center">
@@ -189,14 +410,14 @@
 
                 <!-- Recomendações Táticas Automatizadas -->
                 <div
-                    class="lg:col-span-2 bg-slate-800 p-6 rounded-2xl border border-slate-700 flex flex-col justify-between">
+                    class="lg:col-span-2 apple-dark-card p-6 flex flex-col justify-between">
                     <div>
                         <h3
-                            class="text-sm font-bold text-white mb-3 flex items-center gap-2 border-b border-slate-700 pb-2">
-                            <i class="fa-solid fa-route text-emerald-400"></i> Plano de Ação Estratégico para Próximo
+                            class="text-sm font-bold text-white mb-3 flex items-center gap-2 border-b border-white/10 pb-2">
+                            <i class="fa-solid fa-route text-[#30d158]"></i> Plano de Ação Estratégico para Próximo
                             Nível
                         </h3>
-                        <div id="recommendationsList" class="space-y-3 text-xs text-slate-300">
+                        <div id="recommendationsList" class="space-y-3 text-xs text-gray-300">
                             <!-- Gerado dinamicamente -->
                         </div>
                     </div>
@@ -204,52 +425,52 @@
             </div>
 
             <!-- SIMULADOR DE CENÁRIOS WHAT-IF (Apenas Interativo Screen) -->
-            <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6 space-y-4 print:hidden">
+            <div class="apple-dark-card p-6 space-y-4 print:hidden">
                 <div>
                     <h3 class="text-base font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-sliders text-sky-400"></i> Simulador de Cenários ("What-If")
+                        <i class="fa-solid fa-sliders text-[#0a84ff]"></i> Simulador de Cenários ("What-If")
                     </h3>
-                    <p class="text-xs text-slate-400 mt-1">
+                    <p class="text-xs text-gray-400 mt-1">
                         Ajuste as barras deslizantes para simular o impacto de melhorias de orçamento, cultura ou
                         processos no score final corporativo do time.
                     </p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 pt-2">
-                    <div class="space-y-2 bg-slate-900/50 p-3 rounded-xl border border-slate-700/60">
-                        <div class="flex justify-between text-xs font-semibold text-slate-300">
+                    <div class="space-y-2 apple-dark-card-inset p-3">
+                        <div class="flex justify-between text-xs font-semibold text-gray-300">
                             <span>Estratégia</span>
-                            <span id="sliderValEstrat" class="text-blue-400">1.0</span>
+                            <span id="sliderValEstrat" class="text-[#0a84ff]">1.0</span>
                         </div>
                         <input type="range" id="sliderEstrat" min="1" max="5" step="0.1" oninput="simularWhatIf()"
-                            class="w-full accent-blue-500 bg-slate-800 h-1.5 rounded-lg appearance-none cursor-pointer">
+                            class="sim-slider w-full h-1.5 rounded-lg appearance-none cursor-pointer">
                     </div>
 
-                    <div class="space-y-2 bg-slate-900/50 p-3 rounded-xl border border-slate-700/60">
-                        <div class="flex justify-between text-xs font-semibold text-slate-300">
+                    <div class="space-y-2 apple-dark-card-inset p-3">
+                        <div class="flex justify-between text-xs font-semibold text-gray-300">
                             <span>Cultura</span>
-                            <span id="sliderValCult" class="text-blue-400">1.0</span>
+                            <span id="sliderValCult" class="text-[#0a84ff]">1.0</span>
                         </div>
                         <input type="range" id="sliderCult" min="1" max="5" step="0.1" oninput="simularWhatIf()"
-                            class="w-full accent-blue-500 bg-slate-800 h-1.5 rounded-lg appearance-none cursor-pointer">
+                            class="sim-slider w-full h-1.5 rounded-lg appearance-none cursor-pointer">
                     </div>
 
-                    <div class="space-y-2 bg-slate-900/50 p-3 rounded-xl border border-slate-700/60">
-                        <div class="flex justify-between text-xs font-semibold text-slate-300">
+                    <div class="space-y-2 apple-dark-card-inset p-3">
+                        <div class="flex justify-between text-xs font-semibold text-gray-300">
                             <span>Processo</span>
-                            <span id="sliderValProc" class="text-blue-400">1.0</span>
+                            <span id="sliderValProc" class="text-[#0a84ff]">1.0</span>
                         </div>
                         <input type="range" id="sliderProc" min="1" max="5" step="0.1" oninput="simularWhatIf()"
-                            class="w-full accent-blue-500 bg-slate-800 h-1.5 rounded-lg appearance-none cursor-pointer">
+                            class="sim-slider w-full h-1.5 rounded-lg appearance-none cursor-pointer">
                     </div>
 
-                    <div class="space-y-2 bg-slate-900/50 p-3 rounded-xl border border-slate-700/60">
-                        <div class="flex justify-between text-xs font-semibold text-slate-300">
+                    <div class="space-y-2 apple-dark-card-inset p-3">
+                        <div class="flex justify-between text-xs font-semibold text-gray-300">
                             <span>Resultados</span>
-                            <span id="sliderValResult" class="text-blue-400">1.0</span>
+                            <span id="sliderValResult" class="text-[#0a84ff]">1.0</span>
                         </div>
                         <input type="range" id="sliderResult" min="1" max="5" step="0.1" oninput="simularWhatIf()"
-                            class="w-full accent-blue-500 bg-slate-800 h-1.5 rounded-lg appearance-none cursor-pointer">
+                            class="sim-slider w-full h-1.5 rounded-lg appearance-none cursor-pointer">
                     </div>
                 </div>
             </div>
@@ -259,78 +480,78 @@
     </main>
 
     <!-- Footer com Referências Bibliográficas e Validação Científica -->
-    <footer class="bg-slate-800 border-t border-slate-700 mt-16 py-8 px-4 text-xs text-slate-400 print:hidden">
+    <footer class="header-bar mt-16 py-8 px-4 text-xs text-gray-400 print:hidden">
         <div class="max-w-7xl mx-auto space-y-4">
             <div
-                class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-slate-700/80 pb-3">
-                <h4 class="text-sm font-bold text-slate-200 flex items-center gap-2">
-                    <i class="fa-solid fa-graduation-cap text-blue-400"></i> Validação Científica & Frameworks de
+                class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-white/10 pb-3">
+                <h4 class="text-sm font-bold text-gray-200 flex items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-[#0a84ff]"></i> Validação Científica & Frameworks de
                     Maturidade
                 </h4>
-                <span class="text-[11px] text-slate-500 font-mono">Embasamento Teórico — Design Operations &
+                <span class="text-[11px] text-gray-500 font-mono">Embasamento Teórico — Design Operations &
                     Governance</span>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-[11px] leading-relaxed">
                 <!-- Referência 1: NN/g 6 Estágios -->
                 <div
-                    class="bg-slate-900/60 p-3 rounded-xl border border-slate-700/60 flex flex-col justify-between hover:border-slate-600 transition-colors">
+                    class="apple-dark-card-inset p-3 flex flex-col justify-between hover:border-white/20 transition-colors">
                     <div>
                         <strong class="text-blue-300 block mb-1">Modelo de 6 Estágios (NN/g)</strong>
-                        <p class="text-slate-400">Rosala, M. & Moran, K. (2021). <em>"The 6 Stages of UX Maturity"</em>.
+                        <p class="text-gray-400">Rosala, M. & Moran, K. (2021). <em>"The 6 Stages of UX Maturity"</em>.
                             Nielsen Norman Group.</p>
                     </div>
                     <a href="https://www.nngroup.com/articles/ux-maturity-stages/" target="_blank"
-                        class="text-blue-400 hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
+                        class="text-[#0a84ff] hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
                         Ler no NN/g <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                     </a>
                 </div>
 
                 <!-- Referência 2: McKinsey Design Index -->
                 <div
-                    class="bg-slate-900/60 p-3 rounded-xl border border-slate-700/60 flex flex-col justify-between hover:border-slate-600 transition-colors">
+                    class="apple-dark-card-inset p-3 flex flex-col justify-between hover:border-white/20 transition-colors">
                     <div>
                         <strong class="text-blue-300 block mb-1">Impacto de Negócio (McKinsey)</strong>
-                        <p class="text-slate-400">Sheppard, B. et al. (2018). <em>"The Business Value of Design"</em>.
+                        <p class="text-gray-400">Sheppard, B. et al. (2018). <em>"The Business Value of Design"</em>.
                             McKinsey & Company.</p>
                     </div>
                     <a href="https://www.mckinsey.com/capabilities/mckinsey-design/our-insights/the-business-value-of-design"
                         target="_blank"
-                        class="text-blue-400 hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
+                        class="text-[#0a84ff] hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
                         Ver Estudo McKinsey <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                     </a>
                 </div>
 
                 <!-- Referência 3: Design Value Index (DMI) -->
                 <div
-                    class="bg-slate-900/60 p-3 rounded-xl border border-slate-700/60 flex flex-col justify-between hover:border-slate-600 transition-colors">
+                    class="apple-dark-card-inset p-3 flex flex-col justify-between hover:border-white/20 transition-colors">
                     <div>
                         <strong class="text-blue-300 block mb-1">Design Value Index (DMI)</strong>
-                        <p class="text-slate-400">Westcott, M. et al. (2015). <em>"The DMI Design Value Index: Results
+                        <p class="text-gray-400">Westcott, M. et al. (2015). <em>"The DMI Design Value Index: Results
                                 and Methodologies"</em>. Design Management Institute.</p>
                     </div>
                     <a href="https://www.dmi.org/page/DesignValue" target="_blank"
-                        class="text-blue-400 hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
+                        class="text-[#0a84ff] hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
                         Acessar DMI <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                     </a>
                 </div>
 
-                <!-- Referência 4: Integração em Engenharia / Ágil (Substituída) -->
+                <!-- Referência 4: Integração em Engenharia / Ágil -->
                 <div
-                    class="bg-slate-900/60 p-3 rounded-xl border border-slate-700/60 flex flex-col justify-between hover:border-slate-600 transition-colors">
+                    class="apple-dark-card-inset p-3 flex flex-col justify-between hover:border-white/20 transition-colors">
                     <div>
                         <strong class="text-blue-300 block mb-1">Integração Ágil & Engenharia</strong>
-                        <p class="text-slate-400">Silva, T. S. et al. (2018). <em>"A UX Integration Model for Agile
+                        <p class="text-gray-400">Silva, T. S. et al. (2018). <em>"A UX Integration Model for Agile
                                 Software Development Environments"</em>. ACM / IEEE.</p>
                     </div>
                     <a href="https://dl.acm.org/doi/10.1145/3234152.3234181" target="_blank"
-                        class="text-blue-400 hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
+                        class="text-[#0a84ff] hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
                         Acessar ACM DL <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                     </a>
                 </div>
             </div>
 
-            <div class="text-center text-[10px] text-slate-500 pt-2">
+            <div class="text-center text-[10px] text-gray-500 pt-2">
                 Auditoria de Maturidade UX — Desenvolvida em conformidade com o modelo de 4 pilares e 6 estágios
                 evolutivos do Nielsen Norman Group (NN/g).
             </div>
@@ -378,17 +599,17 @@
             container.innerHTML = '';
 
             bancoQuestoes.forEach(q => {
-                const corPilar = q.pilar === "Estratégia" ? "text-blue-400" : q.pilar === "Cultura" ? "text-purple-400" : q.pilar === "Processo" ? "text-orange-400" : "text-emerald-400";
+                const corPilar = q.pilar === "Estratégia" ? "text-[#0a84ff]" : q.pilar === "Cultura" ? "text-[#bf5af2]" : q.pilar === "Processo" ? "text-[#ff9f0a]" : "text-[#30d158]";
                 container.innerHTML += `
-                    <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/60 space-y-3" id="cardQ_${q.id}">
+                    <div class="quiz-card p-4 space-y-3" id="cardQ_${q.id}">
                         <div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider">
                             <span class="${corPilar}"><i class="fa-solid fa-layer-group mr-1"></i> ${q.pilar}</span>
-                            <span class="text-slate-500 font-mono">NNG-Q${String(q.id).padStart(2, '0')}</span>
+                            <span class="text-gray-500 font-mono">NNG-Q${String(q.id).padStart(2, '0')}</span>
                         </div>
-                        <p class="text-xs text-slate-200 font-medium leading-relaxed">${q.texto}</p>
+                        <p class="text-xs text-gray-200 font-medium leading-relaxed">${q.texto}</p>
                         <div class="grid grid-cols-5 gap-1.5 pt-1">
                             ${[1, 2, 3, 4, 5].map(v => `
-                                <button type="button" onclick="votar(${q.id}, ${v})" id="btn_${q.id}_${v}" class="py-2 text-center text-xs font-bold rounded-lg border border-slate-700 bg-slate-900/80 text-slate-400 hover:border-slate-500 transition-all">
+                                <button type="button" onclick="votar(${q.id}, ${v})" id="btn_${q.id}_${v}" class="quiz-btn py-2 text-center text-xs font-bold">
                                     ${v}
                                 </button>
                             `).join('')}
@@ -405,9 +626,9 @@
                 const btn = document.getElementById(`btn_${qId}_${v}`);
                 if (btn) {
                     if (v === valor) {
-                        btn.className = "py-2 text-center text-xs font-bold rounded-lg border-2 border-blue-500 bg-blue-950/40 text-blue-400 transition-all shadow";
+                        btn.className = "py-2 text-center text-xs font-bold rounded-lg border-2 border-[#0a84ff] bg-blue-500/20 text-[#0a84ff] transition-all shadow";
                     } else {
-                        btn.className = "py-2 text-center text-xs font-bold rounded-lg border border-slate-700 bg-slate-900/80 text-slate-400 hover:border-slate-500 transition-all";
+                        btn.className = "quiz-btn py-2 text-center text-xs font-bold";
                     }
                 }
             }
@@ -437,7 +658,6 @@
                 "Resultados": totais["Resultados"] / 4
             };
 
-            // Transpõe os dados apurados reais diretamente para as frentes do simulador interativo What-If
             document.getElementById('sliderEstrat').value = pilaresScores["Estratégia"];
             document.getElementById('sliderCult').value = pilaresScores["Cultura"];
             document.getElementById('sliderProc').value = pilaresScores["Processo"];
@@ -451,7 +671,6 @@
         };
 
         function atualizarInterfaceDashboard(pilares, scoreFinal) {
-            // Atualiza labels numéricos dos Sliders do simulador
             document.getElementById('sliderValEstrat').innerText = parseFloat(document.getElementById('sliderEstrat').value).toFixed(1);
             document.getElementById('sliderValCult').innerText = parseFloat(document.getElementById('sliderCult').value).toFixed(1);
             document.getElementById('sliderValProc').innerText = parseFloat(document.getElementById('sliderProc').value).toFixed(1);
@@ -464,7 +683,6 @@
             document.getElementById('resultEstagioDesc').innerText = estagio.desc;
             document.getElementById('resultScoreMedio').innerText = scoreFinal.toFixed(1) + " / 100";
 
-            // Lógica incremental da barra interna do nível de estágio
             let minEstagioAnterior = 0;
             if (estagio.nivel > 1) minEstagioAnterior = estagiosNNG[estagio.nivel - 2].maxScore;
 
@@ -472,7 +690,6 @@
             document.getElementById('evolutionBar').style.width = `${evoluçãoInternaPercent}%`;
             document.getElementById('evolutionPercentage').innerText = estagio.nivel === 6 ? "Estágio Máximo Concluído" : `${evoluçãoInternaPercent.toFixed(0)}% de evolução no estágio atual`;
 
-            // Lógica de Detecção Avançada de Gaps NN/g
             const gapBox = document.getElementById('gapAlertBox');
             const gapMsg = document.getElementById('gapAlertMessage');
 
@@ -486,27 +703,25 @@
                 gapBox.classList.add('hidden');
             }
 
-            // Lista de Recomendações Táticas Automatizadas
             const recsList = document.getElementById('recommendationsList');
             recsList.innerHTML = '';
             estagio.recs.forEach((r, idx) => {
                 recsList.innerHTML += `
-                    <div class="flex items-start gap-3 bg-slate-900/40 p-3 rounded-xl border border-slate-700/60">
-                        <span class="w-5 h-5 rounded-full bg-blue-600/20 text-blue-400 border border-blue-500/30 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">${idx + 1}</span>
-                        <p class="text-slate-300 leading-relaxed">${r}</p>
+                    <div class="flex items-start gap-3 apple-dark-card-inset p-3">
+                        <span class="w-5 h-5 rounded-full bg-blue-500/20 text-[#0a84ff] border border-blue-500/30 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">${idx + 1}</span>
+                        <p class="text-gray-300 leading-relaxed">${r}</p>
                     </div>
                 `;
             });
 
-            // Resgata o histórico local criptografado para o Radar Comparativo
             const historico = JSON.parse(localStorage.getItem('nng_ux_history_v2')) || [];
             let datasetsRadar = [{
                 label: 'Auditoria Atual',
                 data: [pilares["Estratégia"], pilares["Cultura"], pilares["Processo"], pilares["Resultados"]],
-                backgroundColor: 'rgba(59, 130, 246, 0.15)',
-                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(10, 132, 255, 0.15)',
+                borderColor: '#0a84ff',
                 borderWidth: 2.5,
-                pointBackgroundColor: '#60a5fa',
+                pointBackgroundColor: '#0a84ff',
                 pointRadius: 4
             }];
 
@@ -515,11 +730,11 @@
                 datasetsRadar.unshift({
                     label: 'Auditoria Anterior',
                     data: [auditoriaPassada["Estratégia"], auditoriaPassada["Cultura"], auditoriaPassada["Processo"], auditoriaPassada["Resultados"]],
-                    backgroundColor: 'rgba(148, 163, 184, 0.04)',
-                    borderColor: '#64748b',
+                    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                    borderColor: '#8e8e93',
                     borderWidth: 1.5,
                     borderDash: [4, 4],
-                    pointBackgroundColor: '#94a3b8',
+                    pointBackgroundColor: '#8e8e93',
                     pointRadius: 3
                 });
             }
@@ -528,7 +743,6 @@
         }
 
         window.simularWhatIf = function () {
-            // Recalcula o score instantaneamente com os dados flutuantes capturados das barras deslizantes
             const est = parseFloat(document.getElementById('sliderEstrat').value);
             const cult = parseFloat(document.getElementById('sliderCult').value);
             const proc = parseFloat(document.getElementById('sliderProc').value);
@@ -555,15 +769,15 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { labels: { color: '#94a3b8', font: { size: 10, weight: 'bold' } }, position: 'bottom' }
+                        legend: { labels: { color: '#8e8e93', font: { size: 10, weight: 'bold' } }, position: 'bottom' }
                     },
                     scales: {
                         r: {
                             min: 1, max: 5,
-                            ticks: { stepSize: 1, color: '#475569', showLabelBackdrop: false },
+                            ticks: { stepSize: 1, color: '#8e8e93', showLabelBackdrop: false },
                             angleLines: { color: 'rgba(255,255,255,0.06)' },
                             grid: { color: 'rgba(255,255,255,0.06)' },
-                            pointLabels: { color: '#94a3b8', font: { size: 11, weight: 'bold' } }
+                            pointLabels: { color: '#f5f5f7', font: { size: 11, weight: 'bold' } }
                         }
                     }
                 }
@@ -573,32 +787,27 @@
         function salvarNoHistoricoLocal(pilares, score) {
             let historico = JSON.parse(localStorage.getItem('nng_ux_history_v2')) || [];
             historico.push({ pilares: pilares, score: score });
-            if (historico.length > 5) historico.shift(); // Preserva apenas auditorias recentes
+            if (historico.length > 5) historico.shift();
             localStorage.setItem('nng_ux_history_v2', JSON.stringify(historico));
         }
 
         window.limparHistorico = function () {
             if (confirm("Deseja expurgar permanentemente todos os registros de evolução salvos localmente?")) {
-                // 1. Limpa o banco de dados do navegador
                 localStorage.removeItem('nng_ux_history_v2');
 
-                // 2. Limpa a memória de respostas do teste atual
                 votosRealizados = {};
 
-                // 3. Reseta visualmente todos os botões de 1 a 5 para o estado inicial
                 bancoQuestoes.forEach(q => {
                     for (let v = 1; v <= 5; v++) {
                         const btn = document.getElementById(`btn_${q.id}_${v}`);
                         if (btn) {
-                            btn.className = "py-2 text-center text-xs font-bold rounded-lg border border-slate-700 bg-slate-900/80 text-slate-400 hover:border-slate-500 transition-all";
+                            btn.className = "quiz-btn py-2 text-center text-xs font-bold";
                         }
                     }
                 });
 
-                // 4. Reseta a barra de progresso visual
                 atualizarProgressoUI();
 
-                // 5. Esconde o dashboard de resultados e limpa o gráfico da tela
                 document.getElementById('dashboardSection').classList.add('hidden');
                 if (radarChartInstance) {
                     radarChartInstance.destroy();

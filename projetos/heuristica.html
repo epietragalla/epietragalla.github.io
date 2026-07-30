@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="dark">
 
 <head>
     <meta charset="UTF-8">
@@ -13,6 +13,118 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
+        /* ==========================================================================
+           VARIÁVEIS DE COR E TEMA NATIVO APPLE (DARK MODE)
+           ========================================================================== */
+        :root {
+            --apple-bg: #000000;
+            --apple-card-bg: rgba(28, 28, 30, 0.75);
+            --apple-inset-bg: rgba(44, 44, 46, 0.6);
+            --apple-header-bg: rgba(22, 22, 24, 0.8);
+            --apple-border: rgba(255, 255, 255, 0.12);
+            --apple-border-light: rgba(255, 255, 255, 0.08);
+            --apple-blue: #0a84ff;
+            --apple-blue-hover: #409cff;
+            --apple-green: #30d158;
+            --apple-red: #ff453a;
+            --apple-orange: #ff9f0a;
+            --apple-purple: #bf5af2;
+            --apple-text-main: #f5f5f7;
+            --apple-text-muted: #8e8e93;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--apple-bg);
+            color: var(--apple-text-main);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ==========================================================================
+           CLASSES REUTILIZÁVEIS APPLE GLASSMORPHISM & SURFACES
+           ========================================================================== */
+        .apple-dark-card {
+            background: var(--apple-card-bg);
+            backdrop-filter: blur(30px) saturate(190%);
+            -webkit-backdrop-filter: blur(30px) saturate(190%);
+            border: 1px solid var(--apple-border);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .apple-dark-card-inset {
+            background: var(--apple-inset-bg);
+            border: 1px solid var(--apple-border-light);
+            border-radius: 14px;
+        }
+
+        .apple-dark-btn {
+            background: var(--apple-blue);
+            color: #ffffff;
+            border-radius: 980px;
+            font-weight: 600;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 0 16px rgba(10, 132, 255, 0.3);
+        }
+
+        .apple-dark-btn:hover {
+            background: var(--apple-blue-hover);
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(10, 132, 255, 0.45);
+        }
+
+        .apple-dark-btn:active {
+            transform: scale(0.97);
+        }
+
+        .header-bar {
+            background: var(--apple-header-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--apple-border-light);
+        }
+
+        .status-pill {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--apple-border-light);
+            border-radius: 9999px;
+        }
+
+        .apple-input {
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--apple-border-light);
+            border-radius: 12px;
+            color: var(--apple-text-main);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            pointer-events: auto !important;
+            user-select: text !important;
+            cursor: text !important;
+        }
+
+        .apple-input:focus {
+            outline: none;
+            border-color: var(--apple-blue);
+            box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.25);
+        }
+
+        .sev-btn {
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--apple-border-light);
+            border-radius: 10px;
+            color: var(--apple-text-muted);
+            transition: all 0.2s ease;
+        }
+
+        .sev-btn:hover {
+            border-color: var(--apple-border);
+            color: var(--apple-text-main);
+        }
+
+        /* ==========================================================================
+           POPOVER TOOLTIP ESTILO macOS/iOS
+           ========================================================================== */
         .hint-tooltip {
             position: relative;
             display: inline-block;
@@ -22,22 +134,25 @@
         .hint-tooltip .tooltip-text {
             visibility: hidden;
             width: 300px;
-            background-color: #1e293b;
-            color: #fff;
+            background-color: rgba(30, 30, 32, 0.95);
+            backdrop-filter: blur(30px) saturate(200%);
+            -webkit-backdrop-filter: blur(30px) saturate(200%);
+            color: var(--apple-text-main);
             text-align: left;
-            border-radius: 8px;
-            padding: 12px;
+            border-radius: 16px;
+            padding: 14px 16px;
             position: absolute;
             z-index: 50;
             bottom: 125%;
             left: 50%;
             transform: translateX(-50%);
             opacity: 0;
-            transition: opacity 0.2s;
+            transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
             font-size: 0.75rem;
             line-height: 1.15rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
-            border: 1px solid #334155;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 2px 6px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            pointer-events: none;
         }
 
         .hint-tooltip:hover .tooltip-text {
@@ -47,22 +162,22 @@
     </style>
 </head>
 
-<body class="bg-slate-900 text-slate-100 min-h-screen font-sans">
+<body class="min-h-screen">
 
     <!-- Header -->
-    <header class="bg-slate-800 border-b border-slate-700 py-6 px-4">
+    <header class="header-bar py-6 px-4">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
-                <h1 class="text-3xl font-extrabold text-blue-400 flex items-center gap-3">
-                    <i class="fa-solid fa-compass text-blue-500"></i> Mapeador Heurístico Digital
+                <h1 class="text-3xl font-extrabold text-[#0a84ff] flex items-center gap-3">
+                    <i class="fa-solid fa-compass text-[#0a84ff]"></i> Mapeador Heurístico Digital
                 </h1>
-                <p class="text-slate-400 text-sm mt-1">
+                <p class="text-gray-400 text-sm mt-1">
                     Utilitário científico para condução e consolidação de avaliações heurísticas de usabilidade baseadas
                     nas diretrizes de Jakob Nielsen.
                 </p>
             </div>
-            <div class="flex items-center gap-2 text-xs bg-slate-700/50 p-2.5 rounded-lg border border-slate-600">
-                <span class="font-semibold text-slate-300">Metodologia:</span> Nielsen Norman Group (NN/g) | Critérios
+            <div class="status-pill flex items-center gap-2 text-xs p-2.5">
+                <span class="font-semibold text-gray-300">Metodologia:</span> Nielsen Norman Group (NN/g) | Critérios
                 de Severidade
             </div>
         </div>
@@ -73,34 +188,27 @@
         <!-- Formulário e Métricas Rápidas -->
         <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Form de Captura -->
-            <div class="lg:col-span-1 bg-slate-800 rounded-2xl border border-slate-700 p-6 space-y-4">
-                <h2 class="text-lg font-bold text-white flex items-center gap-2 border-b border-slate-700 pb-2">
-                    <i class="fa-solid fa-circle-plus text-blue-400"></i> Registrar Violação de UX
+            <div class="lg:col-span-1 apple-dark-card p-6 space-y-4">
+                <h2 class="text-lg font-bold text-white flex items-center gap-2 border-b border-white/10 pb-2">
+                    <i class="fa-solid fa-circle-plus text-[#0a84ff]"></i> Registrar Violação de UX
                 </h2>
 
-                <!-- Descrição do Problema -->
+                <!-- Descrição do Problema e Localização -->
                 <div class="space-y-1">
-                    <label class="text-xs font-semibold text-slate-400">Descrição do Problema Observado</label>
-                    <textarea id="issueDesc" rows="3"
-                        placeholder="Ex: O botão de salvar não muda de estado ao ser clicado, fazendo com que o usuário clique múltiplas vezes sem saber se funcionou..."
-                        class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-slate-100 focus:outline-none focus:border-blue-500"></textarea>
-                </div>
-
-                <!-- Localização / Tela -->
-                <div class="space-y-1">
-                    <label class="text-xs font-semibold text-slate-400">Localização do Problema (Tela / Fluxo)</label>
-                    <input type="text" id="issueLocation" placeholder="Ex: Checkout / Aba de Pagamento"
-                        class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-slate-100 focus:outline-none focus:border-blue-500">
+                    <label for="issueDesc" class="text-xs font-semibold text-gray-400 block">Descreva a falha, a tela e a localização:</label>
+                    <textarea id="issueDesc" rows="4"
+                        placeholder="Ex: No fluxo de Checkout / Aba de Pagamento, o botão de salvar não muda de estado ao ser clicado, fazendo com que o usuário clique múltiplas vezes sem saber se funcionou..."
+                        class="w-full apple-input p-2.5 text-xs resize-y"></textarea>
                 </div>
 
                 <!-- Seleção de Heurística -->
                 <div class="space-y-1">
                     <div class="flex justify-between items-center">
-                        <label class="text-xs font-semibold text-slate-400">Heurística Violada</label>
-                        <span class="text-[10px] text-blue-400 italic">Passe o mouse para ver a definição</span>
+                        <label class="text-xs font-semibold text-gray-400">Heurística Violada</label>
+                        <span class="text-[10px] text-[#0a84ff] italic">Passe o mouse para ver a definição</span>
                     </div>
                     <select id="issueHeuristic"
-                        class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-slate-100 focus:outline-none focus:border-blue-500">
+                        class="w-full apple-input p-2.5 text-xs">
                         <option value="H1">H1: Visibilidade do status do sistema</option>
                         <option value="H2">H2: Correspondência entre o sistema e o mundo real</option>
                         <option value="H3">H3: Controle e liberdade do usuário</option>
@@ -117,61 +225,61 @@
 
                 <!-- Grau de Severidade -->
                 <div class="space-y-1.5">
-                    <label class="text-xs font-semibold text-slate-400 block">Grau de Severidade (Critério NN/g)</label>
+                    <label class="text-xs font-semibold text-gray-400 block">Grau de Severidade (Critério NN/g)</label>
                     <div class="grid grid-cols-5 gap-1" id="severidadeRadioGroup">
                         <button type="button" onclick="setSeveridade(0)" id="btnSev0"
-                            class="py-2 text-center text-xs font-bold rounded-lg border border-slate-700 bg-slate-900 text-slate-400 hover:border-slate-500 transition-colors">0</button>
+                            class="sev-btn py-2 text-center text-xs font-bold">0</button>
                         <button type="button" onclick="setSeveridade(1)" id="btnSev1"
-                            class="py-2 text-center text-xs font-bold rounded-lg border border-slate-700 bg-slate-900 text-slate-400 hover:border-slate-500 transition-colors">1</button>
+                            class="sev-btn py-2 text-center text-xs font-bold">1</button>
                         <button type="button" onclick="setSeveridade(2)" id="btnSev2"
-                            class="py-2 text-center text-xs font-bold rounded-lg border border-slate-700 bg-slate-900 text-slate-400 hover:border-slate-500 transition-colors">2</button>
+                            class="sev-btn py-2 text-center text-xs font-bold">2</button>
                         <button type="button" onclick="setSeveridade(3)" id="btnSev3"
-                            class="py-2 text-center text-xs font-bold rounded-lg border border-slate-700 bg-slate-900 text-slate-400 hover:border-slate-500 transition-colors">3</button>
+                            class="sev-btn py-2 text-center text-xs font-bold">3</button>
                         <button type="button" onclick="setSeveridade(4)" id="btnSev4"
-                            class="py-2 text-center text-xs font-bold rounded-lg border border-slate-700 bg-slate-900 text-slate-400 hover:border-slate-500 transition-colors">4</button>
+                            class="sev-btn py-2 text-center text-xs font-bold">4</button>
                     </div>
-                    <div id="sevSubtitle" class="text-[10px] text-slate-500 italic text-center mt-1">Selecione uma nota
+                    <div id="sevSubtitle" class="text-[10px] text-gray-500 italic text-center mt-1">Selecione uma nota
                         de 0 (Falso Problema) a 4 (Catástrofe).</div>
                 </div>
 
                 <!-- Botão Adicionar -->
                 <button onclick="adicionarViolacao()"
-                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors shadow mt-2">
+                    class="apple-dark-btn w-full text-xs py-3 px-4 flex items-center justify-center gap-2 mt-2">
                     <i class="fa-solid fa-square-plus text-base"></i> Adicionar à Avaliação
                 </button>
             </div>
 
             <!-- Painel Analítico de KPIs e Gráfico -->
             <div
-                class="lg:col-span-2 bg-slate-800 rounded-2xl border border-slate-700 p-6 flex flex-col justify-between">
+                class="lg:col-span-2 apple-dark-card p-6 flex flex-col justify-between">
                 <div>
                     <h2
-                        class="text-lg font-bold text-white mb-4 flex items-center gap-2 border-b border-slate-700 pb-2">
-                        <i class="fa-solid fa-chart-pie text-purple-400"></i> Métricas Consolidadas do Produto
+                        class="text-lg font-bold text-white mb-4 flex items-center gap-2 border-b border-white/10 pb-2">
+                        <i class="fa-solid fa-chart-pie text-[#bf5af2]"></i> Métricas Consolidadas do Produto
                     </h2>
 
                     <!-- KPIs rápidos -->
                     <div class="grid grid-cols-3 gap-4 mb-6">
-                        <div class="bg-slate-900/60 border border-slate-700 rounded-xl p-3 text-center">
-                            <span class="text-slate-400 text-[10px] uppercase font-bold tracking-wider">Total
+                        <div class="apple-dark-card-inset p-3 text-center">
+                            <span class="text-gray-400 text-[10px] uppercase font-bold tracking-wider">Total
                                 Encontrado</span>
                             <div id="kpiTotal" class="text-3xl font-extrabold text-white mt-1">0</div>
                         </div>
-                        <div class="bg-slate-900/60 border border-slate-700 rounded-xl p-3 text-center">
-                            <span class="text-slate-400 text-[10px] uppercase font-bold tracking-wider">Severidade
+                        <div class="apple-dark-card-inset p-3 text-center">
+                            <span class="text-gray-400 text-[10px] uppercase font-bold tracking-wider">Severidade
                                 Média</span>
-                            <div id="kpiMedia" class="text-3xl font-extrabold text-blue-400 mt-1">0.0</div>
+                            <div id="kpiMedia" class="text-3xl font-extrabold text-[#0a84ff] mt-1">0.0</div>
                         </div>
-                        <div class="bg-slate-900/60 border border-slate-700 rounded-xl p-3 text-center">
-                            <span class="text-slate-400 text-[10px] uppercase font-bold tracking-wider">Foco de Alerta
+                        <div class="apple-dark-card-inset p-3 text-center">
+                            <span class="text-gray-400 text-[10px] uppercase font-bold tracking-wider">Foco de Alerta
                                 Crítico</span>
-                            <div id="kpiAlerta" class="text-xs font-bold text-red-400 mt-3 truncate px-1">Nenhum</div>
+                            <div id="kpiAlerta" class="text-xs font-bold text-[#ff453a] mt-3 truncate px-1">Nenhum</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Container do Gráfico -->
-                <div class="relative h-56 w-full bg-slate-900/40 border border-slate-700/60 rounded-xl p-2">
+                <div class="relative h-56 w-full apple-dark-card-inset p-2">
                     <canvas id="heuristicChart"></canvas>
                 </div>
             </div>
@@ -179,34 +287,33 @@
 
         <!-- Listagem e Mural Ponderado de Problemas -->
         <section id="wrapperResultados" class="space-y-4 hidden">
-            <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6">
+            <div class="apple-dark-card p-6">
                 <div
-                    class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-700 pb-4 mb-4">
+                    class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/10 pb-4 mb-4">
                     <div>
                         <h3 class="text-base font-bold text-white">Mural de Backlog UX (Ordenado por Severidade)</h3>
-                        <p class="text-xs text-slate-400">Problemas priorizados para atuação do time de engenharia de
+                        <p class="text-xs text-gray-400">Problemas priorizados para atuação do time de engenharia de
                             produto e design.</p>
                     </div>
                     <button onclick="exportarHeuristicasCSV()"
-                        class="bg-green-600 hover:bg-green-700 text-white font-bold text-xs py-2 px-4 rounded-lg flex items-center gap-2 transition-colors">
+                        class="apple-dark-btn text-xs py-2 px-4 flex items-center gap-2">
                         <i class="fa-solid fa-file-export"></i> Exportar Backlog UX (.CSV)
                     </button>
                 </div>
 
                 <!-- Tabela de Problemas -->
-                <div class="overflow-x-auto rounded-xl border border-slate-700">
-                    <table class="min-w-full divide-y divide-slate-700 text-xs text-left">
-                        <thead class="bg-slate-900 text-slate-400 uppercase text-[10px]">
+                <div class="overflow-x-auto rounded-xl border border-white/10">
+                    <table class="min-w-full divide-y divide-white/10 text-xs text-left">
+                        <thead class="bg-white/5 text-gray-400 uppercase text-[10px]">
                             <tr>
                                 <th class="px-4 py-3 font-bold">ID</th>
                                 <th class="px-4 py-3 font-bold">Heurística</th>
-                                <th class="px-4 py-3 font-bold">Localização / Tela</th>
-                                <th class="px-6 py-3 font-bold">Descrição da Falha Observada</th>
+                                <th class="px-6 py-3 font-bold">Descrição da Falha & Localização Observada</th>
                                 <th class="px-4 py-3 font-bold text-center">Severidade</th>
                                 <th class="px-4 py-3 font-bold text-center">Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="issuesTableBody" class="divide-y divide-slate-700 bg-slate-800 text-slate-300">
+                        <tbody id="issuesTableBody" class="divide-y divide-white/10 bg-transparent text-gray-300">
                             <!-- Inserido Dinamicamente via JS -->
                         </tbody>
                     </table>
@@ -217,80 +324,80 @@
     </main>
 
     <!-- Footer com Referências Bibliográficas e Validação Científica -->
-    <footer class="bg-slate-800 border-t border-slate-700 mt-16 py-8 px-4 text-xs text-slate-400">
+    <footer class="header-bar mt-16 py-8 px-4 text-xs text-gray-400">
         <div class="max-w-7xl mx-auto space-y-4">
             <div
-                class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-slate-700/80 pb-3">
-                <h4 class="text-sm font-bold text-slate-200 flex items-center gap-2">
-                    <i class="fa-solid fa-graduation-cap text-blue-400"></i> Validação Científica & Literatura de
+                class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-white/10 pb-3">
+                <h4 class="text-sm font-bold text-gray-200 flex items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-[#0a84ff]"></i> Validação Científica & Literatura de
                     Suporte
                 </h4>
-                <span class="text-[11px] text-slate-500 font-mono">Embasamento Teórico — Avaliação Heurística &
+                <span class="text-[11px] text-gray-500 font-mono">Embasamento Teórico — Avaliação Heurística &
                     Severidade</span>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-[11px] leading-relaxed">
                 <!-- Referência 1: 10 Heurísticas do NN/g -->
                 <div
-                    class="bg-slate-900/60 p-3 rounded-xl border border-slate-700/60 flex flex-col justify-between hover:border-slate-600 transition-colors">
+                    class="apple-dark-card-inset p-3 flex flex-col justify-between hover:border-white/20 transition-colors">
                     <div>
                         <strong class="text-blue-300 block mb-1">10 Heurísticas de Usabilidade (NN/g)</strong>
-                        <p class="text-slate-400">Nielsen, J. (1994). <em>"10 Usability Heuristics for User Interface
+                        <p class="text-gray-400">Nielsen, J. (1994). <em>"10 Usability Heuristics for User Interface
                                 Design"</em>. Nielsen Norman Group.</p>
                     </div>
                     <a href="https://www.nngroup.com/articles/ten-usability-heuristics/" target="_blank"
-                        class="text-blue-400 hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
+                        class="text-[#0a84ff] hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
                         Ler no NN/g <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                     </a>
                 </div>
 
                 <!-- Referência 2: Escala de Severidade -->
                 <div
-                    class="bg-slate-900/60 p-3 rounded-xl border border-slate-700/60 flex flex-col justify-between hover:border-slate-600 transition-colors">
+                    class="apple-dark-card-inset p-3 flex flex-col justify-between hover:border-white/20 transition-colors">
                     <div>
                         <strong class="text-blue-300 block mb-1">Matriz de Severidade de Usabilidade</strong>
-                        <p class="text-slate-400">Nielsen, J. (1994). <em>"Severity Ratings for Usability
+                        <p class="text-gray-400">Nielsen, J. (1994). <em>"Severity Ratings for Usability
                                 Problems"</em>. Nielsen Norman Group.</p>
                     </div>
                     <a href="https://www.nngroup.com/articles/how-to-rate-the-severity-of-usability-problems/"
                         target="_blank"
-                        class="text-blue-400 hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
+                        class="text-[#0a84ff] hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
                         Ver Escala no NN/g <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                     </a>
                 </div>
 
                 <!-- Referência 3: Paper Fundacional 1990 -->
                 <div
-                    class="bg-slate-900/60 p-3 rounded-xl border border-slate-700/60 flex flex-col justify-between hover:border-slate-600 transition-colors">
+                    class="apple-dark-card-inset p-3 flex flex-col justify-between hover:border-white/20 transition-colors">
                     <div>
                         <strong class="text-blue-300 block mb-1">Paper Fundacional (CHI 1990)</strong>
-                        <p class="text-slate-400">Nielsen, J. & Molich, R. (1990). <em>"Heuristic Evaluation of User
+                        <p class="text-gray-400">Nielsen, J. & Molich, R. (1990). <em>"Heuristic Evaluation of User
                                 Interfaces"</em> (CHI '90).</p>
                     </div>
                     <a href="https://dl.acm.org/doi/10.1145/97243.97281" target="_blank"
-                        class="text-blue-400 hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
+                        class="text-[#0a84ff] hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
                         Acessar ACM DL <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                     </a>
                 </div>
 
                 <!-- Referência 4: Eficiência dos Avaliadores -->
                 <div
-                    class="bg-slate-900/60 p-3 rounded-xl border border-slate-700/60 flex flex-col justify-between hover:border-slate-600 transition-colors">
+                    class="apple-dark-card-inset p-3 flex flex-col justify-between hover:border-white/20 transition-colors">
                     <div>
                         <strong class="text-blue-300 block mb-1">Taxa de Cobertura de Inspeção</strong>
-                        <p class="text-slate-400">Sauro, J. (2012). <em>"How Effective are Heuristic Evaluations?"</em>
+                        <p class="text-gray-400">Sauro, J. (2012). <em>"How Effective are Heuristic Evaluations?"</em>
                             / Law & Hvannberg (2004).</p>
                     </div>
                     <a href="https://measuringu.com/effective-he/" target="_blank"
-                        class="text-blue-400 hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
+                        class="text-[#0a84ff] hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
                         Ver Estudo no MeasuringU <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                     </a>
                 </div>
             </div>
 
-            <div class="text-center text-[10px] text-slate-500 pt-2">
+            <div class="text-center text-[10px] text-gray-500 pt-2">
                 Mapeador Heurístico Digital — Desenvolvido em conformidade com as 10 Heurísticas Gerais e Matriz de
-                Severidade de Jakob Nielsen (NN/g)[cite: 5, 8].
+                Severidade de Jakob Nielsen (NN/g).
             </div>
         </div>
     </footer>
@@ -311,11 +418,11 @@
         };
 
         const severidadesNNG = {
-            0: { label: "Falso Problema", class: "bg-slate-700 text-slate-300 border-slate-600" },
-            1: { label: "Cosmético", class: "bg-green-500/10 text-green-400 border-green-500/20" },
-            2: { label: "Problema Menor", class: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20" },
-            3: { label: "Problema Maior", class: "bg-orange-500/10 text-orange-400 border-orange-500/20" },
-            4: { label: "Catástrofe", class: "bg-red-500/20 text-red-400 border-red-500/30" }
+            0: { label: "Falso Problema", class: "bg-white/10 text-gray-300 border-white/10" },
+            1: { label: "Cosmético", class: "bg-emerald-500/20 text-[#30d158] border-emerald-500/30" },
+            2: { label: "Problema Menor", class: "bg-amber-500/20 text-[#ff9f0a] border-amber-500/30" },
+            3: { label: "Problema Maior", class: "bg-orange-500/20 text-[#ff9f0a] border-orange-500/30" },
+            4: { label: "Catástrofe", class: "bg-rose-500/20 text-[#ff453a] border-rose-500/30" }
         };
 
         let listaViolacoes = [];
@@ -329,9 +436,9 @@
                 const btn = document.getElementById(`btnSev${i}`);
                 if (btn) {
                     if (i === nota) {
-                        btn.className = "py-2 text-center text-xs font-bold rounded-lg border-2 border-blue-500 bg-blue-950/40 text-blue-400 transition-colors shadow";
+                        btn.className = "py-2 text-center text-xs font-bold rounded-lg border-2 border-[#0a84ff] bg-blue-500/20 text-[#0a84ff] transition-colors shadow";
                     } else {
-                        btn.className = "py-2 text-center text-xs font-bold rounded-lg border border-slate-700 bg-slate-900 text-slate-400 hover:border-slate-500 transition-colors";
+                        btn.className = "sev-btn py-2 text-center text-xs font-bold";
                     }
                 }
             }
@@ -340,11 +447,10 @@
 
         window.adicionarViolacao = function () {
             const desc = document.getElementById('issueDesc').value.trim();
-            const location = document.getElementById('issueLocation').value.trim();
             const heuristic = document.getElementById('issueHeuristic').value;
 
-            if (!desc || !location || selectedSeveridade === null) {
-                alert("Por favor, descreva a falha, informe a tela/localização e selecione uma nota de severidade.");
+            if (!desc || selectedSeveridade === null) {
+                alert("Por favor, descreva a falha e a localização, e selecione uma nota de severidade.");
                 return;
             }
 
@@ -352,19 +458,17 @@
                 id: "ERR-" + String(listaViolacoes.length + 1).padStart(2, '0'),
                 heurisId: heuristic,
                 desc: desc,
-                location: location,
                 severity: selectedSeveridade
             });
 
             // Limpa o formulário de entrada
             document.getElementById('issueDesc').value = '';
-            document.getElementById('issueLocation').value = '';
 
             // Reseta botões de severidade
             selectedSeveridade = null;
             for (let i = 0; i <= 4; i++) {
                 const btn = document.getElementById(`btnSev${i}`);
-                if (btn) btn.className = "py-2 text-center text-xs font-bold rounded-lg border border-slate-700 bg-slate-900 text-slate-400 hover:border-slate-500 transition-colors";
+                if (btn) btn.className = "sev-btn py-2 text-center text-xs font-bold";
             }
             document.getElementById('sevSubtitle').innerText = "Selecione uma nota de 0 (Falso Problema) a 4 (Catástrofe).";
 
@@ -420,21 +524,20 @@
             listaViolacoes.forEach(v => {
                 const configSev = severidadesNNG[v.severity];
                 tbody.innerHTML += `
-                    <tr class="hover:bg-slate-700/30 transition-colors">
-                        <td class="px-4 py-3 font-mono text-slate-500">${v.id}</td>
-                        <td class="px-4 py-3 font-semibold text-blue-400">
+                    <tr class="hover:bg-white/5 transition-colors">
+                        <td class="px-4 py-3 font-mono text-gray-400">${v.id}</td>
+                        <td class="px-4 py-3 font-semibold text-[#0a84ff]">
                             <span class="hint-tooltip">
                                 ${v.heurisId}
-                                <span class="tooltip-text font-normal text-slate-300"><strong>${dicionarioHeuristicas[v.heurisId].nome}:</strong> ${dicionarioHeuristicas[v.heurisId].desc}</span>
+                                <span class="tooltip-text font-normal text-gray-300"><strong>${dicionarioHeuristicas[v.heurisId].nome}:</strong> ${dicionarioHeuristicas[v.heurisId].desc}</span>
                             </span>
                         </td>
-                        <td class="px-4 py-3 font-medium text-slate-200">${v.location}</td>
-                        <td class="px-6 py-3 text-slate-400 leading-normal max-w-md break-words">${v.desc}</td>
+                        <td class="px-6 py-3 text-gray-300 leading-normal max-w-md break-words">${v.desc}</td>
                         <td class="px-4 py-3 text-center">
                             <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border ${configSev.class}">${v.severity} - ${configSev.label}</span>
                         </td>
                         <td class="px-4 py-3 text-center">
-                            <button onclick="removerViolacao('${v.id}')" class="text-slate-500 hover:text-red-400 transition-colors p-1"><i class="fa-solid fa-trash-can"></i></button>
+                            <button onclick="removerViolacao('${v.id}')" class="text-gray-500 hover:text-[#ff453a] transition-colors p-1"><i class="fa-solid fa-trash-can"></i></button>
                         </td>
                     </tr>
                 `;
@@ -455,8 +558,8 @@
                     datasets: [{
                         label: 'Índice de Carga Crítica (Frequência × Severidade)',
                         data: dataY,
-                        backgroundColor: 'rgba(147, 51, 234, 0.4)',
-                        borderColor: '#a855f7',
+                        backgroundColor: 'rgba(191, 90, 242, 0.35)',
+                        borderColor: '#bf5af2',
                         borderWidth: 1.5,
                         borderRadius: 6
                     }]
@@ -465,7 +568,7 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { labels: { color: '#94a3b8', font: { size: 10 } } },
+                        legend: { labels: { color: '#8e8e93', font: { size: 10 } } },
                         tooltip: {
                             callbacks: {
                                 title: function (context) {
@@ -476,8 +579,8 @@
                         }
                     },
                     scales: {
-                        x: { ticks: { color: '#64748b', font: { size: 10, weight: 'bold' } }, grid: { display: false } },
-                        y: { ticks: { color: '#64748b', stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                        x: { ticks: { color: '#8e8e93', font: { size: 10, weight: 'bold' } }, grid: { display: false } },
+                        y: { ticks: { color: '#8e8e93', stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.06)' } }
                     }
                 }
             });
@@ -486,20 +589,18 @@
         window.exportarHeuristicasCSV = function () {
             if (listaViolacoes.length === 0) return;
 
-            // Define o cabeçalho do CSV com BOM para garantir compatibilidade de acentuação no Excel
             let csvContent = "\uFEFF";
-            csvContent += "ID;Codigo Heuristica;Nome Heuristica;Tela ou Localizacao;Descricao do Problema;Nota Severidade;Classificacao Severidade\n";
+            csvContent += "ID;Codigo Heuristica;Nome Heuristica;Descricao da Falha e Localizacao;Nota Severidade;Classificacao Severidade\n";
 
             listaViolacoes.forEach(v => {
                 let linha = [
                     v.id,
                     v.heurisId,
                     `"${dicionarioHeuristicas[v.heurisId].nome}"`,
-                    `"${v.location.replace(/"/g, '""')}"`,
                     `"${v.desc.replace(/"/g, '""')}"`,
                     v.severity,
                     severidadesNNG[v.severity].label
-                ].join(";"); // Ponto e vírgula padrão nacional do Excel
+                ].join(";");
                 csvContent += linha + "\n";
             });
 
