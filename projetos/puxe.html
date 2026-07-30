@@ -3244,9 +3244,26 @@
 
     let currentTab = 'dash';
 
-    document.addEventListener('DOMContentLoaded', () => {
+   document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       setupCsvUploader();
+
+      // ===================================================================
+      // AUTOMAÇÃO DE 30 MINUTOS COM DATA E HORA DE ATUALIZAÇÃO
+      // ===================================================================
+      
+      // 1. Executa a primeira sincronização automaticamente ao abrir a página
+      window.syncFromGoogleSheets();
+
+      // 2. Configura a sincronização recorrente a cada 30 minutos (1.800.000 ms)
+      const TRINTA_MINUTOS_EM_MS = 30 * 60 * 1000; // 1.800.000 milissegundos
+      
+      setInterval(() => {
+        console.log("⏰ [Automação 30min] Executando sincronização periódica com Google Sheets...");
+        if (typeof window.syncFromGoogleSheets === 'function') {
+          window.syncFromGoogleSheets();
+        }
+      }, TRINTA_MINUTOS_EM_MS);
     });
 
     function getCanvasCtx(id) {
@@ -3417,13 +3434,19 @@
 
       if (hasAnyData) {
         if (badge) badge.className = "flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-400 text-xs font-medium border border-emerald-500/20";
-        if (text) text.innerText = "Sincronizado";
+        
+        // EXIBE A DATA E HORA DA ÚLTIMA SINCRONIZAÇÃO NO BADGE TOP BAR
+        if (text) {
+          text.innerText = window.LAST_SYNC_TIME || `Sincronizado: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}`;
+        }
+        
         if (emptyState) emptyState.classList.add('hidden');
 
         // Exibe a visualização ativa
         if (currentTab === 'dash' && viewDash) viewDash.classList.remove('hidden');
         else if (currentTab === 'impact') document.getElementById('view-impact')?.classList.remove('hidden');
         else if (currentTab === 'social') document.getElementById('view-social')?.classList.remove('hidden');
+        else if (currentTab === 'control') document.getElementById('view-control')?.classList.remove('hidden');
         else if (currentTab === 'inv') document.getElementById('view-inv')?.classList.remove('hidden');
         else if (viewDetail) viewDetail.classList.remove('hidden');
       } else {
@@ -5355,6 +5378,12 @@
                 console.log(`✅ Aba '${sheetName}' lida da nuvem: ${cleanRows.length} projetos.`);
 
                 if (successCount === sheets.length) {
+                  // Captura e formata a Data/Hora da sincronização bem-sucedida
+                  const agora = new Date();
+                  const dataFormatada = agora.toLocaleDateString('pt-BR');
+                  const horaFormatada = agora.toLocaleTimeString('pt-BR');
+                  window.LAST_SYNC_TIME = `Sincronizado: ${dataFormatada} às ${horaFormatada}`;
+
                   if (window.saveDataToFirebase) {
                     window.saveDataToFirebase(window.RAW_DATA);
                   } else {
