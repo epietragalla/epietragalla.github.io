@@ -276,6 +276,19 @@
 
     <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
 
+        <!-- MODAL DE CARREGAMENTO / LOADING -->
+        <div id="modalLoading"
+            class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 hidden flex flex-col items-center justify-center transition-all duration-300">
+            <div
+                class="apple-dark-card p-6 flex flex-col items-center gap-4 text-center max-w-xs shadow-2xl border border-white/10">
+                <i class="fa-solid fa-circle-notch fa-spin text-3xl text-[#0a84ff]"></i>
+                <div>
+                    <h4 class="text-sm font-bold text-white">Sincronizando com a Nuvem</h4>
+                    <p class="text-xs text-gray-400 mt-1">Carregando quadro de avaliadores do time...</p>
+                </div>
+            </div>
+        </div>
+
         <!-- PAINEL FILOSÓFICO NN/G -->
         <section class="apple-dark-card p-4 border-l-4 border-l-[#bf5af2] print:hidden">
             <div class="flex items-start gap-3">
@@ -444,9 +457,10 @@
                     <p class="text-xs text-gray-400">Listagem das notas individuais salvas na nuvem por cada integrante
                         da equipe.</p>
                 </div>
-                <!-- NOVO SELETOR DE TIME PARA CONSULTA DO QUADRO -->
-                <div class="flex items-center gap-3 flex-wrap justify-end">
-                    <div class="flex items-center gap-1.5">
+
+                <!-- SELETOR E BOTÕES DO QUADRO -->
+                <div class="flex items-center gap-2 flex-wrap justify-end">
+                    <div class="flex items-center gap-1.5 mr-2">
                         <label for="selectTimeConsulta" class="text-xs text-gray-400 font-medium">Exibir Time:</label>
                         <select id="selectTimeConsulta" onchange="alterarTimeConsulta(this.value)"
                             class="input-apple text-xs py-2 px-3">
@@ -454,6 +468,13 @@
                             <option value="PUXE">PUXE</option>
                         </select>
                     </div>
+
+                    <!-- BOTÃO NOVO: LIMPAR QUADRO -->
+                    <button onclick="limparQuadroConsulta()"
+                        class="apple-dark-btn-secondary text-xs py-2.5 px-4 flex items-center gap-2">
+                        <i class="fa-solid fa-[#ff453a] fa-broom text-[#ff453a]"></i> Limpar Quadro
+                    </button>
+
                     <button onclick="calcularMediaGeralDoTime()"
                         class="apple-dark-btn text-xs py-2.5 px-5 flex items-center gap-2 bg-[#30d158] hover:bg-emerald-600">
                         <i class="fa-solid fa-calculator"></i> Calcular Média Geral do Time
@@ -525,27 +546,33 @@
             <div class="banner-maturidade p-6">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                        <span class="text-[#0a84ff] text-xs font-bold tracking-wider uppercase block">Diagnóstico Consolidado do Time</span>
+                        <span class="text-[#0a84ff] text-xs font-bold tracking-wider uppercase block">Diagnóstico
+                            Consolidado do Time</span>
                         <h2 id="resultEstagioTitle" class="text-3xl font-black text-white mt-1">--</h2>
                         <p id="resultEstagioDesc" class="text-gray-300 text-xs mt-1.5 max-w-3xl leading-relaxed">--</p>
                     </div>
                     <div class="score-pill px-5 py-3 text-center min-w-[170px] shrink-0">
-                        <span class="text-gray-400 text-[10px] font-bold uppercase block tracking-wider">Score Geral do Time</span>
+                        <span class="text-gray-400 text-[10px] font-bold uppercase block tracking-wider">Score Geral do
+                            Time</span>
                         <div id="resultScoreMedio" class="text-3xl font-black text-[#0a84ff] mt-0.5">0.0 / 100</div>
                     </div>
                 </div>
 
                 <!-- Bloco de Barras de Evolução -->
                 <div class="mt-6 pt-4 border-t border-white/10 space-y-4">
-                    
+
                     <!-- 1. BARRA MACRO: Nível Geral do Time (Estágios 1 ao 6) -->
                     <div>
                         <div class="flex justify-between text-[11px] text-gray-400 mb-1.5">
-                            <span class="font-semibold text-gray-200"><i class="fa-solid fa-chart-line text-[#0a84ff] mr-1"></i> Maturidade Geral Macro (Escala NN/g)</span>
+                            <span class="font-semibold text-gray-200"><i
+                                    class="fa-solid fa-chart-line text-[#0a84ff] mr-1"></i> Maturidade Geral Macro
+                                (Escala NN/g)</span>
                             <span id="macroLevelText" class="font-mono text-[#0a84ff]">Nível 1 de 6</span>
                         </div>
                         <div class="w-full bg-black/60 rounded-full h-2.5 overflow-hidden border border-white/10">
-                            <div id="macroProgressBar" class="bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-500 h-full transition-all duration-500" style="width: 0%"></div>
+                            <div id="macroProgressBar"
+                                class="bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-500 h-full transition-all duration-500"
+                                style="width: 0%"></div>
                         </div>
                         <div class="flex justify-between text-[9px] text-gray-500 mt-1 font-mono uppercase">
                             <span>E1: Ausente</span>
@@ -560,11 +587,14 @@
                     <!-- 2. BARRA MICRO: Progresso Interno do Estágio Atual -->
                     <div>
                         <div class="flex justify-between text-[11px] text-gray-400 mb-1.5">
-                            <span class="font-semibold text-gray-200"><i class="fa-solid fa-bolt text-amber-400 mr-1"></i> Avanço Interno no Estágio Atual</span>
+                            <span class="font-semibold text-gray-200"><i
+                                    class="fa-solid fa-bolt text-amber-400 mr-1"></i> Avanço Interno no Estágio
+                                Atual</span>
                             <span id="evolutionPercentage">0% concluído neste estágio</span>
                         </div>
                         <div class="w-full bg-black/60 rounded-full h-2.5 overflow-hidden border border-white/10">
-                            <div id="evolutionBar" class="bg-[#30d158] h-full transition-all duration-500" style="width: 0%"></div>
+                            <div id="evolutionBar" class="bg-[#30d158] h-full transition-all duration-500"
+                                style="width: 0%"></div>
                         </div>
                     </div>
 
@@ -574,7 +604,8 @@
                 <div id="gapAlertBox" class="gap-alert mt-4 p-3 text-xs hidden flex items-start gap-2">
                     <i class="fa-solid fa-triangle-exclamation mt-0.5 text-base shrink-0"></i>
                     <div>
-                        <strong class="block text-amber-300">Detecção de Regressão Silenciosa (Sinais de Drift NN/g):</strong>
+                        <strong class="block text-amber-300">Detecção de Regressão Silenciosa (Sinais de Drift
+                            NN/g):</strong>
                         <span id="gapAlertMessage">--</span>
                     </div>
                 </div>
@@ -832,7 +863,21 @@
         // ALTERAÇÃO EXCLUSIVA NO QUADRO DE CONSULTA DO TIME
         function alterarTimeConsulta(timeVal) {
             timeConsultaAtual = timeVal;
-            carregarDadosServidor();
+            if (timeVal) {
+                carregarDadosServidor();
+            } else {
+                limparQuadroConsulta();
+            }
+        }
+
+        function limparQuadroConsulta() {
+            timeConsultaAtual = "";
+            bancoVotosNuvem = [];
+            bancoHealthLogNuvem = [];
+            document.getElementById('selectTimeConsulta').value = "";
+            atualizarTabelaVotos();
+            atualizarTabelaHealthLog();
+            document.getElementById('dashboardSection').classList.add('hidden');
         }
 
         function votar(qId, valor) {
@@ -855,38 +900,43 @@
             document.getElementById('progressText').innerText = `Progresso: ${count} / 16`;
         }
 
-        // CARREGA DADOS DO GOOGLE SHEETS BASEADO NO TIME SELECIONADO NO QUADRO DE CONSULTA
+
         async function carregarDadosServidor() {
-            if (!timeConsultaAtual) return;
+    if (!timeConsultaAtual) return;
 
-            try {
-                const response = await fetch(GOOGLE_SCRIPT_URL);
-                const data = await response.json();
+    const modal = document.getElementById('modalLoading');
+    if (modal) modal.classList.remove('hidden');
 
-                if (data.votos) {
-                    bancoVotosNuvem = data.votos.filter(v => v.time === timeConsultaAtual);
+    try {
+        const response = await fetch(GOOGLE_SCRIPT_URL);
+        const data = await response.json();
 
-                    // Se a pessoa preencheu a sessão dela, recupera as respostas anteriores dela se existirem
-                    if (usuarioAtual.nome && usuarioAtual.time === timeConsultaAtual) {
-                        const meuvoto = bancoVotosNuvem.find(v => v.nome.toLowerCase() === usuarioAtual.nome.toLowerCase());
-                        if (meuvoto && meuvoto.respostas) {
-                            votosAtuais = { ...meuvoto.respostas };
-                            bancoQuestoes.forEach(q => {
-                                if (votosAtuais[q.id]) votar(q.id, votosAtuais[q.id]);
-                            });
-                        }
-                    }
-                    atualizarTabelaVotos();
+        if (data.votos) {
+            bancoVotosNuvem = data.votos.filter(v => v.time === timeConsultaAtual);
+
+            if (usuarioAtual.nome && usuarioAtual.time === timeConsultaAtual) {
+                const meuvoto = bancoVotosNuvem.find(v => v.nome.toLowerCase() === usuarioAtual.nome.toLowerCase());
+                if (meuvoto && meuvoto.respostas) {
+                    votosAtuais = { ...meuvoto.respostas };
+                    bancoQuestoes.forEach(q => {
+                        if (votosAtuais[q.id]) votar(q.id, votosAtuais[q.id]);
+                    });
                 }
-
-                if (data.healthLogs) {
-                    bancoHealthLogNuvem = data.healthLogs.filter(h => h.time === timeConsultaAtual);
-                    atualizarTabelaHealthLog();
-                }
-            } catch (err) {
-                console.error("Erro ao sincronizar com o Google Sheets:", err);
             }
+            atualizarTabelaVotos();
         }
+
+        if (data.healthLogs) {
+            bancoHealthLogNuvem = data.healthLogs.filter(h => h.time === timeConsultaAtual);
+            atualizarTabelaHealthLog();
+        }
+    } catch (err) {
+        console.error("Erro ao sincronizar com o Google Sheets:", err);
+        alert("Não foi possível carregar os dados do Google Sheets.");
+    } finally {
+        if (modal) modal.classList.add('hidden');
+    }
+}
 
         // ENVIA VOTO INDIVIDUAL PARA O GOOGLE SHEETS
         async function salvarAvaliacaoIndividual() {
@@ -1124,7 +1174,7 @@
             const macroPercent = Math.min(100, Math.max(0, scoreFinal));
             const macroBarEl = document.getElementById('macroProgressBar');
             if (macroBarEl) macroBarEl.style.width = `${macroPercent}%`;
-            
+
             const macroTextEl = document.getElementById('macroLevelText');
             if (macroTextEl) macroTextEl.innerText = `Estágio ${estagio.nivel} de 6 (${scoreFinal.toFixed(0)}% da escala total)`;
 
@@ -1133,7 +1183,7 @@
             if (estagio.nivel > 1) minEstagioAnterior = estagiosNNG[estagio.nivel - 2].maxScore;
 
             const evoluçãoInternaPercent = Math.min(100, Math.max(0, ((scoreFinal - minEstagioAnterior) / (estagio.maxScore - minEstagioAnterior)) * 100));
-            
+
             const microBarEl = document.getElementById('evolutionBar');
             if (microBarEl) microBarEl.style.width = `${evoluçãoInternaPercent}%`;
 
@@ -1153,11 +1203,11 @@
             if (pilares["Processo"] >= 3.5 && pilares["Resultados"] < 2.5) {
                 gapBox.classList.remove('hidden');
                 gapMsg.innerText = "Sinal de Alerta NN/g: Rituais Burocráticos. Os processos e cerimônias de UX estão acontecendo, porém não estão gerando impacto mensurável nas decisões de produto.";
-            } 
+            }
             else if (pilares["Processo"] >= 3.5 && pilares["Estratégia"] < 2.5) {
                 gapBox.classList.remove('hidden');
                 gapMsg.innerText = "Sinal de Alerta NN/g: Isolamento Operacional. O time técnico pratica métodos de design, mas não possui orçamento nem apoio das lideranças executivas.";
-            } 
+            }
             else if (avaliadores && avaliadores.length > 1) {
                 const liderancas = avaliadores.filter(a => a.cargo.includes('Liderança'));
                 const operacionais = avaliadores.filter(a => !a.cargo.includes('Liderança'));
@@ -1316,6 +1366,8 @@
         }
 
         inicializarQuiz();
+
+
     </script>
 </body>
 
