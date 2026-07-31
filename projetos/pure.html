@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="dark">
+<html lang="pt-BR" class="light">
 
 <head>
     <meta charset="UTF-8">
@@ -14,11 +14,36 @@
 
     <style>
         /* ==========================================================================
-           VARIÁVEIS DE COR E TEMA NATIVO APPLE (DARK MODE)
-           ========================================================================== */
+       VARIÁVEIS DE COR E TEMA NATIVO APPLE (LIGHT MODE PADRÃO + DARK MODE)
+       ========================================================================== */
         :root {
+            /* Apple HIG Light Mode (Default) - Contrastes Ajustados */
+            --apple-bg: #f2f2f7;
+            --apple-card-bg: rgba(255, 255, 255, 0.88);
+            --apple-card-solid: #ffffff;
+            --apple-inset-bg: rgba(230, 230, 235, 0.8);
+            --apple-header-bg: rgba(255, 255, 255, 0.85);
+            --apple-border: rgba(0, 0, 0, 0.12);
+            --apple-border-light: rgba(0, 0, 0, 0.08);
+            --apple-blue: #007aff;
+            --apple-blue-hover: #0056b3;
+            --apple-green: #28cd41;
+            --apple-red: #ff3b30;
+            --apple-orange: #ff9500;
+            --apple-purple: #8e44ad;
+            --apple-text-main: #1c1c1e;
+            /* Texto principal escuro */
+            --apple-text-muted: #545456;
+            /* Texto secundário com alto contraste */
+            --apple-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
+            --apple-tooltip-bg: rgba(255, 255, 255, 0.98);
+        }
+
+        .dark {
+            /* Apple HIG Dark Mode */
             --apple-bg: #000000;
             --apple-card-bg: rgba(28, 28, 30, 0.75);
+            --apple-card-solid: #1c1c1e;
             --apple-inset-bg: rgba(44, 44, 46, 0.6);
             --apple-header-bg: rgba(22, 22, 24, 0.8);
             --apple-border: rgba(255, 255, 255, 0.12);
@@ -31,6 +56,8 @@
             --apple-purple: #bf5af2;
             --apple-text-main: #f5f5f7;
             --apple-text-muted: #8e8e93;
+            --apple-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            --apple-tooltip-bg: rgba(30, 30, 32, 0.95);
         }
 
         body {
@@ -39,18 +66,52 @@
             color: var(--apple-text-main);
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         /* ==========================================================================
-           CLASSES REUTILIZÁVEIS APPLE GLASSMORPHISM & SURFACES
-           ========================================================================== */
+       CORREÇÃO DE CONTRASTE AUTOMÁTICA PARA LIGHT MODE (OVERRIDERS TAILWIND)
+       ========================================================================== */
+        html:not(.dark) .text-white {
+            color: var(--apple-text-main) !important;
+        }
+
+        html:not(.dark) .text-gray-200,
+        html:not(.dark) .text-gray-300 {
+            color: #2c2c2e !important;
+        }
+
+        html:not(.dark) .text-gray-400,
+        html:not(.dark) .text-gray-500 {
+            color: var(--apple-text-muted) !important;
+        }
+
+        html:not(.dark) .text-purple-300 {
+            color: #6b21a8 !important;
+        }
+
+        html:not(.dark) .text-blue-300 {
+            color: #0056b3 !important;
+        }
+
+        html:not(.dark) .border-white\/10 {
+            border-color: rgba(0, 0, 0, 0.12) !important;
+        }
+
+        html:not(.dark) .bg-white\/5 {
+            background-color: rgba(0, 0, 0, 0.04) !important;
+        }
+
+        /* ==========================================================================
+       CLASSES REUTILIZÁVEIS APPLE GLASSMORPHISM & SURFACES
+       ========================================================================== */
         .apple-dark-card {
             background: var(--apple-card-bg);
             backdrop-filter: blur(30px) saturate(190%);
             -webkit-backdrop-filter: blur(30px) saturate(190%);
             border: 1px solid var(--apple-border);
             border-radius: 20px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            box-shadow: var(--apple-shadow);
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
@@ -62,17 +123,18 @@
 
         .apple-dark-btn {
             background: var(--apple-blue);
-            color: #ffffff;
+            color: #ffffff !important;
+            /* Mantém o texto do botão sempre branco */
             border-radius: 980px;
             font-weight: 600;
             transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 0 16px rgba(10, 132, 255, 0.3);
+            box-shadow: 0 0 16px rgba(0, 122, 255, 0.25);
         }
 
         .apple-dark-btn:hover {
             background: var(--apple-blue-hover);
             transform: scale(1.02);
-            box-shadow: 0 0 20px rgba(10, 132, 255, 0.45);
+            box-shadow: 0 0 20px rgba(0, 122, 255, 0.35);
         }
 
         .apple-dark-btn:active {
@@ -80,15 +142,15 @@
         }
 
         .apple-dark-dropzone {
-            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border: 2px dashed var(--apple-border);
             border-radius: 18px;
-            background: rgba(255, 255, 255, 0.03);
+            background: var(--apple-inset-bg);
             transition: all 0.2s ease;
         }
 
         .apple-dark-dropzone:hover {
             border-color: var(--apple-blue);
-            background: rgba(10, 132, 255, 0.08);
+            background: rgba(0, 122, 255, 0.05);
         }
 
         .header-bar {
@@ -99,14 +161,14 @@
         }
 
         .status-pill {
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--apple-inset-bg);
             border: 1px solid var(--apple-border-light);
             border-radius: 9999px;
         }
 
         /* ==========================================================================
-           POPOVER TOOLTIP ESTILO macOS/iOS
-           ========================================================================== */
+       POPOVER TOOLTIP ESTILO macOS/iOS
+       ========================================================================== */
         .hint-tooltip {
             position: relative;
             display: inline-block;
@@ -116,7 +178,7 @@
         .hint-tooltip .tooltip-text {
             visibility: hidden;
             width: 280px;
-            background-color: rgba(30, 30, 32, 0.95);
+            background-color: var(--apple-tooltip-bg);
             backdrop-filter: blur(30px) saturate(200%);
             -webkit-backdrop-filter: blur(30px) saturate(200%);
             color: var(--apple-text-main);
@@ -132,8 +194,8 @@
             transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
             font-size: 0.75rem;
             line-height: 1.25rem;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 2px 6px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--apple-border);
             pointer-events: none;
         }
 
@@ -147,10 +209,10 @@
         }
 
         /* ==========================================================================
-           ESTILOS UTILITÁRIOS E ESTRUTURAIS
-           ========================================================================== */
+       ESTILOS UTILITÁRIOS E ESTRUTURAIS
+       ========================================================================== */
         .progress-track {
-            background-color: rgba(0, 0, 0, 0.6);
+            background-color: var(--apple-inset-bg);
             height: 1rem;
             border-radius: 9999px;
             overflow: hidden;
@@ -168,16 +230,17 @@
         }
 
         .export-box {
-            border-color: rgba(10, 132, 255, 0.3);
+            border-color: rgba(0, 122, 255, 0.3);
         }
 
         .code-box-formula {
-            background-color: rgba(0, 0, 0, 0.6);
+            background-color: var(--apple-inset-bg);
             border: 1px solid var(--apple-border-light);
+            color: var(--apple-text-main) !important;
         }
 
         .heatmap-bars-container {
-            background-color: rgba(0, 0, 0, 0.6);
+            background-color: var(--apple-inset-bg);
             border: 1px solid var(--apple-border-light);
             min-width: 200px;
         }
@@ -190,67 +253,147 @@
     <header class="header-bar py-6 px-4">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
-                <h1 class="text-3xl font-extrabold text-[#0a84ff] flex items-center gap-3">
-                    <i class="fa-solid fa-gauge-high text-[#0a84ff]"></i> Analisador Psicométrico PURE UX
+                <h1 class="text-3xl font-extrabold text-[var(--apple-blue)] flex items-center gap-3">
+                    <i class="fa-solid fa-gauge-high"></i> Analisador Psicométrico PURE UX
                 </h1>
-                <p class="text-gray-400 text-sm mt-1">
+                <p class="text-[var(--apple-text-muted)] text-sm mt-1">
                     Quantificação pragmática do atrito cognitivo e cálculo de Confiabilidade Interavaliadores por
                     Krippendorff's Alpha.
                 </p>
             </div>
-            <div class="status-pill flex items-center gap-2 text-xs p-2.5">
-                <span class="font-semibold text-gray-300">Normativa Básica:</span> CHI 2016 Case Study (Rohrer, Sauro
-                et al.)
+
+            <div class="flex items-center gap-3">
+                <!-- Seletor de Tema Estilo Apple (Segmented Control) -->
+                <button onclick="toggleAppleTheme()" id="themeToggleBtn"
+                    class="status-pill px-3 py-1.5 flex items-center gap-2 text-xs font-semibold cursor-pointer hover:opacity-80 transition-opacity">
+                    <i id="themeIcon" class="fa-solid fa-moon text-blue-500"></i>
+                    <span id="themeText">Modo Escuro</span>
+                </button>
+
+                <div class="status-pill flex items-center gap-2 text-xs p-2.5">
+                    <span class="font-semibold text-[var(--apple-text-muted)]">Normativa Básica:</span>
+                    <span class="text-[var(--apple-text-main)] font-medium">CHI 2016 Case Study (Rohrer, Sauro et
+                        al.)</span>
+                </div>
             </div>
         </div>
     </header>
 
     <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
 
-       <!-- Área de Upload e Formatação do CSV (Ajustado para 55% / 45%) -->
+        <!-- Área de Upload e Formatação do CSV/Google Sheets (Ajustado para 55% / 45%) -->
         <section class="grid grid-cols-1 lg:grid-cols-[55%_auto] gap-8">
             <!-- Box 1: Importar Matriz (55% da largura) -->
             <div class="apple-dark-card p-6 flex flex-col justify-between">
                 <div>
-                    <h2 class="text-lg font-bold text-white flex items-center gap-2 mb-2">
-                        <i class="fa-solid fa-file-csv text-[#0a84ff]"></i> Importar Matriz de Avaliação (.CSV)
+                    <h2 class="text-lg font-bold text-[var(--apple-text-main)] flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-file-import text-[var(--apple-blue)]"></i> Importar Matriz de Avaliação
                     </h2>
-                    <p class="text-gray-400 text-xs leading-relaxed mb-4">
-                        O método PURE exige que 3 avaliadores especialistas analisem de forma independente e silenciosa
-                        os passos das tarefas essenciais utilizando a rubrica padrão de 1 a 3 pontos. Carregue as notas
-                        unificadas para processar os scores.
+                    <p class="text-[var(--apple-text-muted)] text-xs leading-relaxed mb-4">
+                        O método PURE exige que 3 avaliadores analisem os passos em silêncio (notas de 1 a 3). Importe o
+                        arquivo CSV ou insira o link público do Google Sheets.
                     </p>
+
+                    <!-- Abas de Alternância: CSV vs Google Sheets -->
+                    <div class="flex border-b border-[var(--apple-border-light)] mb-4">
+                        <button id="tabCsvBtn" onclick="switchImportTab('csv')"
+                            class="px-4 py-2 text-xs font-bold border-b-2 border-[var(--apple-blue)] text-[var(--apple-blue)] transition-colors">
+                            <i class="fa-solid fa-file-csv mr-1"></i> Arquivo CSV
+                        </button>
+                        <button id="tabSheetsBtn" onclick="switchImportTab('sheets')"
+                            class="px-4 py-2 text-xs font-bold text-[var(--apple-text-muted)] border-b-2 border-transparent hover:text-[var(--apple-text-main)] transition-colors">
+                            <i class="fa-brands fa-google-drive mr-1"></i> Google Sheets
+                    </div>
                 </div>
 
-                <!-- Dropzone -->
-                <div class="apple-dark-dropzone p-8 text-center cursor-pointer" id="dropZone">
+                <!-- Painel 1: Dropzone do CSV -->
+                <div id="importCsvPanel" class="apple-dark-dropzone p-8 text-center cursor-pointer">
                     <input type="file" id="fileInput" accept=".csv" class="hidden">
                     <div class="space-y-2" id="uploadLabel">
-                        <i class="fa-solid fa-cloud-arrow-up text-4xl text-gray-400" id="uploadIcon"></i>
-                        <p class="text-sm font-medium text-gray-300" id="uploadText">Arraste seu arquivo CSV
-                            consolidado ou clique para buscar</p>
-                        <p class="text-xs text-gray-500">Separadores suportados: vírgula (,) ou ponto e vírgula (;)</p>
+                        <i class="fa-solid fa-cloud-arrow-up text-4xl text-[var(--apple-text-muted)]"
+                            id="uploadIcon"></i>
+                        <p class="text-sm font-medium text-[var(--apple-text-main)]" id="uploadText">Arraste seu arquivo
+                            CSV consolidado ou clique para buscar</p>
+                        <p class="text-xs text-[var(--apple-text-muted)]">Separadores suportados: vírgula (,) ou ponto e
+                            vírgula (;)</p>
                     </div>
+                </div>
+
+                <!-- Painel 2: Input do Google Sheets -->
+                <div id="importSheetsPanel" class="hidden space-y-3 p-4 apple-dark-card-inset">
+                    <div class="flex items-center gap-1.5">
+                        <label class="block text-xs font-bold text-[var(--apple-text-main)]">
+                            Link do Google Sheets (Aba "compilado"):
+                        </label>
+
+                        <!-- Hint Hover com Estrutura Detalhada -->
+                        <div class="hint-tooltip">
+                            <i
+                                class="fa-solid fa-circle-question text-[var(--apple-blue)] hover:opacity-80 text-xs cursor-help"></i>
+                            <div class="tooltip-text" style="width: 320px;">
+                                <strong class="text-[var(--apple-blue)] block mb-1.5 text-[11px]">
+                                    <i class="fa-solid fa-table-cells mr-1"></i> Estrutura Obrigatória do Google Sheets:
+                                </strong>
+                                <p class="text-[11px] leading-relaxed mb-2 text-[var(--apple-text-muted)]">
+                                    O arquivo precisa ter uma aba nomeada exatamente como <strong
+                                        class="text-[var(--apple-text-main)]">compilado</strong> (em minúsculas).
+                                </p>
+                                <div class="code-box-formula p-2 rounded text-[10px] space-y-1 font-mono">
+                                    <p>• <strong>Coluna A:</strong> Nome da Tarefa</p>
+                                    <p>• <strong>Coluna B:</strong> Nº do Passo (1, 2, 3...)</p>
+                                    <p>• <strong>Coluna C:</strong> Descrição do Passo</p>
+                                    <p>• <strong>Coluna D:</strong> Nota do Avaliador 1 (1 a 3)</p>
+                                    <p>• <strong>Coluna E:</strong> Nota do Avaliador 2 (1 a 3)</p>
+                                    <p>• <strong>Coluna F:</strong> Nota do Avaliador 3 (1 a 3)</p>
+                                    <p>• <strong>Coluna G:</strong> Nota Consenso (1 a 3)</p>
+                                </div>
+                                <p class="text-[10px] text-[var(--apple-text-muted)] mt-2 italic">
+                                    *A primeira linha da aba deve conter os cabeçalhos. O processamento dos dados começa
+                                    a partir da linha 2.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <input type="url" id="sheetsUrlInput"
+                            placeholder="https://docs.google.com/spreadsheets/d/ID_DA_PLANILHA/edit..."
+                            class="w-full text-xs p-2.5 rounded-xl border border-[var(--apple-border)] bg-[var(--apple-card-solid)] text-[var(--apple-text-main)] focus:outline-none focus:border-[var(--apple-blue)]">
+                        <button onclick="carregarGoogleSheets()"
+                            class="apple-dark-btn px-4 py-2.5 text-xs flex items-center gap-1.5 whitespace-nowrap">
+                            <i class="fa-solid fa-arrow-down-to-line"></i> Carregar
+                        </button>
+                    </div>
+
+                    <p class="text-[10px] text-[var(--apple-text-muted)] leading-tight">
+                        <i class="fa-solid fa-circle-info text-[var(--apple-blue)] mr-1"></i>
+                        Certifique-se de que a planilha está configurada em <strong>Compartilhar &gt; Qualquer pessoa
+                            com o link pode ver</strong>. O sistema lerá as tarefas, passos e notas (Colunas A a G) da
+                        aba <strong>compilado</strong>.
+                    </p>
                 </div>
             </div>
 
-            <!-- Box 2: Manual de Formatação do CSV (45% da largura restante) -->
+            <!-- Box 2: Manual de Formatação do CSV / Sheets -->
             <div class="apple-dark-card p-6 space-y-4">
-                <h3 class="text-base font-bold text-white flex items-center gap-2 border-b border-white/10 pb-2">
-                    <i class="fa-solid fa-book text-[#bf5af2]"></i> Como formatar seu CSV?
+                <h3
+                    class="text-base font-bold text-[var(--apple-text-main)] flex items-center gap-2 border-b border-[var(--apple-border-light)] pb-2">
+                    <i class="fa-solid fa-book text-[var(--apple-purple)]"></i> Estrutura Esperada
                 </h3>
-                <p class="text-xs text-gray-400 leading-relaxed">
-                    Sua planilha deve conter pelo menos as seguintes colunas nessa ordem:
-                </p>
-                <div class="apple-dark-card-inset p-3 font-mono text-[11px] text-blue-300 space-y-1 overflow-x-auto">
-                    <p class="text-purple-300 font-bold">Tarefa;Etapa;Descrição;Avaliador1;Avaliador2;Avaliador3;NotaConsenso</p>
-                    <p class="text-gray-500 border-t border-white/10 pt-1 mt-1">Exemplo:</p>
-                    <p>Login;1;Inserir e-mail;1;1;2;1</p>
-                    <p>Login;2;Inserir senha;1;2;2;2</p>
+                <div class="text-xs text-[var(--apple-text-muted)] space-y-2">
+                    <p><strong>Via Google Sheets (Aba "compilado"):</strong></p>
+                    <ul class="list-disc list-inside text-[11px] space-y-0.5">
+                        <li><strong>Linha 1:</strong> Cabeçalhos</li>
+                        <li><strong>Coluna D:</strong> Nota do Avaliador 1</li>
+                        <li><strong>Coluna E:</strong> Nota do Avaliador 2</li>
+                        <li><strong>Coluna F:</strong> Nota do Avaliador 3</li>
+                        <li><strong>Coluna G:</strong> Nota Consenso</li>
+                    </ul>
                 </div>
-                <div class="text-[10px] text-gray-500 leading-normal italic">
-                    *Nota: As notas dos avaliadores devem respeitar estritamente os valores ordinais numéricos de 1, 2
-                    ou 3 conforme a rubrica oficial.
+                <div
+                    class="apple-dark-card-inset p-3 font-mono text-[11px] text-[var(--apple-blue)] space-y-1 overflow-x-auto">
+                    <p class="font-bold text-[var(--apple-purple)]">Estrutura CSV Padrão:</p>
+                    <p>Tarefa;Etapa;Descrição;Ava1;Ava2;Ava3;NotaConsenso</p>
                 </div>
             </div>
         </section>
@@ -260,7 +403,8 @@
 
             <!-- Painel da Régua de Escala e Índice de Fricção -->
             <div class="apple-dark-card p-6 space-y-4">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/10 pb-4">
+                <div
+                    class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/10 pb-4">
                     <div>
                         <h3 class="text-base font-bold text-white flex items-center gap-2">
                             <i class="fa-solid fa-ruler-horizontal text-[#0a84ff]"></i> Termômetro de Fricção Cognitiva
@@ -281,13 +425,15 @@
 
                         <!-- Ícone do Hint com Tooltip Explicativo -->
                         <div class="hint-tooltip">
-                            <i class="fa-solid fa-circle-info text-[#0a84ff] hover:text-blue-300 text-sm cursor-help"></i>
+                            <i
+                                class="fa-solid fa-circle-info text-[#0a84ff] hover:text-blue-300 text-sm cursor-help"></i>
                             <div class="tooltip-text">
                                 <strong class="text-blue-300 block mb-1">Validade do Índice de Fricção (%):</strong>
                                 <p class="text-gray-300 text-[11px] leading-relaxed mb-2">
                                     Aplica a técnica estatística padrão <strong>Min-Max Normalization</strong>:
                                 </p>
-                                <div class="code-box-formula p-2 rounded font-mono text-[10px] text-amber-300 text-center mb-2">
+                                <div
+                                    class="code-box-formula p-2 rounded font-mono text-[10px] text-amber-300 text-center mb-2">
                                     ((Score Atual - Mínimo) / (Máximo - Mínimo)) × 100
                                 </div>
                                 <p class="text-gray-400 text-[11px] leading-relaxed">
@@ -305,13 +451,15 @@
                 <div class="space-y-2">
                     <div class="flex justify-between text-xs font-mono font-bold text-gray-400">
                         <span class="flex items-center gap-1.5 text-[#30d158]">
-                            <i class="fa-solid fa-circle-check text-[10px]"></i> Mínimo Teórico: <span id="statMinScore" class="text-white">0</span>
+                            <i class="fa-solid fa-circle-check text-[10px]"></i> Mínimo Teórico: <span id="statMinScore"
+                                class="text-white">0</span>
                         </span>
                         <span id="statCurrentPositionLabel" class="text-blue-300 apple-dark-card-inset px-2 py-0.5">
                             Score Atual: <strong id="statCurrentInBar" class="text-white">0</strong>
                         </span>
                         <span class="flex items-center gap-1.5 text-[#ff453a]">
-                            Máximo Teórico: <span id="statMaxScore" class="text-white">0</span> <i class="fa-solid fa-triangle-exclamation text-[10px]"></i>
+                            Máximo Teórico: <span id="statMaxScore" class="text-white">0</span> <i
+                                class="fa-solid fa-triangle-exclamation text-[10px]"></i>
                         </span>
                     </div>
 
@@ -341,7 +489,8 @@
                         </div>
                     </div>
                     <div id="statPureScore" class="text-4xl font-black text-white mt-2">--</div>
-                    <div id="badgePureColor" class="text-[10px] uppercase font-bold px-2.5 py-0.5 rounded mt-2 inline-block">--</div>
+                    <div id="badgePureColor"
+                        class="text-[10px] uppercase font-bold px-2.5 py-0.5 rounded mt-2 inline-block">--</div>
                 </div>
 
                 <!-- Confiabilidade Interavaliadores IRR -->
@@ -400,14 +549,16 @@
                         <strong class="text-gray-200 block">Fontes Bibliográficas de Validação:</strong>
                         <ul class="space-y-1.5 list-disc list-inside text-[11px]">
                             <li>
-                                <a href="https://dl.acm.org/doi/10.1145/2851581.2851607" target="_blank" class="text-[#0a84ff] font-medium hover:underline">
+                                <a href="https://dl.acm.org/doi/10.1145/2851581.2851607" target="_blank"
+                                    class="text-[#0a84ff] font-medium hover:underline">
                                     Rohrer, C., Sauro, J. et al. (CHI 2016).
                                 </a>
                                 "Practical Usability Rating by Experts (PURE): A Pragmatic Approach for Scoring Product
                                 Usability".
                             </li>
                             <li>
-                                <a href="https://www.nngroup.com/articles/pure-method/" target="_blank" class="text-[#0a84ff] font-medium hover:underline">
+                                <a href="https://www.nngroup.com/articles/pure-method/" target="_blank"
+                                    class="text-[#0a84ff] font-medium hover:underline">
                                     Nielsen Norman Group (2017).
                                 </a>
                                 "Quantifying and Comparing Ease of Use Without Breaking the Bank".
@@ -453,17 +604,21 @@
         </section>
 
         <!-- Seção do Botão de Exportação de Imagem Full HD (1920x1080) -->
-        <div class="apple-dark-card export-box p-5 flex flex-col md:flex-row justify-between items-center gap-4 shadow-xl">
+        <div
+            class="apple-dark-card export-box p-5 flex flex-col md:flex-row justify-between items-center gap-4 shadow-xl">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-blue-500/20 border border-blue-400/30 flex items-center gap-1 justify-center text-[#0a84ff]">
+                <div
+                    class="w-10 h-10 rounded-xl bg-blue-500/20 border border-blue-400/30 flex items-center gap-1 justify-center text-[#0a84ff]">
                     <i class="fa-solid fa-chart-pie text-lg"></i>
                 </div>
                 <div>
                     <h4 class="text-sm font-bold text-white">Exportar Dashboard Executivo PURE</h4>
-                    <p class="text-xs text-gray-400">Gere um painel visual de alto impacto com Big Numbers, Termômetro e Mapa de Calor.</p>
+                    <p class="text-xs text-gray-400">Gere um painel visual de alto impacto com Big Numbers, Termômetro e
+                        Mapa de Calor.</p>
                 </div>
             </div>
-            <button onclick="exportarInfograficoPURE1080p()" class="apple-dark-btn w-full md:w-auto text-xs px-6 py-3 flex items-center justify-center gap-2">
+            <button onclick="exportarInfograficoPURE1080p()"
+                class="apple-dark-btn w-full md:w-auto text-xs px-6 py-3 flex items-center justify-center gap-2">
                 <i class="fa-solid fa-file-image"></i> Baixar Dashboard (.PNG)
             </button>
         </div>
@@ -472,7 +627,8 @@
     <!-- Footer com Referências Bibliográficas e Validação Científica -->
     <footer class="header-bar mt-16 py-8 px-4 text-xs text-gray-400">
         <div class="max-w-7xl mx-auto space-y-4">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-white/10 pb-3">
+            <div
+                class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-white/10 pb-3">
                 <h4 class="text-sm font-bold text-gray-200 flex items-center gap-2">
                     <i class="fa-solid fa-graduation-cap text-[#0a84ff]"></i> Validação Científica & Literatura de
                     Suporte
@@ -482,49 +638,57 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-[11px] leading-relaxed">
                 <!-- Referência 1: CHI 2016 -->
-                <div class="apple-dark-card-inset p-3 flex flex-col justify-between hover:border-white/20 transition-colors">
+                <div
+                    class="apple-dark-card-inset p-3 flex flex-col justify-between hover:border-white/20 transition-colors">
                     <div>
                         <strong class="text-blue-300 block mb-1">Paper Fundacional (CHI 2016)</strong>
                         <p class="text-gray-400">Rohrer, C., Sauro, J. et al. <em>"Practical Usability Rating by
                                 Experts (PURE): A Pragmatic Approach for Scoring Product Usability"</em>.</p>
                     </div>
-                    <a href="https://dl.acm.org/doi/10.1145/2851581.2851607" target="_blank" class="text-[#0a84ff] hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
+                    <a href="https://dl.acm.org/doi/10.1145/2851581.2851607" target="_blank"
+                        class="text-[#0a84ff] hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
                         Acessar ACM DL <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                     </a>
                 </div>
 
                 <!-- Referência 2: NN/g 2017 -->
-                <div class="apple-dark-card-inset p-3 flex flex-col justify-between hover:border-white/20 transition-colors">
+                <div
+                    class="apple-dark-card-inset p-3 flex flex-col justify-between hover:border-white/20 transition-colors">
                     <div>
                         <strong class="text-blue-300 block mb-1">Guia Prático Nielsen Norman Group</strong>
                         <p class="text-gray-400">Rohrer, C. (2017). <em>"Quantifying and Comparing Ease of Use Without
                                 Breaking the Bank"</em>.</p>
                     </div>
-                    <a href="https://www.nngroup.com/articles/pure-method/" target="_blank" class="text-[#0a84ff] hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
+                    <a href="https://www.nngroup.com/articles/pure-method/" target="_blank"
+                        class="text-[#0a84ff] hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
                         Ler na NN/g <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                     </a>
                 </div>
 
                 <!-- Referência 3: arXiv 2026 -->
-                <div class="apple-dark-card-inset p-3 flex flex-col justify-between hover:border-white/20 transition-colors">
+                <div
+                    class="apple-dark-card-inset p-3 flex flex-col justify-between hover:border-white/20 transition-colors">
                     <div>
                         <strong class="text-blue-300 block mb-1">Aplicação em Sistemas Complexos (2026)</strong>
                         <p class="text-gray-400">Ulan Uulu et al. <em>"Tables or Sankey Diagrams? User Interaction with
                                 Simulation Parameters"</em> (arXiv).</p>
                     </div>
-                    <a href="https://arxiv.org/html/2601.10232" target="_blank" class="text-[#0a84ff] hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
+                    <a href="https://arxiv.org/html/2601.10232" target="_blank"
+                        class="text-[#0a84ff] hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
                         Ver no arXiv <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                     </a>
                 </div>
 
                 <!-- Referência 4: Alpha de Krippendorff -->
-                <div class="apple-dark-card-inset p-3 flex flex-col justify-between hover:border-white/20 transition-colors">
+                <div
+                    class="apple-dark-card-inset p-3 flex flex-col justify-between hover:border-white/20 transition-colors">
                     <div>
                         <strong class="text-blue-300 block mb-1">Cálculo de Confiabilidade (IRR)</strong>
                         <p class="text-gray-400">Krippendorff, K. (2018). <em>Content Analysis: An Introduction to Its
                                 Methodology</em> / ReCal OIR (Freelon, 2010).</p>
                     </div>
-                    <a href="http://dfreelon.org/utils/recalfront/recal-oir/" target="_blank" class="text-[#0a84ff] hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
+                    <a href="http://dfreelon.org/utils/recalfront/recal-oir/" target="_blank"
+                        class="text-[#0a84ff] hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
                         Calculadora ReCal OIR <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                     </a>
                 </div>
@@ -662,7 +826,7 @@
                 let exp1 = parseInt(row[3]);
                 let exp2 = parseInt(row[4]);
                 let exp3 = parseInt(row[5]);
-                
+
                 let scoreConsenso = parseInt(row[indexConsenso]);
 
                 if (isNaN(exp1) || isNaN(exp2) || isNaN(exp3)) continue;
@@ -675,7 +839,7 @@
 
                 let votos = [exp1, exp2, exp3];
                 let infoStep = { tarefa, etapaId, descricao, exp1, exp2, exp3, consenso: scoreConsenso };
-                
+
                 dadosEtapas.push(infoStep);
                 matrizParaIrr.push(votos);
 
@@ -849,6 +1013,16 @@
         function exportarInfograficoPURE1080p() {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
+            const isDark = document.documentElement.classList.contains('dark');
+
+            // Cores dinâmicas para o Canvas conforme o tema ativo
+            const bgCanvas = isDark ? '#000000' : '#f2f2f7';
+            const bgCard = isDark ? '#1c1c1e' : '#ffffff';
+            const bgHeader = isDark ? '#1c1c1e' : '#ffffff';
+            const bgInset = isDark ? '#2c2c2e' : '#e5e5ea';
+            const textMain = isDark ? '#ffffff' : '#1c1c1e';
+            const textMuted = isDark ? '#8e8e93' : '#6c6c70';
+            const accentBlue = isDark ? '#0a84ff' : '#007aff';
 
             const width = 1920;
             const height = 1080;
@@ -856,23 +1030,25 @@
             canvas.height = height * 2;
             ctx.scale(2, 2);
 
-            ctx.fillStyle = '#000000';
+            // Fundo da Tela
+            ctx.fillStyle = bgCanvas;
             ctx.fillRect(0, 0, width, height);
 
-            ctx.fillStyle = '#1c1c1e';
+            // Cabeçalho Topo
+            ctx.fillStyle = bgHeader;
             ctx.fillRect(0, 0, width, 85);
 
-            ctx.fillStyle = '#0a84ff';
+            ctx.fillStyle = accentBlue;
             ctx.font = 'bold 26px sans-serif';
             ctx.fillText('DASHBOARD EXECUTIVO DE USABILIDADE — MÉTODO PURE', 50, 42);
 
-            ctx.fillStyle = '#8e8e93';
+            ctx.fillStyle = textMuted;
             ctx.font = '14px sans-serif';
             ctx.fillText('Quantificação de Atrito Cognitivo & Confiabilidade Interavaliadores (IRR)', 50, 68);
 
             const dataHoje = new Date().toLocaleDateString('pt-BR');
             ctx.textAlign = 'right';
-            ctx.fillStyle = '#f5f5f7';
+            ctx.fillStyle = textMain;
             ctx.font = 'bold 14px sans-serif';
             ctx.fillText(`Relatório Emitido em: ${dataHoje}`, width - 50, 50);
             ctx.textAlign = 'left';
@@ -888,23 +1064,24 @@
 
             const colLeftW = 580;
 
-            ctx.fillStyle = '#1c1c1e';
+            // Box Score Principal
+            ctx.fillStyle = bgCard;
             roundRect(ctx, 50, 105, colLeftW, 215, 20, true, false);
 
-            ctx.strokeStyle = '#0a84ff';
+            ctx.strokeStyle = accentBlue;
             ctx.lineWidth = 2;
             roundRect(ctx, 50, 105, colLeftW, 215, 20, false, true);
 
-            ctx.fillStyle = '#8e8e93';
+            ctx.fillStyle = textMuted;
             ctx.font = 'bold 14px sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText('SCORE PURE GLOBAL (ATRITO ACUMULADO)', 50 + (colLeftW / 2), 132);
 
-            ctx.fillStyle = '#ffffff';
+            ctx.fillStyle = textMain;
             ctx.font = 'bold 100px sans-serif';
             ctx.fillText(pureScore, 50 + (colLeftW / 2), 248);
 
-            ctx.fillStyle = '#8e8e93';
+            ctx.fillStyle = textMuted;
             ctx.font = '12px sans-serif';
             ctx.fillText('Lógica do Golfe: quanto menor o score, menor o esforço', 50 + (colLeftW / 2), 298);
 
@@ -912,17 +1089,17 @@
             const miniH = 185;
 
             const miniKpis = [
-                { title: 'CONFIABILIDADE IRR (α)', val: irrValue, color: '#0a84ff', sub: 'Krippendorff Alpha', x: 50, y: 335 },
-                { title: 'ÍNDICE DE FRICÇÃO (%)', val: statIndex, color: '#ff9f0a', sub: 'Min-Max Normalization', x: 50 + miniW + 20, y: 335 },
-                { title: 'TAREFAS MAPEADAS', val: tasksCount, color: '#ffffff', sub: 'Fluxos Críticos', x: 50, y: 535 },
-                { title: 'TOTAL DE ETAPAS', val: stepsCount, color: '#ffffff', sub: 'Passos Decompostos', x: 50 + miniW + 20, y: 535 }
+                { title: 'CONFIABILIDADE IRR (α)', val: irrValue, color: accentBlue, sub: 'Krippendorff Alpha', x: 50, y: 335 },
+                { title: 'ÍNDICE DE FRICÇÃO (%)', val: statIndex, color: '#ff9500', sub: 'Min-Max Normalization', x: 50 + miniW + 20, y: 335 },
+                { title: 'TAREFAS MAPEADAS', val: tasksCount, color: textMain, sub: 'Fluxos Críticos', x: 50, y: 535 },
+                { title: 'TOTAL DE ETAPAS', val: stepsCount, color: textMain, sub: 'Passos Decompostos', x: 50 + miniW + 20, y: 535 }
             ];
 
             miniKpis.forEach(kpi => {
-                ctx.fillStyle = '#1c1c1e';
+                ctx.fillStyle = bgCard;
                 roundRect(ctx, kpi.x, kpi.y, miniW, miniH, 16, true, false);
 
-                ctx.fillStyle = '#8e8e93';
+                ctx.fillStyle = textMuted;
                 ctx.font = 'bold 13px sans-serif';
                 ctx.textAlign = 'center';
                 ctx.fillText(kpi.title, kpi.x + (miniW / 2), kpi.y + 34);
@@ -931,51 +1108,52 @@
                 ctx.font = 'bold 80px sans-serif';
                 ctx.fillText(kpi.val, kpi.x + (miniW / 2), kpi.y + 115);
 
-                ctx.fillStyle = '#8e8e93';
+                ctx.fillStyle = textMuted;
                 ctx.font = '11px sans-serif';
                 ctx.fillText(kpi.sub, kpi.x + (miniW / 2), kpi.y + 158);
             });
 
+            // Box Termômetro
             const termY = 735;
             const termH = 250;
             const offsetY = 20;
 
-            ctx.fillStyle = '#1c1c1e';
+            ctx.fillStyle = bgCard;
             roundRect(ctx, 50, termY, colLeftW, termH, 20, true, false);
 
-            ctx.fillStyle = '#ffffff';
+            ctx.fillStyle = textMain;
             ctx.font = 'bold 16px sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText('Termômetro de Fricção Cognitiva', 50 + (colLeftW / 2), termY + 35 + offsetY);
 
             ctx.font = 'bold 13px monospace';
             ctx.textAlign = 'left';
-            ctx.fillStyle = '#30d158';
+            ctx.fillStyle = '#34c759';
             ctx.fillText(`Mínimo: ${statMin}`, 75, termY + 78 + offsetY);
 
-            ctx.fillStyle = '#0a84ff';
+            ctx.fillStyle = accentBlue;
             ctx.textAlign = 'center';
             ctx.fillText(`Score Atual: ${statCurrent}`, 50 + (colLeftW / 2), termY + 78 + offsetY);
 
-            ctx.fillStyle = '#ff453a';
+            ctx.fillStyle = '#ff3b30';
             ctx.textAlign = 'right';
             ctx.fillText(`Máximo: ${statMax}`, 50 + colLeftW - 25, termY + 78 + offsetY);
 
-            ctx.fillStyle = '#2c2c2e';
+            ctx.fillStyle = bgInset;
             roundRect(ctx, 75, termY + 95 + offsetY, colLeftW - 50, 28, 14, true, false);
 
             const progressPct = parseFloat(statIndex) / 100 || 0;
             const barW = Math.max((colLeftW - 50) * Math.min(progressPct, 1), 14);
 
             const gradBar = ctx.createLinearGradient(75, 0, 50 + colLeftW - 25, 0);
-            gradBar.addColorStop(0, '#30d158');
-            gradBar.addColorStop(0.5, '#ff9f0a');
-            gradBar.addColorStop(1, '#ff453a');
+            gradBar.addColorStop(0, '#34c759');
+            gradBar.addColorStop(0.5, '#ff9500');
+            gradBar.addColorStop(1, '#ff3b30');
 
             ctx.fillStyle = gradBar;
             roundRect(ctx, 75, termY + 95 + offsetY, barW, 28, 14, true, false);
 
-            ctx.fillStyle = '#8e8e93';
+            ctx.fillStyle = textMuted;
             ctx.font = 'bold 12px sans-serif';
             ctx.textAlign = 'left';
             ctx.fillText('0% (Fluido)', 75, termY + 143 + offsetY);
@@ -984,23 +1162,24 @@
             ctx.textAlign = 'right';
             ctx.fillText('100% (Atrito Crítico)', 50 + colLeftW - 25, termY + 143 + offsetY);
 
-            ctx.fillStyle = '#8e8e93';
+            ctx.fillStyle = textMuted;
             ctx.font = '12px sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText('Aplica a técnica estatística padrão Min-Max Normalization', 50 + (colLeftW / 2), termY + 180 + offsetY);
 
+            // Coluna da Direita (Heatmap e Tabela)
             const rightX = 660;
             const rightW = 1210;
 
-            ctx.fillStyle = '#1c1c1e';
+            ctx.fillStyle = bgCard;
             roundRect(ctx, rightX, 105, rightW, 880, 20, true, false);
 
-            ctx.fillStyle = '#ffffff';
+            ctx.fillStyle = textMain;
             ctx.font = 'bold 22px sans-serif';
             ctx.textAlign = 'left';
             ctx.fillText('Mapa de Calor de Atrito & Painel de Alinhamento do Comitê', rightX + 35, 145);
 
-            ctx.fillStyle = '#8e8e93';
+            ctx.fillStyle = textMuted;
             ctx.font = '13px sans-serif';
             ctx.fillText('Visualização combinada das tarefas analisadas e auditoria do consenso entre os especialistas.', rightX + 35, 170);
 
@@ -1016,14 +1195,14 @@
                     const taskName = taskEl.querySelector('h4')?.innerText || `Tarefa ${tIdx + 1}`;
                     const taskScore = taskEl.querySelector('.rounded-full')?.innerText || '--';
 
-                    ctx.fillStyle = '#2c2c2e';
+                    ctx.fillStyle = bgInset;
                     roundRect(ctx, rightX + 35, startY, rightW - 70, 110, 12, true, false);
 
-                    ctx.fillStyle = '#ffffff';
+                    ctx.fillStyle = textMain;
                     ctx.font = 'bold 16px sans-serif';
                     ctx.fillText(taskName, rightX + 50, startY + 38);
 
-                    ctx.fillStyle = '#0a84ff';
+                    ctx.fillStyle = accentBlue;
                     ctx.font = 'bold 14px monospace';
                     ctx.fillText(`Score da Tarefa: ${taskScore}`, rightX + 50, startY + 72);
 
@@ -1032,20 +1211,20 @@
 
                     barElements.forEach((barEl, bIdx) => {
                         let barH = 24;
-                        let barColor = '#30d158';
+                        let barColor = '#34c759';
 
-                        if (barEl.classList.contains('bg-[#ff453a]')) {
+                        if (barEl.classList.contains('bg-[#ff453a]') || barEl.classList.contains('bg-[#ff3b30]')) {
                             barH = 68;
-                            barColor = '#ff453a';
-                        } else if (barEl.classList.contains('bg-[#ff9f0a]')) {
+                            barColor = '#ff3b30';
+                        } else if (barEl.classList.contains('bg-[#ff9f0a]') || barEl.classList.contains('bg-[#ff9500]')) {
                             barH = 44;
-                            barColor = '#ff9f0a';
+                            barColor = '#ff9500';
                         }
 
                         ctx.fillStyle = barColor;
                         roundRect(ctx, barX, startY + 80 - barH, 32, barH, 5, true, false);
 
-                        ctx.fillStyle = '#8e8e93';
+                        ctx.fillStyle = textMuted;
                         ctx.font = 'bold 12px monospace';
                         ctx.fillText(`P${bIdx + 1}`, barX + 6, startY + 98);
 
@@ -1059,18 +1238,18 @@
             const tableY = startY + 10;
             const tableH = 965 - tableY;
 
-            ctx.fillStyle = '#2c2c2e';
+            ctx.fillStyle = bgInset;
             roundRect(ctx, rightX + 35, tableY, rightW - 70, tableH, 14, true, false);
 
-            ctx.fillStyle = '#0a84ff';
+            ctx.fillStyle = accentBlue;
             ctx.font = 'bold 15px sans-serif';
             ctx.fillText('Painel de Auditoria e Notas do Comitê (Avaliadores 1, 2 e 3)', rightX + 55, tableY + 32);
 
             const headerY = tableY + 50;
-            ctx.fillStyle = '#1c1c1e';
+            ctx.fillStyle = bgCard;
             roundRect(ctx, rightX + 50, headerY, rightW - 100, 32, 6, true, false);
 
-            ctx.fillStyle = '#8e8e93';
+            ctx.fillStyle = textMuted;
             ctx.font = 'bold 11px sans-serif';
             ctx.fillText('TAREFA', rightX + 65, headerY + 20);
             ctx.fillText('PASSO', rightX + 260, headerY + 20);
@@ -1099,31 +1278,31 @@
                         const consenso = cols[6].innerText || '-';
 
                         if (rIdx % 2 === 0) {
-                            ctx.fillStyle = '#1c1c1e';
+                            ctx.fillStyle = bgCard;
                             ctx.globalAlpha = 0.5;
                             roundRect(ctx, rightX + 50, rowY - 14, rightW - 100, 26, 4, true, false);
                             ctx.globalAlpha = 1.0;
                         }
 
-                        ctx.fillStyle = '#ffffff';
+                        ctx.fillStyle = textMain;
                         ctx.font = '12px sans-serif';
                         ctx.fillText(tNome.length > 22 ? tNome.substring(0, 20) + '...' : tNome, rightX + 65, rowY);
 
-                        ctx.fillStyle = '#0a84ff';
+                        ctx.fillStyle = accentBlue;
                         ctx.font = 'bold 12px monospace';
                         ctx.fillText(pId, rightX + 270, rowY);
 
-                        ctx.fillStyle = '#8e8e93';
+                        ctx.fillStyle = textMuted;
                         ctx.font = '11px sans-serif';
                         ctx.fillText(desc.length > 42 ? desc.substring(0, 40) + '...' : desc, rightX + 330, rowY);
 
-                        ctx.fillStyle = '#f5f5f7';
+                        ctx.fillStyle = textMain;
                         ctx.font = '12px monospace';
                         ctx.fillText(a1, rightX + 710, rowY);
                         ctx.fillText(a2, rightX + 770, rowY);
                         ctx.fillText(a3, rightX + 830, rowY);
 
-                        ctx.fillStyle = consenso === '3' ? '#ff453a' : consenso === '2' ? '#ff9f0a' : '#30d158';
+                        ctx.fillStyle = consenso === '3' ? '#ff3b30' : consenso === '2' ? '#ff9500' : '#34c759';
                         ctx.font = 'bold 13px monospace';
                         ctx.fillText(consenso, rightX + 915, rowY);
 
@@ -1131,7 +1310,7 @@
                     }
                 });
             } else {
-                ctx.fillStyle = '#8e8e93';
+                ctx.fillStyle = textMuted;
                 ctx.font = '14px sans-serif';
                 ctx.fillText('Nenhum dado importado na tabela.', rightX + 65, rowY + 10);
             }
@@ -1156,6 +1335,156 @@
             ctx.closePath();
             if (fill) ctx.fill();
             if (stroke) ctx.stroke();
+        }
+
+        function toggleAppleTheme() {
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+
+            // Se estiver no Modo Claro, muda para o Modo Escuro
+            if (html.classList.contains('light')) {
+                html.classList.remove('light');
+                html.classList.add('dark');
+                themeIcon.className = "fa-solid fa-sun text-amber-500";
+                themeText.innerText = "Modo Claro";
+            }
+            // Se estiver no Modo Escuro, volta para o Modo Claro
+            else {
+                html.classList.remove('dark');
+                html.classList.add('light');
+                themeIcon.className = "fa-solid fa-moon text-blue-500";
+                themeText.innerText = "Modo Escuro";
+            }
+        }
+        // ==========================================================================
+        // GESTÃO DAS ABAS DE IMPORTAÇÃO (CSV vs GOOGLE SHEETS)
+        // ==========================================================================
+        function switchImportTab(type) {
+            const csvPanel = document.getElementById('importCsvPanel');
+            const sheetsPanel = document.getElementById('importSheetsPanel');
+            const tabCsvBtn = document.getElementById('tabCsvBtn');
+            const tabSheetsBtn = document.getElementById('tabSheetsBtn');
+
+            if (type === 'csv') {
+                csvPanel.classList.remove('hidden');
+                sheetsPanel.classList.add('hidden');
+                tabCsvBtn.className = "px-4 py-2 text-xs font-bold border-b-2 border-[var(--apple-blue)] text-[var(--apple-blue)] transition-colors";
+                tabSheetsBtn.className = "px-4 py-2 text-xs font-bold text-[var(--apple-text-muted)] border-b-2 border-transparent hover:text-[var(--apple-text-main)] transition-colors";
+            } else {
+                csvPanel.classList.add('hidden');
+                sheetsPanel.classList.remove('hidden');
+                tabSheetsBtn.className = "px-4 py-2 text-xs font-bold border-b-2 border-[var(--apple-blue)] text-[var(--apple-blue)] transition-colors";
+                tabCsvBtn.className = "px-4 py-2 text-xs font-bold text-[var(--apple-text-muted)] border-b-2 border-transparent hover:text-[var(--apple-text-main)] transition-colors";
+            }
+        }
+
+        // ==========================================================================
+        // LEITURA E PROCESSAMENTO DA ABA 'COMPILADO' DO GOOGLE SHEETS
+        // ==========================================================================
+        async function carregarGoogleSheets() {
+            const inputUrl = document.getElementById('sheetsUrlInput').value.trim();
+
+            if (!inputUrl) {
+                alert("Por favor, cole o URL completo da sua planilha do Google Sheets.");
+                return;
+            }
+
+            // Extrai o ID único da planilha a partir de qualquer URL do Google Sheets
+            const match = inputUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
+            if (!match || !match[1]) {
+                alert("URL do Google Sheets inválido. Certifique-se de copiar o link da barra de endereços do navegador.");
+                return;
+            }
+
+            const sheetId = match[1];
+            // Constrói o link direto de exportação em CSV para a aba "compilado"
+            const csvExportUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=compilado`;
+
+            try {
+                const response = await fetch(csvExportUrl);
+                if (!response.ok) {
+                    throw new Error("Não foi possível acessar a aba 'compilado'. Verifique se a planilha está configurada como pública ('Qualquer pessoa com o link').");
+                }
+
+                const csvText = await response.text();
+                parseGoogleSheetsCompiladoCSV(csvText);
+
+            } catch (err) {
+                alert(`Erro ao carregar Google Sheets:\n${err.message}`);
+            }
+        }
+
+        function parseGoogleSheetsCompiladoCSV(text) {
+            let cleanText = text.replace(/^\uFEFF/, "");
+            let lines = cleanText.split(/\r?\n/);
+
+            if (lines.length <= 1) {
+                alert("Erro: A aba 'compilado' parece estar vazia.");
+                return;
+            }
+
+            // Função para fazer o parse das linhas do CSV lidando corretamente com aspas
+            let parseCSVLine = (line) => {
+                let values = [];
+                let insideQuotes = false;
+                let currentValue = '';
+
+                for (let i = 0; i < line.length; i++) {
+                    let char = line[i];
+                    if (char === '"') {
+                        insideQuotes = !insideQuotes;
+                    } else if ((char === ',' || char === ';') && !insideQuotes) {
+                        values.push(currentValue.trim().replace(/^"|"$/g, ''));
+                        currentValue = '';
+                    } else {
+                        currentValue += char;
+                    }
+                }
+                values.push(currentValue.trim().replace(/^"|"$/g, ''));
+                return values;
+            };
+
+            let rows = lines.map(line => parseCSVLine(line));
+            let dataRowsFormatted = [];
+
+            // Começa da linha 2 (index 1) para ignorar o cabeçalho
+            for (let i = 1; i < rows.length; i++) {
+                let row = rows[i];
+                if (!row || row.length < 7) continue;
+
+                // Captura a estrutura real da imagem:
+                let tarefa = row[0] || `Tarefa ${i}`;           // Coluna A (Tarefa)
+                let etapaId = row[1] || `${i}`;                 // Coluna B (Nº do Passo)
+                let descricao = row[2] || `Passo ${etapaId}`;   // Coluna C (Descrição)
+
+                let exp1 = parseInt(row[3]);                    // Coluna D (Avaliador 1)
+                let exp2 = parseInt(row[4]);                    // Coluna E (Avaliador 2)
+                let exp3 = parseInt(row[5]);                    // Coluna F (Avaliador 3)
+                let consenso = parseInt(row[6]);                // Coluna G (Nota Consenso)
+
+                // Ignora linhas que não possuem notas válidas
+                if (isNaN(exp1) || isNaN(exp2) || isNaN(exp3) || isNaN(consenso)) continue;
+
+                // Monta o array na ordem consumida pelo motor PURE
+                dataRowsFormatted.push([
+                    tarefa,
+                    etapaId,
+                    descricao,
+                    exp1,
+                    exp2,
+                    exp3,
+                    consenso
+                ]);
+            }
+
+            if (dataRowsFormatted.length === 0) {
+                alert("Erro: Nenhuma nota numérica válida (1 a 3) foi encontrada nas colunas D, E, F e G da aba 'compilado'.");
+                return;
+            }
+
+            // Envia os dados formatados com todas as tarefas e passos separados!
+            processarMetodologiaPure(dataRowsFormatted, 6);
         }
     </script>
 </body>
