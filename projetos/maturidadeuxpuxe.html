@@ -1,206 +1,255 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-theme="light">
-
+<html lang="pt-BR" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maturidade UX — NN/g Living System</title>
-    <!-- Tailwind CSS -->
+
+    <!-- Tailwind CSS CDN com Extensão de Tokens do Apple Design System -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome para Ícones -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        apple: {
+                            blue: '#007AFF',
+                            darkBlue: '#0A84FF',
+                            gray: '#8E8E93',
+                            gray2: '#AEAEB2',
+                            gray3: '#C7C7CC',
+                            gray4: '#D1D1D6',
+                            gray5: '#E5E5EA',
+                            gray6: '#F2F2F7',
+                            darkBg: '#000000',
+                            darkCard: '#1C1C1E',
+                            darkCard2: '#2C2C2E',
+                            darkCard3: '#3A3A3C',
+                            green: '#34C759',
+                            darkGreen: '#30D158',
+                            orange: '#FF9500',
+                            darkOrange: '#FF9F0A',
+                            red: '#FF3B30',
+                            darkRed: '#FF453A',
+                            purple: '#AF52DE',
+                            darkPurple: '#BF5AF2'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', '"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- FontAwesome para Ícones Estilo SF Symbols -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Chart.js para Gráficos -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <!-- Estilos CSS Centralizados (Apple HIG Pattern System) -->
     <style>
-        :root,
-        html[data-theme="dark"] {
-            --apple-bg: #000000;
-            --apple-card-bg: rgba(28, 28, 30, 0.75);
-            --apple-inset-bg: rgba(44, 44, 46, 0.6);
-            --apple-header-bg: rgba(22, 22, 24, 0.8);
-            --apple-border: rgba(255, 255, 255, 0.12);
-            --apple-border-light: rgba(255, 255, 255, 0.08);
-            --apple-blue: #0a84ff;
-            --apple-blue-hover: #409cff;
-            --apple-green: #30d158;
-            --apple-red: #ff453a;
-            --apple-orange: #ff9f0a;
-            --apple-purple: #bf5af2;
-            --apple-text-main: #f5f5f7;
-            --apple-text-muted: #8e8e93;
-            --apple-card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-            --apple-quiz-btn-bg: rgba(0, 0, 0, 0.6);
-            --apple-banner-bg: linear-gradient(135deg, rgba(10, 132, 255, 0.12), rgba(28, 28, 30, 0.85), rgba(191, 90, 242, 0.12));
+        /* Transições suave de tema Apple HIG */
+        *, *::before, *::after {
+            transition: background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+                        border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+                        color 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+                        box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        html[data-theme="light"] {
-            --apple-bg: #f5f5f7;
-            --apple-card-bg: rgba(255, 255, 255, 0.85);
-            --apple-inset-bg: rgba(240, 240, 245, 0.7);
-            --apple-header-bg: rgba(255, 255, 255, 0.75);
-            --apple-border: rgba(0, 0, 0, 0.08);
-            --apple-border-light: rgba(0, 0, 0, 0.05);
-            --apple-blue: #007aff;
-            --apple-blue-hover: #0062cc;
-            --apple-green: #34c759;
-            --apple-red: #ff3b30;
-            --apple-orange: #ff9500;
-            --apple-purple: #af52de;
-            --apple-text-main: #1d1d1f;
-            --apple-text-muted: #86868b;
-            --apple-card-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.06), 0 1px 2px 0 rgba(0, 0, 0, 0.02);
-            --apple-quiz-btn-bg: rgba(255, 255, 255, 0.9);
-            --apple-banner-bg: linear-gradient(135deg, rgba(0, 122, 255, 0.08), rgba(255, 255, 255, 0.9), rgba(175, 82, 222, 0.08));
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
-            background-color: var(--apple-bg);
-            color: var(--apple-text-main);
-            -webkit-font-smoothing: antialiased;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        html[data-theme="light"] .text-white {
-            color: #1d1d1f !important;
-        }
-
-        html[data-theme="light"] .text-gray-200 {
-            color: #1d1d1f !important;
-        }
-
-        html[data-theme="light"] .text-gray-300 {
-            color: #3a3a3c !important;
-        }
-
-        html[data-theme="light"] .text-gray-400 {
-            color: #6e6e73 !important;
-        }
-
-        html[data-theme="light"] .text-gray-500 {
-            color: #86868b !important;
-        }
-
-        .apple-dark-card {
-            background: var(--apple-card-bg);
-            backdrop-filter: blur(30px) saturate(190%);
-            -webkit-backdrop-filter: blur(30px) saturate(190%);
-            border: 1px solid var(--apple-border);
-            border-radius: 20px;
-            box-shadow: var(--apple-card-shadow);
-        }
-
-        .apple-dark-card-inset {
-            background: var(--apple-inset-bg);
-            border: 1px solid var(--apple-border-light);
-            border-radius: 14px;
-        }
-
-        .apple-dark-btn {
-            background: var(--apple-blue);
-            color: #ffffff !important;
-            border-radius: 980px;
-            font-weight: 600;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 2px 8px rgba(0, 122, 255, 0.25);
-        }
-
-        .apple-dark-btn:hover {
-            background: var(--apple-blue-hover);
-            transform: scale(1.02);
-        }
-
-        .apple-dark-btn:active {
-            transform: scale(0.97);
-        }
-
-        .apple-dark-btn-secondary {
-            background: var(--apple-inset-bg);
-            color: var(--apple-text-main);
-            border: 1px solid var(--apple-border);
-            border-radius: 980px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-        }
-
-        .apple-dark-btn-secondary:hover {
-            color: var(--apple-red);
-            border-color: var(--apple-red);
-        }
-
-        .theme-toggle-btn {
-            background: var(--apple-inset-bg);
-            color: var(--apple-text-main);
-            border: 1px solid var(--apple-border);
-            border-radius: 980px;
-            padding: 8px 14px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-        }
-
-        .header-bar {
-            background: var(--apple-header-bg);
+        /* Glassmorphism / Vibrancy Nativam macOS/iOS */
+        .apple-glass {
+            background: rgba(255, 255, 255, 0.78);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--apple-border-light);
+        }
+        .dark .apple-glass {
+            background: rgba(28, 28, 30, 0.78);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
 
-        .quiz-card {
-            background-color: var(--apple-inset-bg);
-            border: 1px solid var(--apple-border-light);
+        /* Cartões Estilo Apple HIG Container */
+        .apple-card {
+            background-color: #FFFFFF;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+        .dark .apple-card {
+            background-color: #1C1C1E;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .apple-card-inset {
+            background-color: #F2F2F7;
             border-radius: 14px;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+        .dark .apple-card-inset {
+            background-color: #2C2C2E;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        /* Botões Estilo Push Button / Pill */
+        .apple-btn-primary {
+            background-color: #007AFF;
+            color: #FFFFFF !important;
+            font-weight: 600;
+            border-radius: 980px;
+            padding: 8px 18px;
+            box-shadow: 0 2px 8px rgba(0, 122, 255, 0.25);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .apple-btn-primary:hover {
+            background-color: #0062CC;
+            transform: scale(1.02);
+        }
+        .dark .apple-btn-primary {
+            background-color: #0A84FF;
+            box-shadow: 0 2px 10px rgba(10, 132, 255, 0.3);
+        }
+        .dark .apple-btn-primary:hover {
+            background-color: #409CFF;
+        }
+
+        .apple-btn-secondary {
+            background-color: #F2F2F7;
+            color: #1C1C1E;
+            font-weight: 500;
+            border-radius: 980px;
+            padding: 8px 16px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .apple-btn-secondary:hover {
+            background-color: #E5E5EA;
+        }
+        .dark .apple-btn-secondary {
+            background-color: #2C2C2E;
+            color: #F2F2F7;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .dark .apple-btn-secondary:hover {
+            background-color: #3A3A3C;
+        }
+
+        /* Form Inputs & Controls */
+        .apple-input {
+            background-color: #F2F2F7;
+            border: 1px solid transparent;
+            border-radius: 12px;
+            padding: 10px 14px;
+            color: #1C1C1E;
+            font-size: 0.875rem;
+            outline: none;
+            transition: all 0.2s ease;
+            pointer-events: auto !important;
+            user-select: text !important;
+            cursor: text !important;
+        }
+        .apple-input:focus {
+            border-color: #007AFF;
+            background-color: #FFFFFF;
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.18);
+        }
+        .dark .apple-input {
+            background-color: #2C2C2E;
+            color: #F2F2F7;
+        }
+        .dark .apple-input:focus {
+            border-color: #0A84FF;
+            background-color: #1C1C1E;
+            box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.25);
+        }
+
+        /* Quiz Buttons & Items */
+        .quiz-card {
+            background-color: #F2F2F7;
+            border: 1px solid rgba(0,0,0,0.04);
+            border-radius: 14px;
+        }
+        .dark .quiz-card {
+            background-color: #2C2C2E;
+            border: 1px solid rgba(255,255,255,0.06);
         }
 
         .quiz-btn {
-            background-color: var(--apple-quiz-btn-bg);
-            border: 1px solid var(--apple-border-light);
+            background-color: #FFFFFF;
+            border: 1px solid rgba(0, 0, 0, 0.08);
             border-radius: 10px;
-            color: var(--apple-text-muted);
+            color: #8E8E93;
             transition: all 0.2s ease;
         }
-
         .quiz-btn:hover {
-            border-color: var(--apple-border);
-            color: var(--apple-text-main);
+            border-color: rgba(0,0,0,0.2);
+            color: #1D1D1F;
+        }
+        .dark .quiz-btn {
+            background-color: #1C1C1E;
+            border: 1px solid rgba(255,255,255,0.08);
+            color: #8E8E93;
+        }
+        .dark .quiz-btn:hover {
+            border-color: rgba(255,255,255,0.2);
+            color: #F5F5F7;
         }
 
+        /* Banner & Score Components */
         .banner-maturidade {
-            background: var(--apple-banner-bg);
-            border: 2px solid var(--apple-blue);
+            background: linear-gradient(135deg, rgba(0, 122, 255, 0.08), rgba(255, 255, 255, 0.9), rgba(175, 82, 222, 0.08));
+            border: 2px solid #007AFF;
             border-radius: 20px;
+        }
+        .dark .banner-maturidade {
+            background: linear-gradient(135deg, rgba(10, 132, 255, 0.12), rgba(28, 28, 30, 0.85), rgba(191, 90, 242, 0.12));
+            border: 2px solid #0A84FF;
         }
 
         .score-pill {
-            background: var(--apple-inset-bg);
-            border: 1px solid var(--apple-border);
+            background-color: #F2F2F7;
+            border: 1px solid rgba(0,0,0,0.06);
             border-radius: 14px;
+        }
+        .dark .score-pill {
+            background-color: #2C2C2E;
+            border: 1px solid rgba(255,255,255,0.08);
         }
 
         .gap-alert {
+            background-color: rgba(255, 149, 0, 0.12);
+            border: 1px solid rgba(255, 149, 0, 0.25);
+            color: #FF9500;
+            border-radius: 14px;
+        }
+        .dark .gap-alert {
             background-color: rgba(255, 159, 10, 0.12);
             border: 1px solid rgba(255, 159, 10, 0.25);
-            color: var(--apple-orange);
-            border-radius: 14px;
+            color: #FF9F0A;
         }
 
         .sim-slider {
-            accent-color: var(--apple-blue);
-            background-color: var(--apple-inset-bg);
+            accent-color: #007AFF;
+        }
+        .dark .sim-slider {
+            accent-color: #0A84FF;
         }
 
+        /* Likert Scale Guide */
         .likert-guide-item {
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 6px 4px;
-            background: var(--apple-inset-bg);
+            background-color: #F2F2F7;
             border-radius: 10px;
-            border: 1px solid var(--apple-border-light);
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+        .dark .likert-guide-item {
+            background-color: #2C2C2E;
+            border: 1px solid rgba(255,255,255,0.06);
         }
 
         .likert-badge {
@@ -219,84 +268,81 @@
         .likert-label {
             font-size: 10px;
             font-weight: 700;
-            color: var(--apple-text-main);
+            color: #1D1D1F;
             line-height: 1.1;
+        }
+        .dark .likert-label {
+            color: #F5F5F7;
         }
 
         .likert-sub {
             font-size: 9px;
-            color: var(--apple-text-muted);
+            color: #86868B;
             margin-top: 2px;
         }
-
-        .input-apple {
-            background: var(--apple-inset-bg);
-            border: 1px solid var(--apple-border);
-            color: var(--apple-text-main);
-            border-radius: 10px;
-            padding: 8px 12px;
-            outline: none;
-            transition: all 0.2s;
-        }
-
-        .input-apple:focus {
-            border-color: var(--apple-blue);
-            box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.2);
+        .dark .likert-sub {
+            color: #8E8E93;
         }
     </style>
 </head>
 
-<body class="min-h-screen">
+<body class="bg-[#F5F5F7] dark:bg-black text-[#1D1D1F] dark:text-[#F5F5F7] min-h-screen font-sans antialiased selection:bg-apple-blue selection:text-white">
 
-    <!-- Header -->
-    <header class="header-bar py-6 px-4 print:hidden">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            <div>
-                <h1 class="text-3xl font-extrabold text-[#0a84ff] flex items-center gap-3">
-                    <i class="fa-solid fa-seedling text-[#30d158]"></i> Maturidade UX — NN/g Living System
-                </h1>
-                <p class="text-gray-400 text-sm mt-1">
-                    Gestão contínua de saúde, sinais de regressão e diagnóstico colaborativo por time (NN/g Framework).
-                </p>
+    <!-- Header Fixo Estilo iOS / macOS Navigation Bar -->
+    <header class="sticky top-0 z-40 apple-glass border-b border-black/5 dark:border-white/10 px-6 py-4 print:hidden">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-apple-green dark:bg-apple-darkGreen flex items-center justify-center text-white shadow-md shadow-apple-green/20">
+                    <i class="fa-solid fa-seedling text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-black dark:text-white flex items-center gap-2">
+                        Maturidade UX <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-apple-green/10 text-apple-green dark:bg-apple-darkGreen/20 dark:text-apple-darkGreen">NN/g Living System</span>
+                    </h1>
+                    <p class="text-xs text-apple-gray">Gestão contínua de saúde, sinais de regressão e diagnóstico colaborativo por time (NN/g Framework).</p>
+                </div>
             </div>
-            <div class="flex items-center gap-2 flex-wrap justify-end">
-                <button onclick="alternarTemaApple()" id="btnThemeToggle" class="theme-toggle-btn">
-                    <i id="themeIcon" class="fa-solid fa-moon text-indigo-500"></i>
-                    <span id="themeLabel">Modo Escuro</span>
+
+            <!-- Controles do Header & Dark Mode Toggle -->
+            <div class="flex items-center gap-3">
+                <button onclick="carregarDadosServidor()" class="apple-btn-secondary text-xs flex items-center gap-2">
+                    <i class="fa-solid fa-rotate text-apple-blue dark:text-apple-darkBlue"></i>
+                    <span>Sincronizar Nuvem</span>
                 </button>
-                <button onclick="carregarDadosServidor()" class="apple-dark-btn-secondary text-xs py-2.5 px-4">
-                    <i class="fa-solid fa-rotate"></i> Sincronizar Nuvem
+                <button onclick="window.print()" class="apple-btn-primary text-xs flex items-center gap-2">
+                    <i class="fa-solid fa-print"></i>
+                    <span>Exportar PDF</span>
                 </button>
-                <button onclick="window.print()" class="apple-dark-btn text-xs py-2.5 px-4 flex items-center gap-2">
-                    <i class="fa-solid fa-print"></i> Exportar PDF
+
+                <!-- Toggle Dark/Light Mode Switcher -->
+                <button id="themeToggleBtn" onclick="toggleTheme()" class="w-10 h-10 rounded-full bg-apple-gray6 dark:bg-apple-darkCard2 flex items-center justify-center text-apple-gray hover:text-black dark:hover:text-white transition-all">
+                    <i id="themeIcon" class="fa-solid fa-sun text-sm text-apple-orange"></i>
                 </button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8">
 
         <!-- MODAL DE CARREGAMENTO / LOADING -->
         <div id="modalLoading"
-            class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 hidden flex flex-col items-center justify-center transition-all duration-300">
-            <div
-                class="apple-dark-card p-6 flex flex-col items-center gap-4 text-center max-w-xs shadow-2xl border border-white/10">
-                <i class="fa-solid fa-circle-notch fa-spin text-3xl text-[#0a84ff]"></i>
+            class="fixed inset-0 bg-black/40 backdrop-blur-md z-50 hidden flex flex-col items-center justify-center transition-all duration-300">
+            <div class="apple-card p-6 flex flex-col items-center gap-4 text-center max-w-xs shadow-2xl">
+                <i class="fa-solid fa-circle-notch fa-spin text-3xl text-apple-blue dark:text-apple-darkBlue"></i>
                 <div>
-                    <h4 class="text-sm font-bold text-white">Sincronizando com a Nuvem</h4>
-                    <p class="text-xs text-gray-400 mt-1">Carregando quadro de avaliadores do time...</p>
+                    <h4 class="text-sm font-bold text-black dark:text-white">Sincronizando com a Nuvem</h4>
+                    <p class="text-xs text-apple-gray mt-1">Carregando quadro de avaliadores do time...</p>
                 </div>
             </div>
         </div>
 
         <!-- PAINEL FILOSÓFICO NN/G -->
-        <section class="apple-dark-card p-4 border-l-4 border-l-[#bf5af2] print:hidden">
+        <section class="apple-card p-5 border-l-4 border-l-apple-purple dark:border-l-apple-darkPurple print:hidden">
             <div class="flex items-start gap-3">
-                <i class="fa-solid fa-arrows-spin text-[#bf5af2] text-xl mt-1 shrink-0"></i>
+                <i class="fa-solid fa-arrows-spin text-apple-purple dark:text-apple-darkPurple text-xl mt-1 shrink-0"></i>
                 <div class="text-xs space-y-1">
-                    <strong class="text-white text-sm block">Princípio NN/g: Maturidade UX é um Sistema Vivo, não uma
-                        Escala Rígida</strong>
-                    <p class="text-gray-300 leading-relaxed">
+                    <strong class="text-black dark:text-white text-sm block">Princípio NN/g: Maturidade UX é um Sistema Vivo, não uma Escala Rígida</strong>
+                    <p class="text-apple-gray leading-relaxed">
                         Avançar de nível não é uma conquista permanente. Alterações de liderança, metas de curto prazo
                         ou "rituais robóticos" causam regressões silenciosas (<em>UX Drift</em>). Este sistema mede a
                         saúde atual e mapeia desalinhamentos entre áreas para garantir a sustentabilidade do
@@ -307,39 +353,35 @@
         </section>
 
         <!-- PAINEL DE IDENTIFICAÇÃO DO TIME / AVALIADOR -->
-        <section class="apple-dark-card p-6 print:hidden">
-            <div
-                class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/10 pb-4">
+        <section class="apple-card p-6 print:hidden">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-black/5 dark:border-white/10 pb-4">
                 <div>
-                    <h2 class="text-base font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-id-card text-[#0a84ff]"></i> Identificação da Sessão de Avaliação
+                    <h2 class="text-base font-bold text-black dark:text-white flex items-center gap-2">
+                        <i class="fa-solid fa-id-card text-apple-blue dark:text-apple-darkBlue"></i> Identificação da Sessão de Avaliação
                     </h2>
-                    <p class="text-xs text-gray-400 mt-0.5">Preencha com o nome da sua equipe e os seus dados para
-                        registrar sua avaliação no conselho do time.</p>
+                    <p class="text-xs text-apple-gray mt-0.5">Preencha com o nome da sua equipe e os seus dados para registrar sua avaliação no conselho do time.</p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span class="text-xs text-gray-400 font-medium">Time Atual do Avaliador:</span>
-                    <span id="labelNomeTime"
-                        class="text-xs font-bold px-3 py-1 rounded-full bg-blue-500/20 text-[#0a84ff] border border-blue-500/30">Nenhum</span>
+                    <span class="text-xs text-apple-gray font-medium">Time Atual do Avaliador:</span>
+                    <span id="labelNomeTime" class="text-xs font-bold px-3 py-1 rounded-full bg-apple-blue/10 text-apple-blue dark:bg-apple-darkBlue/20 dark:text-apple-darkBlue">Nenhum</span>
                 </div>
             </div>
 
-            <form id="formUsuario" onsubmit="confirmarIdentificacao(event)"
-                class="grid grid-cols-1 md:grid-cols-4 gap-4 pt-4">
+            <form id="formUsuario" onsubmit="confirmarIdentificacao(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4 pt-4">
                 <div>
-                    <label class="block text-xs font-medium text-gray-400 mb-1">Nome do Time / Squad *</label>
-                    <select id="inputTime" required class="input-apple w-full text-xs">
+                    <label class="block text-xs font-medium text-apple-gray mb-1">Nome do Time / Squad *</label>
+                    <select id="inputTime" required class="apple-input w-full text-xs cursor-pointer">
                         <option value="">Selecione o Time...</option>
                         <option value="PUXE">PUXE</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-400 mb-1">Seu Nome *</label>
-                    <input type="text" id="inputNome" placeholder="Ex: Ana Silva" class="input-apple w-full text-xs">
+                    <label class="block text-xs font-medium text-apple-gray mb-1">Seu Nome *</label>
+                    <input type="text" id="inputNome" placeholder="Ex: Ana Silva" class="apple-input w-full text-xs">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-400 mb-1">Perfil *</label>
-                    <select id="inputCargo" class="input-apple w-full text-xs">
+                    <label class="block text-xs font-medium text-apple-gray mb-1">Perfil *</label>
+                    <select id="inputCargo" class="apple-input w-full text-xs cursor-pointer">
                         <option value="">Selecione...</option>
                         <option value="Liderança Técnica">Liderança Técnica</option>
                         <option value="CX Pesquisa">CX Pesquisa</option>
@@ -349,8 +391,7 @@
                     </select>
                 </div>
                 <div class="flex items-end">
-                    <button type="submit"
-                        class="apple-dark-btn text-xs py-2.5 px-5 w-full flex items-center justify-center gap-2">
+                    <button type="submit" class="apple-btn-primary text-xs py-2.5 px-5 w-full flex items-center justify-center gap-2">
                         <i class="fa-solid fa-check"></i> Iniciar / Trocar Avaliador
                     </button>
                 </div>
@@ -358,49 +399,47 @@
         </section>
 
         <!-- FORMULÁRIO DE AVALIAÇÃO -->
-        <section id="secaoQuestionario"
-            class="grid grid-cols-1 lg:grid-cols-3 gap-8 print:hidden opacity-50 pointer-events-none transition-all">
-            <div class="lg:col-span-2 apple-dark-card p-6 space-y-6">
-                <div class="border-b border-white/10 pb-3 flex justify-between items-center">
-                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-clipboard-list text-[#0a84ff]"></i> Questionário Multidisciplinar de
-                        Pilares
+        <section id="secaoQuestionario" class="grid grid-cols-1 lg:grid-cols-3 gap-8 print:hidden opacity-50 pointer-events-none transition-all">
+            <div class="lg:col-span-2 apple-card p-6 space-y-6">
+                <div class="border-b border-black/5 dark:border-white/10 pb-3 flex justify-between items-center">
+                    <h2 class="text-lg font-bold text-black dark:text-white flex items-center gap-2">
+                        <i class="fa-solid fa-clipboard-list text-apple-blue dark:text-apple-darkBlue"></i> Questionário Multidisciplinar de Pilares
                     </h2>
-                    <span id="progressText" class="text-xs text-gray-400 font-medium">Progresso: 0 / 16</span>
+                    <span id="progressText" class="text-xs text-apple-gray font-medium">Progresso: 0 / 16</span>
                 </div>
 
-                <div class="apple-dark-card-inset p-4 space-y-2">
+                <!-- BARRA DE LEGENDA EXPLICATIVA DA ESCALA 1 A 5 -->
+                <div class="apple-card-inset p-4 space-y-2">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-white flex items-center gap-1.5">
-                            <i class="fa-solid fa-circle-info text-[#0a84ff]"></i> Como avaliar cada afirmação (Escala
-                            de 1 a 5):
+                        <span class="text-xs font-semibold text-black dark:text-white flex items-center gap-1.5">
+                            <i class="fa-solid fa-circle-info text-apple-blue dark:text-apple-darkBlue"></i> Como avaliar cada afirmação (Escala de 1 a 5):
                         </span>
-                        <span class="text-[10px] text-gray-400">Escala de concordância organizacional</span>
+                        <span class="text-[10px] text-apple-gray">Escala de concordância organizacional</span>
                     </div>
 
                     <div class="grid grid-cols-5 gap-2 text-center pt-1">
                         <div class="likert-guide-item">
-                            <span class="likert-badge bg-rose-500/20 text-[#ff453a] border-rose-500/30">1</span>
+                            <span class="likert-badge bg-rose-500/15 text-apple-red dark:text-apple-darkRed border-rose-500/30">1</span>
                             <span class="likert-label">Discordo Totalmente</span>
                             <span class="likert-sub">Inexistente</span>
                         </div>
                         <div class="likert-guide-item">
-                            <span class="likert-badge bg-orange-500/20 text-[#ff9f0a] border-orange-500/30">2</span>
+                            <span class="likert-badge bg-orange-500/15 text-apple-orange dark:text-apple-darkOrange border-orange-500/30">2</span>
                             <span class="likert-label">Discordo Parcialmente</span>
                             <span class="likert-sub">Raro / Ad hoc</span>
                         </div>
                         <div class="likert-guide-item">
-                            <span class="likert-badge bg-white/10 text-gray-300 border-white/10">3</span>
+                            <span class="likert-badge bg-black/5 dark:bg-white/10 text-black dark:text-gray-300 border-black/10 dark:border-white/10">3</span>
                             <span class="likert-label">Neutro</span>
                             <span class="likert-sub">Às vezes</span>
                         </div>
                         <div class="likert-guide-item">
-                            <span class="likert-badge bg-blue-500/20 text-[#0a84ff] border-blue-500/30">4</span>
+                            <span class="likert-badge bg-blue-500/15 text-apple-blue dark:text-apple-darkBlue border-blue-500/30">4</span>
                             <span class="likert-label">Concordo Parcialmente</span>
                             <span class="likert-sub">Frequente</span>
                         </div>
                         <div class="likert-guide-item">
-                            <span class="likert-badge bg-emerald-500/20 text-[#30d158] border-emerald-500/30">5</span>
+                            <span class="likert-badge bg-emerald-500/15 text-apple-green dark:text-apple-darkGreen border-emerald-500/30">5</span>
                             <span class="likert-label">Concordo Totalmente</span>
                             <span class="likert-sub">Padrão / Consolidado</span>
                         </div>
@@ -412,26 +451,24 @@
                 </div>
 
                 <div class="pt-2 flex justify-end gap-3">
-                    <button id="btnSalvarVoto" onclick="salvarAvaliacaoIndividual()"
-                        class="apple-dark-btn text-sm py-3 px-6 flex items-center gap-2">
+                    <button id="btnSalvarVoto" onclick="salvarAvaliacaoIndividual()" class="apple-btn-primary text-sm py-3 px-6 flex items-center gap-2">
                         <i class="fa-solid fa-cloud-arrow-up"></i> Salvar Avaliação na Nuvem
                     </button>
                 </div>
             </div>
 
-            <div class="apple-dark-card p-6 flex flex-col justify-between">
+            <div class="apple-card p-6 flex flex-col justify-between">
                 <div class="space-y-4">
-                    <h3 class="text-base font-bold text-white flex items-center gap-2 border-b border-white/10 pb-2">
-                        <i class="fa-solid fa-circle-nodes text-[#bf5af2]"></i> Estrutura do Time NN/g
+                    <h3 class="text-base font-bold text-black dark:text-white flex items-center gap-2 border-b border-black/5 dark:border-white/10 pb-2">
+                        <i class="fa-solid fa-circle-nodes text-apple-purple dark:text-apple-darkPurple"></i> Estrutura do Time NN/g
                     </h3>
-                    <p class="text-xs text-gray-400 leading-relaxed">
+                    <p class="text-xs text-apple-gray leading-relaxed">
                         A avaliação por time permite capturar a média real da maturidade organizacional, mitigando
                         vieses individuais e expondo diferenças de visão entre Design, Engenharia e Gestão.
                     </p>
-                    <div class="apple-dark-card-inset p-3 text-[11px] text-gray-300 space-y-2">
-                        <strong class="text-[#bf5af2] block"><i class="fa-solid fa-layer-group"></i> 4 Pilares
-                            Fundamentais</strong>
-                        <ul class="list-disc list-inside text-gray-400 space-y-1">
+                    <div class="apple-card-inset p-3 text-[11px] text-black dark:text-gray-300 space-y-2">
+                        <strong class="text-apple-purple dark:text-apple-darkPurple block"><i class="fa-solid fa-layer-group"></i> 4 Pilares Fundamentais</strong>
+                        <ul class="list-disc list-inside text-apple-gray space-y-1">
                             <li><strong>Estratégia:</strong> Orçamento, metas e visão executiva.</li>
                             <li><strong>Cultura:</strong> Empatia, letramento e aceitação do erro.</li>
                             <li><strong>Processo:</strong> Métodos de pesquisa, testes e Design System.</li>
@@ -439,52 +476,45 @@
                         </ul>
                     </div>
                 </div>
-                <div class="apple-dark-card-inset p-3 text-[11px] text-gray-400 italic">
-                    Cada integrante do time deve preencher o questionário individualmente para que a média geral seja
-                    calculada com precisão.
+                <div class="apple-card-inset p-3 text-[11px] text-apple-gray italic">
+                    Cada integrante do time deve preencher o questionário individualmente para que a média geral seja calculada com precisão.
                 </div>
             </div>
         </section>
 
         <!-- SEÇÃO DE VOTOS DO TIME -->
-        <section class="apple-dark-card p-6 space-y-4">
-            <div
-                class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/10 pb-4">
+        <section class="apple-card p-6 space-y-4">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-black/5 dark:border-white/10 pb-4">
                 <div>
-                    <h3 class="text-base font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-users text-[#30d158]"></i> Quadro de Avaliadores do Time
+                    <h3 class="text-base font-bold text-black dark:text-white flex items-center gap-2">
+                        <i class="fa-solid fa-users text-apple-green dark:text-apple-darkGreen"></i> Quadro de Avaliadores do Time
                     </h3>
-                    <p class="text-xs text-gray-400">Listagem das notas individuais salvas na nuvem por cada integrante
-                        da equipe.</p>
+                    <p class="text-xs text-apple-gray">Listagem das notas individuais salvas na nuvem por cada integrante da equipe.</p>
                 </div>
 
                 <!-- SELETOR E BOTÕES DO QUADRO -->
                 <div class="flex items-center gap-2 flex-wrap justify-end">
                     <div class="flex items-center gap-1.5 mr-2">
-                        <label for="selectTimeConsulta" class="text-xs text-gray-400 font-medium">Exibir Time:</label>
-                        <select id="selectTimeConsulta" onchange="alterarTimeConsulta(this.value)"
-                            class="input-apple text-xs py-2 px-3">
+                        <label for="selectTimeConsulta" class="text-xs text-apple-gray font-medium">Exibir Time:</label>
+                        <select id="selectTimeConsulta" onchange="alterarTimeConsulta(this.value)" class="apple-input text-xs py-2 px-3 cursor-pointer">
                             <option value="">Selecione o Time...</option>
                             <option value="PUXE">PUXE</option>
                         </select>
                     </div>
 
-                    <!-- BOTÃO NOVO: LIMPAR QUADRO -->
-                    <button onclick="limparQuadroConsulta()"
-                        class="apple-dark-btn-secondary text-xs py-2.5 px-4 flex items-center gap-2">
-                        <i class="fa-solid fa-[#ff453a] fa-broom text-[#ff453a]"></i> Limpar Quadro
+                    <button onclick="limparQuadroConsulta()" class="apple-btn-secondary text-xs py-2.5 px-4 flex items-center gap-2">
+                        <i class="fa-solid fa-broom text-apple-red dark:text-apple-darkRed"></i> Limpar Quadro
                     </button>
 
-                    <button onclick="calcularMediaGeralDoTime()"
-                        class="apple-dark-btn text-xs py-2.5 px-5 flex items-center gap-2 bg-[#30d158] hover:bg-emerald-600">
+                    <button onclick="calcularMediaGeralDoTime()" class="apple-btn-primary text-xs py-2.5 px-5 flex items-center gap-2 !bg-apple-green hover:!bg-emerald-600">
                         <i class="fa-solid fa-calculator"></i> Calcular Média Geral do Time
                     </button>
                 </div>
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs text-gray-300">
-                    <thead class="bg-black/40 text-gray-400 uppercase text-[10px] font-bold border-b border-white/10">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-black/5 dark:bg-white/5 text-apple-gray uppercase text-[10px] font-bold border-b border-black/5 dark:border-white/10">
                         <tr>
                             <th class="p-3">Avaliador</th>
                             <th class="p-3">Perfil</th>
@@ -495,7 +525,7 @@
                             <th class="p-3 text-center">Score Indiv.</th>
                         </tr>
                     </thead>
-                    <tbody id="tabelaVotosBody" class="divide-y divide-white/5">
+                    <tbody id="tabelaVotosBody" class="divide-y divide-black/5 dark:divide-white/5">
                         <!-- Gerado dinamicamente -->
                     </tbody>
                 </table>
@@ -503,26 +533,22 @@
         </section>
 
         <!-- LOG DE SAÚDE TRIMESTRAL DO TIME -->
-        <section id="secaoHealthLog" class="apple-dark-card p-6 space-y-4 print:hidden">
-            <div
-                class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/10 pb-4">
+        <section id="secaoHealthLog" class="apple-card p-6 space-y-4 print:hidden">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-black/5 dark:border-white/10 pb-4">
                 <div>
-                    <h3 class="text-base font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-notes-medical text-[#bf5af2]"></i> Log de Saúde Trimestral do Time (UX
-                        Health Log)
+                    <h3 class="text-base font-bold text-black dark:text-white flex items-center gap-2">
+                        <i class="fa-solid fa-notes-medical text-apple-purple dark:text-apple-darkPurple"></i> Log de Saúde Trimestral do Time (UX Health Log)
                     </h3>
-                    <p class="text-xs text-gray-400">Acompanhamento continuado recomendado pelo NN/g para evitar
-                        regressões e manter a resiliência das práticas.</p>
+                    <p class="text-xs text-apple-gray">Acompanhamento continuado recomendado pelo NN/g para evitar regressões e manter a resiliência das práticas.</p>
                 </div>
-                <button onclick="salvarFechamentoTrimestral()"
-                    class="apple-dark-btn-secondary text-xs py-2.5 px-4 flex items-center gap-2 border-[#bf5af2] text-[#bf5af2] hover:bg-[#bf5af2]/10">
+                <button onclick="salvarFechamentoTrimestral()" class="apple-btn-secondary text-xs py-2.5 px-4 flex items-center gap-2 text-apple-purple border-apple-purple/30">
                     <i class="fa-solid fa-bookmark"></i> Registrar Fechamento Trimestral na Nuvem
                 </button>
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs text-gray-300">
-                    <thead class="bg-black/40 text-gray-400 uppercase text-[10px] font-bold border-b border-white/10">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-black/5 dark:bg-white/5 text-apple-gray uppercase text-[10px] font-bold border-b border-black/5 dark:border-white/10">
                         <tr>
                             <th class="p-3">Data / Registro</th>
                             <th class="p-3 text-center">Estratégia</th>
@@ -533,7 +559,7 @@
                             <th class="p-3 text-center">Estágio NN/g</th>
                         </tr>
                     </thead>
-                    <tbody id="tabelaHealthLogBody" class="divide-y divide-white/5">
+                    <tbody id="tabelaHealthLogBody" class="divide-y divide-black/5 dark:divide-white/5">
                         <!-- Gerado dinamicamente -->
                     </tbody>
                 </table>
@@ -546,35 +572,29 @@
             <div class="banner-maturidade p-6">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                        <span class="text-[#0a84ff] text-xs font-bold tracking-wider uppercase block">Diagnóstico
-                            Consolidado do Time</span>
-                        <h2 id="resultEstagioTitle" class="text-3xl font-black text-white mt-1">--</h2>
-                        <p id="resultEstagioDesc" class="text-gray-300 text-xs mt-1.5 max-w-3xl leading-relaxed">--</p>
+                        <span class="text-apple-blue dark:text-apple-darkBlue text-xs font-bold tracking-wider uppercase block">Diagnóstico Consolidado do Time</span>
+                        <h2 id="resultEstagioTitle" class="text-3xl font-black text-black dark:text-white mt-1">--</h2>
+                        <p id="resultEstagioDesc" class="text-apple-gray dark:text-gray-300 text-xs mt-1.5 max-w-3xl leading-relaxed">--</p>
                     </div>
                     <div class="score-pill px-5 py-3 text-center min-w-[170px] shrink-0">
-                        <span class="text-gray-400 text-[10px] font-bold uppercase block tracking-wider">Score Geral do
-                            Time</span>
-                        <div id="resultScoreMedio" class="text-3xl font-black text-[#0a84ff] mt-0.5">0.0 / 100</div>
+                        <span class="text-apple-gray text-[10px] font-bold uppercase block tracking-wider">Score Geral do Time</span>
+                        <div id="resultScoreMedio" class="text-3xl font-black text-apple-blue dark:text-apple-darkBlue mt-0.5">0.0 / 100</div>
                     </div>
                 </div>
 
                 <!-- Bloco de Barras de Evolução -->
-                <div class="mt-6 pt-4 border-t border-white/10 space-y-4">
+                <div class="mt-6 pt-4 border-t border-black/10 dark:border-white/10 space-y-4">
 
                     <!-- 1. BARRA MACRO: Nível Geral do Time (Estágios 1 ao 6) -->
                     <div>
-                        <div class="flex justify-between text-[11px] text-gray-400 mb-1.5">
-                            <span class="font-semibold text-gray-200"><i
-                                    class="fa-solid fa-chart-line text-[#0a84ff] mr-1"></i> Maturidade Geral Macro
-                                (Escala NN/g)</span>
-                            <span id="macroLevelText" class="font-mono text-[#0a84ff]">Nível 1 de 6</span>
+                        <div class="flex justify-between text-[11px] text-apple-gray mb-1.5">
+                            <span class="font-semibold text-black dark:text-gray-200"><i class="fa-solid fa-chart-line text-apple-blue dark:text-apple-darkBlue mr-1"></i> Maturidade Geral Macro (Escala NN/g)</span>
+                            <span id="macroLevelText" class="font-mono text-apple-blue dark:text-apple-darkBlue">Nível 1 de 6</span>
                         </div>
-                        <div class="w-full bg-black/60 rounded-full h-2.5 overflow-hidden border border-white/10">
-                            <div id="macroProgressBar"
-                                class="bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-500 h-full transition-all duration-500"
-                                style="width: 0%"></div>
+                        <div class="w-full bg-black/10 dark:bg-black/60 rounded-full h-2.5 overflow-hidden border border-black/5 dark:border-white/10">
+                            <div id="macroProgressBar" class="bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-500 h-full transition-all duration-500" style="width: 0%"></div>
                         </div>
-                        <div class="flex justify-between text-[9px] text-gray-500 mt-1 font-mono uppercase">
+                        <div class="flex justify-between text-[9px] text-apple-gray mt-1 font-mono uppercase">
                             <span>E1: Ausente</span>
                             <span>E2: Limitado</span>
                             <span>E3: Emergente</span>
@@ -586,15 +606,12 @@
 
                     <!-- 2. BARRA MICRO: Progresso Interno do Estágio Atual -->
                     <div>
-                        <div class="flex justify-between text-[11px] text-gray-400 mb-1.5">
-                            <span class="font-semibold text-gray-200"><i
-                                    class="fa-solid fa-bolt text-amber-400 mr-1"></i> Avanço Interno no Estágio
-                                Atual</span>
+                        <div class="flex justify-between text-[11px] text-apple-gray mb-1.5">
+                            <span class="font-semibold text-black dark:text-gray-200"><i class="fa-solid fa-bolt text-apple-orange dark:text-apple-darkOrange mr-1"></i> Avanço Interno no Estágio Atual</span>
                             <span id="evolutionPercentage">0% concluído neste estágio</span>
                         </div>
-                        <div class="w-full bg-black/60 rounded-full h-2.5 overflow-hidden border border-white/10">
-                            <div id="evolutionBar" class="bg-[#30d158] h-full transition-all duration-500"
-                                style="width: 0%"></div>
+                        <div class="w-full bg-black/10 dark:bg-black/60 rounded-full h-2.5 overflow-hidden border border-black/5 dark:border-white/10">
+                            <div id="evolutionBar" class="bg-apple-green dark:bg-apple-darkGreen h-full transition-all duration-500" style="width: 0%"></div>
                         </div>
                     </div>
 
@@ -604,85 +621,76 @@
                 <div id="gapAlertBox" class="gap-alert mt-4 p-3 text-xs hidden flex items-start gap-2">
                     <i class="fa-solid fa-triangle-exclamation mt-0.5 text-base shrink-0"></i>
                     <div>
-                        <strong class="block text-amber-300">Detecção de Regressão Silenciosa (Sinais de Drift
-                            NN/g):</strong>
+                        <strong class="block text-apple-orange dark:text-amber-300">Detecção de Regressão Silenciosa (Sinais de Drift NN/g):</strong>
                         <span id="gapAlertMessage">--</span>
                     </div>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div class="lg:col-span-1 apple-dark-card p-6 flex flex-col justify-between">
+                <div class="lg:col-span-1 apple-card p-6 flex flex-col justify-between">
                     <div>
-                        <h3
-                            class="text-sm font-bold text-white mb-1 flex items-center gap-2 border-b border-white/10 pb-2">
-                            <i class="fa-solid fa-chart-radar text-[#bf5af2]"></i> Percepção por Perfil vs Média do Time
+                        <h3 class="text-sm font-bold text-black dark:text-white mb-1 flex items-center gap-2 border-b border-black/5 dark:border-white/10 pb-2">
+                            <i class="fa-solid fa-chart-radar text-apple-purple dark:text-apple-darkPurple"></i> Percepção por Perfil vs Média do Time
                         </h3>
-                        <p class="text-[10px] text-gray-400 mb-2">Compara as visões individuais dos perfis com a média
-                            consolidada.</p>
+                        <p class="text-[10px] text-apple-gray mb-2">Compara as visões individuais dos perfis com a média consolidada.</p>
                     </div>
                     <div class="relative h-64 w-full flex items-center justify-center">
                         <canvas id="radarChart"></canvas>
                     </div>
                 </div>
 
-                <div class="lg:col-span-2 apple-dark-card p-6 flex flex-col justify-between">
+                <div class="lg:col-span-2 apple-card p-6 flex flex-col justify-between">
                     <div>
-                        <h3
-                            class="text-sm font-bold text-white mb-3 flex items-center gap-2 border-b border-white/10 pb-2">
-                            <i class="fa-solid fa-route text-[#30d158]"></i> Plano de Manutenção e Evolução Contínua
+                        <h3 class="text-sm font-bold text-black dark:text-white mb-3 flex items-center gap-2 border-b border-black/5 dark:border-white/10 pb-2">
+                            <i class="fa-solid fa-route text-apple-green dark:text-apple-darkGreen"></i> Plano de Manutenção e Evolução Contínua
                         </h3>
-                        <div id="recommendationsList" class="space-y-3 text-xs text-gray-300">
+                        <div id="recommendationsList" class="space-y-3 text-xs text-black dark:text-gray-300">
                             <!-- Gerado dinamicamente -->
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="apple-dark-card p-6 space-y-4 print:hidden">
+            <div class="apple-card p-6 space-y-4 print:hidden">
                 <div>
-                    <h3 class="text-base font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-sliders text-[#0a84ff]"></i> Simulador de Cenários ("What-If") do Time
+                    <h3 class="text-base font-bold text-black dark:text-white flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-apple-blue dark:text-apple-darkBlue"></i> Simulador de Cenários ("What-If") do Time
                     </h3>
-                    <p class="text-xs text-gray-400 mt-1">Simule como melhorias estruturais afetam o score consolidado
-                        do time.</p>
+                    <p class="text-xs text-apple-gray mt-1">Simule como melhorias estruturais afetam o score consolidado do time.</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 pt-2">
-                    <div class="space-y-2 apple-dark-card-inset p-3">
-                        <div class="flex justify-between text-xs font-semibold text-gray-300">
+                    <div class="space-y-2 apple-card-inset p-3">
+                        <div class="flex justify-between text-xs font-semibold text-black dark:text-gray-300">
                             <span>Estratégia</span>
-                            <span id="sliderValEstrat" class="text-[#0a84ff]">1.0</span>
+                            <span id="sliderValEstrat" class="text-apple-blue dark:text-apple-darkBlue">1.0</span>
                         </div>
-                        <input type="range" id="sliderEstrat" min="1" max="5" step="0.1" oninput="simularWhatIf()"
-                            class="sim-slider w-full h-1.5 rounded-lg appearance-none cursor-pointer">
+                        <input type="range" id="sliderEstrat" min="1" max="5" step="0.1" oninput="simularWhatIf()" class="sim-slider w-full h-1.5 rounded-lg appearance-none cursor-pointer">
                     </div>
 
-                    <div class="space-y-2 apple-dark-card-inset p-3">
-                        <div class="flex justify-between text-xs font-semibold text-gray-300">
+                    <div class="space-y-2 apple-card-inset p-3">
+                        <div class="flex justify-between text-xs font-semibold text-black dark:text-gray-300">
                             <span>Cultura</span>
-                            <span id="sliderValCult" class="text-[#0a84ff]">1.0</span>
+                            <span id="sliderValCult" class="text-apple-blue dark:text-apple-darkBlue">1.0</span>
                         </div>
-                        <input type="range" id="sliderCult" min="1" max="5" step="0.1" oninput="simularWhatIf()"
-                            class="sim-slider w-full h-1.5 rounded-lg appearance-none cursor-pointer">
+                        <input type="range" id="sliderCult" min="1" max="5" step="0.1" oninput="simularWhatIf()" class="sim-slider w-full h-1.5 rounded-lg appearance-none cursor-pointer">
                     </div>
 
-                    <div class="space-y-2 apple-dark-card-inset p-3">
-                        <div class="flex justify-between text-xs font-semibold text-gray-300">
+                    <div class="space-y-2 apple-card-inset p-3">
+                        <div class="flex justify-between text-xs font-semibold text-black dark:text-gray-300">
                             <span>Processo</span>
-                            <span id="sliderValProc" class="text-[#0a84ff]">1.0</span>
+                            <span id="sliderValProc" class="text-apple-blue dark:text-apple-darkBlue">1.0</span>
                         </div>
-                        <input type="range" id="sliderProc" min="1" max="5" step="0.1" oninput="simularWhatIf()"
-                            class="sim-slider w-full h-1.5 rounded-lg appearance-none cursor-pointer">
+                        <input type="range" id="sliderProc" min="1" max="5" step="0.1" oninput="simularWhatIf()" class="sim-slider w-full h-1.5 rounded-lg appearance-none cursor-pointer">
                     </div>
 
-                    <div class="space-y-2 apple-dark-card-inset p-3">
-                        <div class="flex justify-between text-xs font-semibold text-gray-300">
+                    <div class="space-y-2 apple-card-inset p-3">
+                        <div class="flex justify-between text-xs font-semibold text-black dark:text-gray-300">
                             <span>Resultados</span>
-                            <span id="sliderValResult" class="text-[#0a84ff]">1.0</span>
+                            <span id="sliderValResult" class="text-apple-blue dark:text-apple-darkBlue">1.0</span>
                         </div>
-                        <input type="range" id="sliderResult" min="1" max="5" step="0.1" oninput="simularWhatIf()"
-                            class="sim-slider w-full h-1.5 rounded-lg appearance-none cursor-pointer">
+                        <input type="range" id="sliderResult" min="1" max="5" step="0.1" oninput="simularWhatIf()" class="sim-slider w-full h-1.5 rounded-lg appearance-none cursor-pointer">
                     </div>
                 </div>
             </div>
@@ -691,76 +699,59 @@
     </main>
 
     <!-- FOOTER -->
-    <footer class="header-bar mt-16 py-8 px-4 text-xs text-gray-400 print:hidden">
+    <footer class="bg-white dark:bg-[#1C1C1E] border-t border-black/5 dark:border-white/10 mt-16 py-8 px-4 text-xs text-apple-gray print:hidden">
         <div class="max-w-7xl mx-auto space-y-4">
-            <div
-                class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-white/10 pb-3">
-                <h4 class="text-sm font-bold text-gray-200 flex items-center gap-2">
-                    <i class="fa-solid fa-graduation-cap text-[#0a84ff]"></i> Validação Científica & Frameworks de
-                    Maturidade
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-black/5 dark:border-white/5 pb-3">
+                <h4 class="text-sm font-bold text-black dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-apple-blue dark:text-apple-darkBlue"></i> Validação Científica & Frameworks de Maturidade
                 </h4>
-                <span class="text-[11px] text-gray-500 font-mono">Embasamento Teórico — Design Operations &
-                    Governance</span>
+                <span class="text-[11px] text-apple-gray font-mono">Embasamento Teórico — Design Operations & Governance</span>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-[11px] leading-relaxed">
-                <div
-                    class="apple-dark-card-inset p-3 flex flex-col justify-between hover:border-white/20 transition-colors">
+                <div class="apple-card-inset p-3 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/20 transition-colors">
                     <div>
-                        <strong class="text-blue-300 block mb-1">Modelo de 6 Estágios (NN/g)</strong>
-                        <p class="text-gray-400">Rosala, M. & Moran, K. (2021). <em>"The 6 Stages of UX Maturity"</em>.
-                            Nielsen Norman Group.</p>
+                        <strong class="text-apple-blue dark:text-apple-darkBlue block mb-1">Modelo de 6 Estágios (NN/g)</strong>
+                        <p class="text-apple-gray">Rosala, M. & Moran, K. (2021). <em>"The 6 Stages of UX Maturity"</em>. Nielsen Norman Group.</p>
                     </div>
-                    <a href="https://www.nngroup.com/articles/ux-maturity-stages/" target="_blank"
-                        class="text-[#0a84ff] hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
+                    <a href="https://www.nngroup.com/articles/ux-maturity-stages/" target="_blank" class="text-apple-blue dark:text-apple-darkBlue font-semibold mt-3 inline-flex items-center gap-1">
                         Ler no NN/g <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                     </a>
                 </div>
 
-                <div
-                    class="apple-dark-card-inset p-3 flex flex-col justify-between hover:border-white/20 transition-colors">
+                <div class="apple-card-inset p-3 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/20 transition-colors">
                     <div>
-                        <strong class="text-blue-300 block mb-1">Impacto de Negócio (McKinsey)</strong>
-                        <p class="text-gray-400">Sheppard, B. et al. (2018). <em>"The Business Value of Design"</em>.
-                            McKinsey & Company.</p>
+                        <strong class="text-apple-blue dark:text-apple-darkBlue block mb-1">Impacto de Negócio (McKinsey)</strong>
+                        <p class="text-apple-gray">Sheppard, B. et al. (2018). <em>"The Business Value of Design"</em>. McKinsey & Company.</p>
                     </div>
-                    <a href="https://www.mckinsey.com/capabilities/mckinsey-design/our-insights/the-business-value-of-design"
-                        target="_blank"
-                        class="text-[#0a84ff] hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
+                    <a href="https://www.mckinsey.com/capabilities/mckinsey-design/our-insights/the-business-value-of-design" target="_blank" class="text-apple-blue dark:text-apple-darkBlue font-semibold mt-3 inline-flex items-center gap-1">
                         Ver Estudo McKinsey <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                     </a>
                 </div>
 
-                <div
-                    class="apple-dark-card-inset p-3 flex flex-col justify-between hover:border-white/20 transition-colors">
+                <div class="apple-card-inset p-3 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/20 transition-colors">
                     <div>
-                        <strong class="text-blue-300 block mb-1">Design Value Index (DMI)</strong>
-                        <p class="text-gray-400">Westcott, M. et al. (2015). <em>"The DMI Design Value Index: Results
-                                and Methodologies"</em>. Design Management Institute.</p>
+                        <strong class="text-apple-blue dark:text-apple-darkBlue block mb-1">Design Value Index (DMI)</strong>
+                        <p class="text-apple-gray">Westcott, M. et al. (2015). <em>"The DMI Design Value Index: Results and Methodologies"</em>. Design Management Institute.</p>
                     </div>
-                    <a href="https://www.dmi.org/page/DesignValue" target="_blank"
-                        class="text-[#0a84ff] hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
+                    <a href="https://www.dmi.org/page/DesignValue" target="_blank" class="text-apple-blue dark:text-apple-darkBlue font-semibold mt-3 inline-flex items-center gap-1">
                         Acessar DMI <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                     </a>
                 </div>
 
-                <div
-                    class="apple-dark-card-inset p-3 flex flex-col justify-between hover:border-white/20 transition-colors">
+                <div class="apple-card-inset p-3 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/20 transition-colors">
                     <div>
-                        <strong class="text-blue-300 block mb-1">Integração Ágil & Engenharia</strong>
-                        <p class="text-gray-400">Silva, T. S. et al. (2018). <em>"A UX Integration Model for Agile
-                                Software Development Environments"</em>. ACM / IEEE.</p>
+                        <strong class="text-apple-blue dark:text-apple-darkBlue block mb-1">Integração Ágil & Engenharia</strong>
+                        <p class="text-apple-gray">Silva, T. S. et al. (2018). <em>"A UX Integration Model for Agile Software Development Environments"</em>. ACM / IEEE.</p>
                     </div>
-                    <a href="https://dl.acm.org/doi/10.1145/3234152.3234181" target="_blank"
-                        class="text-[#0a84ff] hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
+                    <a href="https://dl.acm.org/doi/10.1145/3234152.3234181" target="_blank" class="text-apple-blue dark:text-apple-darkBlue font-semibold mt-3 inline-flex items-center gap-1">
                         Acessar ACM DL <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                     </a>
                 </div>
             </div>
 
-            <div class="text-center text-[10px] text-gray-500 pt-2">
-                Auditoria de Maturidade UX em Equipe — Desenvolvida em conformidade com o modelo de 4 pilares e 6
-                estágios evolutivos do Nielsen Norman Group (NN/g).
+            <div class="text-center text-[10px] text-apple-gray pt-2">
+                Auditoria de Maturidade UX em Equipe — Desenvolvida em conformidade com o modelo de 4 pilares e 6 estágios evolutivos do Nielsen Norman Group (NN/g).
             </div>
         </div>
     </footer>
@@ -771,7 +762,7 @@
 
         // ESTADO GLOBAL DA APLICAÇÃO
         let usuarioAtual = { time: "", nome: "", cargo: "" };
-        let timeConsultaAtual = ""; // Armazena o time que está sendo consultado no quadro
+        let timeConsultaAtual = ""; 
         let votosAtuais = {};
         let radarChartInstance = null;
         let bancoVotosNuvem = [];
@@ -818,9 +809,9 @@
                     <div class="quiz-card p-4 space-y-3" id="cardQ_${q.id}">
                         <div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider">
                             <span class="${corPilar}"><i class="fa-solid fa-layer-group mr-1"></i> ${q.pilar}</span>
-                            <span class="text-gray-500 font-mono">Q${String(q.id).padStart(2, '0')}</span>
+                            <span class="text-apple-gray font-mono">Q${String(q.id).padStart(2, '0')}</span>
                         </div>
-                        <p class="text-xs text-gray-200 font-medium leading-relaxed">${q.texto}</p>
+                        <p class="text-xs text-black dark:text-gray-200 font-medium leading-relaxed">${q.texto}</p>
                         <div class="grid grid-cols-5 gap-1.5 pt-1">
                             ${[1, 2, 3, 4, 5].map(v => `
                                 <button type="button" onclick="votar(${q.id}, ${v})" id="btn_${q.id}_${v}" class="quiz-btn py-2 text-center text-xs font-bold">
@@ -834,7 +825,6 @@
             atualizarProgressoUI();
         }
 
-        // CONFIRMAÇÃO DO FORMULÁRIO DO USUÁRIO NO TOPO (Definição de quem vai votar)
         function confirmarIdentificacao(e) {
             e.preventDefault();
             const time = document.getElementById('inputTime').value;
@@ -849,18 +839,15 @@
             usuarioAtual = { time, nome, cargo };
             document.getElementById('labelNomeTime').innerText = time;
 
-            // Ativa o questionário
             const quizSec = document.getElementById('secaoQuestionario');
             quizSec.classList.remove('opacity-50', 'pointer-events-none');
 
-            // Sincroniza o seletor de consulta lá do quadro para facilitar a visualização do mesmo time
             document.getElementById('selectTimeConsulta').value = time;
             timeConsultaAtual = time;
 
             carregarDadosServidor();
         }
 
-        // ALTERAÇÃO EXCLUSIVA NO QUADRO DE CONSULTA DO TIME
         function alterarTimeConsulta(timeVal) {
             timeConsultaAtual = timeVal;
             if (timeVal) {
@@ -886,7 +873,7 @@
                 const btn = document.getElementById(`btn_${qId}_${v}`);
                 if (btn) {
                     if (v === valor) {
-                        btn.className = "py-2 text-center text-xs font-bold rounded-lg border-2 border-[#0a84ff] bg-blue-500/20 text-[#0a84ff] transition-all shadow";
+                        btn.className = "py-2 text-center text-xs font-bold rounded-lg border-2 border-apple-blue bg-apple-blue/10 dark:bg-apple-darkBlue/20 text-apple-blue dark:text-apple-darkBlue transition-all shadow-sm";
                     } else {
                         btn.className = "quiz-btn py-2 text-center text-xs font-bold";
                     }
@@ -900,45 +887,43 @@
             document.getElementById('progressText').innerText = `Progresso: ${count} / 16`;
         }
 
-
         async function carregarDadosServidor() {
-    if (!timeConsultaAtual) return;
+            if (!timeConsultaAtual) return;
 
-    const modal = document.getElementById('modalLoading');
-    if (modal) modal.classList.remove('hidden');
+            const modal = document.getElementById('modalLoading');
+            if (modal) modal.classList.remove('hidden');
 
-    try {
-        const response = await fetch(GOOGLE_SCRIPT_URL);
-        const data = await response.json();
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL);
+                const data = await response.json();
 
-        if (data.votos) {
-            bancoVotosNuvem = data.votos.filter(v => v.time === timeConsultaAtual);
+                if (data.votos) {
+                    bancoVotosNuvem = data.votos.filter(v => v.time === timeConsultaAtual);
 
-            if (usuarioAtual.nome && usuarioAtual.time === timeConsultaAtual) {
-                const meuvoto = bancoVotosNuvem.find(v => v.nome.toLowerCase() === usuarioAtual.nome.toLowerCase());
-                if (meuvoto && meuvoto.respostas) {
-                    votosAtuais = { ...meuvoto.respostas };
-                    bancoQuestoes.forEach(q => {
-                        if (votosAtuais[q.id]) votar(q.id, votosAtuais[q.id]);
-                    });
+                    if (usuarioAtual.nome && usuarioAtual.time === timeConsultaAtual) {
+                        const meuvoto = bancoVotosNuvem.find(v => v.nome.toLowerCase() === usuarioAtual.nome.toLowerCase());
+                        if (meuvoto && meuvoto.respostas) {
+                            votosAtuais = { ...meuvoto.respostas };
+                            bancoQuestoes.forEach(q => {
+                                if (votosAtuais[q.id]) votar(q.id, votosAtuais[q.id]);
+                            });
+                        }
+                    }
+                    atualizarTabelaVotos();
                 }
+
+                if (data.healthLogs) {
+                    bancoHealthLogNuvem = data.healthLogs.filter(h => h.time === timeConsultaAtual);
+                    atualizarTabelaHealthLog();
+                }
+            } catch (err) {
+                console.error("Erro ao sincronizar com o Google Sheets:", err);
+                alert("Não foi possível carregar os dados do Google Sheets.");
+            } finally {
+                if (modal) modal.classList.add('hidden');
             }
-            atualizarTabelaVotos();
         }
 
-        if (data.healthLogs) {
-            bancoHealthLogNuvem = data.healthLogs.filter(h => h.time === timeConsultaAtual);
-            atualizarTabelaHealthLog();
-        }
-    } catch (err) {
-        console.error("Erro ao sincronizar com o Google Sheets:", err);
-        alert("Não foi possível carregar os dados do Google Sheets.");
-    } finally {
-        if (modal) modal.classList.add('hidden');
-    }
-}
-
-        // ENVIA VOTO INDIVIDUAL PARA O GOOGLE SHEETS
         async function salvarAvaliacaoIndividual() {
             if (!usuarioAtual.nome || !usuarioAtual.time || !usuarioAtual.cargo) {
                 alert("Por favor, confirme seus dados (Time, Nome e Perfil) clicando em 'Iniciar / Trocar Avaliador' no topo antes de salvar.");
@@ -989,7 +974,6 @@
                 });
 
                 alert(`Avaliação de ${usuarioAtual.nome} registrada na nuvem com sucesso!`);
-                // Garante que o quadro passe a consultar o time do voto recém salvo
                 timeConsultaAtual = usuarioAtual.time;
                 document.getElementById('selectTimeConsulta').value = usuarioAtual.time;
                 await carregarDadosServidor();
@@ -1006,33 +990,32 @@
             tbody.innerHTML = '';
 
             if (!timeConsultaAtual) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-gray-500">Selecione um time no menu ao lado do botão de calcular para visualizar o quadro.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-apple-gray">Selecione um time no menu ao lado do botão de calcular para visualizar o quadro.</td></tr>`;
                 return;
             }
 
             if (bancoVotosNuvem.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-gray-500">Nenhum integrante deste time realizou a avaliação ainda.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-apple-gray">Nenhum integrante deste time realizou a avaliação ainda.</td></tr>`;
                 return;
             }
 
             bancoVotosNuvem.forEach(v => {
                 tbody.innerHTML += `
-                    <tr class="hover:bg-white/5 transition-colors">
-                        <td class="p-3 font-semibold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-user-circle text-gray-400 text-sm"></i> ${v.nome}
+                    <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                        <td class="p-3 font-semibold text-black dark:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-user-circle text-apple-gray text-sm"></i> ${v.nome}
                         </td>
-                        <td class="p-3 text-gray-400">${v.cargo}</td>
+                        <td class="p-3 text-apple-gray">${v.cargo}</td>
                         <td class="p-3 text-center font-mono">${v.pilares["Estratégia"].toFixed(1)}</td>
                         <td class="p-3 text-center font-mono">${v.pilares["Cultura"].toFixed(1)}</td>
                         <td class="p-3 text-center font-mono">${v.pilares["Processo"].toFixed(1)}</td>
                         <td class="p-3 text-center font-mono">${v.pilares["Resultados"].toFixed(1)}</td>
-                        <td class="p-3 text-center font-bold text-[#0a84ff]">${v.score.toFixed(1)}%</td>
+                        <td class="p-3 text-center font-bold text-apple-blue dark:text-apple-darkBlue">${v.score.toFixed(1)}%</td>
                     </tr>
                 `;
             });
         }
 
-        // ENVIA FECHAMENTO TRIMESTRAL PARA O GOOGLE SHEETS
         async function salvarFechamentoTrimestral() {
             if (!timeConsultaAtual) {
                 alert("Selecione um time para congelar um fechamento trimestral.");
@@ -1094,31 +1077,30 @@
             tbody.innerHTML = '';
 
             if (!timeConsultaAtual) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-gray-500">Selecione um time para visualizar os registros trimestrais.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-apple-gray">Selecione um time para visualizar os registros trimestrais.</td></tr>`;
                 return;
             }
 
             if (bancoHealthLogNuvem.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-gray-500">Nenhum fechamento trimestral registrado ainda. Clique no botão acima para congelar o momento da equipe.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-apple-gray">Nenhum fechamento trimestral registrado ainda. Clique no botão acima para congelar o momento da equipe.</td></tr>`;
                 return;
             }
 
             bancoHealthLogNuvem.forEach(h => {
                 tbody.innerHTML += `
-                    <tr class="hover:bg-white/5 transition-colors">
-                        <td class="p-3 font-mono text-gray-300">${h.data} (${h.avaliadoresQtd} votos)</td>
+                    <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                        <td class="p-3 font-mono text-black dark:text-gray-300">${h.data} (${h.avaliadoresQtd} votos)</td>
                         <td class="p-3 text-center font-mono">${h.pilares["Estratégia"].toFixed(1)}</td>
                         <td class="p-3 text-center font-mono">${h.pilares["Cultura"].toFixed(1)}</td>
                         <td class="p-3 text-center font-mono">${h.pilares["Processo"].toFixed(1)}</td>
                         <td class="p-3 text-center font-mono">${h.pilares["Resultados"].toFixed(1)}</td>
-                        <td class="p-3 text-center font-bold text-[#0a84ff]">${h.score.toFixed(1)}%</td>
-                        <td class="p-3 text-center font-medium text-[#bf5af2]">${h.estagioNome.split(':')[0]}</td>
+                        <td class="p-3 text-center font-bold text-apple-blue dark:text-apple-darkBlue">${h.score.toFixed(1)}%</td>
+                        <td class="p-3 text-center font-medium text-apple-purple dark:text-apple-darkPurple">${h.estagioNome.split(':')[0]}</td>
                     </tr>
                 `;
             });
         }
 
-        // CÁLCULO DA MÉDIA GERAL DO TIME
         function calcularMediaGeralDoTime() {
             if (!timeConsultaAtual) {
                 alert("Selecione um time no menu de consulta do quadro antes de calcular.");
@@ -1170,7 +1152,6 @@
             document.getElementById('resultEstagioDesc').innerText = estagio.desc;
             document.getElementById('resultScoreMedio').innerText = scoreFinal.toFixed(1) + " / 100";
 
-            // 1. BARRA MACRO (Geral de 1 a 6)
             const macroPercent = Math.min(100, Math.max(0, scoreFinal));
             const macroBarEl = document.getElementById('macroProgressBar');
             if (macroBarEl) macroBarEl.style.width = `${macroPercent}%`;
@@ -1178,7 +1159,6 @@
             const macroTextEl = document.getElementById('macroLevelText');
             if (macroTextEl) macroTextEl.innerText = `Estágio ${estagio.nivel} de 6 (${scoreFinal.toFixed(0)}% da escala total)`;
 
-            // 2. BARRA MICRO (Evolução Interna)
             let minEstagioAnterior = 0;
             if (estagio.nivel > 1) minEstagioAnterior = estagiosNNG[estagio.nivel - 2].maxScore;
 
@@ -1196,7 +1176,6 @@
                 }
             }
 
-            // DETECTOR DE REGRESSÃO / DRIFT NN/G
             const gapBox = document.getElementById('gapAlertBox');
             const gapMsg = document.getElementById('gapAlertMessage');
 
@@ -1229,19 +1208,17 @@
                 gapBox.classList.add('hidden');
             }
 
-            // RECOMENDAÇÕES
             const recsList = document.getElementById('recommendationsList');
             recsList.innerHTML = '';
             estagio.recs.forEach((r, idx) => {
                 recsList.innerHTML += `
-                    <div class="flex items-start gap-3 apple-dark-card-inset p-3">
+                    <div class="flex items-start gap-3 apple-card-inset p-3">
                         <span class="w-5 h-5 rounded-full bg-blue-500/20 text-[#0a84ff] border border-blue-500/30 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">${idx + 1}</span>
-                        <p class="text-gray-300 leading-relaxed">${r}</p>
+                        <p class="text-black dark:text-gray-300 leading-relaxed">${r}</p>
                     </div>
                 `;
             });
 
-            // RADAR DUPLO
             const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
 
             let datasetsRadar = [{
@@ -1367,8 +1344,65 @@
 
         inicializarQuiz();
 
+        // Alternar Tema Dark/Light (Ajustado para sincronizar data-theme e classe 'dark')
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            const themeLabel = document.getElementById('themeLabel');
+            
+            const currentTheme = html.getAttribute('data-theme') || 'light';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
 
+            html.setAttribute('data-theme', newTheme);
+
+            if (newTheme === 'dark') {
+                html.classList.add('dark');
+                if (icon) icon.className = 'fa-solid fa-sun text-sm text-apple-orange';
+                if (themeLabel) themeLabel.innerText = 'Modo Claro';
+            } else {
+                html.classList.remove('dark');
+                if (icon) icon.className = 'fa-solid fa-moon text-sm text-indigo-500';
+                if (themeLabel) themeLabel.innerText = 'Modo Escuro';
+            }
+
+            localStorage.setItem('apple_theme_pref', newTheme);
+
+            // Re-renderiza o gráfico de radar para adaptar as cores dos eixos ao novo tema
+            if (typeof radarChartInstance !== 'undefined' && radarChartInstance) {
+                if (typeof calcularMediaGeralDoTime === 'function') {
+                    calcularMediaGeralDoTime();
+                } else if (typeof atualizarDashboard === 'function') {
+                    atualizarDashboard();
+                }
+            }
+        }
+
+        // Garante a leitura da preferência salva no carregamento
+        (function carregarTemaSalvo() {
+            const savedTheme = localStorage.getItem('apple_theme_pref') || 'light';
+            const html = document.documentElement;
+            html.setAttribute('data-theme', savedTheme);
+
+            if (savedTheme === 'dark') {
+                html.classList.add('dark');
+            } else {
+                html.classList.remove('dark');
+            }
+
+            window.addEventListener('DOMContentLoaded', () => {
+                const icon = document.getElementById('themeIcon');
+                const themeLabel = document.getElementById('themeLabel');
+                if (icon && themeLabel) {
+                    if (savedTheme === 'dark') {
+                        icon.className = 'fa-solid fa-sun text-sm text-apple-orange';
+                        themeLabel.innerText = 'Modo Claro';
+                    } else {
+                        icon.className = 'fa-solid fa-moon text-sm text-indigo-500';
+                        themeLabel.innerText = 'Modo Escuro';
+                    }
+                }
+            });
+        })();
     </script>
 </body>
-
 </html>
