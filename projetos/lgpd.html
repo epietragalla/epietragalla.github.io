@@ -1,234 +1,319 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="dark">
-
+<html lang="pt-BR" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Suíte de Privacidade UX - TCLE & Anonimizador LGPD</title>
-    <!-- Tailwind CSS -->
+
+    <!-- Tailwind CSS CDN com Extensão de Tokens do Apple Design System -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome para Ícones -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        apple: {
+                            blue: '#007AFF',
+                            darkBlue: '#0A84FF',
+                            gray: '#8E8E93',
+                            gray2: '#AEAEB2',
+                            gray3: '#C7C7CC',
+                            gray4: '#D1D1D6',
+                            gray5: '#E5E5EA',
+                            gray6: '#F2F2F7',
+                            darkBg: '#000000',
+                            darkCard: '#1C1C1E',
+                            darkCard2: '#2C2C2E',
+                            darkCard3: '#3A3A3C',
+                            green: '#34C759',
+                            darkGreen: '#30D158',
+                            orange: '#FF9500',
+                            darkOrange: '#FF9F0A',
+                            red: '#FF3B30',
+                            darkRed: '#FF453A',
+                            purple: '#AF52DE',
+                            darkPurple: '#BF5AF2'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', '"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- FontAwesome para Ícones Estilo SF Symbols -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- jsPDF para Geração de PDF no Cliente -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
+    <!-- Estilos CSS Centralizados (Apple HIG Pattern System) -->
     <style>
-        /* ==========================================================================
-           VARIÁVEIS DE COR E TEMA NATIVO APPLE (DARK MODE)
-           ========================================================================== */
-        :root {
-            --apple-bg: #000000;
-            --apple-card-bg: rgba(28, 28, 30, 0.75);
-            --apple-inset-bg: rgba(44, 44, 46, 0.6);
-            --apple-header-bg: rgba(22, 22, 24, 0.8);
-            --apple-border: rgba(255, 255, 255, 0.12);
-            --apple-border-light: rgba(255, 255, 255, 0.08);
-            --apple-blue: #0a84ff;
-            --apple-blue-hover: #409cff;
-            --apple-green: #30d158;
-            --apple-red: #ff453a;
-            --apple-orange: #ff9f0a;
-            --apple-purple: #bf5af2;
-            --apple-text-main: #f5f5f7;
-            --apple-text-muted: #8e8e93;
+        /* Transições suave de tema Apple HIG */
+        *, *::before, *::after {
+            transition: background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+                        border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+                        color 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+                        box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
-            background-color: var(--apple-bg);
-            color: var(--apple-text-main);
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        /* ==========================================================================
-           CLASSES REUTILIZÁVEIS APPLE GLASSMORPHISM & SURFACES
-           ========================================================================== */
-        .apple-dark-card {
-            background: var(--apple-card-bg);
-            backdrop-filter: blur(30px) saturate(190%);
-            -webkit-backdrop-filter: blur(30px) saturate(190%);
-            border: 1px solid var(--apple-border);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .apple-dark-card-inset {
-            background: var(--apple-inset-bg);
-            border: 1px solid var(--apple-border-light);
-            border-radius: 14px;
-        }
-
-        .apple-dark-btn {
-            background: var(--apple-blue);
-            color: #ffffff;
-            border-radius: 980px;
-            font-weight: 600;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 0 16px rgba(10, 132, 255, 0.3);
-        }
-
-        .apple-dark-btn:hover {
-            background: var(--apple-blue-hover);
-            transform: scale(1.02);
-            box-shadow: 0 0 20px rgba(10, 132, 255, 0.45);
-        }
-
-        .apple-dark-btn:active {
-            transform: scale(0.97);
-        }
-
-        .apple-dark-btn-green {
-            background: var(--apple-green);
-            color: #ffffff;
-            border-radius: 980px;
-            font-weight: 600;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 0 16px rgba(48, 209, 88, 0.3);
-        }
-
-        .apple-dark-btn-green:hover {
-            background: #32e061;
-            transform: scale(1.02);
-            box-shadow: 0 0 20px rgba(48, 209, 88, 0.45);
-        }
-
-        .apple-dark-btn-green:active {
-            transform: scale(0.97);
-        }
-
-        .header-bar {
-            background: var(--apple-header-bg);
+        /* Glassmorphism / Vibrancy Nativam macOS/iOS */
+        .apple-glass {
+            background: rgba(255, 255, 255, 0.78);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--apple-border-light);
+        }
+        .dark .apple-glass {
+            background: rgba(28, 28, 30, 0.78);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
 
-        .tab-container {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--apple-border-light);
+        /* Cartões Estilo Apple HIG Container */
+        .apple-card {
+            background-color: #FFFFFF;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+        .dark .apple-card {
+            background-color: #1C1C1E;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .apple-card-inset {
+            background-color: #F2F2F7;
             border-radius: 14px;
-            padding: 4px;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+        .dark .apple-card-inset {
+            background-color: #2C2C2E;
+            border: 1px solid rgba(255, 255, 255, 0.06);
         }
 
-        .tab-btn-active {
-            background-color: var(--apple-blue);
-            color: #ffffff;
-            box-shadow: 0 2px 8px rgba(10, 132, 255, 0.3);
+        /* Botões Estilo Push Button / Pill */
+        .apple-btn-primary {
+            background-color: #007AFF;
+            color: #FFFFFF !important;
+            font-weight: 600;
+            border-radius: 980px;
+            padding: 8px 18px;
+            box-shadow: 0 2px 8px rgba(0, 122, 255, 0.25);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .apple-btn-primary:hover {
+            background-color: #0062CC;
+            transform: scale(1.02);
+        }
+        .dark .apple-btn-primary {
+            background-color: #0A84FF;
+            box-shadow: 0 2px 10px rgba(10, 132, 255, 0.3);
+        }
+        .dark .apple-btn-primary:hover {
+            background-color: #409CFF;
         }
 
-        .tab-btn-inactive {
-            color: var(--apple-text-muted);
+        .apple-btn-green {
+            background-color: #34C759;
+            color: #FFFFFF !important;
+            font-weight: 600;
+            border-radius: 980px;
+            padding: 8px 18px;
+            box-shadow: 0 2px 8px rgba(52, 199, 89, 0.25);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .apple-btn-green:hover {
+            background-color: #28A745;
+            transform: scale(1.02);
+        }
+        .dark .apple-btn-green {
+            background-color: #30D158;
+            box-shadow: 0 2px 10px rgba(48, 209, 88, 0.3);
         }
 
-        .tab-btn-inactive:hover {
-            color: var(--apple-text-main);
+        .apple-btn-secondary {
+            background-color: #F2F2F7;
+            color: #1C1C1E;
+            font-weight: 500;
+            border-radius: 980px;
+            padding: 8px 16px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .apple-btn-secondary:hover {
+            background-color: #E5E5EA;
+        }
+        .dark .apple-btn-secondary {
+            background-color: #2C2C2E;
+            color: #F2F2F7;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .dark .apple-btn-secondary:hover {
+            background-color: #3A3A3C;
         }
 
-        .apple-input {
-            background-color: rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--apple-border-light);
+        /* Segmented Controls (Abas) */
+        .segmented-control-bg {
+            background-color: #E5E5EA;
+            border-radius: 16px;
+            padding: 3px;
+        }
+        .dark .segmented-control-bg {
+            background-color: #2C2C2E;
+        }
+
+        .segmented-tab {
+            padding: 6px 16px;
+            font-size: 0.75rem;
+            font-weight: 600;
             border-radius: 12px;
-            color: var(--apple-text-main);
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            color: #8E8E93;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .segmented-tab.active {
+            background-color: #FFFFFF;
+            color: #000000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .dark .segmented-tab.active {
+            background-color: #1C1C1E;
+            color: #FFFFFF;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.4);
         }
 
-        .apple-input:focus {
+        /* Form Inputs & Controls */
+        .apple-input {
+            background-color: #F2F2F7;
+            border: 1px solid transparent;
+            border-radius: 12px;
+            padding: 10px 14px;
+            color: #1C1C1E;
+            font-size: 0.875rem;
             outline: none;
-            border-color: var(--apple-blue);
+            transition: all 0.2s ease;
+        }
+        .apple-input:focus {
+            border-color: #007AFF;
+            background-color: #FFFFFF;
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.18);
+        }
+        .dark .apple-input {
+            background-color: #2C2C2E;
+            color: #F2F2F7;
+        }
+        .dark .apple-input:focus {
+            border-color: #0A84FF;
+            background-color: #1C1C1E;
             box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.25);
         }
 
+        /* Canvas Box para Assinatura */
         .canvas-box {
-            background-color: #ffffff;
-            border: 1px solid var(--apple-border);
+            background-color: #FFFFFF;
+            border: 1px solid rgba(0, 0, 0, 0.1);
             border-radius: 14px;
             height: 180px;
         }
+        .dark .canvas-box {
+            background-color: #FFFFFF;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
     </style>
 </head>
+<body class="bg-[#F5F5F7] dark:bg-black text-[#1D1D1F] dark:text-[#F5F5F7] min-h-screen font-sans antialiased selection:bg-apple-blue selection:text-white">
 
-<body class="min-h-screen">
-
-    <!-- Header -->
-    <header class="header-bar py-6 px-4">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            <div>
-                <h1 class="text-3xl font-extrabold text-[#0a84ff] flex items-center gap-3">
-                    <i class="fa-solid fa-user-shield text-[#0a84ff]"></i> Suíte de Privacidade UX Research
-                </h1>
-                <p class="text-gray-400 text-sm mt-1">
-                    Mecanismo autônomo para conformidade com a LGPD: Emissão de TCLE com assinatura digital e higienização de bases de dados.
-                </p>
+    <!-- Header Fixo Estilo iOS / macOS Navigation Bar -->
+    <header class="sticky top-0 z-40 apple-glass border-b border-black/5 dark:border-white/10 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-apple-blue dark:bg-apple-darkBlue flex items-center justify-center text-white shadow-md shadow-apple-blue/20">
+                    <i class="fa-solid fa-user-shield text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-black dark:text-white flex items-center gap-2">
+                        Suíte de Privacidade <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-apple-blue/10 text-apple-blue dark:bg-apple-darkBlue/20 dark:text-apple-darkBlue">UX Research LGPD</span>
+                    </h1>
+                    <p class="text-xs text-apple-gray">Mecanismo autônomo para conformidade com a LGPD: Emissão de TCLE com assinatura digital e higienização de bases de dados.</p>
+                </div>
             </div>
-            <!-- Navegação por Abas -->
-            <div class="flex tab-container">
-                <button onclick="alternarAba('tcle')" id="btnAbaTcle" class="px-4 py-2 text-xs font-bold rounded-lg transition-all tab-btn-active">
-                    <i class="fa-solid fa-pen-nib mr-1.5"></i> 1. Gerador de TCLE
-                </button>
-                <button onclick="alternarAba('anon')" id="btnAbaAnon" class="px-4 py-2 text-xs font-bold rounded-lg transition-all tab-btn-inactive ml-1">
-                    <i class="fa-solid fa-mask mr-1.5"></i> 2. Anonimizador de Dados
+
+            <!-- Navegação por Abas (iOS Segmented Controls) & Theme Toggle -->
+            <div class="flex items-center gap-3">
+                <div class="segmented-control-bg p-1 inline-flex gap-1">
+                    <button onclick="alternarAba('tcle')" id="btnAbaTcle" class="segmented-tab active">
+                        <i class="fa-solid fa-pen-nib mr-1.5"></i> 1. Gerador de TCLE
+                    </button>
+                    <button onclick="alternarAba('anon')" id="btnAbaAnon" class="segmented-tab">
+                        <i class="fa-solid fa-mask mr-1.5"></i> 2. Anonimizador
+                    </button>
+                </div>
+
+                <!-- Toggle Dark/Light Mode Switcher -->
+                <button id="themeToggleBtn" onclick="toggleTheme()" class="w-10 h-10 rounded-full bg-apple-gray6 dark:bg-apple-darkCard2 flex items-center justify-center text-apple-gray hover:text-black dark:hover:text-white transition-all">
+                    <i id="themeIcon" class="fa-solid fa-sun text-sm text-apple-orange"></i>
                 </button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 py-8">
+    <!-- Conteúdo Principal -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         
         <!-- SECTION 1: GERADOR DE TCLE -->
         <section id="sectionTcle" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Formulário do Participante -->
-            <div class="lg:col-span-1 apple-dark-card p-6 space-y-5">
-                <h2 class="text-lg font-bold text-white flex items-center gap-2 border-b border-white/10 pb-2">
-                    <i class="fa-solid fa-id-card text-[#0a84ff]"></i> Dados do Participante
+            <div class="lg:col-span-1 apple-card p-6 space-y-5">
+                <h2 class="text-lg font-bold text-black dark:text-white flex items-center gap-2 border-b border-black/5 dark:border-white/10 pb-2">
+                    <i class="fa-solid fa-id-card text-apple-blue dark:text-apple-darkBlue"></i> Dados do Participante
                 </h2>
                 
                 <div class="space-y-1">
-                    <label class="text-xs font-semibold text-gray-400">Nome Completo</label>
+                    <label class="text-xs font-semibold text-apple-gray">Nome Completo</label>
                     <input type="text" id="partNome" placeholder="Ex: João Silva de Souza" class="w-full apple-input p-2.5 text-sm">
                 </div>
 
                 <div class="space-y-1">
-                    <label class="text-xs font-semibold text-gray-400">Documento de Identidade (CPF ou RG)</label>
+                    <label class="text-xs font-semibold text-apple-gray">Documento de Identidade (CPF ou RG)</label>
                     <input type="text" id="partDoc" placeholder="Ex: 000.000.000-00" class="w-full apple-input p-2.5 text-sm">
                 </div>
 
                 <div class="space-y-1">
-                    <label class="text-xs font-semibold text-gray-400">E-mail de Contato</label>
+                    <label class="text-xs font-semibold text-apple-gray">E-mail de Contato</label>
                     <input type="email" id="partEmail" placeholder="joao.silva@email.com" class="w-full apple-input p-2.5 text-sm">
                 </div>
 
                 <!-- Consentimentos de Mídia -->
                 <div class="space-y-3 pt-2">
-                    <label class="text-xs font-semibold text-gray-400 block border-b border-white/10 pb-1">Cláusulas de Captura de Mídia</label>
+                    <label class="text-xs font-semibold text-apple-gray block border-b border-black/5 dark:border-white/10 pb-1">Cláusulas de Captura de Mídia</label>
                     
-                    <div class="flex items-center justify-between p-2.5 apple-dark-card-inset">
-                        <span class="text-xs text-gray-300 font-medium"><i class="fa-solid fa-microphone text-[#0a84ff] mr-1.5"></i> Gravação de Áudio/Voz</span>
-                        <input type="checkbox" id="checkAudio" checked class="w-4 h-4 text-[#0a84ff] bg-black border-white/20 rounded focus:ring-[#0a84ff]">
+                    <div class="flex items-center justify-between p-2.5 apple-card-inset">
+                        <span class="text-xs text-black dark:text-gray-300 font-medium"><i class="fa-solid fa-microphone text-apple-blue dark:text-apple-darkBlue mr-1.5"></i> Gravação de Áudio/Voz</span>
+                        <input type="checkbox" id="checkAudio" checked class="w-4 h-4 text-apple-blue accent-apple-blue rounded">
                     </div>
 
-                    <div class="flex items-center justify-between p-2.5 apple-dark-card-inset">
-                        <span class="text-xs text-gray-300 font-medium"><i class="fa-solid fa-video text-[#0a84ff] mr-1.5"></i> Registro de Vídeo/Rosto</span>
-                        <input type="checkbox" id="checkVideo" checked class="w-4 h-4 text-[#0a84ff] bg-black border-white/20 rounded focus:ring-[#0a84ff]">
+                    <div class="flex items-center justify-between p-2.5 apple-card-inset">
+                        <span class="text-xs text-black dark:text-gray-300 font-medium"><i class="fa-solid fa-video text-apple-blue dark:text-apple-darkBlue mr-1.5"></i> Registro de Vídeo/Rosto</span>
+                        <input type="checkbox" id="checkVideo" checked class="w-4 h-4 text-apple-blue accent-apple-blue rounded">
                     </div>
 
-                    <div class="flex items-center justify-between p-2.5 apple-dark-card-inset">
-                        <span class="text-xs text-gray-300 font-medium"><i class="fa-solid fa-desktop text-[#0a84ff] mr-1.5"></i> Captura de Tela (Interação)</span>
-                        <input type="checkbox" id="checkTela" checked class="w-4 h-4 text-[#0a84ff] bg-black border-white/20 rounded focus:ring-[#0a84ff]">
+                    <div class="flex items-center justify-between p-2.5 apple-card-inset">
+                        <span class="text-xs text-black dark:text-gray-300 font-medium"><i class="fa-solid fa-desktop text-apple-blue dark:text-apple-darkBlue mr-1.5"></i> Captura de Tela (Interação)</span>
+                        <input type="checkbox" id="checkTela" checked class="w-4 h-4 text-apple-blue accent-apple-blue rounded">
                     </div>
                 </div>
             </div>
 
             <!-- Quadro de Visualização de Minuta e Assinatura -->
-            <div class="lg:col-span-2 apple-dark-card p-6 flex flex-col justify-between">
+            <div class="lg:col-span-2 apple-card p-6 flex flex-col justify-between">
                 <div>
-                    <h2 class="text-lg font-bold text-white mb-3 flex items-center gap-2 border-b border-white/10 pb-2">
-                        <i class="fa-solid fa-file-signature text-[#bf5af2]"></i> Termo de Consentimento e Assinatura Digital
+                    <h2 class="text-lg font-bold text-black dark:text-white mb-3 flex items-center gap-2 border-b border-black/5 dark:border-white/10 pb-2">
+                        <i class="fa-solid fa-file-signature text-apple-purple dark:text-apple-darkPurple"></i> Termo de Consentimento e Assinatura Digital
                     </h2>
                     <!-- Pré-visualização Jurídica do Termo -->
-                    <div class="apple-dark-card-inset p-4 max-h-60 overflow-y-auto text-xs text-gray-400 leading-relaxed space-y-3 mb-5">
-                        <h3 class="font-bold text-center text-gray-200 text-sm">TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO (TCLE) — UX RESEARCH</h3>
+                    <div class="apple-card-inset p-4 max-h-60 overflow-y-auto text-xs text-apple-gray leading-relaxed space-y-3 mb-5">
+                        <h3 class="font-bold text-center text-black dark:text-gray-200 text-sm">TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO (TCLE) — UX RESEARCH</h3>
                         <p>Por meio deste instrumento, em conformidade estrita com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018 - LGPD), eu declaro que autorizo de forma livre, informada e inequívoca o tratamento dos meus dados pessoais fornecidos e coletados voluntariamente durante este teste de usabilidade.</p>
                         <p><strong>Finalidade do Tratamento:</strong> Os dados e mídias coletados destinam-se única e exclusivamente à análise de usabilidade, mapeamento de melhorias de interface, fluxos e validação de soluções digitais corporativas desenvolvidas pelo time de design.</p>
                         <p><strong>Direitos e Confidencialidade:</strong> Fica garantido que minha identidade será mantida sob sigilo absoluto perante terceiros externos através de mecanismos de anonimização ou mascaramento. Entendo que posso revogar este consentimento ou solicitar a exclusão das minhas gravações a qualquer momento, enviando uma solicitação ao time de pesquisa.</p>
@@ -238,10 +323,10 @@
                 <!-- Canvas de Assinatura -->
                 <div class="space-y-3">
                     <div class="flex justify-between items-center">
-                        <label class="text-xs font-bold text-[#bf5af2] flex items-center gap-1.5">
+                        <label class="text-xs font-bold text-apple-purple dark:text-apple-darkPurple flex items-center gap-1.5">
                             <i class="fa-solid fa-hand-pointer animate-pulse"></i> Assine com o Mouse ou o Dedo no quadro abaixo:
                         </label>
-                        <button onclick="limparCanvas()" class="text-gray-400 hover:text-[#ff453a] text-xs font-semibold transition-colors flex items-center gap-1">
+                        <button onclick="limparCanvas()" class="text-apple-gray hover:text-apple-red dark:hover:text-apple-darkRed text-xs font-semibold transition-colors flex items-center gap-1">
                             <i class="fa-solid fa-eraser"></i> Limpar Quadro
                         </button>
                     </div>
@@ -251,7 +336,7 @@
                     </div>
 
                     <div class="pt-2 flex justify-end">
-                        <button onclick="gerarPdfTcle()" class="apple-dark-btn font-bold py-3 px-6 flex items-center gap-2 text-sm shadow-lg">
+                        <button onclick="gerarPdfTcle()" class="apple-btn-primary font-bold py-3 px-6 flex items-center gap-2 text-sm shadow-lg">
                             <i class="fa-solid fa-file-pdf text-base"></i> Gerar e Baixar Termo Assinado (PDF)
                         </button>
                     </div>
@@ -261,47 +346,47 @@
 
         <!-- SECTION 2: MOTOR DE DESIDENTIFICAÇÃO -->
         <section id="sectionAnon" class="space-y-6 hidden">
-            <div class="apple-dark-card p-6">
-                <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
-                    <i class="fa-solid fa-mask text-[#30d158]"></i> Mecanismo de Desidentificação e Mascaramento de Bases
+            <div class="apple-card p-6">
+                <h2 class="text-lg font-bold text-black dark:text-white mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-mask text-apple-green dark:text-apple-darkGreen"></i> Mecanismo de Desidentificação e Mascaramento de Bases
                 </h2>
-                <p class="text-xs text-gray-400 leading-relaxed mb-4">
-                    Copie as linhas da sua tabela direto do Excel ou do Google Sheets e cole na caixa abaixo. O sistema analisará as colunas e substituirá nomes, e-mails e CPFs de participantes por códigos seguros (<strong class="text-gray-300">U01, U02...</strong>), gerando uma base protegida para download.
+                <p class="text-xs text-apple-gray leading-relaxed mb-4">
+                    Copie as linhas da sua tabela direto do Excel ou do Google Sheets e cole na caixa abaixo. O sistema analisará as colunas e substituirá nomes, e-mails e CPFs de participantes por códigos seguros (<strong class="text-black dark:text-gray-300">U01, U02...</strong>), gerando uma base protegida para download.
                 </p>
 
                 <!-- Input de Colagem -->
                 <div class="space-y-2">
-                    <textarea id="rawTsvInput" rows="6" placeholder="Cole aqui os dados copiados da sua planilha (linhas e colunas)..." class="w-full apple-input p-4 text-xs font-mono placeholder-gray-600 focus:border-[#30d158]"></textarea>
+                    <textarea id="rawTsvInput" rows="6" placeholder="Cole aqui os dados copiados da sua planilha (linhas e colunas)..." class="w-full apple-input p-4 text-xs font-mono placeholder-apple-gray focus:border-apple-green"></textarea>
                 </div>
 
                 <div class="mt-4 flex gap-3">
-                    <button onclick="processarDesidentificacao()" class="apple-dark-btn-green text-xs py-2.5 px-5 flex items-center gap-2 shadow">
+                    <button onclick="processarDesidentificacao()" class="apple-btn-green text-xs py-2.5 px-5 flex items-center gap-2 shadow">
                         <i class="fa-solid fa-wand-magic-sparkles"></i> Desidentificar Dados da Tabela
                     </button>
                 </div>
             </div>
 
             <!-- Tabela e Resultado Protegido -->
-            <div id="wrapperResultadosAnon" class="apple-dark-card p-6 hidden space-y-4">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 pb-3 border-b border-white/10">
+            <div id="wrapperResultadosAnon" class="apple-card p-6 hidden space-y-4">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 pb-3 border-b border-black/5 dark:border-white/10">
                     <div>
-                        <h3 class="text-base font-bold text-white">Visualização dos Dados Protegidos</h3>
-                        <p class="text-xs text-gray-400">Todos os dados sensíveis foram ofuscados localmente conforme as diretrizes de privacidade da LGPD.</p>
+                        <h3 class="text-base font-bold text-black dark:text-white">Visualização dos Dados Protegidos</h3>
+                        <p class="text-xs text-apple-gray">Todos os dados sensíveis foram ofuscados localmente conforme as diretrizes de privacidade da LGPD.</p>
                     </div>
-                    <button onclick="baixarCsvProtegido()" class="apple-dark-btn text-xs font-bold py-2 px-4 flex items-center gap-2">
+                    <button onclick="baixarCsvProtegido()" class="apple-btn-primary text-xs font-bold py-2 px-4 flex items-center gap-2">
                         <i class="fa-solid fa-download"></i> Baixar Tabela Protegida (.CSV)
                     </button>
                 </div>
 
                 <!-- Tabela Responsiva -->
-                <div class="overflow-x-auto rounded-xl border border-white/10">
-                    <table class="min-w-full divide-y divide-white/10 text-xs text-left">
-                        <thead class="bg-white/5 text-gray-400">
+                <div class="overflow-x-auto rounded-xl border border-black/5 dark:border-white/10">
+                    <table class="min-w-full divide-y divide-black/5 dark:divide-white/10 text-xs text-left">
+                        <thead class="bg-black/5 dark:bg-white/5 text-apple-gray">
                             <tr id="anonTableHeader">
                                 <!-- Dinâmico -->
                             </tr>
                         </thead>
-                        <tbody id="anonTableBody" class="divide-y divide-white/10 bg-transparent text-gray-300">
+                        <tbody id="anonTableBody" class="divide-y divide-black/5 dark:divide-white/10 bg-transparent text-black dark:text-gray-300">
                             <!-- Dinâmico -->
                         </tbody>
                     </table>
@@ -311,6 +396,65 @@
 
     </main>
 
+    <!-- Footer com Referências Bibliográficas e Validação Científica -->
+    <footer class="bg-white dark:bg-[#1C1C1E] border-t border-black/5 dark:border-white/10 mt-16 py-8 px-4 text-xs text-apple-gray">
+        <div class="max-w-7xl mx-auto space-y-4">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-black/5 dark:border-white/5 pb-3">
+                <h4 class="text-sm font-bold text-black dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-apple-blue dark:text-apple-darkBlue"></i> Validação Científica & Literatura de Suporte
+                </h4>
+                <span class="text-[11px] text-apple-gray font-mono">Embasamento Teórico — Proteção de Dados & Privacidade UX</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-[11px] leading-relaxed">
+                <div class="apple-card-inset p-3 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/20 transition-colors">
+                    <div>
+                        <strong class="text-apple-blue dark:text-apple-darkBlue block mb-1">Lei Geral de Proteção de Dados</strong>
+                        <p class="text-apple-gray">Brasil. (2018). <em>Lei nº 13.709/2018 (LGPD)</em>. Presidência da República.</p>
+                    </div>
+                    <a href="http://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm" target="_blank" class="text-apple-blue dark:text-apple-darkBlue font-semibold mt-3 inline-flex items-center gap-1">
+                        Ver Legislação <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                    </a>
+                </div>
+
+                <div class="apple-card-inset p-3 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/20 transition-colors">
+                    <div>
+                        <strong class="text-apple-blue dark:text-apple-darkBlue block mb-1">Ética e Privacidade em UX</strong>
+                        <p class="text-apple-gray">Nielsen Norman Group. <em>"Ethics in User Research & Data Anonymization"</em>. NN/g.</p>
+                    </div>
+                    <a href="https://www.nngroup.com/" target="_blank" class="text-apple-blue dark:text-apple-darkBlue font-semibold mt-3 inline-flex items-center gap-1">
+                        Ler no NN/g <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                    </a>
+                </div>
+
+                <div class="apple-card-inset p-3 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/20 transition-colors">
+                    <div>
+                        <strong class="text-apple-blue dark:text-apple-darkBlue block mb-1">Guias da ANPD</strong>
+                        <p class="text-apple-gray">Autoridade Nacional de Proteção de Dados. <em>"Guia Orientativo de Anonymization"</em>.</p>
+                    </div>
+                    <a href="https://www.gov.br/anpd/pt-br" target="_blank" class="text-apple-blue dark:text-apple-darkBlue font-semibold mt-3 inline-flex items-center gap-1">
+                        Acessar Portal <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                    </a>
+                </div>
+
+                <div class="apple-card-inset p-3 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/20 transition-colors">
+                    <div>
+                        <strong class="text-apple-blue dark:text-apple-darkBlue block mb-1">ISO/IEC 27701</strong>
+                        <p class="text-apple-gray">ISO. <em>"Security techniques — Extension to ISO/IEC 27001 for privacy information management"</em>.</p>
+                    </div>
+                    <a href="https://www.iso.org/standard/71670.html" target="_blank" class="text-apple-blue dark:text-apple-darkBlue font-semibold mt-3 inline-flex items-center gap-1">
+                        Ver Norma ISO <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="text-center text-[10px] text-apple-gray pt-2">
+                Suíte de Privacidade UX — Desenvolvida para conformidade automatizada com os preceitos de privacidade e consentimento informado da LGPD.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Lógica JavaScript da Aplicação -->
     <script>
         // --- GERENCIAMENTO DE INTERFACE (ABAS) ---
         function alternarAba(aba) {
@@ -322,14 +466,29 @@
             if (aba === 'tcle') {
                 tcleSec.classList.remove('hidden');
                 anonSec.classList.add('hidden');
-                btnTcle.className = "px-4 py-2 text-xs font-bold rounded-lg transition-all tab-btn-active";
-                btnAnon.className = "px-4 py-2 text-xs font-bold rounded-lg transition-all tab-btn-inactive ml-1";
+                btnTcle.classList.add('active');
+                btnAnon.classList.remove('active');
             } else {
                 tcleSec.classList.add('hidden');
                 anonSec.classList.remove('hidden');
-                btnTcle.className = "px-4 py-2 text-xs font-bold rounded-lg transition-all tab-btn-inactive";
-                btnAnon.className = "px-4 py-2 text-xs font-bold rounded-lg transition-all tab-btn-active ml-1";
+                btnTcle.classList.remove('active');
+                btnAnon.classList.add('active');
                 setTimeout(redimensionarCanvas, 100);
+            }
+        }
+
+        // --- ALTERNADOR DE TEMA DARK/LIGHT ---
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                html.classList.add('light');
+                icon.className = 'fa-solid fa-moon text-sm text-indigo-500';
+            } else {
+                html.classList.remove('light');
+                html.classList.add('dark');
+                icon.className = 'fa-solid fa-sun text-sm text-apple-orange';
             }
         }
 
@@ -539,15 +698,15 @@
             body.innerHTML = '';
 
             baseTabelaAnonimizada[0].forEach(h => {
-                head.innerHTML += `<th class="px-4 py-3 font-bold border-b border-white/10">${h}</th>`;
+                head.innerHTML += `<th class="px-4 py-3 font-bold border-b border-black/5 dark:border-white/10">${h}</th>`;
             });
 
             for (let r = 1; r < baseTabelaAnonimizada.length; r++) {
-                let rowHTML = `<tr class="hover:bg-white/5 transition-colors">`;
+                let rowHTML = `<tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors">`;
                 baseTabelaAnonimizada[r].forEach((cell, idx) => {
                     let isMasked = cell.includes("U" + String(r).padStart(2, '0')) || cell.includes("Participante");
-                    let textClass = isMasked ? "text-[#30d158] font-semibold" : "text-gray-400";
-                    rowHTML += `<td class="px-4 py-2.5 border-b border-white/10 ${textClass}">${cell}</td>`;
+                    let textClass = isMasked ? "text-apple-green dark:text-apple-darkGreen font-semibold" : "text-apple-gray";
+                    rowHTML += `<td class="px-4 py-2.5 border-b border-black/5 dark:border-white/10 ${textClass}">${cell}</td>`;
                 });
                 rowHTML += `</tr>`;
                 body.innerHTML += rowHTML;
