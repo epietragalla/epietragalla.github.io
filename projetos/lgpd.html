@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Suíte de Privacidade UX - TCLE & Anonimizador LGPD</title>
 
+    <!-- Lucide Icons para renderização dos ícones do Sol e Lua -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
     <!-- Tailwind CSS CDN com Extensão de Tokens do Apple Design System -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -251,8 +254,8 @@
                 </div>
 
                 <!-- Toggle Dark/Light Mode Switcher -->
-                <button id="themeToggleBtn" onclick="toggleTheme()" class="w-10 h-10 rounded-full bg-apple-gray6 dark:bg-apple-darkCard2 flex items-center justify-center text-apple-gray hover:text-black dark:hover:text-white transition-all">
-                    <i id="themeIcon" class="fa-solid fa-sun text-sm text-apple-orange"></i>
+                <button type="button" onclick="toggleTheme()" id="btnToggleTheme" title="Alternar entre Modo Escuro e Modo Claro" class="w-10 h-10 rounded-full bg-apple-gray6 dark:bg-apple-darkCard2 flex items-center justify-center text-apple-gray hover:text-black dark:hover:text-white transition-all">
+                    <i data-lucide="moon" id="themeIcon" class="w-4 h-4 text-apple-orange"></i>
                 </button>
             </div>
         </div>
@@ -477,20 +480,58 @@
             }
         }
 
-        // --- ALTERNADOR DE TEMA DARK/LIGHT ---
+        // --- ALTERNADOR DE TEMA DARK/LIGHT APPLE HIG ---
         function toggleTheme() {
             const html = document.documentElement;
             const icon = document.getElementById('themeIcon');
+
             if (html.classList.contains('dark')) {
+                // Alterna para Modo Claro (Light)
                 html.classList.remove('dark');
                 html.classList.add('light');
-                icon.className = 'fa-solid fa-moon text-sm text-indigo-500';
+                html.setAttribute('data-theme', 'light');
+                if (icon) icon.setAttribute('data-lucide', 'moon');
+                localStorage.setItem('apple_theme_pref', 'light');
             } else {
+                // Alterna para Modo Escuro (Dark)
                 html.classList.remove('light');
                 html.classList.add('dark');
-                icon.className = 'fa-solid fa-sun text-sm text-apple-orange';
+                html.setAttribute('data-theme', 'dark');
+                if (icon) icon.setAttribute('data-lucide', 'sun');
+                localStorage.setItem('apple_theme_pref', 'dark');
+            }
+
+            // Atualiza os ícones do Lucide dinamicamente se a biblioteca estiver presente
+            if (window.lucide) {
+                lucide.createIcons();
             }
         }
+
+        // Carregar Preferência de Tema Salva no Carregamento
+        function carregarTemaSalvo() {
+            const savedTheme = localStorage.getItem('apple_theme_pref') || 'light';
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+
+            html.setAttribute('data-theme', savedTheme);
+            if (savedTheme === 'dark') {
+                html.classList.add('dark');
+                html.classList.remove('light');
+                if (icon) icon.setAttribute('data-lucide', 'sun');
+            } else {
+                html.classList.remove('dark');
+                html.classList.add('light');
+                if (icon) icon.setAttribute('data-lucide', 'moon');
+            }
+        }
+
+        // Inicializa o tema e ícones ao carregar o DOM
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarTemaSalvo();
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        });
 
         // --- MÓDULO CANVAS DE ASSINATURA ---
         const canvas = document.getElementById('signatureCanvas');

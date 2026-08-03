@@ -1,386 +1,435 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="dark">
-
+<html lang="pt-BR" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora Universal UX - Módulo UMUX & UMUX-LITE</title>
-    <!-- Tailwind CSS -->
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Tailwind CSS CDN com Extensão de Tokens do Apple Design System -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome para Ícones -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        apple: {
+                            blue: '#007AFF',
+                            darkBlue: '#0A84FF',
+                            gray: '#8E8E93',
+                            gray2: '#AEAEB2',
+                            gray3: '#C7C7CC',
+                            gray4: '#D1D1D6',
+                            gray5: '#E5E5EA',
+                            gray6: '#F2F2F7',
+                            darkBg: '#000000',
+                            darkCard: '#1C1C1E',
+                            darkCard2: '#2C2C2E',
+                            darkCard3: '#3A3A3C',
+                            green: '#34C759',
+                            darkGreen: '#30D158',
+                            orange: '#FF9500',
+                            darkOrange: '#FF9F0A',
+                            red: '#FF3B30',
+                            darkRed: '#FF453A',
+                            purple: '#AF52DE',
+                            darkPurple: '#BF5AF2'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', '"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- FontAwesome para Ícones Estilo SF Symbols -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Chart.js para Gráficos -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <!-- Estilos CSS Centralizados (Apple HIG Pattern System) -->
     <style>
-        /* ==========================================================================
-           VARIÁVEIS DE COR E TEMA NATIVO APPLE (DARK MODE)
-           ========================================================================== */
-        :root {
-            --apple-bg: #000000;
-            --apple-card-bg: rgba(28, 28, 30, 0.75);
-            --apple-inset-bg: rgba(44, 44, 46, 0.6);
-            --apple-header-bg: rgba(22, 22, 24, 0.8);
-            --apple-border: rgba(255, 255, 255, 0.12);
-            --apple-border-light: rgba(255, 255, 255, 0.08);
-            --apple-blue: #0a84ff;
-            --apple-blue-hover: #409cff;
-            --apple-green: #30d158;
-            --apple-red: #ff453a;
-            --apple-orange: #ff9f0a;
-            --apple-purple: #bf5af2;
-            --apple-text-main: #f5f5f7;
-            --apple-text-muted: #8e8e93;
+        /* Transições suave de tema Apple HIG */
+        *, *::before, *::after {
+            transition: background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+                        border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+                        color 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+                        box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
-            background-color: var(--apple-bg);
-            color: var(--apple-text-main);
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        /* ==========================================================================
-           CLASSES REUTILIZÁVEIS APPLE GLASSMORPHISM & SURFACES
-           ========================================================================== */
-        .apple-dark-card {
-            background: var(--apple-card-bg);
-            backdrop-filter: blur(30px) saturate(190%);
-            -webkit-backdrop-filter: blur(30px) saturate(190%);
-            border: 1px solid var(--apple-border);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .apple-dark-card-inset {
-            background: var(--apple-inset-bg);
-            border: 1px solid var(--apple-border-light);
-            border-radius: 14px;
-        }
-
-        .apple-dark-btn {
-            background: var(--apple-blue);
-            color: #ffffff;
-            border-radius: 980px;
-            font-weight: 600;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 0 16px rgba(10, 132, 255, 0.3);
-        }
-
-        .apple-dark-btn:hover {
-            background: var(--apple-blue-hover);
-            transform: scale(1.02);
-            box-shadow: 0 0 20px rgba(10, 132, 255, 0.45);
-        }
-
-        .apple-dark-btn:active {
-            transform: scale(0.97);
-        }
-
-        .apple-dark-dropzone {
-            border: 2px dashed rgba(255, 255, 255, 0.2);
-            border-radius: 18px;
-            background: rgba(255, 255, 255, 0.03);
-            transition: all 0.2s ease;
-        }
-
-        .apple-dark-dropzone:hover {
-            border-color: var(--apple-blue);
-            background: rgba(10, 132, 255, 0.08);
-        }
-
-        .header-bar {
-            background: var(--apple-header-bg);
+        /* Glassmorphism / Vibrancy Nativam macOS/iOS */
+        .apple-glass {
+            background: rgba(255, 255, 255, 0.78);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--apple-border-light);
+        }
+        .dark .apple-glass {
+            background: rgba(28, 28, 30, 0.78);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
 
-        .status-pill {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--apple-border-light);
-            border-radius: 9999px;
+        /* Cartões Estilo Apple HIG Container */
+        .apple-card {
+            background-color: #FFFFFF;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+        .dark .apple-card {
+            background-color: #1C1C1E;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
         }
 
+        .apple-card-inset {
+            background-color: #F2F2F7;
+            border-radius: 14px;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+        .dark .apple-card-inset {
+            background-color: #2C2C2E;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        /* Botões Estilo Push Button / Pill */
+        .apple-btn-primary {
+            background-color: #007AFF;
+            color: #FFFFFF !important;
+            font-weight: 600;
+            border-radius: 980px;
+            padding: 8px 18px;
+            box-shadow: 0 2px 8px rgba(0, 122, 255, 0.25);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .apple-btn-primary:hover {
+            background-color: #0062CC;
+            transform: scale(1.02);
+        }
+        .dark .apple-btn-primary {
+            background-color: #0A84FF;
+            box-shadow: 0 2px 10px rgba(10, 132, 255, 0.3);
+        }
+        .dark .apple-btn-primary:hover {
+            background-color: #409CFF;
+        }
+
+        .apple-btn-secondary {
+            background-color: #F2F2F7;
+            color: #1C1C1E;
+            font-weight: 500;
+            border-radius: 980px;
+            padding: 8px 16px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .apple-btn-secondary:hover {
+            background-color: #E5E5EA;
+        }
+        .dark .apple-btn-secondary {
+            background-color: #2C2C2E;
+            color: #F2F2F7;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .dark .apple-btn-secondary:hover {
+            background-color: #3A3A3C;
+        }
+
+        /* Dropzone Estilo Apple */
+        .apple-dropzone {
+            border: 2px dashed rgba(0, 0, 0, 0.15);
+            border-radius: 18px;
+            background-color: rgba(0, 0, 0, 0.02);
+            transition: all 0.2s ease;
+        }
+        .apple-dropzone:hover {
+            border-color: #007AFF;
+            background-color: rgba(0, 122, 255, 0.04);
+        }
+        .dark .apple-dropzone {
+            border-color: rgba(255, 255, 255, 0.18);
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+        .dark .apple-dropzone:hover {
+            border-color: #0A84FF;
+            background-color: rgba(10, 132, 255, 0.08);
+        }
+
+        /* Mode Selector (Segmented Control) */
         .mode-container {
-            background-color: rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--apple-border-light);
-            border-radius: 12px;
-            padding: 4px;
+            background-color: #E5E5EA;
+            border-radius: 14px;
+            padding: 3px;
+        }
+        .dark .mode-container {
+            background-color: #2C2C2E;
         }
 
         .mode-btn-active {
-            background-color: var(--apple-blue);
-            color: #ffffff;
-            box-shadow: 0 2px 8px rgba(10, 132, 255, 0.3);
+            background-color: #FFFFFF;
+            color: #000000 !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            font-weight: 700;
+        }
+        .dark .mode-btn-active {
+            background-color: #1C1C1E;
+            color: #FFFFFF !important;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
         }
 
         .mode-btn-inactive {
-            color: var(--apple-text-muted);
-        }
-
-        .mode-btn-inactive:hover {
-            color: var(--apple-text-main);
+            color: #8E8E93;
+            font-weight: 500;
         }
 
         .code-tag {
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.05);
             padding: 0.125rem 0.25rem;
             border-radius: 0.25rem;
-            color: var(--apple-blue);
+            color: #007AFF;
+        }
+        .dark .code-tag {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #0A84FF;
         }
 
-        /* ==========================================================================
-           POPOVER TOOLTIP ESTILO macOS/iOS
-           ========================================================================== */
+        /* Tooltip Popover Customizado Apple */
         .hint-tooltip {
             position: relative;
             display: inline-block;
-            cursor: help;
         }
-
         .hint-tooltip .tooltip-text {
             visibility: hidden;
             width: 320px;
-            background-color: rgba(30, 30, 32, 0.95);
-            backdrop-filter: blur(30px) saturate(200%);
-            -webkit-backdrop-filter: blur(30px) saturate(200%);
-            color: var(--apple-text-main);
+            background-color: rgba(255, 255, 255, 0.95);
+            color: #1D1D1F;
             text-align: left;
-            border-radius: 16px;
-            padding: 14px 16px;
+            border-radius: 14px;
+            padding: 12px 14px;
             position: absolute;
             z-index: 50;
             bottom: 125%;
             left: 50%;
             transform: translateX(-50%);
             opacity: 0;
-            transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: opacity 0.2s, transform 0.2s;
             font-size: 0.75rem;
-            line-height: 1.25rem;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 2px 6px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            line-height: 1.15rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+            border: 1px solid rgba(0, 0, 0, 0.08);
             pointer-events: none;
         }
-
+        .dark .hint-tooltip .tooltip-text {
+            background-color: rgba(30, 30, 32, 0.95);
+            color: #F5F5F7;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
+        }
         .hint-tooltip:hover .tooltip-text {
             visibility: visible;
             opacity: 1;
+            transform: translateX(-50%) translateY(-2px);
         }
     </style>
 </head>
+<body class="bg-[#F5F5F7] dark:bg-black text-[#1D1D1F] dark:text-[#F5F5F7] min-h-screen font-sans antialiased selection:bg-apple-blue selection:text-white">
 
-<body class="min-h-screen">
-
-    <!-- Header -->
-    <header class="header-bar py-6 px-4">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            <div>
-                <h1 class="text-3xl font-extrabold text-[#0a84ff] flex items-center gap-3">
-                    <i class="fa-solid fa-calculator text-[#0a84ff]"></i> Dashboard Analítico UMUX & UMUX-LITE
-                </h1>
-                <p class="text-gray-400 text-sm mt-1">
-                    Processador de métricas ágeis de usabilidade percebida com conversão para a escala equivalente do
-                    SUS.
-                </p>
+    <!-- Header Fixo Estilo iOS / macOS Navigation Bar -->
+    <header class="sticky top-0 z-40 apple-glass border-b border-black/5 dark:border-white/10 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-apple-blue dark:bg-apple-darkBlue flex items-center justify-center text-white shadow-md shadow-apple-blue/20">
+                    <i class="fa-solid fa-calculator text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-black dark:text-white flex items-center gap-2">
+                        Dashboard Analítico UMUX & UMUX-LITE <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-apple-blue/10 text-apple-blue dark:bg-apple-darkBlue/20 dark:text-apple-darkBlue">ISO 9241-11</span>
+                    </h1>
+                    <p class="text-xs text-apple-gray">Processador de métricas ágeis de usabilidade percebida com conversão para a escala equivalente do SUS.</p>
+                </div>
             </div>
-            <div class="status-pill flex items-center gap-2 text-xs p-2.5">
-                <span class="font-semibold text-gray-300">Normativa:</span> ISO 9241-11 | Finstad (2010) | Lewis et al.
-                (2013)
+
+            <!-- Controles do Header & Dark Mode Toggle -->
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2 text-xs bg-apple-gray6 dark:bg-apple-darkCard2 px-3 py-1.5 rounded-full border border-black/5 dark:border-white/5">
+                    <span class="font-semibold text-black dark:text-white">Normativa:</span> <span class="text-apple-gray">Finstad (2010) | Lewis et al. (2013)</span>
+                </div>
+                
+                <!-- Toggle Dark/Light Mode Switcher -->
+                <button type="button" id="themeToggleBtn" onclick="toggleTheme()" title="Alternar entre Modo Escuro e Modo Claro" class="w-10 h-10 rounded-full bg-apple-gray6 dark:bg-apple-darkCard2 flex items-center justify-center text-apple-gray hover:text-black dark:hover:text-white transition-all border border-black/5 dark:border-white/10">
+                    <i data-lucide="moon" id="themeIcon" class="w-4 h-4 text-apple-orange dark:text-apple-darkOrange"></i>
+                </button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+    <!-- Conteúdo Principal -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8">
 
         <!-- Upload e Configuração do Tipo de Métrica -->
         <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Card de Upload -->
-            <div
-                class="lg:col-span-2 apple-dark-card p-6 flex flex-col justify-between">
+            <div class="lg:col-span-2 apple-card p-6 flex flex-col justify-between">
                 <div>
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
-                        <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-file-csv text-[#0a84ff]"></i> Importar Planilha CSV (UMUX)
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 border-b border-black/5 dark:border-white/10 pb-3">
+                        <h2 class="text-lg font-bold text-black dark:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-file-csv text-apple-blue dark:text-apple-darkBlue"></i> Importar Planilha CSV (UMUX)
                         </h2>
 
-                        <!-- Seletor do Tipo de Métrica -->
+                        <!-- Seletor do Tipo de Métrica (Segmented Control) -->
                         <div class="mode-container flex">
                             <button id="modeUmux" onclick="setMetricaMode('UMUX')"
-                                class="px-3 py-1.5 text-xs font-bold rounded-lg mode-btn-active">UMUX (4
-                                Itens)</button>
+                                class="px-3 py-1.5 text-xs rounded-lg mode-btn-active">UMUX (4 Itens)</button>
                             <button id="modeUmuxLite" onclick="setMetricaMode('UMUX-LITE')"
-                                class="px-3 py-1.5 text-xs font-bold rounded-lg mode-btn-inactive ml-1">UMUX-LITE
-                                (2 Itens)</button>
+                                class="px-3 py-1.5 text-xs rounded-lg mode-btn-inactive ml-1">UMUX-LITE (2 Itens)</button>
                         </div>
                     </div>
 
-                    <div class="bg-blue-500/10 border border-blue-500/20 rounded-xl p-3 mb-4">
-                        <p class="text-blue-300 text-xs leading-relaxed flex items-start gap-2">
-                            <span class="hint-tooltip inline-block text-[#0a84ff] hover:text-blue-300 transition-colors">
+                    <div class="apple-card-inset p-3 mb-4">
+                        <p class="text-apple-blue dark:text-apple-darkBlue text-xs leading-relaxed flex items-start gap-2">
+                            <span class="hint-tooltip inline-block text-apple-blue dark:text-apple-darkBlue hover:opacity-80 transition-opacity">
                                 <i class="fa-solid fa-circle-info text-base mt-0.5 cursor-help"></i>
-                                <span
-                                    class="tooltip-text !w-[380px] !bottom-auto !top-full mt-2 p-4 apple-dark-card space-y-2">
-                                    <strong class="text-[#0a84ff] text-sm block border-b border-white/10 pb-1">📋
-                                        Mapeamento de Colunas</strong>
-                                    <span class="block text-gray-300"><strong>Modo UMUX:</strong> Procura colunas com
-                                        os radicais: <code class="code-tag">requirements</code> (Q1), <code
-                                            class="code-tag">frustrat</code> (Q2), <code
-                                            class="code-tag">easy</code> (Q3) e <code
-                                            class="code-tag">correcting</code> (Q4).</span>
-                                    <span class="block text-gray-300"><strong>Modo UMUX-LITE:</strong> Procura colunas
-                                        com os radicais: <code class="code-tag">requirements</code> (Q1) e <code
-                                            class="code-tag">easy</code> (Q2).</span>
+                                <span class="tooltip-text !w-[380px] !bottom-auto !top-full mt-2 p-4 apple-card space-y-2">
+                                    <strong class="text-apple-blue dark:text-apple-darkBlue text-sm block border-b border-black/5 dark:border-white/10 pb-1">📋 Mapeamento de Colunas</strong>
+                                    <span class="block text-black dark:text-gray-300"><strong>Modo UMUX:</strong> Procura colunas com os radicais: <code class="code-tag">requirements</code> (Q1), <code class="code-tag">frustrat</code> (Q2), <code class="code-tag">easy</code> (Q3) e <code class="code-tag">correcting</code> (Q4).</span>
+                                    <span class="block text-black dark:text-gray-300"><strong>Modo UMUX-LITE:</strong> Procura colunas com os radicais: <code class="code-tag">requirements</code> (Q1) e <code class="code-tag">easy</code> (Q2).</span>
                                 </span>
                             </span>
                             <span>
-                                <strong>Motor de Busca Semântica Avançado:</strong> Aceita exportações numéricas (Escala
-                                de 1 a 7) ou textuais brutas do Forms. Ele ignora as colunas de metadados do sistema e
-                                localiza as afirmações automaticamente.
+                                <strong>Motor de Busca Semântica Avançado:</strong> Aceita exportações numéricas (Escala de 1 a 7) ou textuais brutas do Forms. Ele ignora as colunas de metadados do sistema e localiza as afirmações automaticamente.
                             </span>
                         </p>
                     </div>
                 </div>
 
-                <div class="apple-dark-dropzone p-8 text-center cursor-pointer"
-                    id="dropZone">
+                <div class="apple-dropzone p-8 text-center cursor-pointer" id="dropZone">
                     <input type="file" id="fileInput" accept=".csv" class="hidden">
                     <label for="fileInput" class="cursor-pointer space-y-2 block" id="uploadLabel">
-                        <i class="fa-solid fa-cloud-arrow-up text-4xl text-gray-400" id="uploadIcon"></i>
-                        <p class="text-sm font-medium text-gray-300" id="uploadText">Arraste seu arquivo CSV ou clique
-                            para buscar</p>
-                        <p class="text-xs text-gray-500">Apenas arquivos no formato (.csv)</p>
+                        <i class="fa-solid fa-cloud-arrow-up text-4xl text-apple-gray" id="uploadIcon"></i>
+                        <p class="text-sm font-medium text-black dark:text-gray-300" id="uploadText">Arraste seu arquivo CSV ou clique para buscar</p>
+                        <p class="text-xs text-apple-gray">Apenas arquivos no formato (.csv)</p>
                     </label>
                 </div>
             </div>
 
             <!-- Box Metodológico -->
-            <div class="apple-dark-card p-6 space-y-4">
-                <h3 class="text-base font-bold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-circle-question text-[#bf5af2]"></i> Fórmulas de Cálculo
+            <div class="apple-card p-6 space-y-4">
+                <h3 class="text-base font-bold text-black dark:text-white flex items-center gap-2 border-b border-black/5 dark:border-white/10 pb-2">
+                    <i class="fa-solid fa-circle-question text-apple-purple dark:text-apple-darkPurple"></i> Fórmulas de Cálculo
                 </h3>
-                <div id="formulaContainer" class="space-y-3 text-xs text-gray-300 leading-relaxed">
+                <div id="formulaContainer" class="space-y-3 text-xs text-apple-gray leading-relaxed">
                     <!-- Gerado dinamicamente com base no modo selecionado -->
                 </div>
             </div>
         </section>
 
-        <!-- Resultados Dashboard -->
+        <!-- Resultados Dashboard (Ativado via JS) -->
         <section id="resultsSection" class="space-y-8 hidden">
 
             <!-- Cards de KPI -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 <!-- Média Convertida -->
-                <div class="apple-dark-card p-5 text-center">
-                    <div class="text-gray-400 text-xs font-semibold flex items-center justify-center gap-1.5">
+                <div class="apple-card p-5 text-center">
+                    <div class="text-apple-gray text-xs font-semibold flex items-center justify-center gap-1.5">
                         Média Equivalente SUS
                         <div class="hint-tooltip">
-                            <i class="fa-solid fa-circle-question text-[#0a84ff]"></i>
-                            <span class="tooltip-text">Nota normalizada na escala clássica de 0 a 100 pontos, permitindo
-                                a comparação direta com benchmarks históricos do SUS.</span>
+                            <i class="fa-solid fa-circle-question text-apple-blue dark:text-apple-darkBlue"></i>
+                            <span class="tooltip-text">Nota normalizada na escala clássica de 0 a 100 pontos, permitindo a comparação direta com benchmarks históricos do SUS.</span>
                         </div>
                     </div>
-                    <div id="statMean" class="text-4xl font-extrabold text-[#0a84ff] mt-2">--</div>
+                    <div id="statMean" class="text-4xl font-extrabold text-apple-blue dark:text-apple-darkBlue mt-2">--</div>
                     <span id="statGrade" class="text-xs px-2.5 py-0.5 font-bold rounded mt-2 inline-block">--</span>
                 </div>
 
                 <!-- Intervalo de Confiança -->
-                <div class="apple-dark-card p-5 text-center">
-                    <div class="text-gray-400 text-xs font-semibold flex items-center justify-center gap-1.5">
+                <div class="apple-card p-5 text-center">
+                    <div class="text-apple-gray text-xs font-semibold flex items-center justify-center gap-1.5">
                         I.C. 95%
                         <div class="hint-tooltip">
-                            <i class="fa-solid fa-circle-question text-[#0a84ff]"></i>
-                            <span class="tooltip-text">Intervalo de Confiança t-Student (95%) calculated sobre os scores
-                                projetados.</span>
+                            <i class="fa-solid fa-circle-question text-apple-blue dark:text-apple-darkBlue"></i>
+                            <span class="tooltip-text">Intervalo de Confiança t-Student (95%) calculado sobre os scores projetados.</span>
                         </div>
                     </div>
-                    <div id="statCI" class="text-2xl font-bold text-white mt-4">--</div>
-                    <p class="text-[10px] text-gray-500 mt-1">Margem de Erro</p>
+                    <div id="statCI" class="text-2xl font-bold text-black dark:text-white mt-4">--</div>
+                    <p class="text-[10px] text-apple-gray mt-1">Margem de Erro</p>
                 </div>
 
                 <!-- Percentil Histórico -->
-                <div class="apple-dark-card p-5 text-center">
-                    <div class="text-gray-400 text-xs font-semibold flex items-center justify-center gap-1.5">
+                <div class="apple-card p-5 text-center">
+                    <div class="text-apple-gray text-xs font-semibold flex items-center justify-center gap-1.5">
                         Percentil Rank
                         <div class="hint-tooltip">
-                            <i class="fa-solid fa-circle-question text-[#0a84ff]"></i>
-                            <span class="tooltip-text">Porcentagem de soluções globais que o seu produto supera segundo
-                                os dados psicométricos de Sauro & Lewis.</span>
+                            <i class="fa-solid fa-circle-question text-apple-blue dark:text-apple-darkBlue"></i>
+                            <span class="tooltip-text">Porcentagem de soluções globais que o seu produto supera segundo os dados psicométricos de Sauro & Lewis.</span>
                         </div>
                     </div>
-                    <div id="statPercentile" class="text-2xl font-bold text-white mt-4">--</div>
-                    <p id="statAdjective" class="text-xs text-gray-400 mt-1">--</p>
+                    <div id="statPercentile" class="text-2xl font-bold text-black dark:text-white mt-4">--</div>
+                    <p id="statAdjective" class="text-xs text-apple-gray mt-1">--</p>
                 </div>
 
                 <!-- Amostra -->
-                <div class="apple-dark-card p-5 text-center">
-                    <div class="text-gray-400 text-xs font-semibold">Participantes (N)</div>
-                    <div id="statN" class="text-4xl font-extrabold text-white mt-2">--</div>
-                    <p class="text-[10px] text-gray-500 mt-2">Respostas Válidas</p>
+                <div class="apple-card p-5 text-center">
+                    <div class="text-apple-gray text-xs font-semibold">Participantes (N)</div>
+                    <div id="statN" class="text-4xl font-extrabold text-black dark:text-white mt-2">--</div>
+                    <p class="text-[10px] text-apple-gray mt-2">Respostas Válidas</p>
                 </div>
 
                 <!-- Desvio Padrão -->
-                <div class="apple-dark-card p-5 text-center">
-                    <div class="text-gray-400 text-xs font-semibold">Desvio Padrão (s)</div>
-                    <div id="statStdDev" class="text-4xl font-extrabold text-white mt-2">--</div>
-                    <div class="text-[10px] text-gray-500 mt-2">Dispersão Amostral</div>
+                <div class="apple-card p-5 text-center">
+                    <div class="text-apple-gray text-xs font-semibold">Desvio Padrão (s)</div>
+                    <div id="statStdDev" class="text-4xl font-extrabold text-black dark:text-white mt-2">--</div>
+                    <div class="text-[10px] text-apple-gray mt-2">Dispersão Amostral</div>
                 </div>
             </div>
 
             <!-- Gráfico da Curva e Resumo -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div class="lg:col-span-2 apple-dark-card p-6">
-                    <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-chart-area text-[#bf5af2]"></i> Distribuição Crescente de Scores
-                        Projetados
+                <div class="lg:col-span-2 apple-card p-6">
+                    <h3 class="text-base font-bold text-black dark:text-white mb-4 flex items-center gap-2 border-b border-black/5 dark:border-white/10 pb-2">
+                        <i class="fa-solid fa-chart-area text-apple-purple dark:text-apple-darkPurple"></i> Distribuição Crescente de Scores Projetados
                     </h3>
                     <div class="relative h-80 w-full">
                         <canvas id="metricChart"></canvas>
                     </div>
                 </div>
 
-                <div class="apple-dark-card p-6 space-y-4">
-                    <h3 class="text-base font-bold text-white border-b border-white/10 pb-2">Interpretação Baseada em
-                        Evidências</h3>
+                <div class="apple-card p-6 space-y-4">
+                    <h3 class="text-base font-bold text-black dark:text-white border-b border-black/5 dark:border-white/10 pb-2">Interpretação Baseada em Evidências</h3>
                     <div class="space-y-3">
-                        <div
-                            class="flex justify-between items-center apple-dark-card-inset p-3">
-                            <span class="text-xs text-gray-400 font-medium">Aceitabilidade:</span>
-                            <span id="interpAcceptability" class="text-xs font-bold px-2 py-1 rounded">--</span>
+                        <div class="flex justify-between items-center apple-card-inset p-3">
+                            <span class="text-xs text-apple-gray font-medium">Aceitabilidade:</span>
+                            <span id="interpAcceptability" class="text-xs font-bold px-2.5 py-1 rounded-full">--</span>
                         </div>
-                        <div
-                            class="flex justify-between items-center apple-dark-card-inset p-3">
-                            <span class="text-xs text-gray-400 font-medium">Classificação NPS:</span>
-                            <span id="interpNps" class="text-xs font-bold px-2 py-1 rounded">--</span>
+                        <div class="flex justify-between items-center apple-card-inset p-3">
+                            <span class="text-xs text-apple-gray font-medium">Classificação NPS:</span>
+                            <span id="interpNps" class="text-xs font-bold px-2.5 py-1 rounded-full">--</span>
                         </div>
                     </div>
-                    <div
-                        class="apple-dark-card-inset p-4 text-xs text-gray-400 space-y-2">
-                        <span class="font-bold text-gray-200">Conclusão Metodológica:</span>
+                    <div class="apple-card-inset p-4 text-xs text-apple-gray space-y-2">
+                        <span class="font-bold text-black dark:text-gray-200">Conclusão Metodológica:</span>
                         <p id="interpSummary" class="leading-relaxed"></p>
                     </div>
                 </div>
             </div>
 
             <!-- Tabela Detalhada por Usuário -->
-            <div class="apple-dark-card p-6">
-                <div
-                    class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 pb-4 border-b border-white/10">
+            <div class="apple-card p-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 pb-4 border-b border-black/5 dark:border-white/10">
                     <div>
-                        <h3 class="text-base font-bold text-white">Notas Projetadas por Participante (Escala 0-100)</h3>
-                        <p class="text-xs text-gray-400">Dados individuais normalizados usando criptografia em máscara
-                            sequencial de IDs.</p>
+                        <h3 class="text-base font-bold text-black dark:text-white">Notas Projetadas por Participante (Escala 0-100)</h3>
+                        <p class="text-xs text-apple-gray">Dados individuais normalizados usando criptografia em máscara sequencial de IDs.</p>
                     </div>
                 </div>
 
-                <div class="overflow-x-auto rounded-xl border border-white/10">
-                    <table class="min-w-full divide-y divide-white/10 text-sm text-left">
-                        <thead class="bg-white/5 text-gray-400 text-xs">
+                <div class="overflow-x-auto rounded-xl border border-black/5 dark:border-white/10">
+                    <table class="min-w-full divide-y divide-black/5 dark:divide-white/10 text-sm text-left">
+                        <thead class="bg-black/5 dark:bg-white/5 text-apple-gray text-xs">
                             <tr id="tableHeader"></tr>
                         </thead>
-                        <tbody id="tableBody" class="divide-y divide-white/10 bg-transparent text-gray-300"></tbody>
+                        <tbody id="tableBody" class="divide-y divide-black/5 dark:divide-white/10 bg-transparent text-black dark:text-gray-300"></tbody>
                     </table>
                 </div>
             </div>
@@ -389,98 +438,82 @@
     </main>
 
     <!-- Footer com Referências Bibliográficas e Validação Científica -->
-    <footer class="header-bar mt-16 py-8 px-4 text-xs text-gray-400">
+    <footer class="bg-white dark:bg-[#1C1C1E] border-t border-black/5 dark:border-white/10 mt-16 py-8 px-4 text-xs text-apple-gray">
         <div class="max-w-7xl mx-auto space-y-4">
-            <div
-                class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-white/10 pb-3">
-                <h4 class="text-sm font-bold text-gray-200 flex items-center gap-2">
-                    <i class="fa-solid fa-graduation-cap text-[#0a84ff]"></i> Validação Científica & Literatura de
-                    Suporte
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-black/5 dark:border-white/5 pb-3">
+                <h4 class="text-sm font-bold text-black dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-apple-blue dark:text-apple-darkBlue"></i> Validação Científica & Literatura de Suporte
                 </h4>
-                <span class="text-[11px] text-gray-500 font-mono">Embasamento Teórico — UMUX, UMUX-LITE & Regressão
-                    SUS</span>
+                <span class="text-[11px] text-apple-gray font-mono">Embasamento Teórico — UMUX, UMUX-LITE & Regressão SUS</span>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-[11px] leading-relaxed">
                 <!-- Referência 1: Paper Fundacional do UMUX (Finstad 2010) -->
-                <div
-                    class="apple-dark-card-inset p-3 flex flex-col justify-between hover:border-white/20 transition-colors">
+                <div class="apple-card-inset p-3 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/20 transition-colors">
                     <div>
-                        <strong class="text-blue-300 block mb-1">Paper Fundacional do UMUX (2010)</strong>
-                        <p class="text-gray-400">Finstad, K. (2010). <em>"The Usability Metric for User Experience
-                                (UMUX)"</em>. Interacting with Computers, ACM DL.</p>
+                        <strong class="text-apple-blue dark:text-apple-darkBlue block mb-1">Paper Fundacional do UMUX (2010)</strong>
+                        <p class="text-apple-gray">Finstad, K. (2010). <em>"The Usability Metric for User Experience (UMUX)"</em>. Interacting with Computers, ACM DL.</p>
                     </div>
-                    <a href="https://dl.acm.org/doi/10.1016/j.intcom.2010.04.004" target="_blank"
-                        class="text-[#0a84ff] hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
+                    <a href="https://dl.acm.org/doi/10.1016/j.intcom.2010.04.004" target="_blank" class="text-apple-blue dark:text-apple-darkBlue font-semibold mt-3 inline-flex items-center gap-1">
                         Acessar na ACM DL <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                     </a>
                 </div>
 
                 <!-- Referência 2: ACM Digital Library -->
-                <div
-                    class="apple-dark-card-inset p-3 flex flex-col justify-between hover:border-white/20 transition-colors">
+                <div class="apple-card-inset p-3 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/20 transition-colors">
                     <div>
-                        <strong class="text-blue-300 block mb-1">Validação & Avaliação UMUX (ACM)</strong>
-                        <p class="text-gray-400">Estudos em Interação Humano-Computador & Métricas de Usabilidade.
-                            <em>ACM Digital Library</em>.</p>
+                        <strong class="text-apple-blue dark:text-apple-darkBlue block mb-1">Validação & Avaliação UMUX (ACM)</strong>
+                        <p class="text-apple-gray">Estudos em Interação Humano-Computador & Métricas de Usabilidade. <em>ACM Digital Library</em>.</p>
                     </div>
-                    <a href="https://dl.acm.org/doi/10.1145/3635059.3635075" target="_blank"
-                        class="text-[#0a84ff] hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
+                    <a href="https://dl.acm.org/doi/10.1145/3635059.3635075" target="_blank" class="text-apple-blue dark:text-apple-darkBlue font-semibold mt-3 inline-flex items-center gap-1">
                         Acessar na ACM DL <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                     </a>
                 </div>
 
                 <!-- Referência 3: MeasuringU / Paridade de Escalas -->
-                <div
-                    class="apple-dark-card-inset p-3 flex flex-col justify-between hover:border-white/20 transition-colors">
+                <div class="apple-card-inset p-3 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/20 transition-colors">
                     <div>
-                        <strong class="text-blue-300 block mb-1">Paridade UMUX-LITE e SUS (MeasuringU)</strong>
-                        <p class="text-gray-400">Sauro, J. & Lewis, J. R. (2015). <em>"Measuring Usability with the
-                                UMUX-LITE: Regression & Benchmarks"</em>. MeasuringU.</p>
+                        <strong class="text-apple-blue dark:text-apple-darkBlue block mb-1">Paridade UMUX-LITE e SUS (MeasuringU)</strong>
+                        <p class="text-apple-gray">Sauro, J. & Lewis, J. R. (2015). <em>"Measuring Usability with the UMUX-LITE: Regression & Benchmarks"</em>. MeasuringU.</p>
                     </div>
-                    <a href="https://measuringu.com/umux-lite/" target="_blank"
-                        class="text-[#0a84ff] hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
+                    <a href="https://measuringu.com/umux-lite/" target="_blank" class="text-apple-blue dark:text-apple-darkBlue font-semibold mt-3 inline-flex items-center gap-1">
                         Acessar MeasuringU <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                     </a>
                 </div>
 
                 <!-- Referência 4: IIAI Letters / Open Access (UMUX Research) -->
-                <div
-                    class="apple-dark-card-inset p-3 flex flex-col justify-between hover:border-white/20 transition-colors">
+                <div class="apple-card-inset p-3 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/20 transition-colors">
                     <div>
-                        <strong class="text-blue-300 block mb-1">Avaliação UMUX em Aplicações (IIAI)</strong>
-                        <p class="text-gray-400">Hastuti, I. et al. (2024). <em>"Measuring Usability on Mobile
-                                Education Game: the UMUX"</em>. IIAI Letters on Informatics and Interdisciplinary
-                            Research.</p>
+                        <strong class="text-apple-blue dark:text-apple-darkBlue block mb-1">Avaliação UMUX em Aplicações (IIAI)</strong>
+                        <p class="text-apple-gray">Hastuti, I. et al. (2024). <em>"Measuring Usability on Mobile Education Game: the UMUX"</em>. IIAI Letters on Informatics and Interdisciplinary Research.</p>
                     </div>
-                    <a href="https://iaiai.org/letters/index.php/liir/article/view/215" target="_blank"
-                        class="text-[#0a84ff] hover:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
+                    <a href="https://iaiai.org/letters/index.php/liir/article/view/215" target="_blank" class="text-apple-blue dark:text-apple-darkBlue font-semibold mt-3 inline-flex items-center gap-1">
                         Ver no IIAI Letters <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                     </a>
                 </div>
             </div>
 
-            <div class="text-center text-[10px] text-gray-500 pt-2">
-                Módulo Analítico UMUX & UMUX-LITE — Desenvolvido com base no modelo de regressão linear de Lewis et al.
-                para projeção e paridade na escala estandardizada do SUS.
+            <div class="text-center text-[10px] text-apple-gray pt-2">
+                Módulo Analítico UMUX & UMUX-LITE — Desenvolvido com base no modelo de regressão linear de Lewis et al. para projeção e paridade na escala estandardizada do SUS.
             </div>
         </div>
     </footer>
 
+    <!-- Lógica JavaScript da Aplicação -->
     <script>
         const scoringDatabase = [
-            { maxScore: 25.0, grade: 'F', percentile: '0 - 1.9%', adjective: 'Worst Imaginable', acceptability: 'Inaceitável', nps: 'Detrator', colorClass: 'bg-rose-500/20 text-rose-400 border border-rose-500/30' },
-            { maxScore: 51.6, grade: 'F', percentile: '2 - 14%', adjective: 'Poor (Ruim)', acceptability: 'Inaceitável', nps: 'Detrator', colorClass: 'bg-rose-500/20 text-rose-400 border border-rose-500/30' },
-            { maxScore: 62.6, grade: 'D', percentile: '15 - 34%', adjective: 'OK', acceptability: 'Marginalmente Aceitável', nps: 'Detrator', colorClass: 'bg-amber-500/20 text-amber-400 border border-amber-500/30' },
-            { maxScore: 64.9, grade: 'C-', percentile: '35 - 40%', adjective: 'Good (Bom)', acceptability: 'Marginalmente Aceitável', nps: 'Passivo', colorClass: 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' },
-            { maxScore: 71.0, grade: 'C', percentile: '41 - 59%', adjective: 'Good (Bom)', acceptability: 'Marginalmente Aceitável', nps: 'Passivo', colorClass: 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' },
-            { maxScore: 72.5, grade: 'C+', percentile: '60 - 64%', adjective: 'Good (Bom)', acceptability: 'Aceitável', nps: 'Passivo', colorClass: 'bg-blue-500/20 text-blue-400 border border-blue-500/30' },
-            { maxScore: 74.0, grade: 'B-', percentile: '65 - 69%', adjective: 'Good (Bom)', acceptability: 'Aceitável', nps: 'Passivo', colorClass: 'bg-blue-500/20 text-blue-400 border border-blue-500/30' },
-            { maxScore: 77.1, grade: 'B', percentile: '70 - 79%', adjective: 'Excellent (Excelente)', acceptability: 'Aceitável', nps: 'Passivo', colorClass: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' },
-            { maxScore: 78.8, grade: 'B+', percentile: '80 - 84%', adjective: 'Excellent (Excelente)', acceptability: 'Aceitável', nps: 'Passivo', colorClass: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' },
-            { maxScore: 80.7, grade: 'A-', percentile: '85 - 89%', adjective: 'Excellent (Excelente)', acceptability: 'Aceitável', nps: 'Promotor', colorClass: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' },
-            { maxScore: 84.0, grade: 'A', percentile: '90 - 95%', adjective: 'Excellent (Excelente)', acceptability: 'Aceitável', nps: 'Promotor', colorClass: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' },
-            { maxScore: 100.0, grade: 'A+', percentile: '96 - 100%', adjective: 'Best Imaginable (Melhor Possível)', acceptability: 'Aceitável', nps: 'Promotor', colorClass: 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' }
+            { maxScore: 25.0, grade: 'F', percentile: '0 - 1.9%', adjective: 'Worst Imaginable', acceptability: 'Inaceitável', nps: 'Detrator', colorClass: 'bg-apple-red/15 text-apple-red dark:text-apple-darkRed border border-apple-red/30' },
+            { maxScore: 51.6, grade: 'F', percentile: '2 - 14%', adjective: 'Poor (Ruim)', acceptability: 'Inaceitável', nps: 'Detrator', colorClass: 'bg-apple-red/15 text-apple-red dark:text-apple-darkRed border border-apple-red/30' },
+            { maxScore: 62.6, grade: 'D', percentile: '15 - 34%', adjective: 'OK', acceptability: 'Marginalmente Aceitável', nps: 'Detrator', colorClass: 'bg-apple-orange/15 text-apple-orange dark:text-apple-darkOrange border border-apple-orange/30' },
+            { maxScore: 64.9, grade: 'C-', percentile: '35 - 40%', adjective: 'Good (Bom)', acceptability: 'Marginalmente Aceitável', nps: 'Passivo', colorClass: 'bg-amber-500/15 text-amber-500 border border-amber-500/30' },
+            { maxScore: 71.0, grade: 'C', percentile: '41 - 59%', adjective: 'Good (Bom)', acceptability: 'Marginalmente Aceitável', nps: 'Passivo', colorClass: 'bg-amber-500/15 text-amber-500 border border-amber-500/30' },
+            { maxScore: 72.5, grade: 'C+', percentile: '60 - 64%', adjective: 'Good (Bom)', acceptability: 'Aceitável', nps: 'Passivo', colorClass: 'bg-apple-blue/15 text-apple-blue dark:text-apple-darkBlue border border-apple-blue/30' },
+            { maxScore: 74.0, grade: 'B-', percentile: '65 - 69%', adjective: 'Good (Bom)', acceptability: 'Aceitável', nps: 'Passivo', colorClass: 'bg-apple-blue/15 text-apple-blue dark:text-apple-darkBlue border border-apple-blue/30' },
+            { maxScore: 77.1, grade: 'B', percentile: '70 - 79%', adjective: 'Excellent (Excelente)', acceptability: 'Aceitável', nps: 'Passivo', colorClass: 'bg-apple-green/15 text-apple-green dark:text-apple-darkGreen border border-apple-green/30' },
+            { maxScore: 78.8, grade: 'B+', percentile: '80 - 84%', adjective: 'Excellent (Excelente)', acceptability: 'Aceitável', nps: 'Passivo', colorClass: 'bg-apple-green/15 text-apple-green dark:text-apple-darkGreen border border-apple-green/30' },
+            { maxScore: 80.7, grade: 'A-', percentile: '85 - 89%', adjective: 'Excellent (Excelente)', acceptability: 'Aceitável', nps: 'Promotor', colorClass: 'bg-apple-green/15 text-apple-green dark:text-apple-darkGreen border border-apple-green/30' },
+            { maxScore: 84.0, grade: 'A', percentile: '90 - 95%', adjective: 'Excellent (Excelente)', acceptability: 'Aceitável', nps: 'Promotor', colorClass: 'bg-apple-green/15 text-apple-green dark:text-apple-darkGreen border border-apple-green/30' },
+            { maxScore: 100.0, grade: 'A+', percentile: '96 - 100%', adjective: 'Best Imaginable (Melhor Possível)', acceptability: 'Aceitável', nps: 'Promotor', colorClass: 'bg-apple-green/15 text-apple-green dark:text-apple-darkGreen border border-apple-green/30' }
         ];
 
         let currentMode = 'UMUX';
@@ -492,11 +525,81 @@
         const uploadIcon = document.getElementById('uploadIcon');
         const uploadText = document.getElementById('uploadText');
 
+        // --- ALTERNADOR DE TEMA DARK/LIGHT APPLE HIG (LUCIDE OUTLINE LARANJA) ---
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            const isDark = html.classList.contains('dark');
+
+            if (isDark) {
+                // Alterna para Modo Claro (Light) -> Ícone de LUA (Outline Laranja)
+                html.classList.remove('dark');
+                html.classList.add('light');
+                html.setAttribute('data-theme', 'light');
+                if (icon) {
+                    icon.setAttribute('data-lucide', 'moon');
+                    icon.className = "w-4 h-4 text-apple-orange";
+                }
+                localStorage.setItem('apple_theme_pref', 'light');
+            } else {
+                // Alterna para Modo Escuro (Dark) -> Ícone de SOL (Outline Laranja)
+                html.classList.remove('light');
+                html.classList.add('dark');
+                html.setAttribute('data-theme', 'dark');
+                if (icon) {
+                    icon.setAttribute('data-lucide', 'sun');
+                    icon.className = "w-4 h-4 text-apple-darkOrange";
+                }
+                localStorage.setItem('apple_theme_pref', 'dark');
+            }
+
+            // Renderiza o novo SVG do Lucide Icons
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+
+            // Re-renderiza os gráficos para adaptar as cores dos eixos
+            if (parsedParticipants.length > 0 && typeof atualizarDashboard === 'function') {
+                atualizarDashboard();
+            }
+        }
+
+        // Carregar Preferência de Tema Salva no Carregamento
+        (function carregarTemaSalvo() {
+            const savedTheme = localStorage.getItem('apple_theme_pref') || 'light';
+            const html = document.documentElement;
+            html.setAttribute('data-theme', savedTheme);
+
+            if (savedTheme === 'dark') {
+                html.classList.add('dark');
+                html.classList.remove('light');
+            } else {
+                html.classList.remove('dark');
+                html.classList.add('light');
+            }
+
+            window.addEventListener('DOMContentLoaded', () => {
+                const icon = document.getElementById('themeIcon');
+                if (icon) {
+                    if (savedTheme === 'dark') {
+                        icon.setAttribute('data-lucide', 'sun');
+                        icon.className = "w-4 h-4 text-apple-darkOrange";
+                    } else {
+                        icon.setAttribute('data-lucide', 'moon');
+                        icon.className = "w-4 h-4 text-apple-orange";
+                    }
+                }
+                if (window.lucide) {
+                    lucide.createIcons();
+                }
+            });
+        })();
+
         // Configuração Inicial de Abas e Regras de Negócio do Mapeamento
         function setMetricaMode(mode) {
             currentMode = mode;
-            document.getElementById('modeUmux').className = mode === 'UMUX' ? "px-3 py-1.5 text-xs font-bold rounded-lg mode-btn-active" : "px-3 py-1.5 text-xs font-bold rounded-lg mode-btn-inactive ml-1";
-            document.getElementById('modeUmuxLite').className = mode === 'UMUX-LITE' ? "px-3 py-1.5 text-xs font-bold rounded-lg mode-btn-active ml-1" : "px-3 py-1.5 text-xs font-bold rounded-lg mode-btn-inactive ml-1";
+            document.getElementById('modeUmux').className = mode === 'UMUX' ? "px-3 py-1.5 text-xs rounded-lg mode-btn-active" : "px-3 py-1.5 text-xs rounded-lg mode-btn-inactive ml-1";
+            document.getElementById('modeUmuxLite').className = mode === 'UMUX-LITE' ? "px-3 py-1.5 text-xs rounded-lg mode-btn-active ml-1" : "px-3 py-1.5 text-xs rounded-lg mode-btn-inactive ml-1";
             renderizarFormulasDoc();
             if (fileInput.files.length > 0) processarArquivo(fileInput.files[0]);
         }
@@ -505,25 +608,25 @@
             const container = document.getElementById('formulaContainer');
             if (currentMode === 'UMUX') {
                 container.innerHTML = `
-                    <div class="apple-dark-card-inset p-3">
-                        <span class="font-bold text-[#0a84ff]">Itens Ímpares (Q1, Q3):</span>
-                        <p class="text-gray-400 mt-0.5">Pontos = Voto - 1</p>
+                    <div class="apple-card-inset p-3">
+                        <span class="font-bold text-apple-blue dark:text-apple-darkBlue">Itens Ímpares (Q1, Q3):</span>
+                        <p class="text-black dark:text-gray-400 mt-0.5">Pontos = Voto - 1</p>
                     </div>
-                    <div class="apple-dark-card-inset p-3">
-                        <span class="font-bold text-[#ff453a]">Itens Pares (Q2, Q4):</span>
-                        <p class="text-gray-400 mt-0.5">Pontos = 7 - Voto</p>
+                    <div class="apple-card-inset p-3">
+                        <span class="font-bold text-apple-red dark:text-apple-darkRed">Itens Pares (Q2, Q4):</span>
+                        <p class="text-black dark:text-gray-400 mt-0.5">Pontos = 7 - Voto</p>
                     </div>
-                    <p class="text-[11px] text-gray-500 italic">* Conversão Final: (Soma de pontos / 24) * 100 para equivalência com SUS (0-100).</p>
+                    <p class="text-[11px] text-apple-gray italic">* Conversão Final: (Soma de pontos / 24) * 100 para equivalência com SUS (0-100).</p>
                 `;
             } else {
                 container.innerHTML = `
-                    <div class="apple-dark-card-inset p-3">
-                        <span class="font-bold text-[#bf5af2]">Estrutura Direta de Itens (Q1, Q2):</span>
-                        <p class="text-gray-400 mt-0.5">Pontos = Voto - 1</p>
+                    <div class="apple-card-inset p-3">
+                        <span class="font-bold text-apple-purple dark:text-apple-darkPurple">Estrutura Direta de Itens (Q1, Q2):</span>
+                        <p class="text-black dark:text-gray-400 mt-0.5">Pontos = Voto - 1</p>
                     </div>
-                    <div class="apple-dark-card-inset p-3">
-                        <span class="font-bold text-[#0a84ff]">Regressão Linear de Lewis (Paridade SUS):</span>
-                        <p class="text-gray-400 mt-0.5">Score = 0.65 * ((Soma / 12) * 100) + 22.9</p>
+                    <div class="apple-card-inset p-3">
+                        <span class="font-bold text-apple-blue dark:text-apple-darkBlue">Regressão Linear de Lewis (Paridade SUS):</span>
+                        <p class="text-black dark:text-gray-400 mt-0.5">Score = 0.65 * ((Soma / 12) * 100) + 22.9</p>
                     </div>
                 `;
             }
@@ -531,11 +634,11 @@
         renderizarFormulasDoc();
 
         // Drag and Drop
-        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-[#0a84ff]', 'bg-blue-500/10'); });
-        dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('border-[#0a84ff]', 'bg-blue-500/10'); });
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-apple-blue', 'bg-apple-blue/10'); });
+        dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('border-apple-blue', 'bg-apple-blue/10'); });
         dropZone.addEventListener('drop', (e) => {
             e.preventDefault();
-            dropZone.classList.remove('border-[#0a84ff]', 'bg-blue-500/10');
+            dropZone.classList.remove('border-apple-blue', 'bg-apple-blue/10');
             if (e.dataTransfer.files.length > 0) {
                 fileInput.files = e.dataTransfer.files;
                 processarArquivo(e.dataTransfer.files[0]);
@@ -545,7 +648,7 @@
         dropZone.addEventListener('click', () => fileInput.click());
 
         function processarArquivo(file) {
-            uploadIcon.className = "fa-solid fa-spinner fa-spin text-4xl text-[#0a84ff]";
+            uploadIcon.className = "fa-solid fa-spinner fa-spin text-4xl text-apple-blue dark:text-apple-darkBlue";
             uploadText.innerText = `Processando ${file.name}...`;
             const reader = new FileReader();
             reader.onload = function (e) { parseCSV(e.target.result); };
@@ -606,7 +709,7 @@
 
             if (Object.keys(qPositions).length < numItensNecessarios) {
                 alert(`Erro: Não foi possível mapear todas as colunas necessárias para o modo ${currentMode}. Verifique os cabeçalhos.`);
-                uploadIcon.className = "fa-solid fa-cloud-arrow-up text-4xl text-gray-400";
+                uploadIcon.className = "fa-solid fa-cloud-arrow-up text-4xl text-apple-gray";
                 uploadText.innerText = "Arraste seu arquivo CSV ou clique para buscar";
                 return;
             }
@@ -644,7 +747,7 @@
             }
 
             parsedParticipants.sort((a, b) => a.score - b.score);
-            uploadIcon.className = "fa-solid fa-cloud-arrow-up text-4xl text-gray-400";
+            uploadIcon.className = "fa-solid fa-cloud-arrow-up text-4xl text-apple-gray";
             uploadText.innerText = "Arraste seu arquivo CSV ou clique para buscar";
             atualizarDashboard();
         }
@@ -679,9 +782,11 @@
             document.getElementById('interpAcceptability').className = `text-xs font-bold px-2 py-1 rounded ${interp.colorClass}`;
 
             document.getElementById('interpNps').innerText = interp.nps;
-            document.getElementById('interpNps').className = `text-xs font-bold px-2 py-1 rounded ${interp.nps === 'Promotor' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}`;
+            document.getElementById('interpNps').className = `text-xs font-bold px-2 py-1 rounded ${
+                interp.nps === 'Promotor' ? 'bg-apple-green/20 text-apple-green dark:text-apple-darkGreen' : 'bg-apple-red/20 text-apple-red dark:text-apple-darkRed'
+            }`;
 
-            document.getElementById('interpSummary').innerHTML = `A análise de <strong class="text-white">${stats.n} respondentes</strong> via <strong class="text-[#0a84ff]">${currentMode}</strong> gerou uma pontuação de usabilidade projetada em <strong class="text-white">${stats.mean.toFixed(1)} / 100</strong> na régua equivalente do SUS. Isso classifica o produto como <strong class="text-white">"${interp.adjective}"</strong> com aceitabilidade <strong class="text-white">${interp.acceptability}</strong>.`;
+            document.getElementById('interpSummary').innerHTML = `A análise de <strong class="text-black dark:text-white">${stats.n} respondentes</strong> via <strong class="text-apple-blue dark:text-apple-darkBlue">${currentMode}</strong> gerou uma pontuação de usabilidade projetada em <strong class="text-black dark:text-white">${stats.mean.toFixed(1)} / 100</strong> na régua equivalente do SUS. Isso classifica o produto como <strong class="text-black dark:text-white">"${interp.adjective}"</strong> com aceitabilidade <strong class="text-black dark:text-white">${interp.acceptability}</strong>.`;
 
             renderizarTabela();
             renderizarGrafico(stats.mean);
@@ -701,9 +806,9 @@
             body.innerHTML = '';
             parsedParticipants.forEach(p => {
                 const i = scoringDatabase.find(item => p.score <= item.maxScore) || scoringDatabase[scoringDatabase.length - 1];
-                let rowHTML = `<tr class="hover:bg-white/5 transition-colors"><td class="px-4 py-3 font-bold text-gray-200">${p.id}</td>`;
-                p.raw.forEach(v => { rowHTML += `<td class="px-3 py-3 text-center text-gray-400">${v}</td>`; });
-                rowHTML += `<td class="px-4 py-3 font-bold text-right text-[#0a84ff]">${p.score.toFixed(1)}</td><td class="px-4 py-3 text-center"><span class="text-xs font-bold px-2 py-0.5 rounded ${i.colorClass}">${i.grade}</span></td></tr>`;
+                let rowHTML = `<tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors"><td class="px-4 py-3 font-bold text-black dark:text-gray-200">${p.id}</td>`;
+                p.raw.forEach(v => { rowHTML += `<td class="px-3 py-3 text-center text-apple-gray">${v}</td>`; });
+                rowHTML += `<td class="px-4 py-3 font-bold text-right text-apple-blue dark:text-apple-darkBlue">${p.score.toFixed(1)}</td><td class="px-4 py-3 text-center"><span class="text-xs font-bold px-2 py-0.5 rounded ${i.colorClass}">${i.grade}</span></td></tr>`;
                 body.innerHTML += rowHTML;
             });
         }
@@ -712,19 +817,22 @@
             const ctx = document.getElementById('metricChart').getContext('2d');
             if (chartInstance) chartInstance.destroy();
 
+            const isDark = document.documentElement.classList.contains('dark');
+            const colorGrid = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
+            const colorText = isDark ? '#8E8E93' : '#86868B';
+
             chartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: parsedParticipants.map(p => p.id),
                     datasets: [
-                        { label: 'Curva de Scores Projetados', data: parsedParticipants.map(p => p.score), borderColor: '#0a84ff', backgroundColor: 'rgba(10, 132, 255, 0.15)', fill: true, tension: 0.2, pointRadius: 5 },
-                        { label: 'Média Projetada', data: Array(parsedParticipants.length).fill(scoreMedio), borderColor: '#30d158', borderWidth: 2, borderDash: [5, 5], pointRadius: 0 }
+                        { label: 'Curva de Scores Projetados', data: parsedParticipants.map(p => p.score), borderColor: isDark ? '#0A84FF' : '#007AFF', backgroundColor: isDark ? 'rgba(10, 132, 255, 0.15)' : 'rgba(0, 122, 255, 0.1)', fill: true, tension: 0.2, pointRadius: 5 },
+                        { label: 'Média Projetada', data: Array(parsedParticipants.length).fill(scoreMedio), borderColor: isDark ? '#30D158' : '#34C759', borderWidth: 2, borderDash: [5, 5], pointRadius: 0 }
                     ]
                 },
-                options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#8e8e93' } }, y: { min: 0, max: 100, grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#8e8e93' } } }, plugins: { legend: { labels: { color: '#f5f5f7' } } } }
+                options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { color: colorGrid }, ticks: { color: colorText } }, y: { min: 0, max: 100, grid: { color: colorGrid }, ticks: { color: colorText } } }, plugins: { legend: { labels: { color: colorText } } } }
             });
         }
     </script>
 </body>
-
 </html>

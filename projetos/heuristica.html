@@ -280,10 +280,10 @@
 
                 <!-- Toggle Dark/Light Mode Switcher -->
                 <button type="button" onclick="toggleTheme()" id="btnToggleTheme"
-                    title="Alternar entre Modo Escuro e Modo Claro"
-                    class="w-10 h-10 rounded-full bg-apple-gray6 dark:bg-apple-darkCard2 flex items-center justify-center text-apple-gray hover:text-black dark:hover:text-white transition-all">
-                    <i data-lucide="moon" id="themeIcon" class="w-4 h-4 text-apple-orange"></i>
-                </button>
+    title="Alternar entre Modo Escuro e Modo Claro"
+    class="w-10 h-10 rounded-full bg-apple-gray6 dark:bg-apple-darkCard2 flex items-center justify-center text-apple-gray hover:text-black dark:hover:text-white transition-all">
+    <i data-lucide="moon" id="themeIcon" class="w-4 h-4 text-apple-orange"></i>
+</button>
             </div>
         </div>
     </header>
@@ -550,29 +550,34 @@
         let selectedSeveridade = null;
         let chartInstance = null;
 
-        // Alternar Tema Dark/Light
+        // Alternar Tema Dark/Light com Suporte a Lucide Icons & localStorage
         function toggleTheme() {
             const html = document.documentElement;
             const icon = document.getElementById('themeIcon');
+            const isDark = html.classList.contains('dark');
 
-            if (html.classList.contains('dark')) {
-                // Mudando para LIGHT MODE -> define o ícone da LUA
+            if (isDark) {
+                // Alterna para Modo Claro (Light)
                 html.classList.remove('dark');
                 html.classList.add('light');
-                icon.setAttribute('data-lucide', 'moon');
+                html.setAttribute('data-theme', 'light');
+                if (icon) icon.setAttribute('data-lucide', 'moon');
+                localStorage.setItem('apple_theme_pref', 'light');
             } else {
-                // Mudando para DARK MODE -> define o ícone do SOL
+                // Alterna para Modo Escuro (Dark)
                 html.classList.remove('light');
                 html.classList.add('dark');
-                icon.setAttribute('data-lucide', 'sun');
+                html.setAttribute('data-theme', 'dark');
+                if (icon) icon.setAttribute('data-lucide', 'sun');
+                localStorage.setItem('apple_theme_pref', 'dark');
             }
 
-            // Atualiza os ícones do Lucide na tela
+            // Atualiza os ícones do Lucide dinamicamente
             if (window.lucide) {
                 lucide.createIcons();
             }
 
-            // Mantém a re-renderização do gráfico
+            // Re-renderiza o gráfico para atualizar cores de eixos/linhas
             if (chartInstance && listaViolacoes.length > 0) {
                 let contagemPonderada = {};
                 Object.keys(dicionarioHeuristicas).forEach(k => contagemPonderada[k] = 0);
@@ -580,6 +585,32 @@
                 renderizarGrafico(contagemPonderada);
             }
         }
+
+        // Carregar Preferência Salva no Carregamento da Página
+        function carregarTemaSalvo() {
+            const savedTheme = localStorage.getItem('apple_theme_pref') || 'light';
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+
+            html.setAttribute('data-theme', savedTheme);
+            if (savedTheme === 'dark') {
+                html.classList.add('dark');
+                html.classList.remove('light');
+                if (icon) icon.setAttribute('data-lucide', 'sun');
+            } else {
+                html.classList.remove('dark');
+                html.classList.add('light');
+                if (icon) icon.setAttribute('data-lucide', 'moon');
+            }
+        }
+
+        // Inicializa os ícones Lucide e Tema ao carregar
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarTemaSalvo();
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        });
 
         // Inicializa os ícones Lucide ao carregar a página
         document.addEventListener('DOMContentLoaded', () => {

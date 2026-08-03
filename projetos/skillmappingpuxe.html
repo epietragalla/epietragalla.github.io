@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UX Team Skill Mapping — Apple Human Interface & NN/g Framework</title>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -198,8 +200,8 @@
                 </button>
                 
                 <!-- Toggle Dark/Light Mode Switcher -->
-                <button id="themeToggleBtn" onclick="toggleTheme()" class="w-10 h-10 rounded-full bg-apple-gray6 dark:bg-apple-darkCard2 flex items-center justify-center text-apple-gray hover:text-black dark:hover:text-white">
-                    <i id="themeIcon" class="fa-solid fa-moon text-sm"></i>
+                <button type="button" id="themeToggleBtn" onclick="toggleTheme()" title="Alternar entre Modo Escuro e Modo Claro" class="w-10 h-10 rounded-full bg-apple-gray6 dark:bg-apple-darkCard2 flex items-center justify-center text-apple-gray hover:text-black dark:hover:text-white transition-all border border-black/5 dark:border-white/10">
+                    <i data-lucide="moon" id="themeIcon" class="w-4 h-4 text-apple-orange dark:text-apple-darkOrange"></i>
                 </button>
             </div>
         </div>
@@ -602,11 +604,9 @@
             carregarDadosGoogleSheets();
         });
 
-        // --- SISTEMA DE ALTERNÂNCIA DE TEMA APPLE (LIGHT / DARK) ---
+       // --- SISTEMA DE ALTERNÂNCIA DE TEMA APPLE (LIGHT / DARK) - LUCIDE OUTLINE LARANJA ---
         function toggleTheme() {
             const html = document.documentElement;
-            const icon = document.getElementById('themeIcon');
-            
             const currentTheme = html.getAttribute('data-theme') || (html.classList.contains('dark') ? 'dark' : 'light');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
 
@@ -626,11 +626,21 @@
             if (theme === 'dark') {
                 html.classList.add('dark');
                 html.classList.remove('light');
-                if (icon) icon.className = 'fa-solid fa-sun text-sm text-apple-orange';
+                if (icon) {
+                    icon.setAttribute('data-lucide', 'sun');
+                    icon.className = "w-4 h-4 text-apple-darkOrange";
+                }
             } else {
                 html.classList.remove('dark');
                 html.classList.add('light');
-                if (icon) icon.className = 'fa-solid fa-moon text-sm text-indigo-500';
+                if (icon) {
+                    icon.setAttribute('data-lucide', 'moon');
+                    icon.className = "w-4 h-4 text-apple-orange";
+                }
+            }
+
+            if (window.lucide) {
+                lucide.createIcons();
             }
         }
 
