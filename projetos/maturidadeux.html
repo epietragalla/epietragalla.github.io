@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maturidade UX — NN/g Living System</title>
 
+     <script src="https://unpkg.com/lucide@latest"></script>
+
     <!-- Tailwind CSS CDN com Extensão de Tokens do Apple Design System -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -315,8 +317,8 @@
                 </button>
 
                 <!-- Toggle Dark/Light Mode Switcher -->
-                <button id="themeToggleBtn" onclick="toggleTheme()" class="w-10 h-10 rounded-full bg-apple-gray6 dark:bg-apple-darkCard2 flex items-center justify-center text-apple-gray hover:text-black dark:hover:text-white transition-all">
-                    <i id="themeIcon" class="fa-solid fa-sun text-sm text-apple-orange"></i>
+                <button type="button" id="themeToggleBtn" onclick="toggleTheme()" title="Alternar entre Modo Escuro e Modo Claro" class="w-10 h-10 rounded-full bg-apple-gray6 dark:bg-apple-darkCard2 flex items-center justify-center text-apple-gray hover:text-black dark:hover:text-white transition-all border border-black/5 dark:border-white/10">
+                    <i data-lucide="moon" id="themeIcon" class="w-4 h-4 text-indigo-500"></i>
                 </button>
             </div>
         </div>
@@ -1344,40 +1346,46 @@
 
         inicializarQuiz();
 
-        // Alternar Tema Dark/Light (Ajustado para sincronizar data-theme e classe 'dark')
+         // --- ALTERNADOR DE TEMA DARK/LIGHT APPLE HIG (OUTLINE LARANJA) ---
         function toggleTheme() {
             const html = document.documentElement;
             const icon = document.getElementById('themeIcon');
-            const themeLabel = document.getElementById('themeLabel');
-            
-            const currentTheme = html.getAttribute('data-theme') || 'light';
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            const isDark = html.classList.contains('dark');
 
-            html.setAttribute('data-theme', newTheme);
-
-            if (newTheme === 'dark') {
-                html.classList.add('dark');
-                if (icon) icon.className = 'fa-solid fa-sun text-sm text-apple-orange';
-                if (themeLabel) themeLabel.innerText = 'Modo Claro';
-            } else {
+            if (isDark) {
+                // Alterna para Modo Claro (Light) -> Ícone de LUA (Outline Laranja)
                 html.classList.remove('dark');
-                if (icon) icon.className = 'fa-solid fa-moon text-sm text-indigo-500';
-                if (themeLabel) themeLabel.innerText = 'Modo Escuro';
+                html.classList.add('light');
+                html.setAttribute('data-theme', 'light');
+                if (icon) {
+                    icon.setAttribute('data-lucide', 'moon');
+                    icon.className = "w-4 h-4 text-apple-orange";
+                }
+                localStorage.setItem('apple_theme_pref', 'light');
+            } else {
+                // Alterna para Modo Escuro (Dark) -> Ícone de SOL (Outline Laranja)
+                html.classList.remove('light');
+                html.classList.add('dark');
+                html.setAttribute('data-theme', 'dark');
+                if (icon) {
+                    icon.setAttribute('data-lucide', 'sun');
+                    icon.className = "w-4 h-4 text-apple-darkOrange";
+                }
+                localStorage.setItem('apple_theme_pref', 'dark');
             }
 
-            localStorage.setItem('apple_theme_pref', newTheme);
+            // Renderiza o novo SVG em outline do Lucide
+            if (window.lucide) {
+                lucide.createIcons();
+            }
 
-            // Re-renderiza o gráfico de radar para adaptar as cores dos eixos ao novo tema
-            if (typeof radarChartInstance !== 'undefined' && radarChartInstance) {
-                if (typeof calcularMediaGeralDoTime === 'function') {
-                    calcularMediaGeralDoTime();
-                } else if (typeof atualizarDashboard === 'function') {
-                    atualizarDashboard();
-                }
+            // Re-renderiza o gráfico de radar para adaptar cores dos eixos ao tema
+            if (typeof radarChartInstance !== 'undefined' && radarChartInstance && typeof calcularMediaGeralDoTime === 'function') {
+                calcularMediaGeralDoTime();
             }
         }
 
-        // Garante a leitura da preferência salva no carregamento
+        // Carregar Preferência de Tema Salva no Carregamento
         (function carregarTemaSalvo() {
             const savedTheme = localStorage.getItem('apple_theme_pref') || 'light';
             const html = document.documentElement;
@@ -1385,21 +1393,25 @@
 
             if (savedTheme === 'dark') {
                 html.classList.add('dark');
+                html.classList.remove('light');
             } else {
                 html.classList.remove('dark');
+                html.classList.add('light');
             }
 
             window.addEventListener('DOMContentLoaded', () => {
                 const icon = document.getElementById('themeIcon');
-                const themeLabel = document.getElementById('themeLabel');
-                if (icon && themeLabel) {
+                if (icon) {
                     if (savedTheme === 'dark') {
-                        icon.className = 'fa-solid fa-sun text-sm text-apple-orange';
-                        themeLabel.innerText = 'Modo Claro';
+                        icon.setAttribute('data-lucide', 'sun');
+                        icon.className = "w-4 h-4 text-apple-darkOrange";
                     } else {
-                        icon.className = 'fa-solid fa-moon text-sm text-indigo-500';
-                        themeLabel.innerText = 'Modo Escuro';
+                        icon.setAttribute('data-lucide', 'moon');
+                        icon.className = "w-4 h-4 text-apple-orange";
                     }
+                }
+                if (window.lucide) {
+                    lucide.createIcons();
                 }
             });
         })();
