@@ -356,11 +356,11 @@
         </div>
 
         <!-- BOTÃO DE ALTERNÂNCIA DE MODO CLARO / ESCURO (LIGHT MODE / DARK MODE) -->
-        <button type="button" onclick="toggleThemeMode()" id="btnToggleTheme"
-          title="Alternar entre Modo Escuro e Modo Claro"
-          class="w-10 h-10 rounded-full bg-apple-gray6 dark:bg-apple-darkCard2 flex items-center justify-center text-apple-gray hover:text-black dark:hover:text-white transition-all">
-          <i data-lucide="sun" id="iconThemeMode" class="w-4 h-4 text-apple-orange"></i>
-        </button>
+      <button type="button" onclick="toggleThemeMode()" id="btnToggleTheme"
+  title="Alternar entre Modo Escuro e Modo Claro"
+  class="w-10 h-10 rounded-full bg-apple-gray6 dark:bg-apple-darkCard2 flex items-center justify-center text-apple-gray hover:text-black dark:hover:text-white transition-all border border-black/5 dark:border-white/10">
+  <i data-lucide="sun" id="iconThemeMode" class="w-4 h-4 text-apple-orange"></i>
+</button>
       </div>
 
     </div>
@@ -4426,48 +4426,47 @@
     // ALTERNÂNCIA DE TEMA APPLE HIG (MODO ESCURO / MODO CLARO) - CORRIGIDO
     // ===================================================================
     window.toggleThemeMode = function () {
-      const html = document.documentElement;
-      const currentTheme = html.getAttribute('data-theme') || (html.classList.contains('dark') ? 'dark' : 'light');
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  const html = document.documentElement;
+  const currentTheme = html.getAttribute('data-theme') || (html.classList.contains('dark') ? 'dark' : 'light');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
 
-      aplicarTema(newTheme);
-      localStorage.setItem('puxe_theme_pref', newTheme);
+  aplicarTema(newTheme);
+  localStorage.setItem('puxe_theme_pref', newTheme);
 
-      // Re-renderiza os gráficos com as novas cores de texto e eixos
-      if (window.renderAll) window.renderAll();
-    };
+  // Re-renderiza os gráficos com as novas cores de texto e eixos
+  if (window.renderAll) window.renderAll();
+};
 
-    function aplicarTema(theme) {
-      const html = document.documentElement;
-      const icon = document.getElementById('iconThemeMode');
-      const btn = document.getElementById('btnToggleTheme');
+function aplicarTema(theme) {
+  const html = document.documentElement;
+  const icon = document.getElementById('iconThemeMode');
 
-      html.setAttribute('data-theme', theme);
+  html.setAttribute('data-theme', theme);
 
-      if (theme === 'dark') {
-        html.classList.add('dark');
-        html.classList.remove('light');
-        if (icon) {
-          icon.setAttribute('data-lucide', 'sun');
-          icon.className = "w-4 h-4 text-apple-orange";
-        }
-        Chart.defaults.color = '#8E8E93';
-      } else {
-        html.classList.remove('dark');
-        html.classList.add('light');
-        if (icon) {
-          icon.setAttribute('data-lucide', 'moon');
-          icon.className = "w-4 h-4 text-indigo-500";
-        }
-        Chart.defaults.color = '#86868B';
-      }
-      if (window.lucide) lucide.createIcons();
+  if (theme === 'dark') {
+    html.classList.add('dark');
+    html.classList.remove('light');
+    if (icon) {
+      icon.setAttribute('data-lucide', 'sun');
+      icon.className = "w-4 h-4 text-apple-orange";
     }
-
-    function carregarTemaSalvo() {
-      const savedTheme = localStorage.getItem('puxe_theme_pref') || 'light';
-      aplicarTema(savedTheme);
+    Chart.defaults.color = '#8E8E93';
+  } else {
+    html.classList.remove('dark');
+    html.classList.add('light');
+    if (icon) {
+      icon.setAttribute('data-lucide', 'moon');
+      icon.className = "w-4 h-4 text-apple-orange"; // Ajustado para a cor Apple Orange
     }
+    Chart.defaults.color = '#86868B';
+  }
+  if (window.lucide) lucide.createIcons();
+}
+
+function carregarTemaSalvo() {
+  const savedTheme = localStorage.getItem('puxe_theme_pref') || 'light';
+  aplicarTema(savedTheme);
+}
 
     function getCanvasCtx(id) {
       const el = document.getElementById(id);
@@ -7601,6 +7600,28 @@
 
       if (window.lucide) lucide.createIcons();
     };
+    // Ouve o comando enviado pela Central de Gestão pai para sincronizar o Dark Mode
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'CHANGE_THEME') {
+        const novoTema = event.data.theme;
+        
+        // Se o sistema usa a função aplicarTema()
+        if (typeof aplicarTema === 'function') {
+            aplicarTema(novoTema);
+            if (typeof atualizarDashboard === 'function') {
+                atualizarDashboard();
+            }
+        } 
+        // Se o sistema usa a função toggleTheme() simples
+        else if (typeof toggleTheme === 'function') {
+            const html = document.documentElement;
+            const temaAtual = html.classList.contains('dark') ? 'dark' : 'light';
+            if (temaAtual !== novoTema) {
+                toggleTheme();
+            }
+        }
+    }
+});
 </script>
 </body>
 
