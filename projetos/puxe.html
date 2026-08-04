@@ -7622,6 +7622,25 @@ window.addEventListener('message', (event) => {
         }
     }
 });
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'CHANGE_THEME') {
+        const novoTema = event.data.theme;
+        
+        // Esconde o botão de tema local se a central pedir
+        if (event.data.hideThemeBtn) {
+            const btnLocal = document.getElementById('btnToggleTheme') || document.getElementById('themeToggleBtn');
+            if (btnLocal) {
+                btnLocal.style.display = 'none';
+            }
+        }
+        
+        if (typeof aplicarTema === 'function') {
+            aplicarTema(novoTema);
+            if (typeof renderAll === 'function') renderAll();
+            if (typeof atualizarDashboard === 'function') atualizarDashboard();
+        }
+    }
+});
 </script>
 </body>
 
