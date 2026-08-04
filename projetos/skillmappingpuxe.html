@@ -462,7 +462,7 @@
                 <button onclick="fecharModalConfigSkills()" class="text-apple-gray hover:text-black dark:hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             
-            <p class="text-xs text-apple-gray">Altere o nome das habilidades avaliadas. As mudanças serão refletidas automaticamente em todos os gráficos e relatórios.</p>
+            <p class="text-xs text-apple-gray">Altere o nome das habilidades avaliadas. As mudanças serão salvas na aba "Competencias" do Google Sheets e refletidas no sistema.</p>
 
             <div id="modalListaSkillsInput" class="space-y-2 max-h-[300px] overflow-y-auto pr-1">
                 <!-- Injetado dinamicamente -->
@@ -470,7 +470,7 @@
 
             <div class="flex justify-end gap-2 pt-2">
                 <button onclick="adicionarNovaSkillModal()" class="apple-btn-secondary text-xs"><i class="fa-solid fa-plus mr-1"></i>Adicionar Habilidade</button>
-                <button onclick="salvarSkillsModal()" class="apple-btn-primary text-xs">Salvar Ajustes</button>
+                <button onclick="salvarSkillsModal()" class="apple-btn-primary text-xs">Salvar Ajustes no Sheets</button>
             </div>
         </div>
     </div>
@@ -572,12 +572,12 @@
         </div>
     </footer>
 
-   <!-- Script Lógico da Aplicação -->
+    <!-- Script Lógico da Aplicação -->
     <script>
         // URL da Web App da API do Google Apps Script
-        const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbzyETQQoUqlv85FFdVp0_ZiWpxo_1Fax1gdL0L1sHtq6vogRiB4IsTH58T_jqvD7w/exec";
+        const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbzrLxn5ywS68PkFHZHvDiWUdEmyqNeXb8IzCJ4X5HWRgw15AqewESExDbh2Smy_LSaY/exec";
 
-        // Rol de Competências Padrão do Nielsen Norman Group (NN/g Template)
+        // Rol de Competências (Carregado Dinamicamente da aba 'Competencias' do Google Sheets)
         let skillList = [
             "Qualitative research",
             "Quantitative research",
@@ -600,7 +600,6 @@
         // Inicialização do Sistema
         document.addEventListener('DOMContentLoaded', () => {
             carregarTemaSalvo();
-            renderizarFormularioInputs();
             carregarDadosGoogleSheets();
         });
 
@@ -613,7 +612,6 @@
             aplicarTema(newTheme);
             localStorage.setItem('apple_theme_pref', newTheme);
 
-            // Re-renderiza os gráficos para adaptar as cores dos eixos ao novo tema
             atualizarDashboard();
         }
 
@@ -649,23 +647,35 @@
             aplicarTema(savedTheme);
         }
 
-        // Buscar membros gravados na planilha Google Sheets
+        // Buscar membros E competências gravados na planilha Google Sheets
         async function carregarDadosGoogleSheets() {
             try {
                 const res = await fetch(GOOGLE_SHEETS_URL);
                 const data = await res.json();
                 
-                if (Array.isArray(data)) {
-                    teamMembers = data;
-                    if (teamMembers.length > 0 && !membroSelecionadoId) {
-                        membroSelecionadoId = teamMembers[0].id;
+                // Se a API retornar a estrutura combinada { members, skills }
+                if (data && typeof data === 'object') {
+                    if (Array.isArray(data.skills) && data.skills.length > 0) {
+                        skillList = data.skills;
                     }
+                    if (Array.isArray(data.members)) {
+                        teamMembers = data.members;
+                    }
+                } else if (Array.isArray(data)) {
+                    // Fallback para caso retorne apenas o array de membros
+                    teamMembers = data;
+                }
+
+                if (teamMembers.length > 0 && !membroSelecionadoId) {
+                    membroSelecionadoId = teamMembers[0].id;
                 }
                 
+                renderizarFormularioInputs();
                 atualizarTabelaMembros();
                 atualizarDashboard();
             } catch (err) {
                 console.error("Erro ao carregar dados do Google Sheets:", err);
+                renderizarFormularioInputs();
             }
         }
 
@@ -691,7 +701,7 @@
             }
         }
 
-        // Renderização dos Sliders no Formulário
+        // Renderização dos Sliders no Formulário com base na skillList do Sheets
         function renderizarFormularioInputs() {
             const container = document.getElementById('containerInputsSkills');
             container.innerHTML = '';
@@ -879,16 +889,16 @@
                 if (m < medias[minIdx]) minIdx = idx;
             });
 
-            document.getElementById('kpiMaiorForca').innerText = skillList[maxIdx];
-            document.getElementById('kpiMaiorForcaNota').innerText = `Média: ${medias[maxIdx].toFixed(1)} / 5.0`;
+            document.getElementById('kpiMaiorForca').innerText = skillList[maxIdx] || '--';
+            document.getElementById('kpiMaiorForcaNota').innerText = `Média: ${(medias[maxIdx] || 0).toFixed(1)} / 5.0`;
 
-            document.getElementById('kpiMaiorGap').innerText = skillList[minIdx];
-            document.getElementById('kpiMaiorGapNota').innerText = `Média: ${medias[minIdx].toFixed(1)} / 5.0`;
+            document.getElementById('kpiMaiorGap').innerText = skillList[minIdx] || '--';
+            document.getElementById('kpiMaiorGapNota').innerText = `Média: ${(medias[minIdx] || 0).toFixed(1)} / 5.0`;
 
             const containerMedias = document.getElementById('listaMediasEquipe');
             containerMedias.innerHTML = '';
             skillList.forEach((sk, idx) => {
-                const val = medias[idx].toFixed(1);
+                const val = (medias[idx] || 0).toFixed(1);
                 const item = `
                     <div class="flex justify-between items-center text-xs p-2 rounded-lg bg-apple-gray6 dark:bg-apple-darkCard2">
                         <span class="text-black dark:text-white font-medium truncate">${sk}</span>
@@ -1076,7 +1086,8 @@
             container.children[idx].remove();
         }
 
-        function salvarSkillsModal() {
+        // Salvar Lista de Competências na aba 'Competencias' do Google Sheets
+        async function salvarSkillsModal() {
             const container = document.getElementById('modalListaSkillsInput');
             let novasSkills = [];
             for (let el of container.children) {
@@ -1091,6 +1102,7 @@
 
             skillList = novasSkills;
             
+            // Ajustar tamanhos dos vetores de cada membro localmente
             teamMembers.forEach(m => {
                 while (m.current.length < skillList.length) m.current.push(3);
                 while (m.future.length < skillList.length) m.future.push(4);
@@ -1101,6 +1113,18 @@
             fecharModalConfigSkills();
             renderizarFormularioInputs();
             atualizarDashboard();
+
+            // Grava a nova lista de competências no Google Sheets
+            try {
+                await fetch(GOOGLE_SHEETS_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'save_skills', skills: skillList })
+                });
+            } catch (err) {
+                console.error("Erro ao salvar competências no Google Sheets:", err);
+            }
         }
     </script>
 </body>
