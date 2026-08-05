@@ -515,23 +515,32 @@
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs">
-                    <thead class="bg-black/5 dark:bg-white/5 text-apple-gray uppercase text-[10px] font-bold border-b border-black/5 dark:border-white/10">
-                        <tr>
-                            <th class="p-3">Avaliador</th>
-                            <th class="p-3">Perfil</th>
-                            <th class="p-3 text-center">Estratégia</th>
-                            <th class="p-3 text-center">Cultura</th>
-                            <th class="p-3 text-center">Processo</th>
-                            <th class="p-3 text-center">Resultados</th>
-                            <th class="p-3 text-center">Score Indiv.</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabelaVotosBody" class="divide-y divide-black/5 dark:divide-white/5">
-                        <!-- Gerado dinamicamente -->
-                    </tbody>
-                </table>
-            </div>
+    <table class="w-full text-left text-xs border-collapse">
+        <thead class="bg-black/5 dark:bg-white/5 text-apple-gray uppercase text-[10px] font-bold border-b border-black/5 dark:border-white/10">
+            <tr>
+                <th rowspan="2" class="p-3 border-r border-black/5 dark:border-white/10">Avaliador / Perfil</th>
+                <th colspan="5" class="p-2 text-center text-apple-blue dark:text-apple-darkBlue border-r border-black/5 dark:border-white/10 bg-blue-500/5">Estratégia</th>
+                <th colspan="5" class="p-2 text-center text-apple-purple dark:text-apple-darkPurple border-r border-black/5 dark:border-white/10 bg-purple-500/5">Cultura</th>
+                <th colspan="5" class="p-2 text-center text-apple-orange dark:text-apple-darkOrange border-r border-black/5 dark:border-white/10 bg-orange-500/5">Processo</th>
+                <th colspan="5" class="p-2 text-center text-apple-green dark:text-apple-darkGreen border-r border-black/5 dark:border-white/10 bg-green-500/5">Resultados</th>
+                <th rowspan="2" class="p-3 text-center min-w-[90px]">Score Indiv.</th>
+            </tr>
+            <tr class="text-[9px]">
+                <!-- Estratégia -->
+                <th class="p-1 text-center font-mono">Q1</th><th class="p-1 text-center font-mono">Q2</th><th class="p-1 text-center font-mono">Q3</th><th class="p-1 text-center font-mono">Q4</th><th class="p-1 text-center font-bold text-apple-blue dark:text-apple-darkBlue border-r border-black/5 dark:border-white/10 bg-blue-500/10">Média</th>
+                <!-- Cultura -->
+                <th class="p-1 text-center font-mono">Q5</th><th class="p-1 text-center font-mono">Q6</th><th class="p-1 text-center font-mono">Q7</th><th class="p-1 text-center font-mono">Q8</th><th class="p-1 text-center font-bold text-apple-purple dark:text-apple-darkPurple border-r border-black/5 dark:border-white/10 bg-purple-500/10">Média</th>
+                <!-- Processo -->
+                <th class="p-1 text-center font-mono">Q9</th><th class="p-1 text-center font-mono">Q10</th><th class="p-1 text-center font-mono">Q11</th><th class="p-1 text-center font-mono">Q12</th><th class="p-1 text-center font-bold text-apple-orange dark:text-apple-darkOrange border-r border-black/5 dark:border-white/10 bg-orange-500/10">Média</th>
+                <!-- Resultados -->
+                <th class="p-1 text-center font-mono">Q13</th><th class="p-1 text-center font-mono">Q14</th><th class="p-1 text-center font-mono">Q15</th><th class="p-1 text-center font-mono">Q16</th><th class="p-1 text-center font-bold text-apple-green dark:text-apple-darkGreen border-r border-black/5 dark:border-white/10 bg-green-500/10">Média</th>
+            </tr>
+        </thead>
+        <tbody id="tabelaVotosBody" class="divide-y divide-black/5 dark:divide-white/5">
+            <!-- Gerado dinamicamente -->
+        </tbody>
+    </table>
+</div>
         </section>
 
         <!-- LOG DE SAÚDE TRIMESTRAL DO TIME -->
@@ -996,35 +1005,81 @@ async function salvarAvaliacaoIndividual() {
 }
 
         function atualizarTabelaVotos() {
-            const tbody = document.getElementById('tabelaVotosBody');
-            tbody.innerHTML = '';
+    const tbody = document.getElementById('tabelaVotosBody');
+    tbody.innerHTML = '';
 
-            if (!timeConsultaAtual) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-apple-gray">Selecione um time no menu ao lado do botão de calcular para visualizar o quadro.</td></tr>`;
-                return;
-            }
+    if (!timeConsultaAtual) {
+        tbody.innerHTML = `<tr><td colspan="22" class="p-4 text-center text-apple-gray">Selecione um time no menu ao lado do botão de calcular para visualizar o quadro.</td></tr>`;
+        return;
+    }
 
-            if (bancoVotosNuvem.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-apple-gray">Nenhum integrante deste time realizou a avaliação ainda.</td></tr>`;
-                return;
-            }
+    if (bancoVotosNuvem.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="22" class="p-4 text-center text-apple-gray">Nenhum integrante deste time realizou a avaliação ainda.</td></tr>`;
+        return;
+    }
 
-            bancoVotosNuvem.forEach(v => {
-                tbody.innerHTML += `
-                    <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
-                        <td class="p-3 font-semibold text-black dark:text-white flex items-center gap-2">
-                            <i class="fa-solid fa-user-circle text-apple-gray text-sm"></i> ${v.nome}
-                        </td>
-                        <td class="p-3 text-apple-gray">${v.cargo}</td>
-                        <td class="p-3 text-center font-mono">${v.pilares["Estratégia"].toFixed(1)}</td>
-                        <td class="p-3 text-center font-mono">${v.pilares["Cultura"].toFixed(1)}</td>
-                        <td class="p-3 text-center font-mono">${v.pilares["Processo"].toFixed(1)}</td>
-                        <td class="p-3 text-center font-mono">${v.pilares["Resultados"].toFixed(1)}</td>
-                        <td class="p-3 text-center font-bold text-apple-blue dark:text-apple-darkBlue">${v.score.toFixed(1)}%</td>
-                    </tr>
-                `;
-            });
-        }
+    const getNota = (obj, q) => {
+        if (!obj) return '-';
+        const val = obj[q] !== undefined ? obj[q] : obj[String(q)];
+        return (val !== undefined && val !== null && val !== '') ? val : '-';
+    };
+
+    bancoVotosNuvem.forEach(v => {
+        const r = v.respostas || {};
+
+        tbody.innerHTML += `
+            <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                <td class="p-3 border-r border-black/5 dark:border-white/10 min-w-[140px]">
+                    <div class="font-semibold text-black dark:text-white flex items-center gap-1.5">
+                        <i class="fa-solid fa-user-circle text-apple-gray text-xs"></i> ${v.nome}
+                    </div>
+                    <div class="text-[10px] text-apple-gray">${v.cargo}</div>
+                </td>
+
+                <!-- Estratégia: Q1, Q2, Q3, Q4 + Coluna de Média em separado -->
+                <td class="p-2 text-center font-mono bg-blue-500/5">${getNota(r, 1)}</td>
+                <td class="p-2 text-center font-mono bg-blue-500/5">${getNota(r, 2)}</td>
+                <td class="p-2 text-center font-mono bg-blue-500/5">${getNota(r, 3)}</td>
+                <td class="p-2 text-center font-mono bg-blue-500/5">${getNota(r, 4)}</td>
+                <td class="p-2 text-center font-mono font-bold text-apple-blue dark:text-apple-darkBlue border-r border-black/5 dark:border-white/10 bg-blue-500/10">
+                    ${v.pilares && v.pilares["Estratégia"] ? v.pilares["Estratégia"].toFixed(1) : '-'}
+                </td>
+
+                <!-- Cultura: Q5, Q6, Q7, Q8 + Coluna de Média em separado -->
+                <td class="p-2 text-center font-mono bg-purple-500/5">${getNota(r, 5)}</td>
+                <td class="p-2 text-center font-mono bg-purple-500/5">${getNota(r, 6)}</td>
+                <td class="p-2 text-center font-mono bg-purple-500/5">${getNota(r, 7)}</td>
+                <td class="p-2 text-center font-mono bg-purple-500/5">${getNota(r, 8)}</td>
+                <td class="p-2 text-center font-mono font-bold text-apple-purple dark:text-apple-darkPurple border-r border-black/5 dark:border-white/10 bg-purple-500/10">
+                    ${v.pilares && v.pilares["Cultura"] ? v.pilares["Cultura"].toFixed(1) : '-'}
+                </td>
+
+                <!-- Processo: Q9, Q10, Q11, Q12 + Coluna de Média em separado -->
+                <td class="p-2 text-center font-mono bg-orange-500/5">${getNota(r, 9)}</td>
+                <td class="p-2 text-center font-mono bg-orange-500/5">${getNota(r, 10)}</td>
+                <td class="p-2 text-center font-mono bg-orange-500/5">${getNota(r, 11)}</td>
+                <td class="p-2 text-center font-mono bg-orange-500/5">${getNota(r, 12)}</td>
+                <td class="p-2 text-center font-mono font-bold text-apple-orange dark:text-apple-darkOrange border-r border-black/5 dark:border-white/10 bg-orange-500/10">
+                    ${v.pilares && v.pilares["Processo"] ? v.pilares["Processo"].toFixed(1) : '-'}
+                </td>
+
+                <!-- Resultados: Q13, Q14, Q15, Q16 + Coluna de Média em separado -->
+                <td class="p-2 text-center font-mono bg-green-500/5">${getNota(r, 13)}</td>
+                <td class="p-2 text-center font-mono bg-green-500/5">${getNota(r, 14)}</td>
+                <td class="p-2 text-center font-mono bg-green-500/5">${getNota(r, 15)}</td>
+                <td class="p-2 text-center font-mono bg-green-500/5">${getNota(r, 16)}</td>
+                <td class="p-2 text-center font-mono font-bold text-apple-green dark:text-apple-darkGreen border-r border-black/5 dark:border-white/10 bg-green-500/10">
+                    ${v.pilares && v.pilares["Resultados"] ? v.pilares["Resultados"].toFixed(1) : '-'}
+                </td>
+
+                <!-- Score Individual -->
+                <td class="p-3 text-center font-bold text-apple-blue dark:text-apple-darkBlue text-sm">
+                    ${v.score ? v.score.toFixed(1) : '0.0'}%
+                </td>
+            </tr>
+        `;
+    });
+}
 
         async function salvarFechamentoTrimestral() {
             if (!timeConsultaAtual) {
