@@ -894,102 +894,106 @@
         }
 
         async function carregarDadosServidor() {
-            if (!timeConsultaAtual) return;
+    if (!timeConsultaAtual) return;
 
-            const modal = document.getElementById('modalLoading');
-            if (modal) modal.classList.remove('hidden');
+    const modal = document.getElementById('modalLoading');
+    if (modal) modal.classList.remove('hidden');
 
-            try {
-                const response = await fetch(GOOGLE_SCRIPT_URL);
-                const data = await response.json();
+    try {
+        const response = await fetch(GOOGLE_SCRIPT_URL);
 
-                if (data.votos) {
-                    bancoVotosNuvem = data.votos.filter(v => v.time === timeConsultaAtual);
-
-                    if (usuarioAtual.nome && usuarioAtual.time === timeConsultaAtual) {
-                        const meuvoto = bancoVotosNuvem.find(v => v.nome.toLowerCase() === usuarioAtual.nome.toLowerCase());
-                        if (meuvoto && meuvoto.respostas) {
-                            votosAtuais = { ...meuvoto.respostas };
-                            bancoQuestoes.forEach(q => {
-                                if (votosAtuais[q.id]) votar(q.id, votosAtuais[q.id]);
-                            });
-                        }
-                    }
-                    atualizarTabelaVotos();
-                }
-
-                if (data.healthLogs) {
-                    bancoHealthLogNuvem = data.healthLogs.filter(h => h.time === timeConsultaAtual);
-                    atualizarTabelaHealthLog();
-                }
-            } catch (err) {
-                console.error("Erro ao sincronizar com o Google Sheets:", err);
-                alert("Não foi possível carregar os dados do Google Sheets.");
-            } finally {
-                if (modal) modal.classList.add('hidden');
-            }
+        if (!response.ok) {
+            throw new Error(`Status da resposta HTTP: ${response.status}`);
         }
 
-        async function salvarAvaliacaoIndividual() {
-            if (!usuarioAtual.nome || !usuarioAtual.time || !usuarioAtual.cargo) {
-                alert("Por favor, confirme seus dados (Time, Nome e Perfil) clicando em 'Iniciar / Trocar Avaliador' no topo antes de salvar.");
-                return;
-            }
+        const data = await response.json();
 
-            if (Object.keys(votosAtuais).length < 16) {
-                alert("Por favor, responda a todas as 16 afirmações antes de salvar.");
-                return;
-            }
-
-            const btn = document.getElementById('btnSalvarVoto');
-            btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Salvando no Google Sheets...`;
-            btn.disabled = true;
-
-            let totais = { "Estratégia": 0, "Cultura": 0, "Processo": 0, "Resultados": 0 };
-            bancoQuestoes.forEach(q => {
-                totais[q.pilar] += votosAtuais[q.id];
-            });
-
-            const pilares = {
-                "Estratégia": totais["Estratégia"] / 4,
-                "Cultura": totais["Cultura"] / 4,
-                "Processo": totais["Processo"] / 4,
-                "Resultados": totais["Resultados"] / 4
-            };
-
-            const mediaIndiv = (pilares["Estratégia"] + pilares["Cultura"] + pilares["Processo"] + pilares["Resultados"]) / 4;
-            const scoreIndiv = ((mediaIndiv - 1) / 4) * 100;
-
-            const payload = {
-                tipo: "voto",
-                data: new Date().toLocaleDateString('pt-BR'),
-                time: usuarioAtual.time,
-                nome: usuarioAtual.nome,
-                cargo: usuarioAtual.cargo,
-                pilares: pilares,
-                score: scoreIndiv,
-                respostas: { ...votosAtuais }
-            };
-
-            try {
-                await fetch(GOOGLE_SCRIPT_URL, {
-                    method: "POST",
-                    mode: "no-cors",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload)
-                });
-
-                alert(`Avaliação de ${usuarioAtual.nome} registrada na nuvem com sucesso!`);
-                timeConsultaAtual = usuarioAtual.time;
-                document.getElementById('selectTimeConsulta').value = usuarioAtual.time;
-                await carregarDadosServidor();
-            } catch (err) {
-                alert("Erro ao conectar com o Google Sheets. Tente novamente.");
-            } finally {
-                btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Salvar Avaliação na Nuvem`;
-                btn.disabled = false;
-            }
+        if (data && data.votos) {
+            // Filtra os votos do time selecionado para o Quadro de Avaliadores
+            bancoVotosNuvem = data.votos.filter(v => v.time === timeConsultaAtual);
+            atualizarTabelaVotos();
         }
+
+        if (data && data.healthLogs) {
+            bancoHealthLogNuvem = data.healthLogs.filter(h => h.time === timeConsultaAtual);
+            atualizarTabelaHealthLog();
+        }
+    } catch (err) {
+        console.error("Erro detalhado ao sincronizar com o Google Sheets:", err);
+        alert("Não foi possível carregar os dados. Verifique a URL do Google Script ou o console do navegador.");
+    } finally {
+        if (modal) modal.classList.add('hidden');
+    }
+}
+
+async function salvarAvaliacaoIndividual() {
+    if (!usuarioAtual.nome || !usuarioAtual.time || !usuarioAtual.cargo) {
+        alert("Por favor, confirme seus dados (Time, Nome e Perfil) clicando em 'Iniciar / Trocar Avaliador' no topo antes de salvar.");
+        return;
+    }
+
+    if (Object.keys(votosAtuais).length < 16) {
+        alert("Por favor, responda a todas as 16 afirmações antes de salvar.");
+        return;
+    }
+
+    const btn = document.getElementById('btnSalvarVoto');
+    btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Salvando no Google Sheets...`;
+    btn.disabled = true;
+
+    let totais = { "Estratégia": 0, "Cultura": 0, "Processo": 0, "Resultados": 0 };
+    bancoQuestoes.forEach(q => {
+        totais[q.pilar] += (votosAtuais[q.id] || 0);
+    });
+
+    const pilares = {
+        "Estratégia": totais["Estratégia"] / 4,
+        "Cultura": totais["Cultura"] / 4,
+        "Processo": totais["Processo"] / 4,
+        "Resultados": totais["Resultados"] / 4
+    };
+
+    const mediaIndiv = (pilares["Estratégia"] + pilares["Cultura"] + pilares["Processo"] + pilares["Resultados"]) / 4;
+    const scoreIndiv = ((mediaIndiv - 1) / 4) * 100;
+
+    const payload = {
+        tipo: "voto",
+        data: new Date().toLocaleDateString('pt-BR'),
+        time: usuarioAtual.time,
+        nome: usuarioAtual.nome,
+        cargo: usuarioAtual.cargo,
+        pilares: pilares,
+        score: scoreIndiv,
+        respostas: { ...votosAtuais }
+    };
+
+    try {
+        await fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(payload)
+        });
+
+        alert(`Avaliação de "${usuarioAtual.nome}" registrada na nuvem com sucesso!`);
+        
+        // Garante que o quadro passe a consultar o time recém salvo
+        timeConsultaAtual = usuarioAtual.time;
+        document.getElementById('selectTimeConsulta').value = usuarioAtual.time;
+        
+        // Aguarda 1.2 segundos para o Google Sheets processar o append da linha antes de sincronizar a tela
+        setTimeout(async () => {
+            await carregarDadosServidor();
+        }, 1200);
+
+    } catch (err) {
+        console.error("Erro ao salvar no Google Sheets:", err);
+        alert("Erro ao conectar com o Google Sheets. Tente novamente.");
+    } finally {
+        btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Salvar Avaliação na Nuvem`;
+        btn.disabled = false;
+    }
+}
 
         function atualizarTabelaVotos() {
             const tbody = document.getElementById('tabelaVotosBody');
