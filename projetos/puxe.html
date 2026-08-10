@@ -1910,7 +1910,6 @@
           <div class="segmented-control-bg p-1 flex items-center gap-1 shrink-0">
             <button type="button" onclick="setMatrizFrente('CX Pesquisa')" id="btnMatrizCXP" class="px-3 py-1.5 rounded-xl bg-apple-blue text-white font-semibold text-xs transition-all shadow-sm">CX Pesquisa</button>
             <button type="button" onclick="setMatrizFrente('UX Pesquisa')" id="btnMatrizUXP" class="px-3 py-1.5 rounded-lg text-apple-gray hover:text-black dark:hover:text-white font-medium text-xs transition-all">UX Pesquisa</button>
-            <button type="button" onclick="setMatrizFrente('CX Escrita')" id="btnMatrizCXE" class="px-3 py-1.5 rounded-lg text-apple-gray hover:text-black dark:hover:text-white font-medium text-xs transition-all">CX Escrita</button>
             <button type="button" onclick="setMatrizFrente('UX Escrita')" id="btnMatrizUXE" class="px-3 py-1.5 rounded-lg text-apple-gray hover:text-black dark:hover:text-white font-medium text-xs transition-all">UX Escrita</button>
           </div>
         </div>
@@ -7247,16 +7246,15 @@ function carregarTemaSalvo() {
       if (window.lucide) lucide.createIcons();
     }
 
-   window.matrizFrenteAtiva = 'CX Pesquisa';
-    window.matrizStatusFrenteAtiva = 'andamento'; // 'andamento' ou 'concluido'
+   window.setMatrizFrente = function(frente) {
+      // Se por algum motivo tentar carregar CX Escrita, redireciona para CX Pesquisa
+      if (frente === 'CX Escrita') frente = 'CX Pesquisa';
 
-    window.setMatrizFrente = function(frente) {
       window.matrizFrenteAtiva = frente;
 
       const btns = {
         'CX Pesquisa': 'btnMatrizCXP',
         'UX Pesquisa': 'btnMatrizUXP',
-        'CX Escrita': 'btnMatrizCXE',
         'UX Escrita': 'btnMatrizUXE'
       };
 
@@ -7378,18 +7376,22 @@ function carregarTemaSalvo() {
         htmlBody += `</tr>`;
 
         // Linha do TOTAL
-        htmlBody += `<tr class="font-extrabold bg-black/5 dark:bg-white/5"><td class="p-2 text-left uppercase text-black dark:text-white">TOTAL (${labelStatus})</td>`;
+       htmlBody += `<tr class="font-extrabold bg-black/5 dark:bg-white/5"><td class="p-2 text-left uppercase text-black dark:text-white">CARGA TOTAL (${labelStatus})</td>`;
         listaPessoas.forEach(p => {
           const tot = cargas[p].total;
           let colorClass = "";
 
           if (tot === 1 || tot === 2) {
+            // 1 e 2: Tranquilo (Verde)
             colorClass = "bg-apple-green/20 text-apple-green dark:text-apple-darkGreen border border-apple-green/30";
           } else if (tot === 3) {
+            // 3: Moderado (Amarelo)
             colorClass = "bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 border border-yellow-500/30";
           } else if (tot === 4) {
+            // 4: Elevado (Laranja)
             colorClass = "bg-apple-orange/20 text-apple-orange dark:text-apple-darkOrange border border-apple-orange/30";
           } else if (tot >= 5) {
+            // 5+: Crítico (Vermelho)
             colorClass = "bg-apple-red/20 text-apple-red dark:text-apple-darkRed border border-apple-red/30 animate-pulse";
           } else {
             colorClass = "text-apple-gray";
