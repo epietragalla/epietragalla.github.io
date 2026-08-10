@@ -7319,11 +7319,9 @@ function carregarTemaSalvo() {
         colabs.forEach(c => pessoasSet.add(c));
       });
 
-      const listaPessoas = Array.from(pessoasSet).sort();
-
       // 2. Mapeamento de R (Responsável) e A (Apoio) para os projetos filtrados
       const cargas = {};
-      listaPessoas.forEach(p => cargas[p] = { R: 0, A: 0, total: 0 });
+      pessoasSet.forEach(p => cargas[p] = { R: 0, A: 0, total: 0 });
 
       const matrizProjetos = [];
 
@@ -7333,7 +7331,7 @@ function carregarTemaSalvo() {
 
         const linha = { projeto: p.projeto, papelPorPessoa: {} };
 
-        listaPessoas.forEach(pessoa => {
+        pessoasSet.forEach(pessoa => {
           let papel = '';
           if (resps.includes(pessoa)) {
             papel = 'R';
@@ -7350,7 +7348,19 @@ function carregarTemaSalvo() {
         matrizProjetos.push(linha);
       });
 
-      // 3. Renderizar Tabela de Resumo
+      // 3. ORDENAÇÃO CUSTOMIZADA: Pessoas com projetos em ordem alfabética primeiro;
+      // Pessoas com 0 projetos no final da fila (também alfabéticas entre si).
+      const listaPessoas = Array.from(pessoasSet).sort((a, b) => {
+        const temProjetoA = cargas[a].total > 0 ? 1 : 0;
+        const temProjetoB = cargas[b].total > 0 ? 1 : 0;
+
+        if (temProjetoA !== temProjetoB) {
+          return temProjetoB - temProjetoA; // Quem tem projeto (1) vem antes de quem não tem (0)
+        }
+        return a.localeCompare(b, 'pt-BR'); // Ordem alfabética como critério de desempate
+      });
+
+      // 4. Renderizar Tabela de Resumo
       const headerResumo = document.getElementById('matrizResumoHeader');
       const bodyResumo = document.getElementById('matrizResumoBody');
       const labelStatus = statusFiltro === 'andamento' ? 'EM ANDAMENTO' : 'CONCLUÍDOS';
@@ -7376,22 +7386,18 @@ function carregarTemaSalvo() {
         htmlBody += `</tr>`;
 
         // Linha do TOTAL
-       htmlBody += `<tr class="font-extrabold bg-black/5 dark:bg-white/5"><td class="p-2 text-left uppercase text-black dark:text-white">CARGA TOTAL (${labelStatus})</td>`;
+        htmlBody += `<tr class="font-extrabold bg-black/5 dark:bg-white/5"><td class="p-2 text-left uppercase text-black dark:text-white">CARGA TOTAL (${labelStatus})</td>`;
         listaPessoas.forEach(p => {
           const tot = cargas[p].total;
           let colorClass = "";
 
           if (tot === 1 || tot === 2) {
-            // 1 e 2: Tranquilo (Verde)
             colorClass = "bg-apple-green/20 text-apple-green dark:text-apple-darkGreen border border-apple-green/30";
           } else if (tot === 3) {
-            // 3: Moderado (Amarelo)
             colorClass = "bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 border border-yellow-500/30";
           } else if (tot === 4) {
-            // 4: Elevado (Laranja)
             colorClass = "bg-apple-orange/20 text-apple-orange dark:text-apple-darkOrange border border-apple-orange/30";
           } else if (tot >= 5) {
-            // 5+: Crítico (Vermelho)
             colorClass = "bg-apple-red/20 text-apple-red dark:text-apple-darkRed border border-apple-red/30 animate-pulse";
           } else {
             colorClass = "text-apple-gray";
@@ -7404,7 +7410,7 @@ function carregarTemaSalvo() {
         bodyResumo.innerHTML = htmlBody;
       }
 
-      // 4. Renderizar Matriz Detalhada
+      // 5. Renderizar Matriz Detalhada
       const headerDetalhe = document.getElementById('matrizDetalheHeader');
       const bodyDetalhe = document.getElementById('matrizDetalheBody');
 
