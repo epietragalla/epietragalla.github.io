@@ -1890,66 +1890,75 @@
         </span>
       </div>
 
-      <!-- PAINEL 1: RADAR DE GARGALOS & SOBRECARGA INDIVIDUAL (LOAD BALANCING) -->
-      <div class="apple-card p-6 space-y-5">
+      <!-- PAINEL 1: MATRIZ DE ALOCAÇÃO & RADAR DE SOBRECARGA POR FRENTE (ESTILO PLANILHA) -->
+      <div class="apple-card p-6 space-y-6">
 
-        <!-- CABEÇALHO DO PAINEL -->
-        <div
-          class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-black/5 dark:border-white/10 pb-3">
-          <div class="flex items-center gap-2">
-            <div class="p-2 bg-apple-red/10 text-apple-red dark:text-apple-darkRed rounded-xl">
-              <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+        <!-- CABEÇALHO DO PAINEL E SELETOR DE FRENTES -->
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-black/5 dark:border-white/10 pb-4">
+          <div class="flex items-center gap-3">
+            <div class="p-2.5 bg-apple-blue/10 text-apple-blue dark:text-apple-darkBlue rounded-xl border border-apple-blue/20">
+              <i data-lucide="users" class="w-5 h-5"></i>
             </div>
-            <div>
-              <h3 class="text-sm font-bold text-black dark:text-white uppercase tracking-wider">1. Radar de Sobrecarga
-                &amp; Risco de Gargalo em Pessoas</h3>
-              <p class="text-[11px] text-apple-gray">Índice ponderado de esforço nos projetos ativos: Estruturados (Peso
-                3x) + Pontuais (Peso 1x)</p>
+           <div>
+              <h3 class="text-sm font-bold text-black dark:text-white uppercase tracking-wider">1. Matriz de Alocação &amp; Capacidade por Pessoa</h3>
+              <!-- LEGENDA RECALIBRADA -->
+              <p class="text-[11px] text-apple-gray">R - Responsável | A - Apoio | <strong>Carga de Projetos:</strong> <span class="text-apple-green font-semibold">1-2 Tranquilo</span> • <span class="text-yellow-600 dark:text-yellow-400 font-semibold">3 Moderado</span> • <span class="text-apple-orange font-semibold">4 Elevado</span> • <span class="text-apple-red font-semibold">5+ Crítico</span></p>
             </div>
           </div>
-          <span
-            class="text-[11px] font-bold text-apple-red dark:text-apple-darkRed bg-apple-red/10 px-3 py-1 rounded-full border border-apple-red/20"
-            id="cntAlertasRiscoText">
-            0 Alerta(s) de Sobrecarga
-          </span>
+
+          <!-- SELETOR DE FRENTE DA MATRIZ -->
+          <div class="segmented-control-bg p-1 flex items-center gap-1 shrink-0">
+            <button type="button" onclick="setMatrizFrente('CX Pesquisa')" id="btnMatrizCXP" class="px-3 py-1.5 rounded-xl bg-apple-blue text-white font-semibold text-xs transition-all shadow-sm">CX Pesquisa</button>
+            <button type="button" onclick="setMatrizFrente('UX Pesquisa')" id="btnMatrizUXP" class="px-3 py-1.5 rounded-lg text-apple-gray hover:text-black dark:hover:text-white font-medium text-xs transition-all">UX Pesquisa</button>
+            <button type="button" onclick="setMatrizFrente('CX Escrita')" id="btnMatrizCXE" class="px-3 py-1.5 rounded-lg text-apple-gray hover:text-black dark:hover:text-white font-medium text-xs transition-all">CX Escrita</button>
+            <button type="button" onclick="setMatrizFrente('UX Escrita')" id="btnMatrizUXE" class="px-3 py-1.5 rounded-lg text-apple-gray hover:text-black dark:hover:text-white font-medium text-xs transition-all">UX Escrita</button>
+          </div>
         </div>
 
-        <!-- RECOMENDAÇÃO PRESCRITIVA AUTOMÁTICA DA IA -->
-        <div class="p-4 rounded-2xl apple-card-inset space-y-2" id="boxRecomendacaoAlocacao">
-          <div
-            class="text-xs font-bold text-apple-orange dark:text-apple-darkOrange flex items-center gap-1.5 uppercase">
-            <i data-lucide="shield-alert" class="w-4 h-4"></i> Diagnóstico Prescritivo de Alocação:
+        <!-- CONTAINER DA TABELA DE RESUMO DE CARGA (R / A / TOTAL) -->
+        <div class="space-y-2">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <span class="text-xs font-bold uppercase tracking-wider text-apple-gray flex items-center gap-1.5">
+              <i data-lucide="activity" class="w-3.5 h-3.5 text-apple-blue dark:text-apple-darkBlue"></i> Resumo de Capacidade da Equipe — <span id="lblFrenteAtivaMatriz" class="text-black dark:text-white font-extrabold">CX Pesquisa</span>
+            </span>
+
+            <!-- SELETOR DE FILTRO DE STATUS DA MATRIZ (EM ANDAMENTO / CONCLUÍDOS) -->
+            <div class="segmented-control-bg p-0.5 flex items-center gap-1 shrink-0 text-[11px]">
+              <button type="button" onclick="setMatrizStatus('andamento')" id="btnMatrizStatusAndamento" class="px-3 py-1 rounded-lg bg-apple-blue text-white font-semibold shadow-sm transition-all">Em Andamento</button>
+              <button type="button" onclick="setMatrizStatus('concluido')" id="btnMatrizStatusConcluido" class="px-3 py-1 rounded-lg text-apple-gray hover:text-black dark:hover:text-white font-medium transition-all">Concluídos</button>
+            </div>
           </div>
-          <p class="text-xs text-black dark:text-slate-300 leading-relaxed" id="txtRecomendacaoAlocacao">
-            Analisando a esteira ativa do time...
-          </p>
+
+          <div class="overflow-x-auto custom-scrollbar rounded-2xl border border-black/5 dark:border-white/10">
+            <table class="w-full text-center text-xs border-collapse">
+              <thead id="matrizResumoHeader" class="bg-black/5 dark:bg-white/5 text-black dark:text-white font-bold border-b border-black/5 dark:border-white/10">
+                <!-- Injetado via JS -->
+              </thead>
+              <tbody id="matrizResumoBody" class="divide-y divide-black/5 dark:divide-white/10 text-black dark:text-slate-200">
+                <!-- Injetado via JS -->
+              </tbody>
+            </table>
+          </div>
         </div>
 
-        <!-- GRÁFICO E LISTA LADO A LADO -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-
-          <!-- LADO ESQUERDO: GRÁFICO DE VISÃO GERAL DAS CARGAS -->
-          <div class="lg:col-span-2 h-80 relative">
-            <canvas id="chartSobrecargaPessoas"></canvas>
+        <!-- CONTAINER DA MATRIZ PROJETOS X PESSOAS -->
+        <div class="space-y-2 pt-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-apple-gray flex items-center gap-1.5">
+              <i data-lucide="table" class="w-3.5 h-3.5 text-apple-purple dark:text-apple-darkPurple"></i> Detalhamento de Atuação por Projeto (R / A)
+            </span>
           </div>
 
-          <!-- LADO DIREITO: CARD COM A LISTA COMPLETA DE TODAS AS PESSOAS COM PROJETOS ATIVOS -->
-          <div class="apple-card-inset p-4 space-y-3 lg:col-span-1">
-            <div class="flex items-center justify-between border-b border-black/5 dark:border-white/10 pb-2">
-              <span
-                class="text-xs font-bold text-black dark:text-white uppercase tracking-wider flex items-center gap-1.5">
-                <i data-lucide="users" class="w-3.5 h-3.5 text-apple-blue dark:text-apple-darkBlue"></i> Carga de Todos
-                os Especialistas
-              </span>
-              <span class="text-[10px] text-apple-gray font-mono" id="cntTotalEspecialistasAtivos">0 Pessoas</span>
-            </div>
-
-            <!-- CONTAINER ROLÁVEL (TODAS AS PESSOAS SÃO LISTADAS AQUI) -->
-            <div class="space-y-2 max-h-72 overflow-y-auto custom-scrollbar pr-1" id="listaCargasDetalhadas">
-              <!-- Elementos inseridos dinamicamente via JS sem limite de corte -->
-            </div>
+          <div class="overflow-x-auto custom-scrollbar max-h-[450px] rounded-2xl border border-black/5 dark:border-white/10">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead id="matrizDetalheHeader" class="sticky top-0 z-10 bg-black/10 dark:bg-apple-darkCard2 backdrop-blur-md text-black dark:text-white font-bold border-b border-black/5 dark:border-white/10">
+                <!-- Injetado via JS -->
+              </thead>
+              <tbody id="matrizDetalheBody" class="divide-y divide-black/5 dark:divide-white/10 text-black dark:text-slate-300">
+                <!-- Injetado via JS -->
+              </tbody>
+            </table>
           </div>
-
         </div>
 
       </div>
@@ -7238,171 +7247,201 @@ function carregarTemaSalvo() {
       if (window.lucide) lucide.createIcons();
     }
 
-    function renderPainelSobrecargaGargalos(projects) {
-      const ctx = document.getElementById('chartSobrecargaPessoas');
-      if (!ctx) return;
+   window.matrizFrenteAtiva = 'CX Pesquisa';
+    window.matrizStatusFrenteAtiva = 'andamento'; // 'andamento' ou 'concluido'
 
-      const isDark = document.documentElement.classList.contains('dark');
-      const textColor = isDark ? '#8E8E93' : '#86868B';
-      const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
+    window.setMatrizFrente = function(frente) {
+      window.matrizFrenteAtiva = frente;
 
-      const personMap = {};
+      const btns = {
+        'CX Pesquisa': 'btnMatrizCXP',
+        'UX Pesquisa': 'btnMatrizUXP',
+        'CX Escrita': 'btnMatrizCXE',
+        'UX Escrita': 'btnMatrizUXE'
+      };
 
-      const ativos = projects.filter(p => {
-        const st = (p.status || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        return st.includes('andamento') || st.includes('impedi') || st.includes('execuc') || st.includes('iniciad');
-      });
-
-      ativos.forEach(p => {
-        const resps = (p.responsavel || '')
-          .split(/[,;]/)
-          .map(r => r.trim())
-          .filter(r => r && r !== '-' && r !== 'Não definido' && r !== 'nan' && r.toLowerCase() !== 'null');
-
-        const colabs = (p.colaboradores || '')
-          .split(/[,;]/)
-          .map(c => c.trim())
-          .filter(c => c && c !== '-' && c !== 'nan' && c.toLowerCase() !== 'null');
-
-        const todasPessoas = Array.from(new Set([...resps, ...colabs]));
-
-        const tipoClean = String(p.tipo_projeto || p.tamanho || '').toUpperCase();
-        const isPontual = tipoClean.includes('P') && !tipoClean.includes('G') && !tipoClean.includes('E');
-
-        const isAtrasado = (p.prazo_contagem !== undefined && p.prazo_contagem < 0) ||
-          (p.entrega !== '-' && p.prazo !== '-' && p.entrega > p.prazo);
-
-        todasPessoas.forEach(pessoa => {
-          if (!personMap[pessoa]) {
-            personMap[pessoa] = { pontuais: 0, estruturados: 0, cargaTotal: 0, projetosAtrasados: 0, totalProjetos: 0, frentes: new Set() };
-          }
-
-          if (isPontual) {
-            personMap[pessoa].pontuais++;
-            personMap[pessoa].cargaTotal += 1;
+      Object.keys(btns).forEach(f => {
+        const elem = document.getElementById(btns[f]);
+        if (elem) {
+          if (f === frente) {
+            elem.className = "px-3 py-1.5 rounded-xl bg-apple-blue text-white font-semibold text-xs transition-all shadow-sm";
           } else {
-            personMap[pessoa].estruturados++;
-            personMap[pessoa].cargaTotal += 3;
+            elem.className = "px-3 py-1.5 rounded-lg text-apple-gray hover:text-black dark:hover:text-white font-medium text-xs transition-all";
           }
-
-          if (p.area) personMap[pessoa].frentes.add(p.area);
-          personMap[pessoa].totalProjetos++;
-          if (isAtrasado) personMap[pessoa].projetosAtrasados++;
-        });
+        }
       });
 
-      const sorted = Object.entries(personMap).sort((a, b) => b[1].cargaTotal - a[1].cargaTotal);
+      const lblFrente = document.getElementById('lblFrenteAtivaMatriz');
+      if (lblFrente) lblFrente.innerText = frente;
 
-      const topChart = sorted.slice(0, 10);
-      const labelsChart = topChart.map(s => s[0]);
-      const dataCargaChart = topChart.map(s => s[1].cargaTotal);
+      renderPainelSobrecargaGargalos();
+    };
 
-      const sobrecarregados = sorted.filter(s => s[1].cargaTotal >= 6);
-      const comCapacidade = sorted.filter(s => s[1].cargaTotal <= 2);
+    window.setMatrizStatus = function(status) {
+      window.matrizStatusFrenteAtiva = status;
 
-      const elCountAlertas = document.getElementById('cntAlertasRiscoText');
-      if (elCountAlertas) elCountAlertas.innerText = `${sobrecarregados.length} Alerta(s) de Sobrecarga`;
+      const btnAnd = document.getElementById('btnMatrizStatusAndamento');
+      const btnConc = document.getElementById('btnMatrizStatusConcluido');
 
-      const elTotalPessoas = document.getElementById('cntTotalEspecialistasAtivos');
-      if (elTotalPessoas) elTotalPessoas.innerText = `${sorted.length} Pessoas Ativas`;
-
-      const txtRec = document.getElementById('txtRecomendacaoAlocacao');
-      if (txtRec) {
-        if (sobrecarregados.length > 0) {
-          const nomeP1 = sobrecarregados[0][0];
-          const cargaP1 = sobrecarregados[0][1].cargaTotal;
-          const atrasadosP1 = sobrecarregados[0][1].projetosAtrasados;
-
-          let sugestaoSub = "Recomenda-se redistribuir novas demandas para especialistas com menor carga pontual.";
-          if (comCapacidade.length > 0) {
-            sugestaoSub = `Sugestão: Transferir a liderança de novos projetos para <strong>${comCapacidade[0][0]}</strong> (Carga atual: ${comCapacidade[0][1].cargaTotal}).`;
-          }
-
-          txtRec.innerHTML = `<strong>ALERTA DE GARGALO:</strong> O especialista <strong class="text-apple-red dark:text-apple-darkRed">${nomeP1}</strong> atingiu Carga Ponderada ${cargaP1} (${sobrecarregados[0][1].estruturados} Estudos Estruturados ativos, ${atrasadosP1} com risco de SLA). ${sugestaoSub}`;
+      if (btnAnd && btnConc) {
+        if (status === 'andamento') {
+          btnAnd.className = "px-3 py-1 rounded-lg bg-apple-blue text-white font-semibold shadow-sm transition-all";
+          btnConc.className = "px-3 py-1 rounded-lg text-apple-gray hover:text-black dark:hover:text-white font-medium transition-all";
         } else {
-          txtRec.innerHTML = `<strong class="text-apple-green dark:text-apple-darkGreen">ESTEIRA EQUILIBRADA:</strong> Nenhum especialista apresenta sobrecarga crítica no momento. A alocação entre os membros da equipe está distribuída de forma saudável.`;
+          btnConc.className = "px-3 py-1 rounded-lg bg-apple-blue text-white font-semibold shadow-sm transition-all";
+          btnAnd.className = "px-3 py-1 rounded-lg text-apple-gray hover:text-black dark:hover:text-white font-medium transition-all";
         }
       }
 
-      const containerLista = document.getElementById('listaCargasDetalhadas');
-      if (containerLista) {
-        containerLista.innerHTML = '';
+      renderPainelSobrecargaGargalos();
+    };
 
-        if (sorted.length === 0) {
-          containerLista.innerHTML = `<div class="text-[11px] text-apple-gray italic p-3 text-center">Nenhum projeto ativo em andamento nesta frente.</div>`;
+    function renderPainelSobrecargaGargalos() {
+      const frente = window.matrizFrenteAtiva || 'CX Pesquisa';
+      const statusFiltro = window.matrizStatusFrenteAtiva || 'andamento';
+      const todosProjetosFrente = (window.RAW_DATA && window.RAW_DATA[frente]) ? window.RAW_DATA[frente] : [];
+
+      // Filtrar projetos conforme o status selecionado (Em Andamento vs Concluídos)
+      const projetosFiltrados = todosProjetosFrente.filter(p => {
+        const st = (p.status || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        if (statusFiltro === 'andamento') {
+          return st.includes('andamento');
+        } else if (statusFiltro === 'concluido') {
+          return st.includes('conclu');
+        }
+        return true;
+      });
+
+      // 1. Extrair a equipe completa da frente
+      const pessoasSet = new Set();
+      todosProjetosFrente.forEach(p => {
+        const resps = (p.responsavel || '').split(/[,;]/).map(r => r.trim()).filter(r => r && r !== '-' && r !== 'Não definido' && r !== 'nan');
+        const colabs = (p.colaboradores || '').split(/[,;]/).map(c => c.trim()).filter(c => c && c !== '-' && c !== 'nan');
+        resps.forEach(r => pessoasSet.add(r));
+        colabs.forEach(c => pessoasSet.add(c));
+      });
+
+      const listaPessoas = Array.from(pessoasSet).sort();
+
+      // 2. Mapeamento de R (Responsável) e A (Apoio) para os projetos filtrados
+      const cargas = {};
+      listaPessoas.forEach(p => cargas[p] = { R: 0, A: 0, total: 0 });
+
+      const matrizProjetos = [];
+
+      projetosFiltrados.forEach(p => {
+        const resps = (p.responsavel || '').split(/[,;]/).map(r => r.trim());
+        const colabs = (p.colaboradores || '').split(/[,;]/).map(c => c.trim());
+
+        const linha = { projeto: p.projeto, papelPorPessoa: {} };
+
+        listaPessoas.forEach(pessoa => {
+          let papel = '';
+          if (resps.includes(pessoa)) {
+            papel = 'R';
+            cargas[pessoa].R++;
+            cargas[pessoa].total++;
+          } else if (colabs.includes(pessoa)) {
+            papel = 'A';
+            cargas[pessoa].A++;
+            cargas[pessoa].total++;
+          }
+          linha.papelPorPessoa[pessoa] = papel;
+        });
+
+        matrizProjetos.push(linha);
+      });
+
+      // 3. Renderizar Tabela de Resumo
+      const headerResumo = document.getElementById('matrizResumoHeader');
+      const bodyResumo = document.getElementById('matrizResumoBody');
+      const labelStatus = statusFiltro === 'andamento' ? 'EM ANDAMENTO' : 'CONCLUÍDOS';
+
+      if (headerResumo && bodyResumo) {
+        let htmlHead = `<tr><th class="p-2.5 text-left font-bold text-apple-gray uppercase text-[10px] w-52">PROJETOS (${labelStatus})</th>`;
+        listaPessoas.forEach(p => {
+          htmlHead += `<th class="p-2.5 min-w-[90px] text-center font-bold">${p}</th>`;
+        });
+        htmlHead += `</tr>`;
+        headerResumo.innerHTML = htmlHead;
+
+        let htmlBody = `<tr class="hover:bg-black/5 dark:hover:bg-white/5"><td class="p-2 text-left font-bold text-apple-blue dark:text-apple-darkBlue">R - Responsável</td>`;
+        listaPessoas.forEach(p => {
+          htmlBody += `<td class="p-2 font-mono font-semibold">${cargas[p].R}</td>`;
+        });
+        htmlBody += `</tr>`;
+
+        htmlBody += `<tr class="hover:bg-black/5 dark:hover:bg-white/5"><td class="p-2 text-left font-bold text-apple-green dark:text-apple-darkGreen">A - Apoio</td>`;
+        listaPessoas.forEach(p => {
+          htmlBody += `<td class="p-2 font-mono font-semibold">${cargas[p].A}</td>`;
+        });
+        htmlBody += `</tr>`;
+
+        // Linha do TOTAL
+        htmlBody += `<tr class="font-extrabold bg-black/5 dark:bg-white/5"><td class="p-2 text-left uppercase text-black dark:text-white">TOTAL (${labelStatus})</td>`;
+        listaPessoas.forEach(p => {
+          const tot = cargas[p].total;
+          let colorClass = "";
+
+          if (tot === 1 || tot === 2) {
+            colorClass = "bg-apple-green/20 text-apple-green dark:text-apple-darkGreen border border-apple-green/30";
+          } else if (tot === 3) {
+            colorClass = "bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 border border-yellow-500/30";
+          } else if (tot === 4) {
+            colorClass = "bg-apple-orange/20 text-apple-orange dark:text-apple-darkOrange border border-apple-orange/30";
+          } else if (tot >= 5) {
+            colorClass = "bg-apple-red/20 text-apple-red dark:text-apple-darkRed border border-apple-red/30 animate-pulse";
+          } else {
+            colorClass = "text-apple-gray";
+          }
+
+          htmlBody += `<td class="p-1.5"><span class="px-2.5 py-1 rounded-lg font-mono text-xs block ${colorClass}">${tot}</span></td>`;
+        });
+        htmlBody += `</tr>`;
+
+        bodyResumo.innerHTML = htmlBody;
+      }
+
+      // 4. Renderizar Matriz Detalhada
+      const headerDetalhe = document.getElementById('matrizDetalheHeader');
+      const bodyDetalhe = document.getElementById('matrizDetalheBody');
+
+      if (headerDetalhe && bodyDetalhe) {
+        let htmlHeadD = `<tr><th class="p-3 text-left font-bold text-apple-gray uppercase text-[10px] min-w-[280px]">Projetos (${labelStatus})</th>`;
+        listaPessoas.forEach(p => {
+          htmlHeadD += `<th class="p-3 text-center min-w-[90px] font-bold text-[11px]">${p}</th>`;
+        });
+        htmlHeadD += `</tr>`;
+        headerDetalhe.innerHTML = htmlHeadD;
+
+        let htmlBodyD = '';
+        if (matrizProjetos.length === 0) {
+          htmlBodyD = `<tr><td colspan="${listaPessoas.length + 1}" class="p-4 text-center italic text-apple-gray">Nenhum projeto registrado (${labelStatus.toLowerCase()}) nesta frente.</td></tr>`;
         } else {
-          sorted.forEach(([nome, dados]) => {
-            let statusBadge = '';
-            let bgCard = 'apple-card-inset';
-            let textColor = 'text-apple-blue dark:text-apple-darkBlue';
+          matrizProjetos.forEach(row => {
+            htmlBodyD += `<tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors">`;
+            htmlBodyD += `<td class="p-2.5 font-bold text-black dark:text-white max-w-xs truncate">${row.projeto}</td>`;
 
-            if (dados.cargaTotal >= 6) {
-              statusBadge = `<span class="text-[9.5px] bg-apple-red/10 text-apple-red dark:text-apple-darkRed px-1.5 py-0.5 rounded-full font-bold border border-apple-red/20">Sobrecarga</span>`;
-              textColor = 'text-apple-red dark:text-apple-darkRed';
-            } else if (dados.cargaTotal >= 4) {
-              statusBadge = `<span class="text-[9.5px] bg-apple-orange/10 text-apple-orange dark:text-apple-darkOrange px-1.5 py-0.5 rounded-full font-bold border border-apple-orange/20">Ideal</span>`;
-              textColor = 'text-apple-orange dark:text-apple-darkOrange';
-            } else {
-              statusBadge = `<span class="text-[9.5px] bg-apple-green/10 text-apple-green dark:text-apple-darkGreen px-1.5 py-0.5 rounded-full font-bold border border-apple-green/20">Livre</span>`;
-              textColor = 'text-apple-green dark:text-apple-darkGreen';
-            }
+            listaPessoas.forEach(pessoa => {
+              const papel = row.papelPorPessoa[pessoa];
+              let cellContent = `<span class="text-apple-gray/30">-</span>`;
 
-            const divPessoa = document.createElement('div');
-            divPessoa.className = `p-2.5 rounded-xl border border-black/5 dark:border-white/10 ${bgCard} flex items-center justify-between text-xs transition-all`;
-            divPessoa.innerHTML = `
-              <div>
-                <div class="font-bold text-black dark:text-white flex items-center gap-1.5">
-                  <span>${nome}</span>
-                  ${statusBadge}
-                </div>
-                <div class="text-[10px] text-apple-gray mt-0.5">
-                  ${dados.estruturados} Estruturados (E) | ${dados.pontuais} Pontuais (P)
-                </div>
-              </div>
-              <div class="text-right shrink-0">
-                <div class="text-sm font-extrabold ${textColor} font-mono">${dados.cargaTotal}</div>
-                <div class="text-[9px] text-apple-gray uppercase tracking-wider">Carga</div>
-              </div>
-            `;
-            containerLista.appendChild(divPessoa);
+              if (papel === 'R') {
+                cellContent = `<span class="px-2.5 py-1 rounded-md bg-apple-blue text-white font-extrabold text-[10px] shadow-sm">R</span>`;
+              } else if (papel === 'A') {
+                cellContent = `<span class="px-2.5 py-1 rounded-md bg-apple-green/20 text-apple-green dark:text-apple-darkGreen border border-apple-green/30 font-extrabold text-[10px]">A</span>`;
+              }
+
+              htmlBodyD += `<td class="p-2 text-center">${cellContent}</td>`;
+            });
+
+            htmlBodyD += `</tr>`;
           });
         }
+        bodyDetalhe.innerHTML = htmlBodyD;
       }
 
-      if (window.charts && window.charts.sobrecargaPessoas) {
-        window.charts.sobrecargaPessoas.destroy();
-      }
-      window.charts = window.charts || {};
-
-      window.charts.sobrecargaPessoas = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: labelsChart,
-          datasets: [{
-            label: 'Carga Ponderada (Pontuais x1 + Estruturados x3)',
-            data: dataCargaChart,
-            backgroundColor: dataCargaChart.map(c => c >= 6 ? (isDark ? '#FF453A' : '#FF3B30') : (isDark ? '#0A84FF' : '#007AFF')),
-            borderRadius: 6
-          }]
-        },
-        options: {
-          indexAxis: 'y',
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              callbacks: {
-                label: (ctx) => ` Carga Ponderada: ${ctx.raw} (Ativos em andamento)`
-              }
-            }
-          },
-          scales: {
-            x: { beginAtZero: true, grid: { color: gridColor }, ticks: { color: textColor, precision: 0 } },
-            y: { grid: { display: false }, ticks: { color: textColor, font: { size: 10 } } }
-          }
-        }
-      });
+      if (window.lucide) lucide.createIcons();
     }
 
     function runCapacitySimulator(allProjects) {
