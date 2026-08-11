@@ -1899,18 +1899,10 @@
             <div class="p-2.5 bg-apple-blue/10 text-apple-blue dark:text-apple-darkBlue rounded-xl border border-apple-blue/20">
               <i data-lucide="users" class="w-5 h-5"></i>
             </div>
-           <div>
+            <div>
               <h3 class="text-sm font-bold text-black dark:text-white uppercase tracking-wider">1. Matriz de Alocação &amp; Capacidade por Pessoa</h3>
-              <!-- LEGENDA RECALIBRADA -->
               <p class="text-[11px] text-apple-gray">R - Responsável | A - Apoio | <strong>Carga de Projetos:</strong> <span class="text-apple-green font-semibold">1-2 Tranquilo</span> • <span class="text-yellow-600 dark:text-yellow-400 font-semibold">3 Moderado</span> • <span class="text-apple-orange font-semibold">4 Elevado</span> • <span class="text-apple-red font-semibold">5+ Crítico</span></p>
             </div>
-          </div>
-
-          <!-- SELETOR DE FRENTE DA MATRIZ -->
-          <div class="segmented-control-bg p-1 flex items-center gap-1 shrink-0">
-            <button type="button" onclick="setMatrizFrente('CX Pesquisa')" id="btnMatrizCXP" class="px-3 py-1.5 rounded-xl bg-apple-blue text-white font-semibold text-xs transition-all shadow-sm">CX Pesquisa</button>
-            <button type="button" onclick="setMatrizFrente('UX Pesquisa')" id="btnMatrizUXP" class="px-3 py-1.5 rounded-lg text-apple-gray hover:text-black dark:hover:text-white font-medium text-xs transition-all">UX Pesquisa</button>
-            <button type="button" onclick="setMatrizFrente('UX Escrita')" id="btnMatrizUXE" class="px-3 py-1.5 rounded-lg text-apple-gray hover:text-black dark:hover:text-white font-medium text-xs transition-all">UX Escrita</button>
           </div>
         </div>
 
@@ -1962,6 +1954,159 @@
 
       </div>
 
+     <!-- SEÇÃO 2: DIAGNÓSTICO DE CAPACIDADE POR SENIORIDADE & GAP DE CONTRATAÇÃO (PROTEGIDO) -->
+      <div class="apple-card p-6 space-y-6 relative overflow-hidden" id="cardSecaoSenioridade">
+
+        <!-- OVERLAY DE BLOQUEIO POR SENHA -->
+        <div id="overlayBloqueioSenioridade" class="absolute inset-0 z-20 apple-glass backdrop-blur-xl flex flex-col items-center justify-center p-6 text-center space-y-4">
+          <div class="p-3.5 bg-apple-purple/10 text-apple-purple dark:text-apple-darkPurple rounded-2xl border border-apple-purple/20">
+            <i data-lucide="lock" class="w-8 h-8"></i>
+          </div>
+          <div class="max-w-md space-y-1">
+            <h4 class="text-base font-bold text-black dark:text-white">Conteúdo Restrito à Liderança</h4>
+            <p class="text-xs text-apple-gray">O diagnóstico operacional de senioridade e dimensionamento de novas vagas requer autenticação de gestor.</p>
+          </div>
+          <button type="button" onclick="abrirModalAuthSenioridade()" class="apple-btn-primary text-xs font-bold !bg-apple-purple hover:!bg-purple-700 flex items-center gap-2 shadow-lg">
+            <i data-lucide="key-round" class="w-4 h-4"></i>
+            <span>Liberar Acesso Restrito</span>
+          </button>
+        </div>
+
+        <!-- CONTEÚDO DA SEÇÃO (PERMANECE OCULTO ATÉ A AUTENTICAÇÃO) -->
+        <div id="conteudoProtegidoSenioridade" class="space-y-6 opacity-20 pointer-events-none transition-all duration-300">
+          <!-- CABEÇALHO DO PAINEL -->
+          <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-black/5 dark:border-white/10 pb-4">
+            <div class="flex items-center gap-3">
+              <div class="p-2.5 bg-apple-purple/10 text-apple-purple dark:text-apple-darkPurple rounded-xl border border-apple-purple/20">
+                <i data-lucide="brain-circuit" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h3 class="text-sm font-bold text-black dark:text-white uppercase tracking-wider">2. Diagnóstico Operacional: Senioridade, Complexidade &amp; Gaps</h3>
+                <p class="text-[11px] text-apple-gray">Algoritmo de inferência comportamental (Frameworks: Travis, Dreyfus, Sauro &amp; Levy) — <span id="lblFrenteSenioridade" class="text-black dark:text-white font-bold">CX Pesquisa</span></p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-mono font-bold text-apple-purple dark:text-apple-darkPurple bg-apple-purple/10 px-3 py-1 rounded-full border border-apple-purple/20" id="badgeTotalPontosComplexidade">
+                0 Pts de Complexidade
+              </span>
+              <button type="button" onclick="bloquearSenioridadeManual()" title="Bloquear Seção Novamente" class="p-1.5 rounded-lg bg-apple-gray6 dark:bg-apple-darkCard2 hover:bg-apple-red/10 hover:text-apple-red text-apple-gray transition-colors">
+                <i data-lucide="lock" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- TÓPICO 1 E 2: CARDS DE DISTRIBUIÇÃO E PERFIL DO TIME -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="apple-card-inset p-4 flex flex-col justify-between space-y-2">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-apple-purple dark:text-apple-darkPurple uppercase">Sêniores (Liderança &amp; Estratégia)</span>
+                <span class="p-1.5 bg-apple-purple/10 text-apple-purple rounded-lg font-mono font-bold text-xs" id="cntSeniorCount">0</span>
+              </div>
+              <p class="text-[10.5px] text-apple-gray leading-relaxed">Foco em projetos do Super App, demandas Críticas e triangulação de 3+ metodologias estatísticas.</p>
+              <div class="text-[11px] font-semibold text-black dark:text-white border-t border-black/5 dark:border-white/10 pt-1.5 truncate" id="txtSeniorNomes">--</div>
+            </div>
+
+            <div class="apple-card-inset p-4 flex flex-col justify-between space-y-2">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-apple-blue dark:text-apple-darkBlue uppercase">Plenos (Execução Autônoma)</span>
+                <span class="p-1.5 bg-apple-blue/10 text-apple-blue rounded-lg font-mono font-bold text-xs" id="cntPlenoCount">0</span>
+              </div>
+              <p class="text-[10.5px] text-apple-gray leading-relaxed">Liderança autônoma em projetos de média complexidade e suporte a grandes estudos.</p>
+              <div class="text-[11px] font-semibold text-black dark:text-white border-t border-black/5 dark:border-white/10 pt-1.5 truncate" id="txtPlenoNomes">--</div>
+            </div>
+
+            <div class="apple-card-inset p-4 flex flex-col justify-between space-y-2">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-apple-green dark:text-apple-darkGreen uppercase">Juniores (Apoio &amp; Guiados)</span>
+                <span class="p-1.5 bg-apple-green/10 text-apple-green rounded-lg font-mono font-bold text-xs" id="cntJuniorCount">0</span>
+              </div>
+              <p class="text-[10.5px] text-apple-gray leading-relaxed">Atuação focada em apoio tático, testes de usabilidade pontuais e execução instruída.</p>
+              <div class="text-[11px] font-semibold text-black dark:text-white border-t border-black/5 dark:border-white/10 pt-1.5 truncate" id="txtJuniorNomes">--</div>
+            </div>
+          </div>
+
+          <!-- TÓPICO 3 E 4: PAINEL DE DIAGNÓSTICO PRESCRITIVO & SOLICITAÇÃO DE VAGAS -->
+          <div class="apple-card-inset p-5 space-y-3 border-l-4 border-l-apple-purple dark:border-l-apple-darkPurple">
+            <div class="flex items-center justify-between border-b border-black/5 dark:border-white/10 pb-2">
+              <span class="text-xs font-bold uppercase tracking-wider text-apple-purple dark:text-apple-darkPurple flex items-center gap-1.5">
+                <i data-lucide="sparkles" class="w-4 h-4"></i> Parecer Operacional &amp; Dimensionamento de Reforço ($X$ Vagas)
+              </span>
+              <span class="text-[10px] bg-apple-purple/10 text-apple-purple dark:text-apple-darkPurple px-2.5 py-0.5 rounded-full font-bold uppercase border border-apple-purple/20">Análise de Risco de SLA</span>
+            </div>
+
+            <div class="text-xs text-black dark:text-slate-200 leading-relaxed space-y-2" id="boxParecerPrescritivoVagas">
+              <!-- Texto estruturado gerado via JS -->
+            </div>
+          </div>
+
+          <!-- TABELA DE MATRIZ DE COMPLEXIDADE X INTEGRANTES -->
+          <div class="space-y-2 pt-1">
+            <span class="text-xs font-bold uppercase tracking-wider text-apple-gray flex items-center gap-1.5">
+              <i data-lucide="layers" class="w-3.5 h-3.5 text-apple-blue dark:text-apple-darkBlue"></i> Mapeamento de Complexidade por Projeto &amp; Senioridade Exigida
+            </span>
+
+            <div class="overflow-x-auto custom-scrollbar max-h-[350px] rounded-2xl border border-black/5 dark:border-white/10">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead class="sticky top-0 z-10 bg-black/10 dark:bg-apple-darkCard2 backdrop-blur-md text-black dark:text-white font-bold border-b border-black/5 dark:border-white/10">
+                  <tr>
+                    <th class="p-3">Projeto em Andamento</th>
+                    <th class="p-3 text-center">Porte / Tipo</th>
+                    <th class="p-3 text-center">Nº Métodos</th>
+                    <th class="p-3 text-center">Nível Complexidade</th>
+                    <th class="p-3">Responsável (`R`)</th>
+                    <th class="p-3 text-center">Senioridade Inferida</th>
+                    <th class="p-3 text-center">Status Alocação</th>
+                  </tr>
+                </thead>
+                <tbody id="tabelaComplexidadeBody" class="divide-y divide-black/5 dark:divide-white/10 text-black dark:text-slate-300">
+                  <!-- Injetado via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- MODAL NATIVA APPLE DE AUTENTICAÇÃO VIA APPS SCRIPT -->
+      <div id="modalAuthSenioridade" class="fixed inset-0 z-[110] hidden flex items-center justify-center p-4 bg-black/50 backdrop-blur-md transition-all">
+        <div class="apple-card max-w-sm w-full p-6 space-y-4 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+          <div class="flex items-center justify-between border-b border-black/5 dark:border-white/10 pb-3">
+            <div class="flex items-center gap-2">
+              <div class="p-2 bg-apple-purple/10 text-apple-purple dark:text-apple-darkPurple rounded-xl">
+                <i data-lucide="shield-check" class="w-5 h-5"></i>
+              </div>
+              <h3 class="text-sm font-bold text-black dark:text-white">Autenticação de Liderança</h3>
+            </div>
+            <button type="button" onclick="fecharModalAuthSenioridade()" class="text-apple-gray hover:text-black dark:hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+          </div>
+
+          <form id="formAuthSenioridade" onsubmit="validarLoginSenioridade(event)" class="space-y-3">
+            <div>
+              <label class="block text-[11px] font-bold text-apple-gray mb-1 uppercase">E-mail Cadastrado</label>
+              <input type="email" id="inputAuthEmail" required placeholder="seu.email@puxe.com" class="apple-input w-full text-xs">
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold text-apple-gray mb-1 uppercase">Senha</label>
+              <input type="password" id="inputAuthSenha" required placeholder="••••••••" class="apple-input w-full text-xs">
+            </div>
+
+            <div id="msgErroAuthSenioridade" class="text-[11px] font-semibold text-apple-red dark:text-apple-darkRed hidden">
+              <!-- Mensagem de erro -->
+            </div>
+
+            <div class="pt-2 flex items-center justify-end gap-2">
+              <button type="button" onclick="fecharModalAuthSenioridade()" class="apple-btn-secondary text-xs">Cancelar</button>
+              <button type="submit" id="btnSubmitAuth" class="apple-btn-primary text-xs !bg-apple-purple hover:!bg-purple-700 flex items-center gap-1.5">
+                <span id="txtBtnAuth">Acessar</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
       <!-- LINHA DE PAINÉIS DE DECISÃO 2 E 3 -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
@@ -1973,7 +2118,7 @@
                 <i data-lucide="sliders" class="w-5 h-5"></i>
               </div>
               <div>
-                <h3 class="text-sm font-bold text-black dark:text-white uppercase tracking-wider">2. Simulador de
+                <h3 class="text-sm font-bold text-black dark:text-white uppercase tracking-wider">3. Simulador de
                   Capacidade (What-If)</h3>
                 <p class="text-[11px] text-apple-gray">Previsão de impacto de novas demandas na esteira do time</p>
               </div>
@@ -2029,7 +2174,7 @@
                 <i data-lucide="target" class="w-5 h-5"></i>
               </div>
               <div>
-                <h3 class="text-sm font-bold text-black dark:text-white uppercase tracking-wider">3. Índice de Aderência
+                <h3 class="text-sm font-bold text-black dark:text-white uppercase tracking-wider">4. Índice de Aderência
                   Estratégica</h3>
                 <p class="text-[11px] text-apple-gray">Percentual do orçamento de pessoas alocado em demandas Críticas /
                   SuperApp</p>
@@ -2070,7 +2215,7 @@
               <i data-lucide="users" class="w-5 h-5"></i>
             </div>
             <div>
-              <h3 class="text-sm font-bold text-black dark:text-white uppercase tracking-wider">4. Eficiência de
+              <h3 class="text-sm font-bold text-black dark:text-white uppercase tracking-wider">5. Eficiência de
                 Recrutamento &amp; Testes com Usuários Reais</h3>
               <p class="text-[11px] text-apple-gray">Rastreabilidade metodológica: Validação ativa com cidadãos/usuários
                 vs. Pesquisas Desk/Heurísticas</p>
@@ -7229,7 +7374,7 @@ function carregarTemaSalvo() {
       }
     });
 
-    function renderControlView() {
+ function renderControlView() {
       const selectedArea = document.getElementById('filterArea')?.value || 'ALL';
       let activeSheets = selectedArea === 'ALL' ? ['CX Pesquisa', 'UX Pesquisa', 'CX Escrita', 'UX Escrita'] : [selectedArea];
 
@@ -7238,10 +7383,12 @@ function carregarTemaSalvo() {
         if (window.RAW_DATA[sh]) allProjects = allProjects.concat(window.RAW_DATA[sh]);
       });
 
+      // ➔ Atualizado para passar os projetos filtrados pelo cabeçalho
       renderPainelSobrecargaGargalos(allProjects);
       runCapacitySimulator(allProjects);
       renderPainelIndiceAderencia(allProjects);
       renderPainelRecrutamentoUsuarios(allProjects);
+      renderDiagnosticoSenioridade();
 
       if (window.lucide) lucide.createIcons();
     }
@@ -7294,13 +7441,27 @@ function carregarTemaSalvo() {
       renderPainelSobrecargaGargalos();
     };
 
-    function renderPainelSobrecargaGargalos() {
-      const frente = window.matrizFrenteAtiva || 'CX Pesquisa';
+    function renderPainelSobrecargaGargalos(projects) {
+      const selectedArea = document.getElementById('filterArea')?.value || 'ALL';
       const statusFiltro = window.matrizStatusFrenteAtiva || 'andamento';
-      const todosProjetosFrente = (window.RAW_DATA && window.RAW_DATA[frente]) ? window.RAW_DATA[frente] : [];
+
+      // Se não receber projetos via parâmetro, carrega com base no filtro global
+      if (!projects) {
+        let activeSheets = selectedArea === 'ALL' ? ['CX Pesquisa', 'UX Pesquisa', 'CX Escrita', 'UX Escrita'] : [selectedArea];
+        projects = [];
+        activeSheets.forEach(sh => {
+          if (window.RAW_DATA[sh]) projects = projects.concat(window.RAW_DATA[sh]);
+        });
+      }
+
+      // Atualiza o rótulo exibido no título da tabela
+      const lblFrente = document.getElementById('lblFrenteAtivaMatriz');
+      if (lblFrente) {
+        lblFrente.innerText = selectedArea === 'ALL' ? 'Todas as Frentes' : selectedArea;
+      }
 
       // Filtrar projetos conforme o status selecionado (Em Andamento vs Concluídos)
-      const projetosFiltrados = todosProjetosFrente.filter(p => {
+      const projetosFiltrados = projects.filter(p => {
         const st = (p.status || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         if (statusFiltro === 'andamento') {
           return st.includes('andamento');
@@ -7310,9 +7471,9 @@ function carregarTemaSalvo() {
         return true;
       });
 
-      // 1. Extrair a equipe completa da frente
+      // 1. Extrair a equipe completa a partir do conjunto de projetos recebido
       const pessoasSet = new Set();
-      todosProjetosFrente.forEach(p => {
+      projects.forEach(p => {
         const resps = (p.responsavel || '').split(/[,;]/).map(r => r.trim()).filter(r => r && r !== '-' && r !== 'Não definido' && r !== 'nan');
         const colabs = (p.colaboradores || '').split(/[,;]/).map(c => c.trim()).filter(c => c && c !== '-' && c !== 'nan');
         resps.forEach(r => pessoasSet.add(r));
@@ -7348,16 +7509,15 @@ function carregarTemaSalvo() {
         matrizProjetos.push(linha);
       });
 
-      // 3. ORDENAÇÃO CUSTOMIZADA: Pessoas com projetos em ordem alfabética primeiro;
-      // Pessoas com 0 projetos no final da fila (também alfabéticas entre si).
+      // 3. Ordenação: Pessoas com projetos atritos em ordem alfabética primeiro; 0 projetos ao final
       const listaPessoas = Array.from(pessoasSet).sort((a, b) => {
         const temProjetoA = cargas[a].total > 0 ? 1 : 0;
         const temProjetoB = cargas[b].total > 0 ? 1 : 0;
 
         if (temProjetoA !== temProjetoB) {
-          return temProjetoB - temProjetoA; // Quem tem projeto (1) vem antes de quem não tem (0)
+          return temProjetoB - temProjetoA;
         }
-        return a.localeCompare(b, 'pt-BR'); // Ordem alfabética como critério de desempate
+        return a.localeCompare(b, 'pt-BR');
       });
 
       // 4. Renderizar Tabela de Resumo
@@ -7385,7 +7545,7 @@ function carregarTemaSalvo() {
         });
         htmlBody += `</tr>`;
 
-        // Linha do TOTAL
+        // Linha do TOTAL com cores por capacidade
         htmlBody += `<tr class="font-extrabold bg-black/5 dark:bg-white/5"><td class="p-2 text-left uppercase text-black dark:text-white">CARGA TOTAL (${labelStatus})</td>`;
         listaPessoas.forEach(p => {
           const tot = cargas[p].total;
@@ -7424,7 +7584,7 @@ function carregarTemaSalvo() {
 
         let htmlBodyD = '';
         if (matrizProjetos.length === 0) {
-          htmlBodyD = `<tr><td colspan="${listaPessoas.length + 1}" class="p-4 text-center italic text-apple-gray">Nenhum projeto registrado (${labelStatus.toLowerCase()}) nesta frente.</td></tr>`;
+          htmlBodyD = `<tr><td colspan="${listaPessoas.length + 1}" class="p-4 text-center italic text-apple-gray">Nenhum projeto registrado (${labelStatus.toLowerCase()}) na seleção atual.</td></tr>`;
         } else {
           matrizProjetos.forEach(row => {
             htmlBodyD += `<tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors">`;
@@ -7688,6 +7848,303 @@ window.addEventListener('message', (event) => {
         }
     }
 });
+
+function renderDiagnosticoSenioridade() {
+      const isAuth = sessionStorage.getItem('puxe_senioridade_auth') === 'true';
+
+      // Se a pessoa já estiver autenticada na sessão, mantemos liberado
+      if (isAuth) {
+        const overlay = document.getElementById('overlayBloqueioSenioridade');
+        const conteudo = document.getElementById('conteudoProtegidoSenioridade');
+        if (overlay) overlay.classList.add('hidden');
+        if (conteudo) {
+          conteudo.classList.remove('opacity-20', 'pointer-events-none');
+          conteudo.classList.add('opacity-100');
+        }
+      } else {
+        // Se não estiver logado, encerra a renderização
+        return;
+      }
+  const frente = window.matrizFrenteAtiva || 'CX Pesquisa';
+  const statusFiltro = window.matrizStatusFrenteAtiva || 'andamento';
+  const todosProjetos = (window.RAW_DATA && window.RAW_DATA[frente]) ? window.RAW_DATA[frente] : [];
+
+  // Filtrar projetos ativos pelo status
+  const projetosAtivos = todosProjetos.filter(p => {
+    const st = (p.status || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    if (statusFiltro === 'andamento') return st.includes('andamento');
+    if (statusFiltro === 'concluido') return st.includes('conclu');
+    return true;
+  });
+
+  // Atualiza Label da Frente
+  const lblFrente = document.getElementById('lblFrenteSenioridade');
+  if (lblFrente) lblFrente.innerText = frente;
+
+  // 1. Extrair Equipe da Frente
+  const pessoasSet = new Set();
+  todosProjetos.forEach(p => {
+    const resps = (p.responsavel || '').split(/[,;]/).map(r => r.trim()).filter(r => r && r !== '-' && r !== 'Não definido' && r !== 'nan');
+    const colabs = (p.colaboradores || '').split(/[,;]/).map(c => c.trim()).filter(c => c && c !== '-' && c !== 'nan');
+    resps.forEach(r => pessoasSet.add(r));
+    colabs.forEach(c => pessoasSet.add(c));
+  });
+
+  const listaPessoas = Array.from(pessoasSet).sort();
+
+  // 2. Mapear histórico de atuação de cada pessoa para inferir Senioridade
+  const perfilPessoas = {};
+  listaPessoas.forEach(p => {
+    perfilPessoas[p] = { R_alta: 0, R_media: 0, R_baixa: 0, A_total: 0, total_R: 0, total_A: 0 };
+  });
+
+  // Avaliação da Complexidade de cada Projeto
+  let somaPontosComplexidade = 0;
+  const projetosMapeados = [];
+
+  projetosAtivos.forEach(p => {
+    const mStr = String(p.pesquisa_metodo || '').trim();
+    const numMetodos = (mStr && mStr !== '-' && mStr.toLowerCase() !== 'nan') ? mStr.split(/[,;/|\n]/).filter(m => m.trim()).length : 1;
+
+    const isSuperApp = String(p.super_app || '').toLowerCase() === 'sim';
+    const isCritico = (p.prioridade || '').toLowerCase().includes('crit');
+    const isEstruturado = (p.tipo_projeto || '').toUpperCase().includes('E');
+
+    let nivelComplexidade = 'Baixa';
+    let pontos = 1;
+
+    if (isSuperApp || isCritico || numMetodos >= 3) {
+      nivelComplexidade = 'Alta';
+      pontos = 3;
+    } else if (isEstruturado || numMetodos === 2) {
+      nivelComplexidade = 'Média';
+      pontos = 2;
+    }
+
+    somaPontosComplexidade += pontos;
+
+    const resps = (p.responsavel || '').split(/[,;]/).map(r => r.trim());
+    const colabs = (p.colaboradores || '').split(/[,;]/).map(c => c.trim());
+
+    resps.forEach(r => {
+      if (perfilPessoas[r]) {
+        perfilPessoas[r].total_R++;
+        if (nivelComplexidade === 'Alta') perfilPessoas[r].R_alta++;
+        else if (nivelComplexidade === 'Média') perfilPessoas[r].R_media++;
+        else perfilPessoas[r].R_baixa++;
+      }
+    });
+
+    colabs.forEach(c => {
+      if (perfilPessoas[c]) {
+        perfilPessoas[c].total_A++;
+        perfilPessoas[c].A_total++;
+      }
+    });
+
+    projetosMapeados.push({
+      projeto: p.projeto,
+      tipo: p.tipo_projeto || 'E',
+      metodos: numMetodos,
+      complexidade: nivelComplexidade,
+      pontos: pontos,
+      responsavel: resps.join(', ') || 'Não definido'
+    });
+  });
+
+  // 3. Classificar Senioridade Inferida de cada pessoa
+  const seniores = [];
+  const plenos = [];
+  const juniores = [];
+  const senioridadePessoaMap = {};
+
+  listaPessoas.forEach(p => {
+    const d = perfilPessoas[p];
+    let sen = 'Júnior';
+
+    if (d.R_alta > 0 || (d.total_R >= 2 && d.R_media >= 1)) {
+      sen = 'Sênior';
+      seniores.push(p);
+    } else if (d.total_R >= 1 || d.A_total >= 2) {
+      sen = 'Pleno';
+      plenos.push(p);
+    } else {
+      juniores.push(p);
+    }
+    senioridadePessoaMap[p] = sen;
+  });
+
+  // Atualizar Cards de Senioridade
+  const elSeniorCnt = document.getElementById('cntSeniorCount'); if (elSeniorCnt) elSeniorCnt.innerText = seniores.length;
+  const elSeniorNomes = document.getElementById('txtSeniorNomes'); if (elSeniorNomes) elSeniorNomes.innerText = seniores.length > 0 ? seniores.join(', ') : 'Nenhum identificado';
+
+  const elPlenoCnt = document.getElementById('cntPlenoCount'); if (elPlenoCnt) elPlenoCnt.innerText = plenos.length;
+  const elPlenoNomes = document.getElementById('txtPlenoNomes'); if (elPlenoNomes) elPlenoNomes.innerText = plenos.length > 0 ? plenos.join(', ') : 'Nenhum identificado';
+
+  const elJuniorCnt = document.getElementById('cntJuniorCount'); if (elJuniorCnt) elJuniorCnt.innerText = juniores.length;
+  const elJuniorNomes = document.getElementById('txtJuniorNomes'); if (elJuniorNomes) elJuniorNomes.innerText = juniores.length > 0 ? juniores.join(', ') : 'Nenhum identificado';
+
+  const elBadgePts = document.getElementById('badgeTotalPontosComplexidade'); if (elBadgePts) elBadgePts.innerText = `${somaPontosComplexidade} Pts de Complexidade`;
+
+  // 4. Mapear Gaps & Parecer Prescritivo de Contratação ($X$ Vagas)
+  const projetosAltosSemSenior = projetosMapeados.filter(pm => pm.complexidade === 'Alta' && senioridadePessoaMap[pm.responsavel] !== 'Sênior');
+  
+  // Capacidade Ideal: Sênior = 3 pts | Pleno = 2 pts | Júnior = 1 pt
+  const capacidadeTotalPontos = (seniores.length * 3) + (plenos.length * 2) + (juniores.length * 1);
+  const gapPontos = somaPontosComplexidade - capacidadeTotalPontos;
+
+  let novasVagasSenior = 0;
+  let novasVagasPleno = 0;
+
+  if (projetosAltosSemSenior.length > 0) {
+    novasVagasSenior = Math.ceil(projetosAltosSemSenior.length / 2);
+  }
+  if (gapPontos > 0 && novasVagasSenior === 0) {
+    novasVagasPleno = Math.ceil(gapPontos / 2);
+  }
+
+  const totalNovasVagas = novasVagasSenior + novasVagasPleno;
+
+  const boxParecer = document.getElementById('boxParecerPrescritivoVagas');
+  if (boxParecer) {
+    if (totalNovasVagas > 0) {
+      boxParecer.innerHTML = `
+        <p><strong>DIAGNÓSTICO DE CAPACIDADE:</strong> A frente <strong class="text-apple-purple dark:text-apple-darkPurple">${frente}</strong> acumula <strong>${somaPontosComplexidade} pontos de complexidade</strong> ativados na esteira para uma capacidade suportada de <strong>${capacidadeTotalPontos} pontos</strong>.</p>
+        <p><strong>INCONSISTÊNCIA DE SENIORIDADE:</strong> Detectamos <strong class="text-apple-red dark:text-apple-darkRed">${projetosAltosSemSenior.length} projeto(s) de Alta Complexidade</strong> (SuperApp/Prioridade Crítica) sob liderança de profissionais sem perfil Sênior inferido, gerando risco alto de gargalo e restrabalho.</p>
+        <p class="pt-1"><strong class="text-apple-green dark:text-apple-darkGreen">PARECER RECOMENDADO:</strong> Para equilibrar a demanda sem estourar SLAs, é necessária a contratação de <strong class="text-apple-purple dark:text-apple-darkPurple text-sm">${totalNovasVagas} profissional(is)</strong> (${novasVagasSenior > 0 ? novasVagasSenior + ' Sênior(es)' : ''} ${novasVagasPleno > 0 ? novasVagasPleno + ' Pleno(s)' : ''}). Essa solicitação é fundamentada em dados operacionais de carga x complexidade analítica.</p>
+      `;
+    } else {
+      boxParecer.innerHTML = `
+        <p><strong class="text-apple-green dark:text-apple-darkGreen">CAPACIDADE E SENIORIDADE ALINHADAS:</strong> A equipe da frente <strong class="text-black dark:text-white">${frente}</strong> possui senioridade compatível com a complexidade dos projetos ativos. Todos os estudos de Alta Complexidade possuem liderança Sênior devidamente alocada.</p>
+      `;
+    }
+  }
+
+  // 5. Renderizar Tabela de Complexidade x Integrantes
+  const tbody = document.getElementById('tabelaComplexidadeBody');
+  if (tbody) {
+    tbody.innerHTML = '';
+
+    if (projetosMapeados.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center italic text-apple-gray">Nenhum projeto ativo mapeado para análise de complexidade.</td></tr>`;
+    } else {
+      projetosMapeados.forEach(pm => {
+        const senResp = senioridadePessoaMap[pm.responsavel] || 'Júnior';
+        let badgeCompl = 'bg-apple-blue/10 text-apple-blue border-apple-blue/20';
+        if (pm.complexidade === 'Alta') badgeCompl = 'bg-apple-red/10 text-apple-red border-apple-red/20';
+        else if (pm.complexidade === 'Média') badgeCompl = 'bg-apple-orange/10 text-apple-orange border-apple-orange/20';
+
+        let statusAloc = '<span class="text-apple-green font-bold">✅ Adequado</span>';
+        if (pm.complexidade === 'Alta' && senResp !== 'Sênior') {
+          statusAloc = '<span class="text-apple-red font-bold animate-pulse">⚠️ Risco de SLA</span>';
+        }
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-black/5 dark:hover:bg-white/5 transition-colors";
+        tr.innerHTML = `
+          <td class="p-2.5 font-bold text-black dark:text-white max-w-xs truncate">${pm.projeto}</td>
+          <td class="p-2.5 text-center font-mono">${pm.tipo}</td>
+          <td class="p-2.5 text-center font-mono font-bold">${pm.metodos}</td>
+          <td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold border ${badgeCompl}">${pm.complexidade} (${pm.pontos} pts)</span></td>
+          <td class="p-2.5 font-medium">${pm.responsavel}</td>
+          <td class="p-2.5 text-center font-semibold text-apple-purple dark:text-apple-darkPurple">${senResp}</td>
+          <td class="p-2.5 text-center">${statusAloc}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+  }
+
+  if (window.lucide) lucide.createIcons();
+}
+
+// 🔴 COLE AQUI A URL GERADA NA IMPLANTAÇÃO DO SEU GOOGLE APPS SCRIPT:
+    const APPS_SCRIPT_AUTH_URL = "https://script.google.com/macros/s/AKfycbyxEZyzm2d-3uqNlOysNrUXbjS2MG9IB-5daZGAt1v2nlpYCvmk34v6vXykn7zxMeF7/exec";
+
+    function abrirModalAuthSenioridade() {
+      const modal = document.getElementById('modalAuthSenioridade');
+      const msgErro = document.getElementById('msgErroAuthSenioridade');
+      if (msgErro) msgErro.classList.add('hidden');
+      if (modal) modal.classList.remove('hidden');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function fecharModalAuthSenioridade() {
+      const modal = document.getElementById('modalAuthSenioridade');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    async function validarLoginSenioridade(e) {
+      e.preventDefault();
+
+      const email = document.getElementById('inputAuthEmail')?.value || '';
+      const senha = document.getElementById('inputAuthSenha')?.value || '';
+      const msgErro = document.getElementById('msgErroAuthSenioridade');
+      const btnSubmit = document.getElementById('btnSubmitAuth');
+      const txtBtn = document.getElementById('txtBtnAuth');
+
+      if (btnSubmit) btnSubmit.disabled = true;
+      if (txtBtn) txtBtn.innerText = "Verificando...";
+      if (msgErro) msgErro.classList.add('hidden');
+
+      try {
+        const response = await fetch(APPS_SCRIPT_AUTH_URL, {
+          method: 'POST',
+          mode: 'cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ email: email, senha: senha })
+        });
+
+        const data = await response.json();
+
+        if (data && data.success) {
+          // Autenticação bem-sucedida
+          sessionStorage.setItem('puxe_senioridade_auth', 'true');
+          desbloquearSenioridadeUI();
+          fecharModalAuthSenioridade();
+        } else {
+          if (msgErro) {
+            msgErro.innerText = data.message || "E-mail ou senha incorretos.";
+            msgErro.classList.remove('hidden');
+          }
+        }
+      } catch (err) {
+        console.error("Erro ao autenticar via Apps Script:", err);
+        if (msgErro) {
+          msgErro.innerText = "Erro ao conectar com o servidor. Tente novamente.";
+          msgErro.classList.remove('hidden');
+        }
+      } finally {
+        if (btnSubmit) btnSubmit.disabled = false;
+        if (txtBtn) txtBtn.innerText = "Acessar";
+      }
+    }
+
+    function desbloquearSenioridadeUI() {
+      const overlay = document.getElementById('overlayBloqueioSenioridade');
+      const conteudo = document.getElementById('conteudoProtegidoSenioridade');
+
+      if (overlay) overlay.classList.add('hidden');
+      if (conteudo) {
+        conteudo.classList.remove('opacity-20', 'pointer-events-none');
+        conteudo.classList.add('opacity-100');
+      }
+
+      // Renderiza o diagnóstico de senioridade após liberar
+      renderDiagnosticoSenioridade();
+    }
+
+    function bloquearSenioridadeManual() {
+      sessionStorage.removeItem('puxe_senioridade_auth');
+      const overlay = document.getElementById('overlayBloqueioSenioridade');
+      const conteudo = document.getElementById('conteudoProtegidoSenioridade');
+
+      if (overlay) overlay.classList.remove('hidden');
+      if (conteudo) {
+        conteudo.classList.add('opacity-20', 'pointer-events-none');
+        conteudo.classList.remove('opacity-100');
+      }
+    }
 </script>
 </body>
 
