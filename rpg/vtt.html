@@ -138,7 +138,6 @@
       display: none !important;
     }
 
-    /* Quando a visão do Mestre está ativa no Jogador: esconde o header totalmente */
     body.mirroring-active header {
       display: none !important;
     }
@@ -377,7 +376,14 @@
     const syncChannel = new BroadcastChannel('rpg_fog_vtt');
     const urlParams = new URLSearchParams(window.location.search);
     const roomParam = urlParams.get('room');
-    const isPlayerMode = urlParams.get('mode') === 'player' || !!roomParam;
+    const modeParam = urlParams.get('mode');
+
+    // DETECÇÃO ROBUSTA DE MODO JOGADOR:
+    // Se a URL contém 'mode=player' OU 'room=' -> É um Jogador!
+    const isPlayerMode = modeParam === 'player' || 
+                         (roomParam !== null && roomParam !== '' && roomParam !== 'undefined') ||
+                         window.location.href.includes('mode=player') ||
+                         window.location.href.includes('room=');
 
     // Elementos DOM
     const viewport = document.getElementById('viewport');
@@ -517,7 +523,10 @@
       peer = new Peer(roomId);
       
       peer.on('open', (id) => {
-        const playerUrl = `${window.location.origin}${window.location.pathname}?room=${id}`;
+        // Constrói a URL limpa apontando EXPLICITAMENTE para o modo jogador
+        const baseUrl = window.location.href.split('?')[0].split('#')[0];
+        const playerUrl = `${baseUrl}?mode=player&room=${id}`;
+        
         document.getElementById('qrcode').innerHTML = '';
         new QRCode(document.getElementById('qrcode'), {
           text: playerUrl,
@@ -981,7 +990,8 @@
 
     if (btnOpenPlayer) {
       btnOpenPlayer.addEventListener('click', () => {
-        const playerUrl = `${window.location.origin}${window.location.pathname}?room=${roomId}`;
+        const baseUrl = window.location.href.split('?')[0].split('#')[0];
+        const playerUrl = `${baseUrl}?mode=player&room=${roomId}`;
         window.open(playerUrl, '_blank');
       });
     }
@@ -1023,7 +1033,6 @@
         hintBox.innerHTML = '🖱️ <b>Scroll:</b> Zoom | ⌨️ <b>Espaço + Arrastar:</b> Mover Mapa';
       }
 
-      // Recalcula o tamanho da tela pois a barra de ferramentas sumiu/apareceu
       setTimeout(resizeCanvas, 50);
     }
 
