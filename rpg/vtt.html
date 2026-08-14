@@ -561,7 +561,7 @@
       }
     }
 
-   // --- CONEXÃO PEERJS E WEBRTC (COM TRATAMENTO DE ERROS E TIMEOUT P/ DISPOSITIVOS ANTIGOS) ---
+    // --- CONEXÃO PEERJS E WEBRTC (COM TRATAMENTO DE ERROS E TIMEOUT P/ DISPOSITIVOS ANTIGOS) ---
     var peer = null;
     var connections = [];
     var playerConn = null;
@@ -677,6 +677,36 @@
 
         peer.on('error', function(err) {
           console.log('Erro Peer Mestre:', err);
+        });
+      }
+    }
+
+    function broadcast(data) {
+      if (!isPlayerMode) {
+        syncChannel.postMessage(data);
+        for (var i = 0; i < connections.length; i++) {
+          if (connections[i] && connections[i].open) {
+            connections[i].send(data);
+          }
+        }
+      }
+    }
+
+    function resizeCanvas() {
+      mainCanvas.width = viewport.clientWidth;
+      mainCanvas.height = viewport.clientHeight;
+      render();
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    function broadcastCamera() {
+      if (!isPlayerMode && mapImage) {
+        var centerWorld = screenToWorld(viewport.clientWidth / 2, viewport.clientHeight / 2);
+        broadcast({
+          type: 'CAMERA_UPDATE',
+          scale: scale,
+          centerX: centerWorld.x,
+          centerY: centerWorld.y
         });
       }
     }
