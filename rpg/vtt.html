@@ -245,7 +245,7 @@
     .modal-desc {
       font-size: 13px;
       color: #c4c4cc;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       line-height: 1.4;
     }
 
@@ -253,7 +253,21 @@
       background: white;
       padding: 10px;
       border-radius: 6px;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
+    }
+
+    /* Estilização do Link da Sala */
+    .url-box {
+      background: #121214;
+      border: 1px solid #323238;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 11px;
+      color: #04d361;
+      word-break: break-all;
+      width: 100%;
+      margin-bottom: 10px;
+      font-family: monospace;
     }
 
     .connection-status {
@@ -351,10 +365,16 @@
   <div id="connect-modal" class="modal-overlay">
     <div class="modal-box">
       <div class="modal-title">Conectar Tablet / TV / Celular</div>
-      <div class="modal-desc">Escaneie o QR Code abaixo com a câmera do outro dispositivo para abrir a Tela do Jogador:</div>
+      <div class="modal-desc">Escaneie o QR Code ou acesse o link direto:</div>
       <div id="qrcode"></div>
+      
+      <!-- Caixa de Texto com o Link Gerado -->
+      <div id="url-display" class="url-box">Gerando link...</div>
+
       <div id="connection-count" class="connection-status">Aguardando conexões...</div>
+      
       <div class="modal-actions">
+        <button id="btn-copy-url" class="btn" style="border-color: #04d361; color: #04d361;">📋 Copiar Link</button>
         <button id="modal-close-connect" class="btn">Fechar Janela</button>
       </div>
     </div>
@@ -375,15 +395,17 @@
   <script>
     const syncChannel = new BroadcastChannel('rpg_fog_vtt');
     const urlParams = new URLSearchParams(window.location.search);
-    const roomParam = urlParams.get('room');
-    const modeParam = urlParams.get('mode');
+    
+    // Suporta tanto parâmetros curtos (?m=p&r=123) quanto normais (?mode=player&room=123)
+    const roomParam = urlParams.get('r') || urlParams.get('room');
+    const modeParam = urlParams.get('m') || urlParams.get('mode');
 
     // DETECÇÃO ROBUSTA DE MODO JOGADOR:
-    // Se a URL contém 'mode=player' OU 'room=' -> É um Jogador!
-    const isPlayerMode = modeParam === 'player' || 
+    const isPlayerMode = modeParam === 'p' || 
+                         modeParam === 'player' || 
                          (roomParam !== null && roomParam !== '' && roomParam !== 'undefined') ||
-                         window.location.href.includes('mode=player') ||
-                         window.location.href.includes('room=');
+                         window.location.href.includes('m=p') ||
+                         window.location.href.includes('r=');
 
     // Elementos DOM
     const viewport = document.getElementById('viewport');
@@ -414,6 +436,8 @@
     const btnOpenPlayer = document.getElementById('btn-open-player');
     const modalCloseConnect = document.getElementById('modal-close-connect');
     const connectionCount = document.getElementById('connection-count');
+    const urlDisplay = document.getElementById('url-display');
+    const btnCopyUrl = document.getElementById('btn-copy-url');
 
     // Canvas de Memória para Névoa
     const fogCanvas = document.createElement('canvas');
@@ -479,7 +503,10 @@
     let peer = null;
     let connections = [];
     let playerConn = null;
-    const roomId = roomParam || ('rpg-' + Math.random().toString(36).substring(2, 9));
+    let playerUrlGenerated = '';
+    
+    // Gera uma sala simples com exatamente 6 caracteres no final (ex: x7k9a2)
+    const roomId = roomParam || Math.random().toString(36).substring(2, 8);
 
     function sendFullSync(targetConn) {
       if (!mapImage) return;
@@ -523,13 +550,17 @@
       peer = new Peer(roomId);
       
       peer.on('open', (id) => {
-        // Constrói a URL limpa apontando EXPLICITAMENTE para o modo jogador
+        // Constrói uma URL ultra simples e curta mantendo 6 variáveis no final: ?m=p&r=xxxxxx
         const baseUrl = window.location.href.split('?')[0].split('#')[0];
-        const playerUrl = `${baseUrl}?mode=player&room=${id}`;
+        playerUrlGenerated = `${baseUrl}?m=p&r=${id}`;
         
+        // Exibe o link abaixo do QR Code
+        urlDisplay.textContent = playerUrlGenerated;
+
+        // Gera QR Code com o endereço simplificado
         document.getElementById('qrcode').innerHTML = '';
         new QRCode(document.getElementById('qrcode'), {
-          text: playerUrl,
+          text: playerUrlGenerated,
           width: 180,
           height: 180
         });
@@ -988,11 +1019,19 @@
     if (btnConnect) btnConnect.addEventListener('click', () => connectModal.classList.add('active'));
     if (modalCloseConnect) modalCloseConnect.addEventListener('click', () => connectModal.classList.remove('active'));
 
+    // Botão para copiar URL diretamente
+    btnCopyUrl.addEventListener('click', () => {
+      if (playerUrlGenerated) {
+        navigator.clipboard.writeText(playerUrlGenerated).then(() => {
+          btnCopyUrl.textContent = '✅ Copiado!';
+          setTimeout(() => { btnCopyUrl.textContent = '📋 Copiar Link'; }, 2000);
+        });
+      }
+    });
+
     if (btnOpenPlayer) {
       btnOpenPlayer.addEventListener('click', () => {
-        const baseUrl = window.location.href.split('?')[0].split('#')[0];
-        const playerUrl = `${baseUrl}?mode=player&room=${roomId}`;
-        window.open(playerUrl, '_blank');
+        window.open(playerUrlGenerated, '_blank');
       });
     }
 
