@@ -561,12 +561,13 @@
       }
     }
 
-    // PEERJS
+   // --- CONEXÃO PEERJS E WEBRTC (COM TRATAMENTO DE ERROS E TIMEOUT P/ DISPOSITIVOS ANTIGOS) ---
     var peer = null;
     var connections = [];
     var playerConn = null;
     var playerUrlGenerated = '';
     var roomId = roomParam || Math.random().toString(36).substring(2, 8);
+    var connectionTimeout = null;
 
     function sendFullSync(targetConn) {
       if (!mapImage) return;
@@ -589,11 +590,29 @@
       placeholder.textContent = 'Conectando ao Mestre...';
 
       if (typeof Peer !== 'undefined') {
-        peer = new Peer();
+        // Adicionados servidores STUN da Google para ajudar conexões em redes antigas
+        peer = new Peer({
+          config: {
+            iceServers: [
+              { urls: 'stun:stun.l.google.com:19302' },
+              { urls: 'stun:stun1.l.google.com:19302' }
+            ]
+          }
+        });
+
+        // Temporizador de 7 segundos: Se a conexão travar, informa o motivo na tela
+        connectionTimeout = setTimeout(function() {
+          if (placeholder.textContent.indexOf('Conectado') === -1) {
+            placeholder.textContent = '⚠️ Falha ao conectar sem fio no iPad. O servidor de rede não respondeu. Tente recarregar ou use a opção "Janela do Jogador" no computador.';
+          }
+        }, 7000);
+
         peer.on('open', function() {
-          playerConn = peer.connect(roomId);
+          // Desativado 'reliable' para evitar travamentos de handshake no iOS 9
+          playerConn = peer.connect(roomId, { reliable: false });
           
           playerConn.on('open', function() {
+            clearTimeout(connectionTimeout);
             placeholder.textContent = 'Conectado! Solicitando mapa do Mestre...';
             playerConn.send({ type: 'REQUEST_SYNC' });
           });
@@ -602,13 +621,31 @@
             if (data.type === 'CHUNK') processChunk(data);
             else handleData(data); 
           });
+
+          playerConn.on('error', function(err) {
+            clearTimeout(connectionTimeout);
+            placeholder.textContent = '⚠️ Erro na conexão do jogador.';
+          });
+        });
+
+        peer.on('error', function(err) {
+          clearTimeout(connectionTimeout);
+          placeholder.textContent = '⚠️ O navegador deste iPad é antigo e não suporta o certificado de segurança WebRTC atual.';
         });
       }
 
+      // Tenta sincronizar também via canal local (BroadcastChannel / LocalStorage)
       syncChannel.postMessage({ type: 'REQUEST_SYNC' });
     } else {
       if (typeof Peer !== 'undefined') {
-        peer = new Peer(roomId);
+        peer = new Peer(roomId, {
+          config: {
+            iceServers: [
+              { urls: 'stun:stun.l.google.com:19302' },
+              { urls: 'stun:stun1.l.google.com:19302' }
+            ]
+          }
+        });
         
         peer.on('open', function(id) {
           var baseUrl = window.location.href.split('?')[0].split('#')[0];
@@ -637,35 +674,9 @@
             else if (data.type === 'REQUEST_CAMERA') broadcastCamera();
           });
         });
-      }
-    }
 
-    function broadcast(data) {
-      if (!isPlayerMode) {
-        syncChannel.postMessage(data);
-        for (var i = 0; i < connections.length; i++) {
-          if (connections[i] && connections[i].open) {
-            connections[i].send(data);
-          }
-        }
-      }
-    }
-
-    function resizeCanvas() {
-      mainCanvas.width = viewport.clientWidth;
-      mainCanvas.height = viewport.clientHeight;
-      render();
-    }
-    window.addEventListener('resize', resizeCanvas);
-
-    function broadcastCamera() {
-      if (!isPlayerMode && mapImage) {
-        var centerWorld = screenToWorld(viewport.clientWidth / 2, viewport.clientHeight / 2);
-        broadcast({
-          type: 'CAMERA_UPDATE',
-          scale: scale,
-          centerX: centerWorld.x,
-          centerY: centerWorld.y
+        peer.on('error', function(err) {
+          console.log('Erro Peer Mestre:', err);
         });
       }
     }
