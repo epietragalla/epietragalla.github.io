@@ -387,7 +387,7 @@
     let currentX = 0, currentY = 0;
     let polygonPoints = [];
 
-    // --- OTIMIZAÇÃO E COMPRESSÃO DE IMAGEM ---
+    // --- COMPRESSÃO DE IMAGEM ---
     function compressImage(file, maxWidth = 2048, quality = 0.8) {
       return new Promise((resolve) => {
         const reader = new FileReader();
@@ -428,6 +428,26 @@
     let playerConn = null;
     const roomId = roomParam || ('rpg-' + Math.random().toString(36).substring(2, 9));
 
+    // Função para o Mestre enviar o estado completo para um jogador novo ou que reconectou
+    function sendFullSync(targetConn) {
+      if (!mapImage) return;
+      const centerWorld = screenToWorld(viewport.clientWidth / 2, viewport.clientHeight / 2);
+      const syncData = {
+        type: 'FULL_SYNC',
+        mapDataUrl: mapImage.src,
+        fogDataUrl: fogCanvas.toDataURL(),
+        centerX: centerWorld.x,
+        centerY: centerWorld.y,
+        scale: scale
+      };
+
+      if (targetConn && targetConn.open) {
+        targetConn.send(syncData);
+      } else {
+        broadcast(syncData);
+      }
+    }
+
     if (isPlayerMode) {
       document.body.classList.add('player-mode');
       roleBadge.textContent = 'Jogador';
@@ -439,14 +459,16 @@
         playerConn = peer.connect(roomId);
         
         playerConn.on('open', () => {
-          placeholder.textContent = 'Conectado! Aguardando o Mestre carregar o mapa...';
-          playerConn.send({ type: 'REQUEST_CAMERA' });
+          placeholder.textContent = 'Conectado! Solicitando mapa do Mestre...';
+          // Pede a sincronização do mapa e da névoa assim que a conexão se estabelece
+          playerConn.send({ type: 'REQUEST_SYNC' });
         });
 
         playerConn.on('data', (data) => handleData(data));
       });
 
-      syncChannel.postMessage({ type: 'REQUEST_CAMERA' });
+      // Solicita sincronização também via aba local (BroadcastChannel)
+      syncChannel.postMessage({ type: 'REQUEST_SYNC' });
     } else {
       peer = new Peer(roomId);
       
@@ -464,13 +486,15 @@
         connections.push(conn);
         connectionCount.textContent = `🟢 ${connections.length} dispositivo(s) conectado(s)!`;
 
-        conn.on('data', (data) => {
-          if (data.type === 'REQUEST_CAMERA') broadcastCamera();
+        conn.on('open', () => {
+          // Quando a conexão de um jogador abre, envia o estado do mapa imediatamente
+          if (mapImage) sendFullSync(conn);
         });
 
-        if (mapImage) {
-          conn.send({ type: 'LOAD_MAP', dataUrl: mapImage.src });
-        }
+        conn.on('data', (data) => {
+          if (data.type === 'REQUEST_SYNC') sendFullSync(conn);
+          else if (data.type === 'REQUEST_CAMERA') broadcastCamera();
+        });
       });
     }
 
@@ -490,10 +514,8 @@
     }
     window.addEventListener('resize', resizeCanvas);
 
-    // --- NOVA LÓGICA DE SINCRONIZAÇÃO DA CÂMERA (PELO CENTRO) ---
     function broadcastCamera() {
       if (!isPlayerMode && mapImage) {
-        // Encontra o ponto exato do mapa (World Coordinates) no CENTRO da tela do Mestre
         const centerWorld = screenToWorld(viewport.clientWidth / 2, viewport.clientHeight / 2);
         broadcast({
           type: 'CAMERA_UPDATE',
@@ -688,10 +710,42 @@
       mapImage.src = src;
     }
 
+    // Carrega o mapa E restaura o estado exato da névoa e da câmera (para conexões novas/tardias)
+    function loadMapWithFogState(mapSrc, fogSrc, centerX, centerY, targetScale) {
+      mapImage = new Image();
+      mapImage.onload = () => {
+        fogCanvas.width = mapImage.width;
+        fogCanvas.height = mapImage.height;
+        placeholder.style.display = 'none';
+
+        if (fogSrc) {
+          const fogImg = new Image();
+          fogImg.onload = () => {
+            fogCtx.clearRect(0, 0, fogCanvas.width, fogCanvas.height);
+            fogCtx.drawImage(fogImg, 0, 0);
+            if (targetScale !== undefined && centerX !== undefined) {
+              scale = targetScale;
+              panX = (viewport.clientWidth / 2) - (centerX * scale);
+              panY = (viewport.clientHeight / 2) - (centerY * scale);
+              updateZoomDisplay();
+            }
+            render();
+          };
+          fogImg.src = fogSrc;
+        } else {
+          resetFog(true);
+          resetCamera();
+        }
+      };
+      mapImage.src = mapSrc;
+    }
+
     // --- PROCESSAMENTO DE DADOS RECEBIDOS ---
     function handleData(data) {
       if (data.type === 'LOAD_MAP') loadMapImage(data.dataUrl);
-      else if (data.type === 'STROKE') applyStroke(data.x, data.y, data.radius, data.action);
+      else if (data.type === 'FULL_SYNC') {
+        loadMapWithFogState(data.mapDataUrl, data.fogDataUrl, data.centerX, data.centerY, data.scale);
+      } else if (data.type === 'STROKE') applyStroke(data.x, data.y, data.radius, data.action);
       else if (data.type === 'RECT') applyRect(data.x, data.y, data.w, data.h, data.action);
       else if (data.type === 'CIRCLE') applyCircle(data.x, data.y, data.radius, data.action);
       else if (data.type === 'POLYGON') applyPolygon(data.points, data.action);
@@ -699,18 +753,21 @@
       else if (data.type === 'CAMERA_UPDATE') {
         if (isPlayerMode && isMirroringDM) {
           scale = data.scale;
-          // Alinha o centro recebido do Mestre com o centro do Viewport do Jogador
           panX = (viewport.clientWidth / 2) - (data.centerX * scale);
           panY = (viewport.clientHeight / 2) - (data.centerY * scale);
           updateZoomDisplay();
           render();
         }
-      } else if (data.type === 'REQUEST_CAMERA' && !isPlayerMode) {
-        broadcastCamera();
       }
     }
 
-    syncChannel.onmessage = (event) => handleData(event.data);
+    syncChannel.onmessage = (event) => {
+      if (!isPlayerMode && event.data && event.data.type === 'REQUEST_SYNC') {
+        sendFullSync();
+      } else {
+        handleData(event.data);
+      }
+    };
 
     // --- EVENTOS DE INTERAÇÃO ---
     window.addEventListener('keydown', (e) => {
@@ -883,8 +940,8 @@
           btnToggleView.textContent = '🎯 Visão: Espelhar Mestre';
           btnToggleView.classList.add('active');
           hintBox.innerHTML = '🔒 <b>Câmera Bloqueada:</b> Seguindo a visão do Mestre em tempo real.';
-          if (playerConn) playerConn.send({ type: 'REQUEST_CAMERA' });
-          syncChannel.postMessage({ type: 'REQUEST_CAMERA' });
+          if (playerConn) playerConn.send({ type: 'REQUEST_SYNC' });
+          syncChannel.postMessage({ type: 'REQUEST_SYNC' });
         } else {
           btnToggleView.textContent = '👁️ Visão: Livre';
           btnToggleView.classList.remove('active');
