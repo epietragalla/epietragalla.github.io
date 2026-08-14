@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VTT - Nevoeiro de Guerra com Conexão Remota</title>
+
+  <!-- Bibliotecas externas para Conexão Ponto a Ponto e QR Code -->
+  <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #000000;
+      color: #e1e1e6;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Barra de Ferramentas */
+    header {
+      background-color: #202024;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 2px solid #29292e;
+      z-index: 10;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    .badge-dm { background-color: #8257e5; color: #fff; }
+    .badge-player { background-color: #04d361; color: #000; }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #121214;
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid #29292e;
+    }
+
+    .group-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: #737380;
+      font-weight: bold;
+      margin-right: 2px;
+    }
+
+    label { font-size: 13px; color: #a8a8b3; }
+    input[type="file"] { display: none; }
+
+    .btn {
+      background-color: #29292e;
+      color: #e1e1e6;
+      border: 1px solid #323238;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      background-color: #323238;
+      border-color: #8257e5;
+    }
+
+    .btn.active {
+      background-color: #8257e5;
+      color: #ffffff;
+      border-color: #8257e5;
+    }
+
+    .btn-danger {
+      background-color: #7a1f1d;
+      border-color: #9c2725;
+    }
+
+    .btn-danger:hover {
+      background-color: #9c2725;
+    }
+
+    .btn-player-mode {
+      border-color: #04d361;
+      color: #04d361;
+      font-weight: 500;
+    }
+
+    .btn-player-mode.active {
+      background-color: #04d361;
+      color: #000000;
+    }
+
+    /* Área Principal */
+    main {
+      flex: 1;
+      position: relative;
+      background-color: #000000;
+      overflow: hidden;
+      cursor: default;
+    }
+
+    canvas {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    body.player-mode header .dm-only {
+      display: none !important;
+    }
+
+    body:not(.player-mode) header .player-only {
+      display: none !important;
+    }
+
+    #placeholder {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #737380;
+      font-size: 18px;
+      pointer-events: none;
+      text-align: center;
+    }
+
+    .controls-hint {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      background: rgba(18, 18, 20, 0.85);
+      border: 1px solid #29292e;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      color: #a8a8b3;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    /* Modais (Confirmação e Conexão) */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-box {
+      background: #202024;
+      border: 1px solid #323238;
+      border-radius: 8px;
+      padding: 24px;
+      max-width: 420px;
+      width: 90%;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #8257e5;
+      margin-bottom: 12px;
+    }
+
+    .modal-desc {
+      font-size: 13px;
+      color: #c4c4cc;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    #qrcode {
+      background: white;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+    }
+
+    .connection-status {
+      font-size: 12px;
+      color: #04d361;
+      font-weight: bold;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <span id="role-badge" class="badge badge-dm">Mestre</span>
+
+    <!-- Controles do Mestre -->
+    <div class="control-group dm-only">
+      <label for="map-loader" class="btn">📁 Mapa</label>
+      <input type="file" id="map-loader" accept="image/*">
+    </div>
+
+    <!-- Modos de Forma -->
+    <div class="control-group dm-only">
+      <span class="group-label">Forma:</span>
+      <button id="tool-freehand" class="btn active" title="Pincel Livre">🖌️ Livre</button>
+      <button id="tool-rect" class="btn" title="Retângulo">⬜ Retângulo</button>
+      <button id="tool-circle" class="btn" title="Círculo">⭕ Círculo</button>
+      <button id="tool-polygon" class="btn" title="Polígono">📐 Polígono</button>
+    </div>
+
+    <!-- Ação -->
+    <div class="control-group dm-only">
+      <span class="group-label">Ação:</span>
+      <button id="action-erase" class="btn active">🧹 Revelar</button>
+      <button id="action-paint" class="btn">⬛ Esconder</button>
+    </div>
+
+    <!-- Tamanho do Pincel -->
+    <div class="control-group dm-only" id="brush-size-container">
+      <label for="brush-size">Tamanho:</label>
+      <input type="range" id="brush-size" min="10" max="250" value="60">
+      <span id="brush-size-val" style="font-size: 12px;">60px</span>
+    </div>
+
+    <!-- Câmera -->
+    <div class="control-group">
+      <span class="group-label">Câmera:</span>
+      <button id="btn-zoom-out" class="btn">🔍-</button>
+      <span id="zoom-val" style="font-size: 12px; min-width: 45px; text-align: center;">100%</span>
+      <button id="btn-zoom-in" class="btn">🔍+</button>
+      <button id="btn-zoom-reset" class="btn" title="Centralizar Mapa">🎯 Reset</button>
+    </div>
+
+    <!-- Jogador: Modo de Visão -->
+    <div class="control-group player-only">
+      <span class="group-label">Modo de Visão:</span>
+      <button id="btn-toggle-view" class="btn btn-player-mode">👁️ Visão: Livre</button>
+    </div>
+
+    <div class="control-group dm-only">
+      <button id="btn-reset" class="btn btn-danger">Cobrir Tudo</button>
+      <button id="btn-clear" class="btn btn-danger">Revelar Tudo</button>
+    </div>
+
+    <div style="margin-left: auto;" class="dm-only">
+      <button id="btn-connect" class="btn" style="border-color: #8257e5; color: #8257e5;">📱 Conectar Dispositivo (QR Code)</button>
+    </div>
+  </header>
+
+  <main id="viewport">
+    <div id="placeholder">Carregue uma imagem de mapa para começar</div>
+    <canvas id="main-canvas"></canvas>
+    
+    <div class="controls-hint" id="hint-box">
+      🖱️ <b>Scroll:</b> Zoom | ⌨️ <b>Espaço + Arrastar</b> ou <b>Botão do Meio:</b> Mover Mapa
+    </div>
+  </main>
+
+  <!-- Modal do QR Code / Conexão -->
+  <div id="connect-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-title">Conectar Tablet / TV / Celular</div>
+      <div class="modal-desc">Escaneie o QR Code abaixo com a câmera do outro dispositivo para abrir a Tela do Jogador:</div>
+      <div id="qrcode"></div>
+      <div id="connection-count" class="connection-status">Aguardando conexões...</div>
+      <div class="modal-actions">
+        <button id="modal-close-connect" class="btn">Fechar Window</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Confirmação -->
+  <div id="confirm-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div id="modal-title" class="modal-title" style="color: #fba94c;">Tem certeza?</div>
+      <div id="modal-desc" class="modal-desc">Esta ação alterará a visibilidade do mapa.</div>
+      <div class="modal-actions">
+        <button id="modal-cancel" class="btn">Cancelar</button>
+        <button id="modal-confirm" class="btn btn-danger">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomParam = urlParams.get('room');
+    const isPlayerMode = urlParams.get('mode') === 'player' || !!roomParam;
+
+    // Elementos DOM
+    const viewport = document.getElementById('viewport');
+    const mainCanvas = document.getElementById('main-canvas');
+    const mainCtx = mainCanvas.getContext('2d');
+    const mapLoader = document.getElementById('map-loader');
+    const brushSizeInput = document.getElementById('brush-size');
+    const brushSizeVal = document.getElementById('brush-size-val');
+    const zoomVal = document.getElementById('zoom-val');
+    const placeholder = document.getElementById('placeholder');
+    const roleBadge = document.getElementById('role-badge');
+    const brushSizeContainer = document.getElementById('brush-size-container');
+    const btnToggleView = document.getElementById('btn-toggle-view');
+    const hintBox = document.getElementById('hint-box');
+
+    // Modais
+    const confirmModal = document.getElementById('confirm-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalDesc = document.getElementById('modal-desc');
+    const modalCancel = document.getElementById('modal-cancel');
+    const modalConfirm = document.getElementById('modal-confirm');
+    let pendingAction = null;
+
+    const connectModal = document.getElementById('connect-modal');
+    const btnConnect = document.getElementById('btn-connect');
+    const modalCloseConnect = document.getElementById('modal-close-connect');
+    const connectionCount = document.getElementById('connection-count');
+
+    // Canvas de Memória para Névoa
+    const fogCanvas = document.createElement('canvas');
+    const fogCtx = fogCanvas.getContext('2d');
+
+    // Estado da Ferramenta
+    let mapImage = null;
+    let isDrawing = false;
+    let shapeTool = 'freehand'; 
+    let currentAction = 'erase'; 
+    let brushSize = parseInt(brushSizeInput.value);
+
+    // Estado da Câmera
+    let scale = 1.0;
+    let panX = 0;
+    let panY = 0;
+    let isPanning = false;
+    let startPanX = 0, startPanY = 0;
+    let isSpacePressed = false;
+    let isMirroringDM = false;
+
+    // Coordenadas
+    let startX = 0, startY = 0;
+    let currentX = 0, currentY = 0;
+    let polygonPoints = [];
+
+    // --- LÓGICA DE CONEXÃO PEERJS (WEBRTC) ---
+    let peer = null;
+    let connections = []; // Lista de conexões do Mestre
+    let playerConn = null; // Conexão do Jogador com o Mestre
+    const roomId = roomParam || ('rpg-' + Math.random().toString(36).substring(2, 9));
+
+    if (isPlayerMode) {
+      document.body.classList.add('player-mode');
+      roleBadge.textContent = 'Jogador';
+      roleBadge.className = 'badge badge-player';
+      placeholder.textContent = 'Conectando ao Mestre...';
+
+      // Jogador se conecta à sala do Mestre
+      peer = new Peer();
+      peer.on('open', () => {
+        playerConn = peer.connect(roomId);
+        
+        playerConn.on('open', () => {
+          placeholder.textContent = 'Conectado! Aguardando o Mestre carregar o mapa...';
+          playerConn.send({ type: 'REQUEST_CAMERA' });
+        });
+
+        playerConn.on('data', (data) => handleData(data));
+      });
+    } else {
+      // Mestre cria a sala
+      peer = new Peer(roomId);
+      
+      peer.on('open', (id) => {
+        // Gera o QR Code com a URL do jogador
+        const playerUrl = `${window.location.origin}${window.location.pathname}?room=${id}`;
+        document.getElementById('qrcode').innerHTML = '';
+        new QRCode(document.getElementById('qrcode'), {
+          text: playerUrl,
+          width: 180,
+          height: 180
+        });
+      });
+
+      peer.on('connection', (conn) => {
+        connections.push(conn);
+        connectionCount.textContent = `🟢 ${connections.length} dispositivo(s) conectado(s)!`;
+
+        conn.on('data', (data) => {
+          if (data.type === 'REQUEST_CAMERA') broadcastCamera();
+        });
+
+        // Envia estado atual para o novo jogador que entrou
+        if (mapImage) {
+          conn.send({ type: 'LOAD_MAP', dataUrl: mapImage.src });
+        }
+      });
+    }
+
+    // Função universal para enviar dados aos jogadores
+    function broadcast(data) {
+      if (!isPlayerMode) {
+        connections.forEach(conn => {
+          if (conn.open) conn.send(data);
+        });
+      }
+    }
+
+    function resizeCanvas() {
+      mainCanvas.width = viewport.clientWidth;
+      mainCanvas.height = viewport.clientHeight;
+      render();
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    function broadcastCamera() {
+      broadcast({
+        type: 'CAMERA_UPDATE',
+        scale: scale,
+        panX: panX,
+        panY: panY
+      });
+    }
+
+    function resetCamera() {
+      if (!mapImage) return;
+      const scaleX = viewport.clientWidth / mapImage.width;
+      const scaleY = viewport.clientHeight / mapImage.height;
+      scale = Math.min(scaleX, scaleY, 1.0);
+      panX = (viewport.clientWidth - mapImage.width * scale) / 2;
+      panY = (viewport.clientHeight - mapImage.height * scale) / 2;
+      
+      updateZoomDisplay();
+      render();
+      broadcastCamera();
+    }
+
+    function updateZoomDisplay() {
+      zoomVal.textContent = `${Math.round(scale * 100)}%`;
+    }
+
+    function screenToWorld(screenX, screenY) {
+      return {
+        x: (screenX - panX) / scale,
+        y: (screenY - panY) / scale
+      };
+    }
+
+    // --- RENDERIZAÇÃO ---
+    function render() {
+      mainCtx.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
+      if (!mapImage) return;
+
+      mainCtx.save();
+      mainCtx.translate(panX, panY);
+      mainCtx.scale(scale, scale);
+
+      if (isPlayerMode) {
+        // Recorte 100% Imersivo p/ Jogador
+        const maskCanvas = document.createElement('canvas');
+        maskCanvas.width = fogCanvas.width;
+        maskCanvas.height = fogCanvas.height;
+        const maskCtx = maskCanvas.getContext('2d');
+
+        maskCtx.fillStyle = '#ffffff';
+        maskCtx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
+        maskCtx.globalCompositeOperation = 'destination-out';
+        maskCtx.drawImage(fogCanvas, 0, 0);
+
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = fogCanvas.width;
+        tempCanvas.height = fogCanvas.height;
+        const tempCtx = tempCanvas.getContext('2d');
+
+        tempCtx.drawImage(maskCanvas, 0, 0);
+        tempCtx.globalCompositeOperation = 'source-in';
+        tempCtx.drawImage(mapImage, 0, 0);
+
+        mainCtx.drawImage(tempCanvas, 0, 0);
+      } else {
+        // Visão Raio-X do Mestre
+        mainCtx.drawImage(mapImage, 0, 0);
+        mainCtx.globalAlpha = 0.55;
+        mainCtx.drawImage(fogCanvas, 0, 0);
+        mainCtx.globalAlpha = 1.0;
+
+        drawShapePreview();
+      }
+
+      mainCtx.restore();
+    }
+
+    function drawShapePreview() {
+      mainCtx.strokeStyle = currentAction === 'erase' ? '#04d361' : '#ff4757';
+      mainCtx.fillStyle = currentAction === 'erase' ? 'rgba(4, 211, 97, 0.2)' : 'rgba(255, 71, 87, 0.2)';
+      mainCtx.lineWidth = 2 / scale;
+      mainCtx.setLineDash([6 / scale, 6 / scale]);
+
+      if (isDrawing) {
+        if (shapeTool === 'rect') {
+          const w = currentX - startX;
+          const h = currentY - startY;
+          mainCtx.fillRect(startX, startY, w, h);
+          mainCtx.strokeRect(startX, startY, w, h);
+        } else if (shapeTool === 'circle') {
+          const radius = Math.hypot(currentX - startX, currentY - startY);
+          mainCtx.beginPath();
+          mainCtx.arc(startX, startY, radius, 0, Math.PI * 2);
+          mainCtx.fill();
+          mainCtx.stroke();
+        }
+      }
+
+      if (shapeTool === 'polygon' && polygonPoints.length > 0) {
+        mainCtx.beginPath();
+        mainCtx.moveTo(polygonPoints[0].x, polygonPoints[0].y);
+        for (let i = 1; i < polygonPoints.length; i++) {
+          mainCtx.lineTo(polygonPoints[i].x, polygonPoints[i].y);
+        }
+        mainCtx.lineTo(currentX, currentY);
+        mainCtx.fill();
+        mainCtx.stroke();
+
+        polygonPoints.forEach(p => {
+          mainCtx.fillStyle = '#04d361';
+          mainCtx.fillRect(p.x - 4 / scale, p.y - 4 / scale, 8 / scale, 8 / scale);
+        });
+      }
+
+      mainCtx.setLineDash([]);
+    }
+
+    // --- DESENHO DE NÉVOA ---
+    function applyStroke(x, y, radius, action) {
+      fogCtx.save();
+      if (action === 'erase') {
+        fogCtx.globalCompositeOperation = 'destination-out';
+        const gradient = fogCtx.createRadialGradient(x, y, radius * 0.5, x, y, radius);
+        gradient.addColorStop(0, 'rgba(0,0,0,1)');
+        gradient.addColorStop(1, 'rgba(0,0,0,0)');
+        fogCtx.fillStyle = gradient;
+      } else {
+        fogCtx.globalCompositeOperation = 'source-over';
+        fogCtx.fillStyle = '#000000';
+      }
+      fogCtx.beginPath();
+      fogCtx.arc(x, y, radius, 0, Math.PI * 2);
+      fogCtx.fill();
+      fogCtx.restore();
+      render();
+    }
+
+    function applyRect(x, y, w, h, action) {
+      fogCtx.save();
+      fogCtx.globalCompositeOperation = action === 'erase' ? 'destination-out' : 'source-over';
+      fogCtx.fillStyle = '#000000';
+      fogCtx.fillRect(x, y, w, h);
+      fogCtx.restore();
+      render();
+    }
+
+    function applyCircle(centerX, centerY, radius, action) {
+      fogCtx.save();
+      fogCtx.globalCompositeOperation = action === 'erase' ? 'destination-out' : 'source-over';
+      fogCtx.fillStyle = '#000000';
+      fogCtx.beginPath();
+      fogCtx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      fogCtx.fill();
+      fogCtx.restore();
+      render();
+    }
+
+    function applyPolygon(points, action) {
+      if (points.length < 3) return;
+      fogCtx.save();
+      fogCtx.globalCompositeOperation = action === 'erase' ? 'destination-out' : 'source-over';
+      fogCtx.fillStyle = '#000000';
+      fogCtx.beginPath();
+      fogCtx.moveTo(points[0].x, points[0].y);
+      for (let i = 1; i < points.length; i++) {
+        fogCtx.lineTo(points[i].x, points[i].y);
+      }
+      fogCtx.closePath();
+      fogCtx.fill();
+      fogCtx.restore();
+      render();
+    }
+
+    function resetFog(fillWithFog = true) {
+      fogCtx.clearRect(0, 0, fogCanvas.width, fogCanvas.height);
+      if (fillWithFog) {
+        fogCtx.fillStyle = '#000000';
+        fogCtx.fillRect(0, 0, fogCanvas.width, fogCanvas.height);
+      }
+      render();
+    }
+
+    function loadMapImage(src) {
+      mapImage = new Image();
+      mapImage.onload = () => {
+        fogCanvas.width = mapImage.width;
+        fogCanvas.height = mapImage.height;
+
+        placeholder.style.display = 'none';
+        resetFog(true);
+        resetCamera();
+      };
+      mapImage.src = src;
+    }
+
+    // --- PROCESSAMENTO DE DADOS RECEBIDOS ---
+    function handleData(data) {
+      if (data.type === 'LOAD_MAP') loadMapImage(data.dataUrl);
+      else if (data.type === 'STROKE') applyStroke(data.x, data.y, data.radius, data.action);
+      else if (data.type === 'RECT') applyRect(data.x, data.y, data.w, data.h, data.action);
+      else if (data.type === 'CIRCLE') applyCircle(data.x, data.y, data.radius, data.action);
+      else if (data.type === 'POLYGON') applyPolygon(data.points, data.action);
+      else if (data.type === 'RESET_FOG') resetFog(data.fill);
+      else if (data.type === 'CAMERA_UPDATE') {
+        if (isPlayerMode && isMirroringDM) {
+          scale = data.scale;
+          panX = data.panX;
+          panY = data.panY;
+          updateZoomDisplay();
+          render();
+        }
+      }
+    }
+
+    // --- EVENTOS DO MOUSE ---
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') { isSpacePressed = true; mainCanvas.style.cursor = 'grab'; }
+    });
+
+    window.addEventListener('keyup', (e) => {
+      if (e.code === 'Space') { isSpacePressed = false; mainCanvas.style.cursor = 'crosshair'; }
+    });
+
+    viewport.addEventListener('wheel', (e) => {
+      if (!mapImage || (isPlayerMode && isMirroringDM)) return;
+      e.preventDefault();
+
+      const zoomFactor = e.deltaY < 0 ? 1.15 : 0.85;
+      const newScale = Math.min(Math.max(0.1, scale * zoomFactor), 5.0);
+
+      const rect = mainCanvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
+      panX = mouseX - (mouseX - panX) * (newScale / scale);
+      panY = mouseY - (mouseY - panY) * (newScale / scale);
+      scale = newScale;
+
+      updateZoomDisplay();
+      render();
+      broadcastCamera();
+    }, { passive: false });
+
+    mainCanvas.addEventListener('mousedown', (e) => {
+      if (!mapImage) return;
+
+      if (e.button === 1 || isSpacePressed) {
+        isPanning = true;
+        startPanX = e.clientX - panX;
+        startPanY = e.clientY - panY;
+        mainCanvas.style.cursor = 'grabbing';
+        return;
+      }
+
+      if (!isPlayerMode && e.button === 0) {
+        const rect = mainCanvas.getBoundingClientRect();
+        const worldCoords = screenToWorld(e.clientX - rect.left, e.clientY - rect.top);
+        
+        startX = worldCoords.x; startY = worldCoords.y;
+        currentX = worldCoords.x; currentY = worldCoords.y;
+
+        if (shapeTool === 'freehand') {
+          isDrawing = true;
+          applyStroke(startX, startY, brushSize, currentAction);
+          broadcast({ type: 'STROKE', x: startX, y: startY, radius: brushSize, action: currentAction });
+        } else if (shapeTool === 'rect' || shapeTool === 'circle') {
+          isDrawing = true;
+        } else if (shapeTool === 'polygon') {
+          polygonPoints.push({ x: worldCoords.x, y: worldCoords.y });
+          render();
+        }
+      }
+    });
+
+    mainCanvas.addEventListener('mousemove', (e) => {
+      if (!mapImage) return;
+      const rect = mainCanvas.getBoundingClientRect();
+
+      if (isPanning) {
+        panX = e.clientX - startPanX; panY = e.clientY - startPanY;
+        render(); broadcastCamera();
+        return;
+      }
+
+      if (!isPlayerMode) {
+        const worldCoords = screenToWorld(e.clientX - rect.left, e.clientY - rect.top);
+        currentX = worldCoords.x; currentY = worldCoords.y;
+
+        if (isDrawing && shapeTool === 'freehand') {
+          applyStroke(currentX, currentY, brushSize, currentAction);
+          broadcast({ type: 'STROKE', x: currentX, y: currentY, radius: brushSize, action: currentAction });
+        } else if (isDrawing || shapeTool === 'polygon') {
+          render();
+        }
+      }
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (isPanning) {
+        isPanning = false;
+        mainCanvas.style.cursor = isSpacePressed ? 'grab' : 'crosshair';
+        return;
+      }
+
+      if (!isPlayerMode && isDrawing) {
+        isDrawing = false;
+        if (shapeTool === 'rect') {
+          const w = currentX - startX; const h = currentY - startY;
+          applyRect(startX, startY, w, h, currentAction);
+          broadcast({ type: 'RECT', x: startX, y: startY, w, h, action: currentAction });
+        } else if (shapeTool === 'circle') {
+          const radius = Math.hypot(currentX - startX, currentY - startY);
+          applyCircle(startX, startY, radius, currentAction);
+          broadcast({ type: 'CIRCLE', x: startX, y: startY, radius, action: currentAction });
+        }
+      }
+    });
+
+    function finishPolygon() {
+      if (polygonPoints.length >= 3) {
+        applyPolygon(polygonPoints, currentAction);
+        broadcast({ type: 'POLYGON', points: polygonPoints, action: currentAction });
+      }
+      polygonPoints = [];
+      render();
+    }
+
+    mainCanvas.addEventListener('dblclick', finishPolygon);
+    mainCanvas.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      if (shapeTool === 'polygon') finishPolygon();
+    });
+
+    // --- CONTROLES DE INTERFACE E MODAIS ---
+    btnConnect.addEventListener('click', () => connectModal.classList.add('active'));
+    modalCloseConnect.addEventListener('click', () => connectModal.classList.remove('active'));
+
+    function openConfirmModal(title, desc, action) {
+      modalTitle.textContent = title;
+      modalDesc.textContent = desc;
+      pendingAction = action;
+      confirmModal.classList.add('active');
+    }
+
+    function closeModal() {
+      confirmModal.classList.remove('active');
+      pendingAction = null;
+    }
+
+    modalCancel.addEventListener('click', closeModal);
+    modalConfirm.addEventListener('click', () => {
+      if (pendingAction) pendingAction();
+      closeModal();
+    });
+
+    if (isPlayerMode) {
+      btnToggleView.addEventListener('click', () => {
+        isMirroringDM = !isMirroringDM;
+        if (isMirroringDM) {
+          btnToggleView.textContent = '🎯 Visão: Espelhar Mestre';
+          btnToggleView.classList.add('active');
+          hintBox.innerHTML = '🔒 <b>Câmera Bloqueada:</b> Seguindo a visão do Mestre em tempo real.';
+          if (playerConn) playerConn.send({ type: 'REQUEST_CAMERA' });
+        } else {
+          btnToggleView.textContent = '👁️ Visão: Livre';
+          btnToggleView.classList.remove('active');
+          hintBox.innerHTML = '🖱️ <b>Scroll:</b> Zoom | ⌨️ <b>Espaço + Arrastar:</b> Mover Mapa';
+        }
+      });
+    }
+
+    document.getElementById('btn-zoom-in').addEventListener('click', () => {
+      if (isPlayerMode && isMirroringDM) return;
+      scale = Math.min(scale * 1.2, 5.0);
+      updateZoomDisplay(); render(); broadcastCamera();
+    });
+
+    document.getElementById('btn-zoom-out').addEventListener('click', () => {
+      if (isPlayerMode && isMirroringDM) return;
+      scale = Math.max(scale * 0.8, 0.1);
+      updateZoomDisplay(); render(); broadcastCamera();
+    });
+
+    document.getElementById('btn-zoom-reset').addEventListener('click', () => {
+      if (isPlayerMode && isMirroringDM) return;
+      resetCamera();
+    });
+
+    if (!isPlayerMode) {
+      mapLoader.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            loadMapImage(event.target.result);
+            broadcast({ type: 'LOAD_MAP', dataUrl: event.target.result });
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      const tools = {
+        'tool-freehand': 'freehand', 'tool-rect': 'rect', 'tool-circle': 'circle', 'tool-polygon': 'polygon'
+      };
+
+      Object.keys(tools).forEach(id => {
+        document.getElementById(id).addEventListener('click', (e) => {
+          shapeTool = tools[id];
+          Object.keys(tools).forEach(btnId => document.getElementById(btnId).classList.remove('active'));
+          e.target.classList.add('active');
+          brushSizeContainer.style.display = shapeTool === 'freehand' ? 'flex' : 'none';
+          polygonPoints = []; render();
+        });
+      });
+
+      document.getElementById('action-erase').addEventListener('click', (e) => {
+        currentAction = 'erase';
+        document.getElementById('action-erase').classList.add('active');
+        document.getElementById('action-paint').classList.remove('active');
+      });
+
+      document.getElementById('action-paint').addEventListener('click', (e) => {
+        currentAction = 'paint';
+        document.getElementById('action-paint').classList.add('active');
+        document.getElementById('action-erase').classList.remove('active');
+      });
+
+      brushSizeInput.addEventListener('input', (e) => {
+        brushSize = parseInt(e.target.value);
+        brushSizeVal.textContent = `${brushSize}px`;
+      });
+
+      document.getElementById('btn-reset').addEventListener('click', () => {
+        openConfirmModal('🔒 Cobrir Todo o Mapa?', 'Esconderá o mapa inteiro com névoa preta.', () => {
+          resetFog(true); broadcast({ type: 'RESET_FOG', fill: true });
+        });
+      });
+
+      document.getElementById('btn-clear').addEventListener('click', () => {
+        openConfirmModal('⚠️ REVELAR TODO O MAPA?', 'Revelará o mapa inteiro imediatamente.', () => {
+          resetFog(false); broadcast({ type: 'RESET_FOG', fill: false });
+        });
+      });
+    }
+
+    resizeCanvas();
+  </script>
+</body>
+</html>
