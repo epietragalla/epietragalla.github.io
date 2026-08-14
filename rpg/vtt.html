@@ -437,16 +437,16 @@
     const syncChannel = new BroadcastChannel('rpg_fog_vtt');
     const urlParams = new URLSearchParams(window.location.search);
     
-    // Suporta tanto parâmetros curtos (?m=p&r=123) quanto normais (?mode=player&room=123)
+    // Suporta parâmetros curtos (?m=p&r=123) e normais (?mode=player&room=123)
     const roomParam = urlParams.get('r') || urlParams.get('room');
     const modeParam = urlParams.get('m') || urlParams.get('mode');
 
-    // DETECÇÃO ROBUSTA DE MODO JOGADOR:
-    const isPlayerMode = modeParam === 'p' || 
-                         modeParam === 'player' || 
-                         (roomParam !== null && roomParam !== '' && roomParam !== 'undefined') ||
-                         window.location.href.includes('m=p') ||
-                         window.location.href.includes('r=');
+    // Identifica se este aparelho é um cliente conectado a uma sala existente
+    const isClientDevice = (roomParam !== null && roomParam !== '' && roomParam !== 'undefined');
+
+    // LÓGICA DE MODO CORRIGIDA:
+    // É Jogador se pedir explicitamente 'm=p' OU se tiver um 'room' mas NÃO for especificado 'm=d'
+    const isPlayerMode = (modeParam === 'p' || modeParam === 'player') || (isClientDevice && modeParam !== 'd' && modeParam !== 'dm');
 
     // Elementos DOM
     const viewport = document.getElementById('viewport');
@@ -548,7 +548,6 @@
     
     const roomId = roomParam || Math.random().toString(36).substring(2, 8);
 
-    // Servidores STUN públicos da Google para garantir atravessamento de roteadores
     const peerConfig = {
       config: {
         iceServers: [
@@ -558,7 +557,6 @@
       }
     };
 
-    // Atualiza a cor e o texto da luz de status na tela
     function setStatusUI(state, text) {
       const indicator = document.getElementById('conn-status-indicator');
       const textLabel = document.getElementById('conn-status-text');
@@ -592,9 +590,8 @@
     function startHeartbeat() {
       if (heartbeatInterval) clearInterval(heartbeatInterval);
       
-      // Manda um PING a cada 4s para o celular não dormir o Wi-Fi
       heartbeatInterval = setInterval(() => {
-        if (isPlayerMode && playerConn && playerConn.open) {
+        if (isClientDevice && playerConn && playerConn.open) {
           playerConn.send({ type: 'PING' });
         }
       }, 4000);
@@ -618,7 +615,7 @@
 
         playerConn.on('close', () => {
           setStatusUI('reconnecting', 'Reconectando...');
-          setTimeout(connectToMaster, 3000); // Tenta de novo em 3s
+          setTimeout(connectToMaster, 3000);
         });
 
         playerConn.on('error', () => {
@@ -633,12 +630,17 @@
       });
     }
 
-    if (isPlayerMode) {
-      document.body.classList.add('player-mode');
-      roleBadge.textContent = 'Jogador';
-      roleBadge.className = 'badge badge-player';
-      placeholder.textContent = 'Conectando ao Mestre...';
+    if (isClientDevice) {
+      if (isPlayerMode) {
+        document.body.classList.add('player-mode');
+        roleBadge.textContent = 'Jogador';
+        roleBadge.className = 'badge badge-player';
+      } else {
+        roleBadge.textContent = 'Mestre (Remoto)';
+        roleBadge.className = 'badge badge-dm';
+      }
 
+      placeholder.textContent = 'Conectando ao Mestre...';
       connectToMaster();
       syncChannel.postMessage({ type: 'REQUEST_SYNC' });
     } else {
@@ -646,8 +648,9 @@
       
       peer.on('open', (id) => {
         const baseUrl = window.location.href.split('?')[0].split('#')[0];
-        playerUrlGenerated = `${baseUrl}?m=p&r=${id}`;
         
+        // QR Code abre o link no Modo Jogador (?m=p&r=xxx) por padrão
+        playerUrlGenerated = `${baseUrl}?m=p&r=${id}`;        
         urlDisplay.textContent = playerUrlGenerated;
 
         document.getElementById('qrcode').innerHTML = '';
@@ -1200,10 +1203,13 @@
       setTimeout(resizeCanvas, 50);
     }
 
-    if (isPlayerMode) {
+   if (isPlayerMode) {
       btnToggleView.addEventListener('click', () => setMirrorMode(!isMirroringDM));
       btnExitMirror.addEventListener('click', () => setMirrorMode(false));
       btnFullscreen.addEventListener('click', toggleFullscreen);
+
+      // Ativa a visão espelhada do Mestre automaticamente ao entrar
+      setMirrorMode(true);
     }
 
     document.getElementById('btn-zoom-in').addEventListener('click', () => {
