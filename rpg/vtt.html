@@ -282,12 +282,53 @@
       gap: 12px;
       margin-top: 12px;
     }
+
+    /* Indicador de Status da Conexão */
+    .status-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: bold;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: #121214;
+      border: 1px solid #29292e;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #04d361; /* Verde = Conectado */
+    }
+
+    .status-indicator.reconnecting .status-dot {
+      background-color: #fba94c; /* Amarelo = Reconectando */
+      animation: pulse 1s infinite;
+    }
+
+    .status-indicator.offline .status-dot {
+      background-color: #ff4757; /* Vermelho = Offline */
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.3; }
+      100% { opacity: 1; }
+    }
   </style>
 </head>
 <body>
 
   <header>
     <span id="role-badge" class="badge badge-dm">Mestre</span>
+
+    <!-- Indicador Visual de Conexão -->
+    <div id="conn-status-indicator" class="status-indicator">
+      <span class="status-dot"></span>
+      <span id="conn-status-text">Conectado</span>
+    </div>
 
     <!-- Controles do Mestre -->
     <div class="control-group dm-only">
@@ -499,14 +540,33 @@
       });
     }
 
-    // --- CONEXÃO PEERJS E BROADCASTCHANNEL ---
+    // --- CONEXÃO PEERJS E RECONEXÃO AUTOMÁTICA ---
     let peer = null;
     let connections = [];
     let playerConn = null;
     let playerUrlGenerated = '';
     
-    // Gera uma sala simples com exatamente 6 caracteres no final (ex: x7k9a2)
     const roomId = roomParam || Math.random().toString(36).substring(2, 8);
+
+    // Servidores STUN públicos da Google para garantir atravessamento de roteadores
+    const peerConfig = {
+      config: {
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:stun1.l.google.com:19302' }
+        ]
+      }
+    };
+
+    // Atualiza a cor e o texto da luz de status na tela
+    function setStatusUI(state, text) {
+      const indicator = document.getElementById('conn-status-indicator');
+      const textLabel = document.getElementById('conn-status-text');
+      if (!indicator || !textLabel) return;
+
+      indicator.className = 'status-indicator ' + (state || '');
+      textLabel.textContent = text;
+    }
 
     function sendFullSync(targetConn) {
       if (!mapImage) return;
@@ -527,43 +587,77 @@
       }
     }
 
+    let heartbeatInterval = null;
+
+    function startHeartbeat() {
+      if (heartbeatInterval) clearInterval(heartbeatInterval);
+      
+      // Manda um PING a cada 4s para o celular não dormir o Wi-Fi
+      heartbeatInterval = setInterval(() => {
+        if (isPlayerMode && playerConn && playerConn.open) {
+          playerConn.send({ type: 'PING' });
+        }
+      }, 4000);
+    }
+
+    function connectToMaster() {
+      setStatusUI('reconnecting', 'Conectando...');
+      peer = new Peer(peerConfig);
+
+      peer.on('open', () => {
+        playerConn = peer.connect(roomId, { reliable: false });
+
+        playerConn.on('open', () => {
+          setStatusUI('', 'Conectado');
+          placeholder.textContent = 'Conectado! Solicitando mapa do Mestre...';
+          playerConn.send({ type: 'REQUEST_SYNC' });
+          startHeartbeat();
+        });
+
+        playerConn.on('data', (data) => handleData(data));
+
+        playerConn.on('close', () => {
+          setStatusUI('reconnecting', 'Reconectando...');
+          setTimeout(connectToMaster, 3000); // Tenta de novo em 3s
+        });
+
+        playerConn.on('error', () => {
+          setStatusUI('offline', 'Erro de Sinal');
+          setTimeout(connectToMaster, 4000);
+        });
+      });
+
+      peer.on('error', () => {
+        setStatusUI('offline', 'Sem Rede');
+        setTimeout(connectToMaster, 5000);
+      });
+    }
+
     if (isPlayerMode) {
       document.body.classList.add('player-mode');
       roleBadge.textContent = 'Jogador';
       roleBadge.className = 'badge badge-player';
       placeholder.textContent = 'Conectando ao Mestre...';
 
-      peer = new Peer();
-      peer.on('open', () => {
-        playerConn = peer.connect(roomId);
-        
-        playerConn.on('open', () => {
-          placeholder.textContent = 'Conectado! Solicitando mapa do Mestre...';
-          playerConn.send({ type: 'REQUEST_SYNC' });
-        });
-
-        playerConn.on('data', (data) => handleData(data));
-      });
-
+      connectToMaster();
       syncChannel.postMessage({ type: 'REQUEST_SYNC' });
     } else {
-      peer = new Peer(roomId);
+      peer = new Peer(roomId, peerConfig);
       
       peer.on('open', (id) => {
-        // Constrói uma URL ultra simples e curta mantendo 6 variáveis no final: ?m=p&r=xxxxxx
         const baseUrl = window.location.href.split('?')[0].split('#')[0];
         playerUrlGenerated = `${baseUrl}?m=p&r=${id}`;
         
-        // Exibe o link abaixo do QR Code
         urlDisplay.textContent = playerUrlGenerated;
 
-        // Gera QR Code com o endereço simplificado
         document.getElementById('qrcode').innerHTML = '';
         new QRCode(document.getElementById('qrcode'), {
           text: playerUrlGenerated,
           width: 180,
           height: 180
         });
+
+        setStatusUI('', 'Sala Pronta');
       });
 
       peer.on('connection', (conn) => {
@@ -575,8 +669,18 @@
         });
 
         conn.on('data', (data) => {
-          if (data.type === 'REQUEST_SYNC') sendFullSync(conn);
-          else if (data.type === 'REQUEST_CAMERA') broadcastCamera();
+          if (data.type === 'PING') {
+            if (conn.open) conn.send({ type: 'PONG' });
+          } else if (data.type === 'REQUEST_SYNC') {
+            sendFullSync(conn);
+          } else if (data.type === 'REQUEST_CAMERA') {
+            broadcastCamera();
+          }
+        });
+
+        conn.on('close', () => {
+          connections = connections.filter(c => c !== conn);
+          connectionCount.textContent = `🟢 ${connections.length} dispositivo(s) conectado(s)!`;
         });
       });
     }
@@ -597,6 +701,10 @@
     }
     window.addEventListener('resize', resizeCanvas);
 
+    // --- OTIMIZAÇÃO DE CÂMERA (THROTTLING / MAX 30 FPS) ---
+    let lastCameraBroadcast = 0;
+    let cameraBroadcastTimer = null;
+
     function broadcastCamera() {
       if (!isPlayerMode && mapImage) {
         const centerWorld = screenToWorld(viewport.clientWidth / 2, viewport.clientHeight / 2);
@@ -606,6 +714,22 @@
           centerX: centerWorld.x,
           centerY: centerWorld.y
         });
+      }
+    }
+
+    function throttledBroadcastCamera() {
+      const now = Date.now();
+      const delay = 33; // ~30 FPS
+
+      if (now - lastCameraBroadcast >= delay) {
+        lastCameraBroadcast = now;
+        broadcastCamera();
+      } else {
+        if (cameraBroadcastTimer) clearTimeout(cameraBroadcastTimer);
+        cameraBroadcastTimer = setTimeout(() => {
+          lastCameraBroadcast = Date.now();
+          broadcastCamera();
+        }, delay - (now - lastCameraBroadcast));
       }
     }
 
@@ -877,7 +1001,7 @@
 
       updateZoomDisplay();
       render();
-      broadcastCamera();
+      throttledBroadcastCamera();
     }, { passive: false });
 
     mainCanvas.addEventListener('mousedown', (e) => {
@@ -917,7 +1041,8 @@
 
       if (isPanning) {
         panX = e.clientX - startPanX; panY = e.clientY - startPanY;
-        render(); broadcastCamera();
+        render(); 
+        throttledBroadcastCamera();
         return;
       }
 
