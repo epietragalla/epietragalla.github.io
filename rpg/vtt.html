@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VTT - Nevoeiro de Guerra com Conexão Remota e Local</title>
+  <title>VTT - Nevoeiro de Guerra Otimizado</title>
 
   <!-- Bibliotecas externas para Conexão Ponto a Ponto e QR Code -->
   <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
@@ -348,7 +348,7 @@
     const btnToggleView = document.getElementById('btn-toggle-view');
     const hintBox = document.getElementById('hint-box');
 
-    // Modais e Botoes de Conexão
+    // Modais e Botões de Conexão
     const confirmModal = document.getElementById('confirm-modal');
     const modalTitle = document.getElementById('modal-title');
     const modalDesc = document.getElementById('modal-desc');
@@ -387,7 +387,44 @@
     let currentX = 0, currentY = 0;
     let polygonPoints = [];
 
-    // --- LÓGICA DE CONEXÃO PEERJS (WEBRTC) E BROADCASTCHANNEL ---
+    // --- FUNÇÃO DE OTIMIZAÇÃO E COMPRESSÃO DE IMAGEM ---
+    function compressImage(file, maxWidth = 2048, quality = 0.8) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+
+            // Redimensiona mantendo a proporção caso a imagem seja gigante
+            if (width > maxWidth || height > maxWidth) {
+              if (width > height) {
+                height = Math.round((height * maxWidth) / width);
+                width = maxWidth;
+              } else {
+                width = Math.round((width * maxWidth) / height);
+                height = maxWidth;
+              }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            // Converte para JPEG otimizado
+            const compressedUrl = canvas.toDataURL('image/jpeg', quality);
+            resolve(compressedUrl);
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // --- CONEXÃO PEERJS E BROADCASTCHANNEL ---
     let peer = null;
     let connections = [];
     let playerConn = null;
@@ -399,7 +436,6 @@
       roleBadge.className = 'badge badge-player';
       placeholder.textContent = 'Conectando ao Mestre...';
 
-      // Conexão via PeerJS (Remota)
       peer = new Peer();
       peer.on('open', () => {
         playerConn = peer.connect(roomId);
@@ -412,10 +448,8 @@
         playerConn.on('data', (data) => handleData(data));
       });
 
-      // Solicitação via BroadcastChannel (Aba Local)
       syncChannel.postMessage({ type: 'REQUEST_CAMERA' });
     } else {
-      // Mestre
       peer = new Peer(roomId);
       
       peer.on('open', (id) => {
@@ -442,7 +476,6 @@
       });
     }
 
-    // Envia dados tanto por BroadcastChannel (local) quanto por PeerJS (remoto)
     function broadcast(data) {
       if (!isPlayerMode) {
         syncChannel.postMessage(data);
@@ -502,7 +535,6 @@
       mainCtx.scale(scale, scale);
 
       if (isPlayerMode) {
-        // Recorte 100% Imersivo p/ Jogador
         const maskCanvas = document.createElement('canvas');
         maskCanvas.width = fogCanvas.width;
         maskCanvas.height = fogCanvas.height;
@@ -524,7 +556,6 @@
 
         mainCtx.drawImage(tempCanvas, 0, 0);
       } else {
-        // Visão Raio-X do Mestre
         mainCtx.drawImage(mapImage, 0, 0);
         mainCtx.globalAlpha = 0.55;
         mainCtx.drawImage(fogCanvas, 0, 0);
@@ -576,7 +607,7 @@
       mainCtx.setLineDash([]);
     }
 
-    // --- DESENHO DE NÉVOA ---
+    // --- OPERAÇÕES DA NÉVOA ---
     function applyStroke(x, y, radius, action) {
       fogCtx.save();
       if (action === 'erase') {
@@ -654,7 +685,6 @@
       mapImage.src = src;
     }
 
-    // --- PROCESSAMENTO DE DADOS RECEBIDOS ---
     function handleData(data) {
       if (data.type === 'LOAD_MAP') loadMapImage(data.dataUrl);
       else if (data.type === 'STROKE') applyStroke(data.x, data.y, data.radius, data.action);
@@ -675,10 +705,9 @@
       }
     }
 
-    // Escuta também pelo BroadcastChannel local
     syncChannel.onmessage = (event) => handleData(event.data);
 
-    // --- EVENTOS DO MOUSE ---
+    // --- EVENTOS DE INTERAÇÃO ---
     window.addEventListener('keydown', (e) => {
       if (e.code === 'Space') { isSpacePressed = true; mainCanvas.style.cursor = 'grab'; }
     });
@@ -797,6 +826,23 @@
       if (shapeTool === 'polygon') finishPolygon();
     });
 
+    // --- CARREGAMENTO DO MAPA COM COMPRESSÃO AUTOMÁTICA ---
+    if (!isPlayerMode) {
+      mapLoader.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          placeholder.textContent = '⚡ Otimizando e carregando o mapa...';
+          placeholder.style.display = 'block';
+
+          // Comprime a imagem antes de enviar
+          const compressedDataUrl = await compressImage(file, 2048, 0.8);
+          
+          loadMapImage(compressedDataUrl);
+          broadcast({ type: 'LOAD_MAP', dataUrl: compressedDataUrl });
+        }
+      });
+    }
+
     // --- CONTROLES DE INTERFACE E MODAIS ---
     if (btnConnect) btnConnect.addEventListener('click', () => connectModal.classList.add('active'));
     if (modalCloseConnect) modalCloseConnect.addEventListener('click', () => connectModal.classList.remove('active'));
@@ -861,18 +907,6 @@
     });
 
     if (!isPlayerMode) {
-      mapLoader.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = (event) => {
-            loadMapImage(event.target.result);
-            broadcast({ type: 'LOAD_MAP', dataUrl: event.target.result });
-          };
-          reader.readAsDataURL(file);
-        }
-      });
-
       const tools = {
         'tool-freehand': 'freehand', 'tool-rect': 'rect', 'tool-circle': 'circle', 'tool-polygon': 'polygon'
       };
