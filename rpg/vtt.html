@@ -348,7 +348,7 @@
     const btnToggleView = document.getElementById('btn-toggle-view');
     const hintBox = document.getElementById('hint-box');
 
-    // Modais e Botões de Conexão
+    // Modais e Botoes de Conexão
     const confirmModal = document.getElementById('confirm-modal');
     const modalTitle = document.getElementById('modal-title');
     const modalDesc = document.getElementById('modal-desc');
@@ -387,7 +387,7 @@
     let currentX = 0, currentY = 0;
     let polygonPoints = [];
 
-    // --- FUNÇÃO DE OTIMIZAÇÃO E COMPRESSÃO DE IMAGEM ---
+    // --- OTIMIZAÇÃO E COMPRESSÃO DE IMAGEM ---
     function compressImage(file, maxWidth = 2048, quality = 0.8) {
       return new Promise((resolve) => {
         const reader = new FileReader();
@@ -398,7 +398,6 @@
             let width = img.width;
             let height = img.height;
 
-            // Redimensiona mantendo a proporção caso a imagem seja gigante
             if (width > maxWidth || height > maxWidth) {
               if (width > height) {
                 height = Math.round((height * maxWidth) / width);
@@ -414,7 +413,6 @@
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
 
-            // Converte para JPEG otimizado
             const compressedUrl = canvas.toDataURL('image/jpeg', quality);
             resolve(compressedUrl);
           };
@@ -492,13 +490,18 @@
     }
     window.addEventListener('resize', resizeCanvas);
 
+    // --- NOVA LÓGICA DE SINCRONIZAÇÃO DA CÂMERA (PELO CENTRO) ---
     function broadcastCamera() {
-      broadcast({
-        type: 'CAMERA_UPDATE',
-        scale: scale,
-        panX: panX,
-        panY: panY
-      });
+      if (!isPlayerMode && mapImage) {
+        // Encontra o ponto exato do mapa (World Coordinates) no CENTRO da tela do Mestre
+        const centerWorld = screenToWorld(viewport.clientWidth / 2, viewport.clientHeight / 2);
+        broadcast({
+          type: 'CAMERA_UPDATE',
+          scale: scale,
+          centerX: centerWorld.x,
+          centerY: centerWorld.y
+        });
+      }
     }
 
     function resetCamera() {
@@ -685,6 +688,7 @@
       mapImage.src = src;
     }
 
+    // --- PROCESSAMENTO DE DADOS RECEBIDOS ---
     function handleData(data) {
       if (data.type === 'LOAD_MAP') loadMapImage(data.dataUrl);
       else if (data.type === 'STROKE') applyStroke(data.x, data.y, data.radius, data.action);
@@ -695,8 +699,9 @@
       else if (data.type === 'CAMERA_UPDATE') {
         if (isPlayerMode && isMirroringDM) {
           scale = data.scale;
-          panX = data.panX;
-          panY = data.panY;
+          // Alinha o centro recebido do Mestre com o centro do Viewport do Jogador
+          panX = (viewport.clientWidth / 2) - (data.centerX * scale);
+          panY = (viewport.clientHeight / 2) - (data.centerY * scale);
           updateZoomDisplay();
           render();
         }
@@ -834,7 +839,6 @@
           placeholder.textContent = '⚡ Otimizando e carregando o mapa...';
           placeholder.style.display = 'block';
 
-          // Comprime a imagem antes de enviar
           const compressedDataUrl = await compressImage(file, 2048, 0.8);
           
           loadMapImage(compressedDataUrl);
