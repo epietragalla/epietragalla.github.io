@@ -2,8 +2,8 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VTT - Nevoeiro de Guerra (Retro-Compatível)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>VTT - Nevoeiro de Guerra Otimizado</title>
 
   <!-- Bibliotecas externas para Conexão Ponto a Ponto e QR Code -->
   <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
@@ -15,6 +15,8 @@
       margin: 0;
       padding: 0;
       user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
     }
 
     body {
@@ -126,6 +128,7 @@
       position: absolute;
       top: 0;
       left: 0;
+      touch-action: none;
     }
 
     body.player-mode header .dm-only {
@@ -136,17 +139,26 @@
       display: none !important;
     }
 
-    body.mirroring-active header {
+    body.mirroring-active header,
+    body.ios-fullscreen header {
       display: none !important;
     }
 
-    /* Pílula Flutuante p/ iOS antigo */
+    /* Modos de Tela Cheia no iOS */
+    body.ios-fullscreen main {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      z-index: 9999 !important;
+    }
+
     .floating-player-control {
       position: fixed;
       top: 12px;
       right: 12px;
       z-index: 50;
-      background: #181814;
       background: rgba(18, 18, 20, 0.9);
       border: 1px solid #04d361;
       border-radius: 20px;
@@ -339,7 +351,7 @@
     </button>
 
     <div class="controls-hint" id="hint-box">
-      🖱️ <b>Scroll:</b> Zoom | ⌨️ <b>Espaço + Arrastar:</b> Mover Mapa
+      👆 <b>Arraste com o dedo:</b> Mover | 🔍 <b>Pinça:</b> Zoom
     </div>
   </main>
 
@@ -371,7 +383,7 @@
   </div>
 
   <script>
-    // --- POLYFILL P/ NAVEGADORES ANTIGOS (iOS 9 / Chrome Antigo) ---
+    // --- UTILS P/ COMPATIBILIDADE ---
     function getQueryParam(param) {
       var search = window.location.search.substring(1);
       if (!search) return null;
@@ -394,7 +406,6 @@
                          window.location.href.indexOf('m=p') !== -1 ||
                          window.location.href.indexOf('r=') !== -1;
 
-    // Canal de Comunicação Local seguro p/ iOS antigo
     var syncChannel = {
       bc: (typeof BroadcastChannel !== 'undefined') ? new BroadcastChannel('rpg_fog_vtt') : null,
       postMessage: function(data) {
@@ -421,7 +432,7 @@
       }
     };
 
-    // Elementos DOM
+    // DOM
     var viewport = document.getElementById('viewport');
     var mainCanvas = document.getElementById('main-canvas');
     var mainCtx = mainCanvas.getContext('2d');
@@ -437,7 +448,6 @@
     var btnFullscreen = document.getElementById('btn-fullscreen');
     var hintBox = document.getElementById('hint-box');
 
-    // Modais
     var confirmModal = document.getElementById('confirm-modal');
     var modalTitle = document.getElementById('modal-title');
     var modalDesc = document.getElementById('modal-desc');
@@ -453,18 +463,15 @@
     var urlDisplay = document.getElementById('url-display');
     var btnCopyUrl = document.getElementById('btn-copy-url');
 
-    // Canvas de Névoa
     var fogCanvas = document.createElement('canvas');
     var fogCtx = fogCanvas.getContext('2d');
 
-    // Estado da Ferramenta
     var mapImage = null;
     var isDrawing = false;
     var shapeTool = 'freehand'; 
     var currentAction = 'erase'; 
     var brushSize = parseInt(brushSizeInput.value, 10);
 
-    // Estado da Câmera
     var scale = 1.0;
     var panX = 0;
     var panY = 0;
@@ -477,10 +484,10 @@
     var currentX = 0, currentY = 0;
     var polygonPoints = [];
 
-    // --- COMPRESSÃO DE IMAGEM (Promessa Padrão ES5) ---
+    // Otimização de imagem leve p/ iPad (máx 1600px)
     function compressImage(file, maxWidth, quality) {
-      maxWidth = maxWidth || 2048;
-      quality = quality || 0.8;
+      maxWidth = maxWidth || 1600;
+      quality = quality || 0.7;
       return new Promise(function(resolve) {
         var reader = new FileReader();
         reader.onload = function(e) {
@@ -513,20 +520,58 @@
       });
     }
 
-    // --- CONEXÃO PEERJS E WEBRTC (Com checagem de suporte a iOS antigo) ---
+    // --- ENVIAR EM FRAGMENTOS (CHUNK SEND P/ WEBRTC NO IPAD) ---
+    var chunksBuffer = {};
+
+    function sendChunkedData(conn, type, payloadObj) {
+      var jsonStr = JSON.stringify({ type: type, payload: payloadObj });
+      var chunkSize = 16384; // Pacotes seguros de 16KB
+      var totalChunks = Math.ceil(jsonStr.length / chunkSize);
+      var msgId = Math.random().toString(36).substring(2, 9);
+
+      for (var i = 0; i < totalChunks; i++) {
+        var chunk = jsonStr.substring(i * chunkSize, (i + 1) * chunkSize);
+        var dataPacket = { type: 'CHUNK', msgId: msgId, chunk: chunk, index: i, total: totalChunks };
+        if (conn && conn.open) {
+          conn.send(dataPacket);
+        } else {
+          broadcast(dataPacket);
+        }
+      }
+    }
+
+    function processChunk(data) {
+      if (!chunksBuffer[data.msgId]) {
+        chunksBuffer[data.msgId] = new Array(data.total);
+      }
+      chunksBuffer[data.msgId][data.index] = data.chunk;
+
+      var receivedCount = 0;
+      for (var k = 0; k < data.total; k++) {
+        if (chunksBuffer[data.msgId][k]) receivedCount++;
+      }
+
+      if (receivedCount === data.total) {
+        var fullStr = chunksBuffer[data.msgId].join('');
+        delete chunksBuffer[data.msgId];
+        try {
+          var parsed = JSON.parse(fullStr);
+          handleData(parsed);
+        } catch(e) {}
+      }
+    }
+
+    // PEERJS
     var peer = null;
     var connections = [];
     var playerConn = null;
     var playerUrlGenerated = '';
     var roomId = roomParam || Math.random().toString(36).substring(2, 8);
 
-    var hasWebRTC = !!(window.RTCPeerConnection || window.webkitRTCPeerConnection || window.mozRTCPeerConnection);
-
     function sendFullSync(targetConn) {
       if (!mapImage) return;
       var centerWorld = screenToWorld(viewport.clientWidth / 2, viewport.clientHeight / 2);
-      var syncData = {
-        type: 'FULL_SYNC',
+      var payload = {
         mapDataUrl: mapImage.src,
         fogDataUrl: fogCanvas.toDataURL(),
         centerX: centerWorld.x,
@@ -534,22 +579,16 @@
         scale: scale
       };
 
-      if (targetConn && targetConn.open) {
-        targetConn.send(syncData);
-      } else {
-        broadcast(syncData);
-      }
+      sendChunkedData(targetConn, 'FULL_SYNC', payload);
     }
 
     if (isPlayerMode) {
       document.body.className += ' player-mode';
       roleBadge.textContent = 'Jogador';
       roleBadge.className = 'badge badge-player';
-      
-      if (!hasWebRTC) {
-        placeholder.textContent = 'Aviso: Este aparelho (iOS 9) não suporta conexão sem fio WebRTC. Abra em uma aba do mesmo navegador ou use um tablet mais recente.';
-      } else {
-        placeholder.textContent = 'Conectando ao Mestre...';
+      placeholder.textContent = 'Conectando ao Mestre...';
+
+      if (typeof Peer !== 'undefined') {
         peer = new Peer();
         peer.on('open', function() {
           playerConn = peer.connect(roomId);
@@ -559,13 +598,16 @@
             playerConn.send({ type: 'REQUEST_SYNC' });
           });
 
-          playerConn.on('data', function(data) { handleData(data); });
+          playerConn.on('data', function(data) { 
+            if (data.type === 'CHUNK') processChunk(data);
+            else handleData(data); 
+          });
         });
       }
 
       syncChannel.postMessage({ type: 'REQUEST_SYNC' });
     } else {
-      if (hasWebRTC && typeof Peer !== 'undefined') {
+      if (typeof Peer !== 'undefined') {
         peer = new Peer(roomId);
         
         peer.on('open', function(id) {
@@ -737,7 +779,6 @@
       if (mainCtx.setLineDash) mainCtx.setLineDash([]);
     }
 
-    // --- OPERAÇÕES DA NÉVOA ---
     function applyStroke(x, y, radius, action) {
       fogCtx.save();
       if (action === 'erase') {
@@ -847,19 +888,22 @@
 
     function handleData(data) {
       if (!data) return;
-      if (data.type === 'LOAD_MAP') loadMapImage(data.dataUrl);
-      else if (data.type === 'FULL_SYNC') {
-        loadMapWithFogState(data.mapDataUrl, data.fogDataUrl, data.centerX, data.centerY, data.scale);
-      } else if (data.type === 'STROKE') applyStroke(data.x, data.y, data.radius, data.action);
-      else if (data.type === 'RECT') applyRect(data.x, data.y, data.w, data.h, data.action);
-      else if (data.type === 'CIRCLE') applyCircle(data.x, data.y, data.radius, data.action);
-      else if (data.type === 'POLYGON') applyPolygon(data.points, data.action);
-      else if (data.type === 'RESET_FOG') resetFog(data.fill);
-      else if (data.type === 'CAMERA_UPDATE') {
+      var type = data.type;
+      var payload = data.payload || data;
+
+      if (type === 'FULL_SYNC') {
+        loadMapWithFogState(payload.mapDataUrl, payload.fogDataUrl, payload.centerX, payload.centerY, payload.scale);
+      } else if (type === 'LOAD_MAP') loadMapImage(payload.dataUrl || payload);
+      else if (type === 'STROKE') applyStroke(payload.x, payload.y, payload.radius, payload.action);
+      else if (type === 'RECT') applyRect(payload.x, payload.y, payload.w, payload.h, payload.action);
+      else if (type === 'CIRCLE') applyCircle(payload.x, payload.y, payload.radius, payload.action);
+      else if (type === 'POLYGON') applyPolygon(payload.points, payload.action);
+      else if (type === 'RESET_FOG') resetFog(payload.fill);
+      else if (type === 'CAMERA_UPDATE') {
         if (isPlayerMode && isMirroringDM) {
-          scale = data.scale;
-          panX = (viewport.clientWidth / 2) - (data.centerX * scale);
-          panY = (viewport.clientHeight / 2) - (data.centerY * scale);
+          scale = payload.scale;
+          panX = (viewport.clientWidth / 2) - (payload.centerX * scale);
+          panY = (viewport.clientHeight / 2) - (payload.centerY * scale);
           updateZoomDisplay();
           render();
         }
@@ -867,22 +911,57 @@
     }
 
     syncChannel.onMessage(function(data) {
-      if (!isPlayerMode && data && data.type === 'REQUEST_SYNC') {
+      if (data && data.type === 'CHUNK') processChunk(data);
+      else if (!isPlayerMode && data && data.type === 'REQUEST_SYNC') {
         sendFullSync();
       } else {
         handleData(data);
       }
     });
 
-    // --- EVENTOS DE MOUSE/TOQUE ---
-    window.addEventListener('keydown', function(e) {
-      if (e.code === 'Space') { isSpacePressed = true; mainCanvas.style.cursor = 'grab'; }
-    });
+    // --- EVENTOS DE TOQUE P/ IPAD ---
+    var touchStartDist = 0;
+    mainCanvas.addEventListener('touchstart', function(e) {
+      if (!mapImage || (isPlayerMode && isMirroringDM)) return;
+      if (e.touches.length === 1) {
+        isPanning = true;
+        startPanX = e.touches[0].clientX - panX;
+        startPanY = e.touches[0].clientY - panY;
+      } else if (e.touches.length === 2) {
+        isPanning = false;
+        var dx = e.touches[0].clientX - e.touches[1].clientX;
+        var dy = e.touches[0].clientY - e.touches[1].clientY;
+        touchStartDist = Math.sqrt(dx * dx + dy * dy);
+      }
+    }, { passive: false });
 
-    window.addEventListener('keyup', function(e) {
-      if (e.code === 'Space') { isSpacePressed = false; mainCanvas.style.cursor = 'crosshair'; }
-    });
+    mainCanvas.addEventListener('touchmove', function(e) {
+      if (!mapImage || (isPlayerMode && isMirroringDM)) return;
+      e.preventDefault();
 
+      if (e.touches.length === 1 && isPanning) {
+        panX = e.touches[0].clientX - startPanX;
+        panY = e.touches[0].clientY - startPanY;
+        render();
+        broadcastCamera();
+      } else if (e.touches.length === 2 && touchStartDist > 0) {
+        var dx = e.touches[0].clientX - e.touches[1].clientX;
+        var dy = e.touches[0].clientY - e.touches[1].clientY;
+        var newDist = Math.sqrt(dx * dx + dy * dy);
+
+        var zoomFactor = newDist / touchStartDist;
+        scale = Math.min(Math.max(0.1, scale * zoomFactor), 5.0);
+        touchStartDist = newDist;
+
+        updateZoomDisplay();
+        render();
+        broadcastCamera();
+      }
+    }, { passive: false });
+
+    mainCanvas.addEventListener('touchend', function() { isPanning = false; touchStartDist = 0; });
+
+    // EVENTOS MOUSE
     viewport.addEventListener('wheel', function(e) {
       if (!mapImage || (isPlayerMode && isMirroringDM)) return;
       e.preventDefault();
@@ -994,26 +1073,32 @@
       if (shapeTool === 'polygon') finishPolygon();
     });
 
-    // --- TELA CHEIA SEGURO P/ NAVEGADORES ANTIGOS ---
+    // --- TELA CHEIA COMPATÍVEL COM IPAD ---
     function toggleFullscreen() {
       var doc = document;
       var docEl = document.documentElement;
 
-      var isFS = doc.fullscreenElement || doc.webkitFullscreenElement || doc.msFullscreenElement;
+      var isFS = doc.fullscreenElement || doc.webkitFullscreenElement || doc.msFullscreenElement || (document.body.className.indexOf('ios-fullscreen') !== -1);
 
       if (!isFS) {
         if (docEl.requestFullscreen) docEl.requestFullscreen();
         else if (docEl.webkitRequestFullscreen) docEl.webkitRequestFullscreen();
-        else if (docEl.msRequestFullscreen) docEl.msRequestFullscreen();
+        else {
+          // Fallback Pseudo-Fullscreen p/ iPad
+          document.body.className += ' ios-fullscreen';
+          updateFullscreenBtn();
+        }
       } else {
         if (doc.exitFullscreen) doc.exitFullscreen();
         else if (doc.webkitExitFullscreen) doc.webkitExitFullscreen();
-        else if (doc.msExitFullscreen) doc.msExitFullscreen();
+
+        document.body.className = document.body.className.replace(' ios-fullscreen', '');
+        updateFullscreenBtn();
       }
     }
 
     function updateFullscreenBtn() {
-      var isFS = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+      var isFS = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement || (document.body.className.indexOf('ios-fullscreen') !== -1);
       if (btnFullscreen) {
         btnFullscreen.textContent = isFS ? '🗗 Sair da Tela Cheia' : '⛶ Tela Cheia';
       }
@@ -1023,7 +1108,7 @@
     document.addEventListener('fullscreenchange', updateFullscreenBtn);
     document.addEventListener('webkitfullscreenchange', updateFullscreenBtn);
 
-    // --- CARREGAMENTO DE MAPA ---
+    // CONTROLES DE INTERFACE
     if (!isPlayerMode) {
       mapLoader.addEventListener('change', function(e) {
         var file = e.target.files[0];
@@ -1031,7 +1116,7 @@
           placeholder.textContent = '⚡ Otimizando e carregando o mapa...';
           placeholder.style.display = 'block';
 
-          compressImage(file, 2048, 0.8).then(function(compressedDataUrl) {
+          compressImage(file, 1600, 0.7).then(function(compressedDataUrl) {
             loadMapImage(compressedDataUrl);
             broadcast({ type: 'LOAD_MAP', dataUrl: compressedDataUrl });
           });
@@ -1039,7 +1124,6 @@
       });
     }
 
-    // --- CONTROLES DE INTERFACE E MODAIS ---
     if (btnConnect) btnConnect.addEventListener('click', function() { connectModal.className += ' active'; });
     if (modalCloseConnect) modalCloseConnect.addEventListener('click', function() { connectModal.className = connectModal.className.replace(' active', ''); });
 
@@ -1099,7 +1183,7 @@
         document.body.className = document.body.className.replace(' mirroring-active', '');
         btnToggleView.textContent = '👁️ Visão: Livre';
         btnToggleView.className = btnToggleView.className.replace(' active', '');
-        hintBox.innerHTML = '🖱️ <b>Scroll:</b> Zoom | ⌨️ <b>Espaço + Arrastar:</b> Mover Mapa';
+        hintBox.innerHTML = '👆 <b>Arraste com o dedo:</b> Mover | 🔍 <b>Pinça:</b> Zoom';
       }
 
       setTimeout(resizeCanvas, 50);
