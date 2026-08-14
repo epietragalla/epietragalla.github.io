@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VTT - Nevoeiro de Guerra com Conexão Remota</title>
+  <title>VTT - Nevoeiro de Guerra com Conexão Remota e Local</title>
 
   <!-- Bibliotecas externas para Conexão Ponto a Ponto e QR Code -->
   <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
@@ -162,7 +162,7 @@
       z-index: 5;
     }
 
-    /* Modais (Confirmação e Conexão) */
+    /* Modais */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -287,7 +287,9 @@
       <button id="btn-clear" class="btn btn-danger">Revelar Tudo</button>
     </div>
 
-    <div style="margin-left: auto;" class="dm-only">
+    <!-- Botões de Conexão do Mestre -->
+    <div style="margin-left: auto; display: flex; gap: 8px;" class="dm-only">
+      <button id="btn-open-player" class="btn" style="border-color: #04d361; color: #04d361;">📺 Janela do Jogador</button>
       <button id="btn-connect" class="btn" style="border-color: #8257e5; color: #8257e5;">📱 Conectar Dispositivo (QR Code)</button>
     </div>
   </header>
@@ -309,7 +311,7 @@
       <div id="qrcode"></div>
       <div id="connection-count" class="connection-status">Aguardando conexões...</div>
       <div class="modal-actions">
-        <button id="modal-close-connect" class="btn">Fechar Window</button>
+        <button id="modal-close-connect" class="btn">Fechar Janela</button>
       </div>
     </div>
   </div>
@@ -327,6 +329,7 @@
   </div>
 
   <script>
+    const syncChannel = new BroadcastChannel('rpg_fog_vtt');
     const urlParams = new URLSearchParams(window.location.search);
     const roomParam = urlParams.get('room');
     const isPlayerMode = urlParams.get('mode') === 'player' || !!roomParam;
@@ -345,7 +348,7 @@
     const btnToggleView = document.getElementById('btn-toggle-view');
     const hintBox = document.getElementById('hint-box');
 
-    // Modais
+    // Modais e Botoes de Conexão
     const confirmModal = document.getElementById('confirm-modal');
     const modalTitle = document.getElementById('modal-title');
     const modalDesc = document.getElementById('modal-desc');
@@ -355,6 +358,7 @@
 
     const connectModal = document.getElementById('connect-modal');
     const btnConnect = document.getElementById('btn-connect');
+    const btnOpenPlayer = document.getElementById('btn-open-player');
     const modalCloseConnect = document.getElementById('modal-close-connect');
     const connectionCount = document.getElementById('connection-count');
 
@@ -383,10 +387,10 @@
     let currentX = 0, currentY = 0;
     let polygonPoints = [];
 
-    // --- LÓGICA DE CONEXÃO PEERJS (WEBRTC) ---
+    // --- LÓGICA DE CONEXÃO PEERJS (WEBRTC) E BROADCASTCHANNEL ---
     let peer = null;
-    let connections = []; // Lista de conexões do Mestre
-    let playerConn = null; // Conexão do Jogador com o Mestre
+    let connections = [];
+    let playerConn = null;
     const roomId = roomParam || ('rpg-' + Math.random().toString(36).substring(2, 9));
 
     if (isPlayerMode) {
@@ -395,7 +399,7 @@
       roleBadge.className = 'badge badge-player';
       placeholder.textContent = 'Conectando ao Mestre...';
 
-      // Jogador se conecta à sala do Mestre
+      // Conexão via PeerJS (Remota)
       peer = new Peer();
       peer.on('open', () => {
         playerConn = peer.connect(roomId);
@@ -407,12 +411,14 @@
 
         playerConn.on('data', (data) => handleData(data));
       });
+
+      // Solicitação via BroadcastChannel (Aba Local)
+      syncChannel.postMessage({ type: 'REQUEST_CAMERA' });
     } else {
-      // Mestre cria a sala
+      // Mestre
       peer = new Peer(roomId);
       
       peer.on('open', (id) => {
-        // Gera o QR Code com a URL do jogador
         const playerUrl = `${window.location.origin}${window.location.pathname}?room=${id}`;
         document.getElementById('qrcode').innerHTML = '';
         new QRCode(document.getElementById('qrcode'), {
@@ -430,16 +436,16 @@
           if (data.type === 'REQUEST_CAMERA') broadcastCamera();
         });
 
-        // Envia estado atual para o novo jogador que entrou
         if (mapImage) {
           conn.send({ type: 'LOAD_MAP', dataUrl: mapImage.src });
         }
       });
     }
 
-    // Função universal para enviar dados aos jogadores
+    // Envia dados tanto por BroadcastChannel (local) quanto por PeerJS (remoto)
     function broadcast(data) {
       if (!isPlayerMode) {
+        syncChannel.postMessage(data);
         connections.forEach(conn => {
           if (conn.open) conn.send(data);
         });
@@ -664,8 +670,13 @@
           updateZoomDisplay();
           render();
         }
+      } else if (data.type === 'REQUEST_CAMERA' && !isPlayerMode) {
+        broadcastCamera();
       }
     }
+
+    // Escuta também pelo BroadcastChannel local
+    syncChannel.onmessage = (event) => handleData(event.data);
 
     // --- EVENTOS DO MOUSE ---
     window.addEventListener('keydown', (e) => {
@@ -787,8 +798,15 @@
     });
 
     // --- CONTROLES DE INTERFACE E MODAIS ---
-    btnConnect.addEventListener('click', () => connectModal.classList.add('active'));
-    modalCloseConnect.addEventListener('click', () => connectModal.classList.remove('active'));
+    if (btnConnect) btnConnect.addEventListener('click', () => connectModal.classList.add('active'));
+    if (modalCloseConnect) modalCloseConnect.addEventListener('click', () => connectModal.classList.remove('active'));
+
+    if (btnOpenPlayer) {
+      btnOpenPlayer.addEventListener('click', () => {
+        const playerUrl = `${window.location.origin}${window.location.pathname}?room=${roomId}`;
+        window.open(playerUrl, '_blank');
+      });
+    }
 
     function openConfirmModal(title, desc, action) {
       modalTitle.textContent = title;
@@ -816,6 +834,7 @@
           btnToggleView.classList.add('active');
           hintBox.innerHTML = '🔒 <b>Câmera Bloqueada:</b> Seguindo a visão do Mestre em tempo real.';
           if (playerConn) playerConn.send({ type: 'REQUEST_CAMERA' });
+          syncChannel.postMessage({ type: 'REQUEST_CAMERA' });
         } else {
           btnToggleView.textContent = '👁️ Visão: Livre';
           btnToggleView.classList.remove('active');
