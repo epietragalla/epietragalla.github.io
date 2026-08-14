@@ -276,10 +276,11 @@
       <button id="btn-zoom-reset" class="btn" title="Centralizar Mapa">🎯 Reset</button>
     </div>
 
-    <!-- Jogador: Modo de Visão -->
+    <!-- Jogador: Modo de Visão e Tela Cheia -->
     <div class="control-group player-only">
-      <span class="group-label">Modo de Visão:</span>
+      <span class="group-label">Opções do Jogador:</span>
       <button id="btn-toggle-view" class="btn btn-player-mode">👁️ Visão: Livre</button>
+      <button id="btn-fullscreen" class="btn btn-player-mode">⛶ Tela Cheia</button>
     </div>
 
     <div class="control-group dm-only">
@@ -346,9 +347,10 @@
     const roleBadge = document.getElementById('role-badge');
     const brushSizeContainer = document.getElementById('brush-size-container');
     const btnToggleView = document.getElementById('btn-toggle-view');
+    const btnFullscreen = document.getElementById('btn-fullscreen');
     const hintBox = document.getElementById('hint-box');
 
-    // Modais e Botoes de Conexão
+    // Modais e Botões de Conexão
     const confirmModal = document.getElementById('confirm-modal');
     const modalTitle = document.getElementById('modal-title');
     const modalDesc = document.getElementById('modal-desc');
@@ -428,7 +430,6 @@
     let playerConn = null;
     const roomId = roomParam || ('rpg-' + Math.random().toString(36).substring(2, 9));
 
-    // Função para o Mestre enviar o estado completo para um jogador novo ou que reconectou
     function sendFullSync(targetConn) {
       if (!mapImage) return;
       const centerWorld = screenToWorld(viewport.clientWidth / 2, viewport.clientHeight / 2);
@@ -460,14 +461,12 @@
         
         playerConn.on('open', () => {
           placeholder.textContent = 'Conectado! Solicitando mapa do Mestre...';
-          // Pede a sincronização do mapa e da névoa assim que a conexão se estabelece
           playerConn.send({ type: 'REQUEST_SYNC' });
         });
 
         playerConn.on('data', (data) => handleData(data));
       });
 
-      // Solicita sincronização também via aba local (BroadcastChannel)
       syncChannel.postMessage({ type: 'REQUEST_SYNC' });
     } else {
       peer = new Peer(roomId);
@@ -487,7 +486,6 @@
         connectionCount.textContent = `🟢 ${connections.length} dispositivo(s) conectado(s)!`;
 
         conn.on('open', () => {
-          // Quando a conexão de um jogador abre, envia o estado do mapa imediatamente
           if (mapImage) sendFullSync(conn);
         });
 
@@ -710,7 +708,6 @@
       mapImage.src = src;
     }
 
-    // Carrega o mapa E restaura o estado exato da névoa e da câmera (para conexões novas/tardias)
     function loadMapWithFogState(mapSrc, fogSrc, centerX, centerY, targetScale) {
       mapImage = new Image();
       mapImage.onload = () => {
@@ -888,6 +885,35 @@
       if (shapeTool === 'polygon') finishPolygon();
     });
 
+    // --- FUNÇÃO DE TELA CHEIA (FULLSCREEN) ---
+    function toggleFullscreen() {
+      const doc = document;
+      const docEl = document.documentElement;
+
+      const isFS = doc.fullscreenElement || doc.webkitFullscreenElement || doc.msFullscreenElement;
+
+      if (!isFS) {
+        if (docEl.requestFullscreen) docEl.requestFullscreen();
+        else if (docEl.webkitRequestFullscreen) docEl.webkitRequestFullscreen();
+        else if (docEl.msRequestFullscreen) docEl.msRequestFullscreen();
+      } else {
+        if (doc.exitFullscreen) doc.exitFullscreen();
+        else if (doc.webkitExitFullscreen) doc.webkitExitFullscreen();
+        else if (doc.msExitFullscreen) doc.msExitFullscreen();
+      }
+    }
+
+    function updateFullscreenBtn() {
+      const isFS = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+      if (btnFullscreen) {
+        btnFullscreen.textContent = isFS ? '🗗 Sair da Tela Cheia' : '⛶ Tela Cheia';
+      }
+      setTimeout(resizeCanvas, 100);
+    }
+
+    document.addEventListener('fullscreenchange', updateFullscreenBtn);
+    document.addEventListener('webkitfullscreenchange', updateFullscreenBtn);
+
     // --- CARREGAMENTO DO MAPA COM COMPRESSÃO AUTOMÁTICA ---
     if (!isPlayerMode) {
       mapLoader.addEventListener('change', async (e) => {
@@ -948,6 +974,8 @@
           hintBox.innerHTML = '🖱️ <b>Scroll:</b> Zoom | ⌨️ <b>Espaço + Arrastar:</b> Mover Mapa';
         }
       });
+
+      btnFullscreen.addEventListener('click', toggleFullscreen);
     }
 
     document.getElementById('btn-zoom-in').addEventListener('click', () => {
