@@ -2,8 +2,8 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>VTT - Nevoeiro de Guerra Otimizado</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VTT - Nevoeiro de Guerra (Retro-Compatível)</title>
 
   <!-- Bibliotecas externas para Conexão Ponto a Ponto e QR Code -->
   <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
@@ -15,8 +15,6 @@
       margin: 0;
       padding: 0;
       user-select: none;
-      -webkit-user-select: none;
-      -webkit-touch-callout: none;
     }
 
     body {
@@ -128,7 +126,6 @@
       position: absolute;
       top: 0;
       left: 0;
-      touch-action: none;
     }
 
     body.player-mode header .dm-only {
@@ -139,26 +136,17 @@
       display: none !important;
     }
 
-    body.mirroring-active header,
-    body.ios-fullscreen header {
+    body.mirroring-active header {
       display: none !important;
     }
 
-    /* Modos de Tela Cheia no iOS */
-    body.ios-fullscreen main {
-      position: fixed !important;
-      top: 0 !important;
-      left: 0 !important;
-      width: 100vw !important;
-      height: 100vh !important;
-      z-index: 9999 !important;
-    }
-
+    /* Pílula Flutuante p/ iOS antigo */
     .floating-player-control {
       position: fixed;
       top: 12px;
       right: 12px;
       z-index: 50;
+      background: #181814;
       background: rgba(18, 18, 20, 0.9);
       border: 1px solid #04d361;
       border-radius: 20px;
@@ -351,7 +339,7 @@
     </button>
 
     <div class="controls-hint" id="hint-box">
-      👆 <b>Arraste com o dedo:</b> Mover | 🔍 <b>Pinça:</b> Zoom
+      🖱️ <b>Scroll:</b> Zoom | ⌨️ <b>Espaço + Arrastar:</b> Mover Mapa
     </div>
   </main>
 
@@ -383,7 +371,7 @@
   </div>
 
   <script>
-    // --- UTILS P/ COMPATIBILIDADE ---
+    // --- POLYFILL P/ NAVEGADORES ANTIGOS (iOS 9 / Chrome Antigo) ---
     function getQueryParam(param) {
       var search = window.location.search.substring(1);
       if (!search) return null;
@@ -406,6 +394,7 @@
                          window.location.href.indexOf('m=p') !== -1 ||
                          window.location.href.indexOf('r=') !== -1;
 
+    // Canal de Comunicação Local seguro p/ iOS antigo
     var syncChannel = {
       bc: (typeof BroadcastChannel !== 'undefined') ? new BroadcastChannel('rpg_fog_vtt') : null,
       postMessage: function(data) {
@@ -432,7 +421,7 @@
       }
     };
 
-    // DOM
+    // Elementos DOM
     var viewport = document.getElementById('viewport');
     var mainCanvas = document.getElementById('main-canvas');
     var mainCtx = mainCanvas.getContext('2d');
@@ -448,6 +437,7 @@
     var btnFullscreen = document.getElementById('btn-fullscreen');
     var hintBox = document.getElementById('hint-box');
 
+    // Modais
     var confirmModal = document.getElementById('confirm-modal');
     var modalTitle = document.getElementById('modal-title');
     var modalDesc = document.getElementById('modal-desc');
@@ -463,15 +453,18 @@
     var urlDisplay = document.getElementById('url-display');
     var btnCopyUrl = document.getElementById('btn-copy-url');
 
+    // Canvas de Névoa
     var fogCanvas = document.createElement('canvas');
     var fogCtx = fogCanvas.getContext('2d');
 
+    // Estado da Ferramenta
     var mapImage = null;
     var isDrawing = false;
     var shapeTool = 'freehand'; 
     var currentAction = 'erase'; 
     var brushSize = parseInt(brushSizeInput.value, 10);
 
+    // Estado da Câmera
     var scale = 1.0;
     var panX = 0;
     var panY = 0;
@@ -484,10 +477,10 @@
     var currentX = 0, currentY = 0;
     var polygonPoints = [];
 
-    // Otimização de imagem leve p/ iPad (máx 1600px)
+    // --- COMPRESSÃO DE IMAGEM (Promessa Padrão ES5) ---
     function compressImage(file, maxWidth, quality) {
-      maxWidth = maxWidth || 1600;
-      quality = quality || 0.7;
+      maxWidth = maxWidth || 2048;
+      quality = quality || 0.8;
       return new Promise(function(resolve) {
         var reader = new FileReader();
         reader.onload = function(e) {
@@ -520,59 +513,20 @@
       });
     }
 
-    // --- ENVIAR EM FRAGMENTOS (CHUNK SEND P/ WEBRTC NO IPAD) ---
-    var chunksBuffer = {};
-
-    function sendChunkedData(conn, type, payloadObj) {
-      var jsonStr = JSON.stringify({ type: type, payload: payloadObj });
-      var chunkSize = 16384; // Pacotes seguros de 16KB
-      var totalChunks = Math.ceil(jsonStr.length / chunkSize);
-      var msgId = Math.random().toString(36).substring(2, 9);
-
-      for (var i = 0; i < totalChunks; i++) {
-        var chunk = jsonStr.substring(i * chunkSize, (i + 1) * chunkSize);
-        var dataPacket = { type: 'CHUNK', msgId: msgId, chunk: chunk, index: i, total: totalChunks };
-        if (conn && conn.open) {
-          conn.send(dataPacket);
-        } else {
-          broadcast(dataPacket);
-        }
-      }
-    }
-
-    function processChunk(data) {
-      if (!chunksBuffer[data.msgId]) {
-        chunksBuffer[data.msgId] = new Array(data.total);
-      }
-      chunksBuffer[data.msgId][data.index] = data.chunk;
-
-      var receivedCount = 0;
-      for (var k = 0; k < data.total; k++) {
-        if (chunksBuffer[data.msgId][k]) receivedCount++;
-      }
-
-      if (receivedCount === data.total) {
-        var fullStr = chunksBuffer[data.msgId].join('');
-        delete chunksBuffer[data.msgId];
-        try {
-          var parsed = JSON.parse(fullStr);
-          handleData(parsed);
-        } catch(e) {}
-      }
-    }
-
-    // --- CONEXÃO PEERJS E WEBRTC (COM TRATAMENTO DE ERROS E TIMEOUT P/ DISPOSITIVOS ANTIGOS) ---
+    // --- CONEXÃO PEERJS E WEBRTC (Com checagem de suporte a iOS antigo) ---
     var peer = null;
     var connections = [];
     var playerConn = null;
     var playerUrlGenerated = '';
     var roomId = roomParam || Math.random().toString(36).substring(2, 8);
-    var connectionTimeout = null;
+
+    var hasWebRTC = !!(window.RTCPeerConnection || window.webkitRTCPeerConnection || window.mozRTCPeerConnection);
 
     function sendFullSync(targetConn) {
       if (!mapImage) return;
       var centerWorld = screenToWorld(viewport.clientWidth / 2, viewport.clientHeight / 2);
-      var payload = {
+      var syncData = {
+        type: 'FULL_SYNC',
         mapDataUrl: mapImage.src,
         fogDataUrl: fogCanvas.toDataURL(),
         centerX: centerWorld.x,
@@ -580,72 +534,39 @@
         scale: scale
       };
 
-      sendChunkedData(targetConn, 'FULL_SYNC', payload);
+      if (targetConn && targetConn.open) {
+        targetConn.send(syncData);
+      } else {
+        broadcast(syncData);
+      }
     }
 
     if (isPlayerMode) {
       document.body.className += ' player-mode';
       roleBadge.textContent = 'Jogador';
       roleBadge.className = 'badge badge-player';
-      placeholder.textContent = 'Conectando ao Mestre...';
-
-      if (typeof Peer !== 'undefined') {
-        // Adicionados servidores STUN da Google para ajudar conexões em redes antigas
-        peer = new Peer({
-          config: {
-            iceServers: [
-              { urls: 'stun:stun.l.google.com:19302' },
-              { urls: 'stun:stun1.l.google.com:19302' }
-            ]
-          }
-        });
-
-        // Temporizador de 7 segundos: Se a conexão travar, informa o motivo na tela
-        connectionTimeout = setTimeout(function() {
-          if (placeholder.textContent.indexOf('Conectado') === -1) {
-            placeholder.textContent = '⚠️ Falha ao conectar sem fio no iPad. O servidor de rede não respondeu. Tente recarregar ou use a opção "Janela do Jogador" no computador.';
-          }
-        }, 7000);
-
+      
+      if (!hasWebRTC) {
+        placeholder.textContent = 'Aviso: Este aparelho (iOS 9) não suporta conexão sem fio WebRTC. Abra em uma aba do mesmo navegador ou use um tablet mais recente.';
+      } else {
+        placeholder.textContent = 'Conectando ao Mestre...';
+        peer = new Peer();
         peer.on('open', function() {
-          // Desativado 'reliable' para evitar travamentos de handshake no iOS 9
-          playerConn = peer.connect(roomId, { reliable: false });
+          playerConn = peer.connect(roomId);
           
           playerConn.on('open', function() {
-            clearTimeout(connectionTimeout);
             placeholder.textContent = 'Conectado! Solicitando mapa do Mestre...';
             playerConn.send({ type: 'REQUEST_SYNC' });
           });
 
-          playerConn.on('data', function(data) { 
-            if (data.type === 'CHUNK') processChunk(data);
-            else handleData(data); 
-          });
-
-          playerConn.on('error', function(err) {
-            clearTimeout(connectionTimeout);
-            placeholder.textContent = '⚠️ Erro na conexão do jogador.';
-          });
-        });
-
-        peer.on('error', function(err) {
-          clearTimeout(connectionTimeout);
-          placeholder.textContent = '⚠️ O navegador deste iPad é antigo e não suporta o certificado de segurança WebRTC atual.';
+          playerConn.on('data', function(data) { handleData(data); });
         });
       }
 
-      // Tenta sincronizar também via canal local (BroadcastChannel / LocalStorage)
       syncChannel.postMessage({ type: 'REQUEST_SYNC' });
     } else {
-      if (typeof Peer !== 'undefined') {
-        peer = new Peer(roomId, {
-          config: {
-            iceServers: [
-              { urls: 'stun:stun.l.google.com:19302' },
-              { urls: 'stun:stun1.l.google.com:19302' }
-            ]
-          }
-        });
+      if (hasWebRTC && typeof Peer !== 'undefined') {
+        peer = new Peer(roomId);
         
         peer.on('open', function(id) {
           var baseUrl = window.location.href.split('?')[0].split('#')[0];
@@ -673,10 +594,6 @@
             if (data.type === 'REQUEST_SYNC') sendFullSync(conn);
             else if (data.type === 'REQUEST_CAMERA') broadcastCamera();
           });
-        });
-
-        peer.on('error', function(err) {
-          console.log('Erro Peer Mestre:', err);
         });
       }
     }
@@ -820,6 +737,7 @@
       if (mainCtx.setLineDash) mainCtx.setLineDash([]);
     }
 
+    // --- OPERAÇÕES DA NÉVOA ---
     function applyStroke(x, y, radius, action) {
       fogCtx.save();
       if (action === 'erase') {
@@ -929,22 +847,19 @@
 
     function handleData(data) {
       if (!data) return;
-      var type = data.type;
-      var payload = data.payload || data;
-
-      if (type === 'FULL_SYNC') {
-        loadMapWithFogState(payload.mapDataUrl, payload.fogDataUrl, payload.centerX, payload.centerY, payload.scale);
-      } else if (type === 'LOAD_MAP') loadMapImage(payload.dataUrl || payload);
-      else if (type === 'STROKE') applyStroke(payload.x, payload.y, payload.radius, payload.action);
-      else if (type === 'RECT') applyRect(payload.x, payload.y, payload.w, payload.h, payload.action);
-      else if (type === 'CIRCLE') applyCircle(payload.x, payload.y, payload.radius, payload.action);
-      else if (type === 'POLYGON') applyPolygon(payload.points, payload.action);
-      else if (type === 'RESET_FOG') resetFog(payload.fill);
-      else if (type === 'CAMERA_UPDATE') {
+      if (data.type === 'LOAD_MAP') loadMapImage(data.dataUrl);
+      else if (data.type === 'FULL_SYNC') {
+        loadMapWithFogState(data.mapDataUrl, data.fogDataUrl, data.centerX, data.centerY, data.scale);
+      } else if (data.type === 'STROKE') applyStroke(data.x, data.y, data.radius, data.action);
+      else if (data.type === 'RECT') applyRect(data.x, data.y, data.w, data.h, data.action);
+      else if (data.type === 'CIRCLE') applyCircle(data.x, data.y, data.radius, data.action);
+      else if (data.type === 'POLYGON') applyPolygon(data.points, data.action);
+      else if (data.type === 'RESET_FOG') resetFog(data.fill);
+      else if (data.type === 'CAMERA_UPDATE') {
         if (isPlayerMode && isMirroringDM) {
-          scale = payload.scale;
-          panX = (viewport.clientWidth / 2) - (payload.centerX * scale);
-          panY = (viewport.clientHeight / 2) - (payload.centerY * scale);
+          scale = data.scale;
+          panX = (viewport.clientWidth / 2) - (data.centerX * scale);
+          panY = (viewport.clientHeight / 2) - (data.centerY * scale);
           updateZoomDisplay();
           render();
         }
@@ -952,57 +867,22 @@
     }
 
     syncChannel.onMessage(function(data) {
-      if (data && data.type === 'CHUNK') processChunk(data);
-      else if (!isPlayerMode && data && data.type === 'REQUEST_SYNC') {
+      if (!isPlayerMode && data && data.type === 'REQUEST_SYNC') {
         sendFullSync();
       } else {
         handleData(data);
       }
     });
 
-    // --- EVENTOS DE TOQUE P/ IPAD ---
-    var touchStartDist = 0;
-    mainCanvas.addEventListener('touchstart', function(e) {
-      if (!mapImage || (isPlayerMode && isMirroringDM)) return;
-      if (e.touches.length === 1) {
-        isPanning = true;
-        startPanX = e.touches[0].clientX - panX;
-        startPanY = e.touches[0].clientY - panY;
-      } else if (e.touches.length === 2) {
-        isPanning = false;
-        var dx = e.touches[0].clientX - e.touches[1].clientX;
-        var dy = e.touches[0].clientY - e.touches[1].clientY;
-        touchStartDist = Math.sqrt(dx * dx + dy * dy);
-      }
-    }, { passive: false });
+    // --- EVENTOS DE MOUSE/TOQUE ---
+    window.addEventListener('keydown', function(e) {
+      if (e.code === 'Space') { isSpacePressed = true; mainCanvas.style.cursor = 'grab'; }
+    });
 
-    mainCanvas.addEventListener('touchmove', function(e) {
-      if (!mapImage || (isPlayerMode && isMirroringDM)) return;
-      e.preventDefault();
+    window.addEventListener('keyup', function(e) {
+      if (e.code === 'Space') { isSpacePressed = false; mainCanvas.style.cursor = 'crosshair'; }
+    });
 
-      if (e.touches.length === 1 && isPanning) {
-        panX = e.touches[0].clientX - startPanX;
-        panY = e.touches[0].clientY - startPanY;
-        render();
-        broadcastCamera();
-      } else if (e.touches.length === 2 && touchStartDist > 0) {
-        var dx = e.touches[0].clientX - e.touches[1].clientX;
-        var dy = e.touches[0].clientY - e.touches[1].clientY;
-        var newDist = Math.sqrt(dx * dx + dy * dy);
-
-        var zoomFactor = newDist / touchStartDist;
-        scale = Math.min(Math.max(0.1, scale * zoomFactor), 5.0);
-        touchStartDist = newDist;
-
-        updateZoomDisplay();
-        render();
-        broadcastCamera();
-      }
-    }, { passive: false });
-
-    mainCanvas.addEventListener('touchend', function() { isPanning = false; touchStartDist = 0; });
-
-    // EVENTOS MOUSE
     viewport.addEventListener('wheel', function(e) {
       if (!mapImage || (isPlayerMode && isMirroringDM)) return;
       e.preventDefault();
@@ -1114,32 +994,26 @@
       if (shapeTool === 'polygon') finishPolygon();
     });
 
-    // --- TELA CHEIA COMPATÍVEL COM IPAD ---
+    // --- TELA CHEIA SEGURO P/ NAVEGADORES ANTIGOS ---
     function toggleFullscreen() {
       var doc = document;
       var docEl = document.documentElement;
 
-      var isFS = doc.fullscreenElement || doc.webkitFullscreenElement || doc.msFullscreenElement || (document.body.className.indexOf('ios-fullscreen') !== -1);
+      var isFS = doc.fullscreenElement || doc.webkitFullscreenElement || doc.msFullscreenElement;
 
       if (!isFS) {
         if (docEl.requestFullscreen) docEl.requestFullscreen();
         else if (docEl.webkitRequestFullscreen) docEl.webkitRequestFullscreen();
-        else {
-          // Fallback Pseudo-Fullscreen p/ iPad
-          document.body.className += ' ios-fullscreen';
-          updateFullscreenBtn();
-        }
+        else if (docEl.msRequestFullscreen) docEl.msRequestFullscreen();
       } else {
         if (doc.exitFullscreen) doc.exitFullscreen();
         else if (doc.webkitExitFullscreen) doc.webkitExitFullscreen();
-
-        document.body.className = document.body.className.replace(' ios-fullscreen', '');
-        updateFullscreenBtn();
+        else if (doc.msExitFullscreen) doc.msExitFullscreen();
       }
     }
 
     function updateFullscreenBtn() {
-      var isFS = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement || (document.body.className.indexOf('ios-fullscreen') !== -1);
+      var isFS = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
       if (btnFullscreen) {
         btnFullscreen.textContent = isFS ? '🗗 Sair da Tela Cheia' : '⛶ Tela Cheia';
       }
@@ -1149,7 +1023,7 @@
     document.addEventListener('fullscreenchange', updateFullscreenBtn);
     document.addEventListener('webkitfullscreenchange', updateFullscreenBtn);
 
-    // CONTROLES DE INTERFACE
+    // --- CARREGAMENTO DE MAPA ---
     if (!isPlayerMode) {
       mapLoader.addEventListener('change', function(e) {
         var file = e.target.files[0];
@@ -1157,7 +1031,7 @@
           placeholder.textContent = '⚡ Otimizando e carregando o mapa...';
           placeholder.style.display = 'block';
 
-          compressImage(file, 1600, 0.7).then(function(compressedDataUrl) {
+          compressImage(file, 2048, 0.8).then(function(compressedDataUrl) {
             loadMapImage(compressedDataUrl);
             broadcast({ type: 'LOAD_MAP', dataUrl: compressedDataUrl });
           });
@@ -1165,6 +1039,7 @@
       });
     }
 
+    // --- CONTROLES DE INTERFACE E MODAIS ---
     if (btnConnect) btnConnect.addEventListener('click', function() { connectModal.className += ' active'; });
     if (modalCloseConnect) modalCloseConnect.addEventListener('click', function() { connectModal.className = connectModal.className.replace(' active', ''); });
 
@@ -1224,7 +1099,7 @@
         document.body.className = document.body.className.replace(' mirroring-active', '');
         btnToggleView.textContent = '👁️ Visão: Livre';
         btnToggleView.className = btnToggleView.className.replace(' active', '');
-        hintBox.innerHTML = '👆 <b>Arraste com o dedo:</b> Mover | 🔍 <b>Pinça:</b> Zoom';
+        hintBox.innerHTML = '🖱️ <b>Scroll:</b> Zoom | ⌨️ <b>Espaço + Arrastar:</b> Mover Mapa';
       }
 
       setTimeout(resizeCanvas, 50);
