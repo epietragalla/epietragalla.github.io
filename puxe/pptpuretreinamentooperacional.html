@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="light" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treinamento Operacional PURE — Guia do Piloto & Avaliadores</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- FontAwesome & Lucide Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- MathJax para Equações TeX -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            blue: '#005CA9',
+                            darkBlue: '#002A4D',
+                            lightBlue: '#E5F1FC',
+                            orange: '#D67B00',
+                            orangeLight: '#FFEFD6',
+                            green: '#179231',
+                            greenLight: '#E7F4EA',
+                            red: '#D93636',
+                            redLight: '#FBEBEB',
+                            yellow: '#FCBE05',
+                            yellowLight: '#FFF9E6',
+                            purple: '#8E44AD',
+                            purpleLight: '#F3E8FF'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
+
+        :root {
+            --bg-canvas: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-inset: #f1f5f9;
+            --border-color: #e2e8f0;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --accent-blue: #005CA9;
+            --accent-cyan: #0284c7;
+            --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+        }
+
+        .dark {
+            --bg-canvas: #090d16;
+            --bg-card: #111827;
+            --bg-inset: #1e293b;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-blue: #38bdf8;
+            --accent-cyan: #38bdf8;
+            --shadow-card: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
+        }
+
+        body {
+            background-color: var(--bg-canvas);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Linha de Progresso Topo */
+        .progress-bar-container {
+            width: 100%;
+            height: 4px;
+            background: rgba(148, 163, 184, 0.2);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #38bdf8, #005CA9, #34d399);
+            width: 0%;
+            transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Barra Header */
+        .top-bar {
+            height: 65px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            z-index: 30;
+            backdrop-filter: blur(16px);
+        }
+
+        /* Shell da Apresentação */
+        .presentation-container {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+            position: relative;
+        }
+
+        .slide {
+            display: none;
+            width: 100%;
+            max-width: 1280px;
+            height: 100%;
+            max-height: 720px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 36px 44px;
+            box-shadow: var(--shadow-card);
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            opacity: 0;
+            transform: scale(0.98) translateY(10px);
+        }
+
+        .slide.active {
+            display: flex;
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+            padding-right: 6px;
+        }
+
+        .slide-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .slide-content::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 4px;
+        }
+
+        .quote-box {
+            background: var(--bg-inset);
+            border-left: 4px solid var(--accent-cyan);
+            padding: 14px 18px;
+            border-radius: 0 12px 12px 0;
+            font-style: italic;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-top: 8px;
+        }
+
+        /* Tags de Módulo */
+        .module-tag {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-bottom: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 6px;
+        }
+
+        /* Badges Customizados */
+        .badge-pure {
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            display: inline-block;
+        }
+
+        /* Opções Interativas do Simulador */
+        .interactive-opt {
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            background: var(--bg-inset);
+            border-radius: 12px;
+            padding: 12px 16px;
+        }
+
+        .interactive-opt:hover {
+            border-color: #38bdf8;
+            transform: translateY(-2px);
+        }
+
+        .interactive-opt.active-opt {
+            border-color: #005CA9;
+            background-color: rgba(56, 189, 248, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Linha de Progresso Topo -->
+    <div class="progress-bar-container">
+        <div class="progress-bar-fill" id="progressBar"></div>
+    </div>
+
+    <!-- Barra de Navegação Superior -->
+    <header class="top-bar">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-sky-500/20 border border-sky-400/40 flex items-center justify-center text-sky-500 font-extrabold text-base shadow-sm">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <div>
+                <h1 class="text-sm font-bold tracking-tight flex items-center gap-2">
+                    Treinamento Operacional PURE
+                    <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-500 border border-sky-500/30">Guia do Piloto & Avaliadores</span>
+                </h1>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <button id="themeToggleBtn" onclick="toggleTheme()" class="p-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:scale-105 text-xs font-semibold flex items-center gap-1.5 cursor-pointer">
+                <i class="fa-solid fa-moon text-sky-500" id="themeIcon"></i>
+                <span id="themeText">Modo Escuro</span>
+            </button>
+
+            <button onclick="changeSlide(-1)" id="prevBtn" class="px-3.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed">
+                <i class="fa-solid fa-chevron-left mr-1"></i> Anterior
+            </button>
+
+            <div id="slideCounter" class="font-mono text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700">
+                01 / 24
+            </div>
+
+            <button onclick="changeSlide(1)" id="nextBtn" class="px-3.5 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold shadow-md shadow-sky-600/30">
+                Próximo <i class="fa-solid fa-chevron-right ml-1"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Container do Slide -->
+    <main class="presentation-container">
+
+        <!-- SLIDE 1: CAPA -->
+        <div class="slide active justify-between">
+            <div class="my-auto text-center max-w-4xl mx-auto space-y-6">
+                <span class="module-tag bg-sky-500/10 text-sky-500 border border-sky-500/30">
+                    <i class="fa-solid fa-rocket"></i> Treinamento Oficial PURE
+                </span>
+                <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight leading-tight">
+                    Manual de Avaliação & Condução
+                </h1>
+                <h2 class="text-xl font-bold text-sky-500">
+                    Instruções Práticas para o Piloto (Driver) e Comitê de Especialistas
+                </h2>
+                <p class="text-slate-500 dark:text-slate-400 text-sm max-w-2xl mx-auto leading-relaxed">
+                    Aprenda a executar o Happy Path sem hesitação, assumir a perspectiva empática do "Seu Carlos", aplicar a rubrica de fricção (1 a 3), calibrar a persona e conduzir a reunião de consenso.
+                </p>
+
+                <!-- Cards dos Papéis na Capa -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto text-left mt-6">
+                    <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 flex items-start gap-3">
+                        <div class="p-3 rounded-lg bg-sky-500/20 text-sky-500 font-bold">
+                            <i class="fa-solid fa-gamepad text-xl"></i>
+                        </div>
+                        <div>
+                            <strong class="text-sm block">O Piloto (Driver)</strong>
+                            <p class="text-slate-500 dark:text-slate-400 text-xs mt-1">Mecânico, preciso e sem hesitação. Conhece o sistema e conduz o Happy Path para o grupo sem votar.</p>
+                        </div>
+                    </div>
+                    <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 flex items-start gap-3">
+                        <div class="p-3 rounded-lg bg-emerald-500/20 text-emerald-500 font-bold">
+                            <i class="fa-solid fa-user-check text-xl"></i>
+                        </div>
+                        <div>
+                            <strong class="text-sm block">Os 3 Avaliadores</strong>
+                            <p class="text-slate-500 dark:text-slate-400 text-xs mt-1">Empáticos e silenciosos. Vestem a pele da persona e julgam o atrito cognitivo passo a passo em gabarito individual.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center text-xs text-slate-400 pt-4 border-t border-slate-200 dark:border-slate-800">
+                <span>Engenharia de Usabilidade & PURE Methodology</span>
+                <span>Slide 01 de 24</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 2: OBJETIVO E MISSÃO -->
+        <div class="slide">
+            <div class="slide-content">
+                <span class="module-tag bg-sky-500/10 text-sky-500 border border-sky-500/30">
+                    <i class="fa-solid fa-bullseye"></i> Módulo 1 — Visão Geral
+                </span>
+                <div class="space-y-1">
+                    <h2 class="text-2xl font-extrabold tracking-tight">A Missão da Nossa Sessão de Avaliação</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Entendendo a natureza analítica e o rigor da auditoria</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-auto">
+                    <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-3">
+                        <div class="text-sky-500 font-bold text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-gauge-high"></i> O que vamos medir juntos?
+                        </div>
+                        <p class="text-xs leading-relaxed text-slate-600 dark:text-slate-300">
+                            O PURE mede a <strong>fricção cognitiva e física</strong> que a interface impõe ao usuário para realizar uma tarefa essencial sem falhar.
+                        </p>
+                        <ul class="text-xs space-y-2 text-slate-500 dark:text-slate-400 list-disc list-inside">
+                            <li><strong>Não é teste empírico:</strong> Não há usuários reais testando ao vivo na sala.</li>
+                            <li><strong>Não é debate de opinião:</strong> Não discutimos "gostei/não gostei". O julgamento é estritamente amparado no esforço da persona.</li>
+                        </ul>
+                    </div>
+
+                    <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-3">
+                        <div class="text-amber-500 font-bold text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-shield-halved"></i> O Veto da Imparcialidade
+                        </div>
+                        <ul class="text-xs space-y-2 text-slate-500 dark:text-slate-400 list-disc list-inside leading-relaxed">
+                            <li><strong>Pontuação Independente:</strong> Na 1ª rodada, cada especialista registra sua nota em silêncio absoluto no gabarito.</li>
+                            <li><strong>Isenção de Autoria:</strong> Quem desenhou a tela NUNCA pontua. Atua exclusivamente como o Piloto (Driver).</li>
+                            <li><strong>Rigor Científico:</strong> Calculamos a confiabilidade do grupo via <em>Krippendorff's Alpha (IRR)</em> antes da reunião de consenso.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="quote-box">
+                    "O nosso objetivo na sessão não é defender a interface, mas sim simular com máxima empatia onde a nossa persona encontrará dúvidas, esforço ou risco de desistência."
+                </div>
+            </div>
+            <div class="flex justify-between items-center text-xs text-slate-400 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <span>Treinamento PURE — Missão do Comitê</span>
+                <span>Slide 02 de 24</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 3: O PAPEL DO PILOTO -->
+        <div class="slide">
+            <div class="slide-content">
+                <span class="module-tag bg-amber-500/10 text-amber-500 border border-amber-500/30">
+                    <i class="fa-solid fa-gamepad"></i> Módulo 2 — O Piloto (Driver)
+                </span>
+                <div class="space-y-1">
+                    <h2 class="text-2xl font-extrabold tracking-tight">O Papel do Piloto — Por que ele DEVE ser um Expert?</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">A figura mecânica que garante o ritmo e a padronização do teste</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-auto">
+                    <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-3">
+                        <div class="text-amber-500 font-bold text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-bolt"></i> Execução Perfeita sem Hesitação
+                        </div>
+                        <p class="text-xs leading-relaxed text-slate-600 dark:text-slate-300">
+                            O piloto <strong>conhece o software a fundo</strong>. Ele navega pelo Happy Path com precisão cirúrgica, sem errar cliques, sem parar para procurar botões e sem simular "dúvidas".
+                        </p>
+                        <div class="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-xs text-amber-600 dark:text-amber-300">
+                            <strong>Por que essa precisão é vital?</strong> Se o piloto fosse leigo e hesitasse, ele traria ruído ao teste, transformando a sessão analítica em um teste empírico despadronizado.
+                        </div>
+                    </div>
+
+                    <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-3">
+                        <div class="text-sky-500 font-bold text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-flag-checkered"></i> Demarcador de Fronteiras de Passo
+                        </div>
+                        <p class="text-xs leading-relaxed text-slate-600 dark:text-slate-300">
+                            O piloto é o maestro do tempo. Ele conhece a lista de passos do roteiro e anuncia o início e o fim de cada etapa para o grupo.
+                        </p>
+                        <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 font-mono text-xs text-amber-300">
+                            "Avaliadores, concluí a digitação do formulário e cliquei em Avançar. Podem pontuar o Passo 2 em silêncio."
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quote-box">
+                    "O piloto remove o ruído do operador: a sua execução mecânica isola o objeto de estudo para que os avaliadores analisem puramente a clareza do design."
+                </div>
+            </div>
+            <div class="flex justify-between items-center text-xs text-slate-400 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <span>Treinamento PURE — Função do Piloto</span>
+                <span>Slide 03 de 24</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 4: REGRAS DO PILOTO DO'S AND DONT'S -->
+        <div class="slide">
+            <div class="slide-content">
+                <span class="module-tag bg-amber-500/10 text-amber-500 border border-amber-500/30">
+                    <i class="fa-solid fa-list-check"></i> Módulo 2 — O Piloto
+                </span>
+                <div class="space-y-1">
+                    <h2 class="text-2xl font-extrabold tracking-tight">Diretrizes do Piloto: O que FAZER e NÃO FAZER</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Postura operacional durante o walkthrough ao vivo</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-auto">
+                    <div class="p-5 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 space-y-3">
+                        <div class="text-emerald-500 font-bold text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-circle-check"></i> O que o Piloto DEVE Fazer
+                        </div>
+                        <ul class="text-xs space-y-2 text-slate-600 dark:text-slate-300 list-disc list-inside leading-relaxed">
+                            <li><strong>Compartilhar a tela com clareza:</strong> Garantir que todos enxerguem os detalhes e textos legíveis.</li>
+                            <li><strong>Seguir estritamente o Happy Path:</strong> Sem entrar em caminhos secundários ou exceções de erro.</li>
+                            <li><strong>Avisar as transições de etapa:</strong> Falar em voz alta o número do passo conforme o roteiro.</li>
+                            <li><strong>Aguardar os avaliadores:</strong> Dar tempo para que os 3 especialistas registrem notas e justificativas antes do próximo clique.</li>
+                        </ul>
+                    </div>
+
+                    <div class="p-5 rounded-2xl border border-red-500/30 bg-red-500/5 space-y-3">
+                        <div class="text-red-500 font-bold text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-circle-xmark"></i> O que o Piloto NUNCA DEVE Fazer
+                        </div>
+                        <ul class="text-xs space-y-2 text-slate-600 dark:text-slate-300 list-disc list-inside leading-relaxed">
+                            <li><strong>NÃO dar palpites de nota:</strong> O piloto não opina se o passo é 1, 2 ou 3.</li>
+                            <li><strong>NÃO defender a tela:</strong> Não diga "fiz assim porque o usuário prefere assim".</li>
+                            <li><strong>NÃO simular dúvidas fictícias:</strong> Não faça caras e bocas fingindo que não sabe onde clicar.</li>
+                            <li><strong>NÃO votar na planilha:</strong> Se o piloto for o designer criador da tela, ele tem veto absoluto de voto.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="quote-box">
+                    "O piloto é o espelho neutro do software. Sua postura firme e silenciosa em relação a votos preserva a isenção dos 3 especialistas."
+                </div>
+            </div>
+            <div class="flex justify-between items-center text-xs text-slate-400 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <span>Treinamento PURE — Diretrizes do Piloto</span>
+                <span>Slide 04 de 24</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 5: PASSO A PASSO (STEP BOUNDARIES) -->
+        <div class="slide">
+            <div class="slide-content">
+                <span class="module-tag bg-amber-500/10 text-amber-500 border border-amber-500/30">
+                    <i class="fa-solid fa-crop-simple"></i> Módulo 2 — Fronteiras
+                </span>
+                <div class="space-y-1">
+                    <h2 class="text-2xl font-extrabold tracking-tight">Entendendo as Fronteiras dos Passos (Step Boundaries)</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Padronização da decomposição linear do roteiro de teste</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-auto">
+                    <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-3">
+                        <div class="text-sky-500 font-bold text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-play"></i> Onde Começa e Onde Termina um Passo?
+                        </div>
+                        <ul class="text-xs space-y-2 text-slate-600 dark:text-slate-300 list-disc list-inside leading-relaxed">
+                            <li><strong>Início do Passo:</strong> Quando a tela renderiza ou apresenta um novo conjunto de opções visuais para a persona.</li>
+                            <li><strong>Término do Passo:</strong> Quando o usuário conclui a ação e o sistema processa ou transita para o próximo estado.</li>
+                        </ul>
+                        <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-xs text-slate-300">
+                            <strong class="text-sky-400 block mb-1">Regra dos Formulários (Micro-interações):</strong>
+                            Preencher Nome, CPF, Telefone e Endereço é considerado <strong>UM ÚNICO PASSO</strong>. O passo só encerra quando o usuário clica no botão "Avançar" ou "Cadastrar".
+                        </div>
+                    </div>
+
+                    <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-3">
+                        <div class="text-purple-500 font-bold text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-sitemap"></i> Exemplo Mapeado no Cadastro de Maquininha
+                        </div>
+                        <div class="space-y-2 text-xs font-mono">
+                            <div class="p-2.5 bg-slate-900 rounded-lg border border-slate-800 flex justify-between items-center text-slate-200">
+                                <span>Passo 1: Selecionar Tipo (CPF vs CNPJ)</span>
+                                <span class="badge-pure bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Render ➔ Clique</span>
+                            </div>
+                            <div class="p-2.5 bg-slate-900 rounded-lg border border-slate-800 flex justify-between items-center text-slate-200">
+                                <span>Passo 2: Preencher Dados do Negócio</span>
+                                <span class="badge-pure bg-amber-500/20 text-amber-400 border border-amber-500/30">Form ➔ Botão Avançar</span>
+                            </div>
+                            <div class="p-2.5 bg-slate-900 rounded-lg border border-slate-800 flex justify-between items-center text-slate-200">
+                                <span>Passo 3: Captura de Biometria Facial</span>
+                                <span class="badge-pure bg-red-500/20 text-red-400 border border-red-500/30">Câmera ➔ Confirmação</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quote-box">
+                    "Padronizar as fronteiras dos passos antes da sessão garante que todos os especialistas estejam avaliando exatamente o mesmo bloco de ação."
+                </div>
+            </div>
+            <div class="flex justify-between items-center text-xs text-slate-400 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <span>Treinamento PURE — Step Boundaries</span>
+                <span>Slide 05 de 24</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 6: A MENTALIDADE DO AVALIADOR -->
+        <div class="slide">
+            <div class="slide-content">
+                <span class="module-tag bg-sky-500/10 text-sky-500 border border-sky-500/30">
+                    <i class="fa-solid fa-user-check"></i> Módulo 3 — Avaliadores
+                </span>
+                <div class="space-y-1">
+                    <h2 class="text-2xl font-extrabold tracking-tight">A Lente Empática do Avaliador — Calçando os Sapatos da Persona</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Como assumir o olhar da persona e abandonar o viés de expert</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-auto">
+                    <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-3">
+                        <div class="text-sky-500 font-bold text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-glasses"></i> Quem realmente faz o papel do leigo?
+                        </div>
+                        <p class="text-xs leading-relaxed text-slate-600 dark:text-slate-300">
+                            São os <strong>3 especialistas assistindo à navegação</strong>! Enquanto o piloto avança perfeitamente, o especialista olha para a tela e faz a pergunta fundamental:
+                        </p>
+                        <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-xs italic text-amber-300 font-mono">
+                            "Se a nossa persona estivesse no balcão do seu negócio agora vendo esta tela, o quão difícil seria para ela entender o que fazer?"
+                        </div>
+                    </div>
+
+                    <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-3">
+                        <div class="text-purple-500 font-bold text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-eye-slash"></i> Eliminando o Viés de Expert
+                        </div>
+                        <ul class="text-xs space-y-2 text-slate-600 dark:text-slate-300 list-disc list-inside leading-relaxed">
+                            <li><strong>Você conhece atalhos? Esqueça-os!</strong> A persona não sabe que clicar no logotipo volta para a home.</li>
+                            <li><strong>Você entende termos de FinTech? A persona não!</strong> Palavras como <em>MEC, Adquirência, Chave EVP</em> geram bloqueio imediato.</li>
+                            <li><strong>A tela parece linda para você?</strong> Se a fonte for pequena no celular, para a persona será um pesadelo.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="quote-box">
+                    "Saber usar o software não é pré-requisito para o avaliador — na verdade, o excesso de familiaridade é um ponto cego. O seu papel é aplicar heurísticas despidas do olhar de desenvolvedor."
+                </div>
+            </div>
+            <div class="flex justify-between items-center text-xs text-slate-400 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <span>Treinamento PURE — Mentalidade do Avaliador</span>
+                <span>Slide 06 de 24</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 7: A PERSONA EM DETALHES (SEU CARLOS) -->
+        <div class="slide">
+            <div class="slide-content">
+                <span class="module-tag bg-sky-500/10 text-sky-500 border border-sky-500/30">
+                    <i class="fa-solid fa-store"></i> Módulo 3 — A Persona
+                </span>
+                <div class="space-y-1">
+                    <h2 class="text-2xl font-extrabold tracking-tight">Conhecendo a Persona Real: O Pequeno Empreendedor ("Seu Carlos")</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Contexto de uso para o cadastro de Maquininha de Pagamento</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-auto">
+                    <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-3">
+                        <div class="text-emerald-500 font-bold text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-address-card"></i> Perfil e Contexto de Uso
+                        </div>
+                        <ul class="text-xs space-y-2 text-slate-600 dark:text-slate-300 list-disc list-inside leading-relaxed">
+                            <li><strong>Quem é:</strong> "Seu Carlos", 45 anos, dono de mercadinho/salão/oficina no Brasil.</li>
+                            <li><strong>Dispositivo:</strong> Celular mediano, internet 4G/3G oscilante.</li>
+                            <li><strong>Momento de Uso:</strong> Preenche o cadastro no balcão da loja, em pé, entre o atendimento de um cliente e outro.</li>
+                            <li><strong>Urgência:</strong> Quer a maquininha para não perder vendas no fim de semana. Tem pavor de burocracia e taxas escondidas.</li>
+                        </ul>
+                    </div>
+
+                    <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-3">
+                        <div class="text-amber-500 font-bold text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-brain"></i> Modelos Mentais & Dores Específicas
+                        </div>
+                        <ul class="text-xs space-y-2 text-slate-600 dark:text-slate-300 list-disc list-inside leading-relaxed">
+                            <li><strong>Mistura CPF/CNPJ:</strong> Não entende a exigência de conta PJ se for MEI.</li>
+                            <li><strong>Receio da Biometria:</strong> Teme que a foto da CNH "dê erro" por causa da iluminação do balcão.</li>
+                            <li><strong>Fadiga de Digitação:</strong> Digitar endereço completo campo por campo gera irritação.</li>
+                            <li><strong>Aversão a Jargões:</strong> Desiste se ver siglas financeiras sem explicação clara.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="quote-box">
+                    "Instrução do Teste: Se a tela exigir que o Seu Carlos pare por 10 segundos, procure um papel na gaveta ou pergunte a um contador, aquela etapa possui ATRITO NOTÁVEL (Nota 2) ou CRÍTICO (Nota 3)."
+                </div>
+            </div>
+            <div class="flex justify-between items-center text-xs text-slate-400 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <span>Treinamento PURE — Persona em Detalhes</span>
+                <span>Slide 07 de 24</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 8: A RUBRICA DE PONTUAÇÃO (1, 2, 3) -->
+        <div class="slide">
+            <div class="slide-content">
+                <span class="module-tag bg-red-500/10 text-red-500 border border-red-500/30">
+                    <i class="fa-solid fa-ruler"></i> Módulo 4 — Rubrica
+                </span>
+                <div class="space-y-1">
+                    <h2 class="text-2xl font-extrabold tracking-tight">A Rubrica Oficial de Pontuação de Fricção (1 a 3)</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Escala ordinal padrão para classificação do atrito cognitivo</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5 my-auto">
+                    <div class="p-5 rounded-2xl border border-emerald-500/40 bg-emerald-500/10 space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-2xl font-black text-emerald-500 font-mono">Nota 1</span>
+                            <span class="badge-pure bg-emerald-500/20 text-emerald-500 border border-emerald-500">VERDE</span>
+                        </div>
+                        <strong class="text-sm block">Atrito Baixo / Fluido</strong>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                            Etapa óbvia e simples para a persona. Carga cognitiva mínima. Padrão consagrado (ex: botão gigante "Avançar").
+                        </p>
+                    </div>
+
+                    <div class="p-5 rounded-2xl border border-amber-500/40 bg-amber-500/10 space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-2xl font-black text-amber-500 font-mono">Nota 2</span>
+                            <span class="badge-pure bg-amber-500/20 text-amber-500 border border-amber-500">AMARELO</span>
+                        </div>
+                        <strong class="text-sm block">Esforço Moderado / Hesitação</strong>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                            Exige leitura atenta ou esforço físico. A persona hesita, procura elementos ou digita dados manuais, mas conclui.
+                        </p>
+                    </div>
+
+                    <div class="p-5 rounded-2xl border border-red-500/40 bg-red-500/10 space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-2xl font-black text-red-500 font-mono">Nota 3</span>
+                            <span class="badge-pure bg-red-500/20 text-red-500 border border-red-500">VERMELHO</span>
+                        </div>
+                        <strong class="text-sm block">Atrito Crítico / Bloqueio</strong>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                            Etapa confusa, com jargões, exigência de documentos raros ou falha visual. Alta chance de abandono do cadastro.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="quote-box">
+                    "Lembre-se: Apenas 1 nota Vermelha (3) em qualquer passo torna a tarefa INTEIRA Vermelha. Tolerância zero para pontos de desistência."
+                </div>
+            </div>
+            <div class="flex justify-between items-center text-xs text-slate-400 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <span>Treinamento PURE — Rubrica de Pontuação</span>
+                <span>Slide 08 de 24</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 9: GUIA PRÁTICO DE PONTUAÇÃO DE TELAS -->
+        <div class="slide">
+            <div class="slide-content">
+                <span class="module-tag bg-red-500/10 text-red-500 border border-red-500/30">
+                    <i class="fa-solid fa-mobile-screen"></i> Módulo 4 — Casos Práticos
+                </span>
+                <div class="space-y-1">
+                    <h2 class="text-2xl font-extrabold tracking-tight">Guia Prático: Como Pontuar Elementos de Interface</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Exemplos reais de telas de cadastro de maquininha de cartão</p>
+                </div>
+
+                <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 my-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 font-mono text-[11px] uppercase border-b border-slate-200 dark:border-slate-800">
+                            <tr>
+                                <th class="p-3">Elemento</th>
+                                <th class="p-3">Fluido (Nota 1)</th>
+                                <th class="p-3">Esforço Moderado (Nota 2)</th>
+                                <th class="p-3">Bloqueio Crítico (Nota 3)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 dark:divide-slate-800 text-slate-600 dark:text-slate-300">
+                            <tr>
+                                <td class="p-3 font-bold text-slate-800 dark:text-white">Endereço</td>
+                                <td class="p-3 text-emerald-600 dark:text-emerald-400">Digita CEP ➔ Auto-completa Rua, Bairro e Cidade.</td>
+                                <td class="p-3 text-amber-600 dark:text-amber-400">CEP preenche parcial; exige digitar Bairro manualmente.</td>
+                                <td class="p-3 text-red-600 dark:text-red-400">Sem busca por CEP; exige digitar 7 campos manuais no celular.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold text-slate-800 dark:text-white">Documentos</td>
+                                <td class="p-3 text-emerald-600 dark:text-emerald-400">Consulta CNPJ na Receita Federal automaticamente.</td>
+                                <td class="p-3 text-amber-600 dark:text-amber-400">Exige digitar Razão Social e Inscrição Estadual.</td>
+                                <td class="p-3 text-red-600 dark:text-red-400">Exige upload de Contrato Social PDF e Comprovante PJ recente.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold text-slate-800 dark:text-white">Biometria</td>
+                                <td class="p-3 text-emerald-600 dark:text-emerald-400">Guia visual na tela + captura automática em 3s.</td>
+                                <td class="p-3 text-amber-600 dark:text-amber-400">Exige apertar botão manual enquanto enquadra o rosto.</td>
+                                <td class="p-3 text-red-600 dark:text-red-400">Dá erro silencioso sem explicar se faltou iluminação na loja.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold text-slate-800 dark:text-white">Taxas/Planos</td>
+                                <td class="p-3 text-emerald-600 dark:text-emerald-400">Tabela clara: "Débito 1,2% | Crédito 2,5%".</td>
+                                <td class="p-3 text-amber-600 dark:text-amber-400">Exige clicar em "Ver Mais" para ver parcelado.</td>
+                                <td class="p-3 text-red-600 dark:text-red-400">Usa jargões como "Taxa Adquirente + MEC + Repasse".</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="quote-box">
+                    "O PURE penaliza o esforço desnecessário. Se o sistema poderia automatizar e jogou o trabalho para o Seu Carlos, a nota deve subir para 2 ou 3."
+                </div>
+            </div>
+            <div class="flex justify-between items-center text-xs text-slate-400 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <span>Treinamento PURE — Casos Práticos</span>
+                <span>Slide 09 de 24</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 10: SIMULADOR INTERATIVO DE PONTUAÇÃO -->
+        <div class="slide">
+            <div class="slide-content">
+                <span class="module-tag bg-red-500/10 text-red-500 border border-red-500/30">
+                    <i class="fa-solid fa-gamepad"></i> Módulo 4 — Treino Interativo
+                </span>
+                <div class="space-y-1">
+                    <h2 class="text-2xl font-extrabold tracking-tight">Exercício Prático: Pontue este Passo com o Seu Carlos</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Clique na nota que você daria para o cenário abaixo e veja o feedback</p>
+                </div>
+
+                <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 space-y-4 my-auto">
+                    <div class="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-xs space-y-1">
+                        <strong class="text-amber-500 block font-bold"><i class="fa-solid fa-mobile text-sm mr-1"></i> Cenário da Tela: Passo 3 — "Informar Conta para Recebimento"</strong>
+                        <p class="text-slate-600 dark:text-slate-300">
+                            A tela pede o Banco, Agência e Conta. Para aceitar a conta, a tela exige selecionar o <strong>"Tipo de Conta (MEC / Adquirência PJ)"</strong> em um menu dropdown com 8 siglas bancárias sem explicações.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <button onclick="evaluatePractice(1)" id="practiceBtn1" class="interactive-opt text-left space-y-1">
+                            <span class="badge-pure bg-emerald-500/20 text-emerald-500 border border-emerald-500">Nota 1 (Verde)</span>
+                            <strong class="text-xs block">Atrito Baixo</strong>
+                            <p class="text-[11px] text-slate-500">É fácil, o Seu Carlos escolhe rápido.</p>
+                        </button>
+
+                        <button onclick="evaluatePractice(2)" id="practiceBtn2" class="interactive-opt text-left space-y-1">
+                            <span class="badge-pure bg-amber-500/20 text-amber-500 border border-amber-500">Nota 2 (Amarelo)</span>
+                            <strong class="text-xs block">Atrito Notável</strong>
+                            <p class="text-[11px] text-slate-500">Ele lê com atenção e chuta uma sigla.</p>
+                        </button>
+
+                        <button onclick="evaluatePractice(3)" id="practiceBtn3" class="interactive-opt text-left space-y-1">
+                            <span class="badge-pure bg-red-500/20 text-red-500 border border-red-500">Nota 3 (Vermelho)</span>
+                            <strong class="text-xs block">Atrito Crítico</strong>
+                            <p class="text-[11px] text-slate-500">Ele não sabe o que é MEC/Adquirência e desiste.</p>
+                        </button>
+                    </div>
+
+                    <div id="practiceFeedback" class="hidden p-3 rounded-xl border text-xs leading-relaxed font-medium"></div>
+                </div>
+
+                <div class="quote-box">
+                    "O segredo do PURE é a empatia técnica: se a sigla bloqueia o Seu Carlos no balcão, a nota deve ser 3 sem hesitação."
+                </div>
+            </div>
+            <div class="flex justify-between items-center text-xs text-slate-400 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <span>Treinamento PURE — Treino Interativo</span>
+                <span>Slide 10 de 24</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 11: A TABELA E GABARITO INDIVIDUAL -->
+        <div class="slide">
+            <div class="slide-content">
+                <span class="module-tag bg-purple-500/10 text-purple-500 border border-purple-500/30">
+                    <i class="fa-solid fa-table"></i> Módulo 5 — Gabarito
+                </span>
+                <div class="space-y-1">
+                    <h2 class="text-2xl font-extrabold tracking-tight">O Preenchimento Silencioso do Gabarito Individual</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Como registrar suas notas na planilha durante o walkthrough</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-auto">
+                    <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-3">
+                        <div class="text-purple-500 font-bold text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-pen-to-square"></i> Regras da 1ª Rodada (Silenciosa)
+                        </div>
+                        <ul class="text-xs space-y-2 text-slate-600 dark:text-slate-300 list-disc list-inside leading-relaxed">
+                            <li><strong>Silêncio Absoluto:</strong> Ninguém comenta a nota em voz alta durante a navegação do piloto.</li>
+                            <li><strong>Justificativa Obrigatória:</strong> Se der Nota 2 ou 3, escreva o motivo na coluna de observações (ex: "Jargão MEC confuso").</li>
+                            <li><strong>Acompanhamento do Roteiro:</strong> Não precisa memorizar nada. O roteiro pré-cadastrado orienta cada linha.</li>
+                        </ul>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-900 p-3 text-slate-200 text-xs font-mono">
+                        <strong class="text-sky-400 block mb-2 font-sans text-xs">Exemplo do seu Gabarito Individual:</strong>
+                        <table class="w-full text-left text-[11px]">
+                            <thead class="border-b border-slate-700 text-slate-400">
+                                <tr>
+                                    <th class="p-1.5">Passo</th>
+                                    <th class="p-1.5">Sua Nota (1-3)</th>
+                                    <th class="p-1.5">Sua Justificativa (Por quê?)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800">
+                                <tr>
+                                    <td class="p-1.5 text-sky-400">Passo 1</td>
+                                    <td class="p-1.5"><span class="badge-pure bg-emerald-500/20 text-emerald-400">1</span></td>
+                                    <td class="p-1.5 text-slate-400">CEP preencheu automático.</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-1.5 text-sky-400">Passo 2</td>
+                                    <td class="p-1.5"><span class="badge-pure bg-amber-500/20 text-amber-400">2</span></td>
+                                    <td class="p-1.5 text-slate-400">Pediu Inscrição Estadual manual.</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-1.5 text-sky-400">Passo 3</td>
+                                    <td class="p-1.5"><span class="badge-pure bg-red-500/20 text-red-400">3</span></td>
+                                    <td class="p-1.5 text-slate-400">Siglas MEC/Adquirência sem ajuda.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="quote-box">
+                    "O preenchimento silencioso garante a independência das notas, elemento indispensável para o cálculo estatístico do Krippendorff's Alpha."
+                </div>
+            </div>
+            <div class="flex justify-between items-center text-xs text-slate-400 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <span>Treinamento PURE — Gabarito Individual</span>
+                <span>Slide 11 de 24</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 12: REUNIÃO DE CONSENSO (PASSO 7) -->
+        <div class="slide">
+            <div class="slide-content">
+                <span class="module-tag bg-purple-500/10 text-purple-500 border border-purple-500/30">
+                    <i class="fa-solid fa-comments"></i> Módulo 5 — Consenso
+                </span>
+                <div class="space-y-1">
+                    <h2 class="text-2xl font-extrabold tracking-tight">Reunião de Consenso (Passo 7) — Calibrando o Cérebro do Time</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Como transformar notas divergentes em um julgamento oficial alinhado</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-auto">
+                    <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-3">
+                        <div class="text-purple-500 font-bold text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-comments"></i> O Momento da Deliberação
+                        </div>
+                        <p class="text-xs leading-relaxed text-slate-600 dark:text-slate-300">
+                            Após a 1ª rodada silenciosa, o líder abre a planilha de notas. Se houver divergência no Passo 2 (ex: Avaliador A deu 1, Avaliador B deu 3), os dois expõem seus argumentos em até 2 minutos.
+                        </p>
+                        <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-xs font-mono text-slate-300 space-y-1">
+                            <p class="text-red-400"><strong>Ava B:</strong> "Dei 3 porque o Seu Carlos não sabe o que é Inscrição Estadual."</p>
+                            <p class="text-emerald-400"><strong>Ava A:</strong> "Nossa, é verdade! Eu dei 1 porque sou contador, me esqueci que a persona é leiga. Vamos ajustar para 3!"</p>
+                        </div>
+                    </div>
+
+                    <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-3">
+                        <div class="text-emerald-500 font-bold text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-check-double"></i> A Nota Consenso Oficial
+                        </div>
+                        <ul class="text-xs space-y-2 text-slate-600 dark:text-slate-300 list-disc list-inside leading-relaxed">
+                            <li><strong>Definição Unânime:</strong> O grupo decide em conjunto a <strong>Nota Consenso (1, 2 ou 3)</strong> para preencher a Coluna G.</li>
+                            <li><strong>Aprendizado da Mente Coletiva:</strong> Esse debate alinha a "régua de empatia" da equipe para os próximos testes.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="quote-box">
+                    "O consenso não é imposição de vontade: é a harmonização de visões onde o especialista que lembrou da limitação da persona convence os demais."
+                </div>
+            </div>
+            <div class="flex justify-between items-center text-xs text-slate-400 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <span>Treinamento PURE — Reunião de Consenso</span>
+                <span>Slide 12 de 24</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 13: SIMULADOR INTERATIVO DE CONSENSO -->
+        <div class="slide">
+            <div class="slide-content">
+                <span class="module-tag bg-purple-500/10 text-purple-500 border border-purple-500/30">
+                    <i class="fa-solid fa-scale-balanced"></i> Módulo 5 — Treino de Consenso
+                </span>
+                <div class="space-y-1">
+                    <h2 class="text-2xl font-extrabold tracking-tight">Simulador de Consenso: Resolva a Divergência do Comitê</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Análise os votos individuais e decida qual deve ser a Nota Consenso Oficial</p>
+                </div>
+
+                <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 space-y-4 my-auto">
+                    <div class="grid grid-cols-3 gap-3 text-center text-xs font-mono">
+                        <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+                            <span class="text-slate-400 block mb-1">Avaliador 1 (UX)</span>
+                            <span class="badge-pure bg-emerald-500/20 text-emerald-400 border border-emerald-500">Nota 1</span>
+                            <p class="text-[10px] text-slate-400 font-sans mt-1">"Achou o botão grande."</p>
+                        </div>
+                        <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+                            <span class="text-slate-400 block mb-1">Avaliador 2 (Negócio)</span>
+                            <span class="badge-pure bg-red-500/20 text-red-400 border border-red-500">Nota 3</span>
+                            <p class="text-[10px] text-slate-400 font-sans mt-1">"Exige Contrato Social que o MEI não tem."</p>
+                        </div>
+                        <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+                            <span class="text-slate-400 block mb-1">Avaliador 3 (Pesquisa)</span>
+                            <span class="badge-pure bg-amber-500/20 text-amber-400 border border-amber-500">Nota 2</span>
+                            <p class="text-[10px] text-slate-400 font-sans mt-1">"Achou trabalhoso."</p>
+                        </div>
+                    </div>
+
+                    <div class="text-center space-y-2">
+                        <span class="text-xs font-bold block">Qual é a Nota Consenso Correta para o Seu Carlos?</span>
+                        <div class="flex justify-center gap-3">
+                            <button onclick="resolveConsensus(1)" id="consensusBtn1" class="px-4 py-2 rounded-xl border text-xs font-bold hover:border-emerald-500">Consenso 1</button>
+                            <button onclick="resolveConsensus(2)" id="consensusBtn2" class="px-4 py-2 rounded-xl border text-xs font-bold hover:border-amber-500">Consenso 2</button>
+                            <button onclick="resolveConsensus(3)" id="consensusBtn3" class="px-4 py-2 rounded-xl border text-xs font-bold hover:border-red-500">Consenso 3</button>
+                        </div>
+                    </div>
+
+                    <div id="consensusFeedback" class="hidden p-3 rounded-xl border text-xs leading-relaxed font-medium"></div>
+                </div>
+
+                <div class="quote-box">
+                    "Se o passo exige um documento que a persona MEI não possui, a Nota 3 prevalece porque representa bloqueio real no balcão."
+                </div>
+            </div>
+            <div class="flex justify-between items-center text-xs text-slate-400 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <span>Treinamento PURE — Treino de Consenso</span>
+                <span>Slide 13 de 24</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 14: A REGRA DO PIOR CASO (WORST-CASE) -->
+        <div class="slide">
+            <div class="slide-content">
+                <span class="module-tag bg-red-500/10 text-red-500 border border-red-500/30">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Módulo 5 — Regra do Pior Caso
+                </span>
+                <div class="space-y-1">
+                    <h2 class="text-2xl font-extrabold tracking-tight">A Regra do Pior Caso (Worst-Case) — Tolerância Zero a Bloqueios</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Por que 1 passo vermelho mancha a tarefa inteira com a cor vermelha</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-auto">
+                    <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-3">
+                        <div class="text-red-500 font-bold text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-shield-catastrophic"></i> A Contaminação Cromática
+                        </div>
+                        <p class="text-xs leading-relaxed text-slate-600 dark:text-slate-300">
+                            Se uma tarefa possuir 8 passos "Verdes" (Nota 1) e apenas 1 passo "Vermelho" (Nota 3), a cor final da tarefa inteira é <strong>VERMELHA</strong>.
+                        </p>
+                        <div class="p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-xs text-red-600 dark:text-red-300">
+                            <strong>Fundamentação de Rohrer (2017):</strong> Produtos consolidados não podem ter "pontos cegos" onde o cliente corre o risco de desistência catastrófica.
+                        </div>
+                    </div>
+
+                    <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-3">
+                        <div class="text-sky-500 font-bold text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-wrench"></i> Vantagem para a Engenharia
+                        </div>
+                        <ul class="text-xs space-y-2 text-slate-600 dark:text-slate-300 list-disc list-inside leading-relaxed">
+                            <li><strong>Refinamento Cirúrgico:</strong> O time de desenvolvimento não precisa refazer o fluxo inteiro!</li>
+                            <li><strong>Ação Imediata:</strong> Corrigindo exclusivamente a única etapa vermelha, a tarefa inteira passa a ser <strong>VERDE</strong>.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="quote-box">
+                    "A cor vermelha funciona como o disjuntor de segurança do teste: ela garante que uma boa média matemática não esconda um ponto de abandono fatal."
+                </div>
+            </div>
+            <div class="flex justify-between items-center text-xs text-slate-400 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <span>Treinamento PURE — Worst-Case Rule</span>
+                <span>Slide 14 de 24</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 15: CONFIABILIDADE INTERAVALIADORES (IRR - ALPHA) -->
+        <div class="slide">
+            <div class="slide-content">
+                <span class="module-tag bg-purple-500/10 text-purple-500 border border-purple-500/30">
+                    <i class="fa-solid fa-chart-line"></i> Módulo 6 — Estatística
+                </span>
+                <div class="space-y-1">
+                    <h2 class="text-2xl font-extrabold tracking-tight">Confiabilidade Interavaliadores (IRR) — O Alpha de Krippendorff</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Por que o índice começa baixo na 1ª rodada e como ele evolui</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-auto">
+                    <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-3">
+                        <div class="text-amber-500 font-bold text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-chart-line-down"></i> Por que o Alpha começa baixo (~0.50)?
+                        </div>
+                        <ul class="text-xs space-y-2 text-slate-600 dark:text-slate-300 list-disc list-inside leading-relaxed">
+                            <li><strong>Projeção Abstrata da Persona:</strong> Cada especialista interpreta o "leiguismo" do Seu Carlos com nuances na 1ª rodada.</li>
+                            <li><strong>Régua de Sensibilidade:</strong> Avaliador mais exigente dá nota 3, enquanto o otimista dá nota 1 para a mesma tela.</li>
+                        </ul>
+                    </div>
+
+                    <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-3">
+                        <div class="text-emerald-500 font-bold text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-chart-line-up"></i> A Evolução para 0.85+
+                        </div>
+                        <p class="text-xs leading-relaxed text-slate-600 dark:text-slate-300">
+                            Após a 1ª reunião de consenso, o cérebro da equipe se alinha. Nas auditorias seguintes dos próximos meses, o Alpha de Krippendorff inicial salta para <strong>0.80 a 1.0</strong> logo de primeira!
+                        </p>
+                    </div>
+                </div>
+
+                <div class="quote-box">
+                    "Um Alpha inicial baixo não é um erro do teste: é a revelação de que a equipe tinha visões desalinhadas sobre o cliente. O consenso uniformiza essa régua."
+                </div>
+            </div>
+            <div class="flex justify-between items-center text-xs text-slate-400 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <span>Treinamento PURE — Krippendorff's Alpha</span>
+                <span>Slide 15 de 24</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 16: RÉGUA DE ESCALA E ÍNDICE DE FRICÇÃO (%) -->
+        <div class="slide">
+            <div class="slide-content">
+                <span class="module-tag bg-purple-500/10 text-purple-500 border border-purple-500/30">
+                    <i class="fa-solid fa-percent"></i> Módulo 6 — Índice Relativo
+                </span>
+                <div class="space-y-1">
+                    <h2 class="text-2xl font-extrabold tracking-tight">Régua de Escala e o Índice de Fricção Relativa (%)</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Normalização Min-Max para relatórios executivos e diretoria</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-auto">
+                    <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-3">
+                        <div class="text-purple-500 font-bold text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-calculator"></i> A Fórmula da Normalização
+                        </div>
+                        <div class="p-3 bg-slate-900 text-amber-300 font-mono text-center rounded-xl text-xs">
+                            $$\text{Índice de Fricção (\%)} = \frac{\text{Score Atual} - \text{Mínimo}}{\text{Máximo} - \text{Mínimo}} \times 100$$
+                        </div>
+                        <p class="text-xs text-slate-500 leading-relaxed">
+                            Tradução: Converte pontuações brutas em uma taxa de 0% (Interface Perfeita) a 100% (Atrito Máximo Teórico).
+                        </p>
+                    </div>
+
+                    <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-3">
+                        <div class="text-sky-500 font-bold text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-scale-unbalanced-flip"></i> Comparação entre Versões (V1 vs V2)
+                        </div>
+                        <p class="text-xs leading-relaxed text-slate-600 dark:text-slate-300">
+                            A normalização permite comparar a densidade de atrito mesmo quando o número de etapas do fluxo é alterado entre lançamentos.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="quote-box">
+                    "Apresentar 'Score 18' para a diretoria exige explicação técnica; apresentar '25% de atrito acumulado' gera entendimento imediato."
+                </div>
+            </div>
+            <div class="flex justify-between items-center text-xs text-slate-400 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <span>Treinamento PURE — Índice de Fricção</span>
+                <span>Slide 16 de 24</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 17: CHECKLIST FINAL DA SESSÃO -->
+        <div class="slide">
+            <div class="slide-content">
+                <span class="module-tag bg-emerald-500/10 text-emerald-500 border border-emerald-500/30">
+                    <i class="fa-solid fa-clipboard-check"></i> Módulo 7 — Checklist
+                </span>
+                <div class="space-y-1">
+                    <h2 class="text-2xl font-extrabold tracking-tight">Checklist de Preparação para a Reunião Piloto</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Verificação antes de abrir a sessão oficial de auditoria PURE</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-auto text-xs">
+                    <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-2">
+                        <strong class="text-sky-500 font-bold block"><i class="fa-solid fa-gamepad mr-1"></i> Check do Piloto (Driver)</strong>
+                        <ul class="space-y-1.5 text-slate-600 dark:text-slate-300 list-disc list-inside">
+                            <li>Protótipo/sistema rodando sem bugs ou travamentos.</li>
+                            <li>Happy Path testado e decorado para navegação fluida.</li>
+                            <li>Tela compartilhada em alta resolução.</li>
+                            <li>Compromisso de não votar nem opinar sobre as notas.</li>
+                        </ul>
+                    </div>
+
+                    <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-2">
+                        <strong class="text-emerald-500 font-bold block"><i class="fa-solid fa-users mr-1"></i> Check dos 3 Avaliadores</strong>
+                        <ul class="space-y-1.5 text-slate-600 dark:text-slate-300 list-disc list-inside">
+                            <li>Aba "compilado" do Google Sheets ou CSV aberto no celular/PC.</li>
+                            <li>Perfil do "Seu Carlos" lido e assimilado pelo grupo.</li>
+                            <li>Compromisso de preenchimento em silêncio absoluto.</li>
+                            <li>Justificativas preparadas para qualquer nota 2 ou 3.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="quote-box">
+                    "Tudo pronto! Com o piloto afiado e os especialistas alinhados no 'Seu Carlos', nossa sessão PURE será ágil, rigorosa e cirúrgica."
+                </div>
+            </div>
+            <div class="flex justify-between items-center text-xs text-slate-400 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <span>Treinamento PURE — Checklist Final</span>
+                <span>Slide 17 de 24</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 18: TREINAMENTO DE PERSONA - FUNDAMENTAÇÃO TEÓRICA -->
+        <div class="slide">
+            <div class="slide-content">
+                <span class="module-tag bg-purple-500/10 text-purple-500 border border-purple-500/30">
+                    <i class="fa-solid fa-user-gear"></i> Módulo 8 — Calibração da Persona
+                </span>
+                <div class="space-y-1">
+                    <h2 class="text-2xl font-extrabold tracking-tight">Processo de Treinamento e Calibração na Persona</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Eliminando o Viés do Expert (Expert Bias) com base na literatura (CHI 2016 / NN/g 2017)</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-auto">
+                    <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-3">
+                        <div class="text-purple-500 font-bold text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-mask"></i> O Especialista como Procurador/Proxy
+                        </div>
+                        <p class="text-xs leading-relaxed text-slate-600 dark:text-slate-300">
+                            No PURE, os especialistas não atuam como críticos de design abstratos, mas como <strong>procuradores da persona</strong>. A premissa matemática central é:
+                        </p>
+                        <div class="p-3 bg-slate-900 text-sky-400 font-mono text-center rounded-xl text-xs">
+                            $$\text{Nota PURE} = f(\text{Complexidade da Tela}, \text{Capacidade da Persona})$$
+                        </div>
+                    </div>
+
+                    <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-3">
+                        <div class="text-amber-500 font-bold text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-triangle-exclamation"></i> O Risco da Falta de Calibração
+                        </div>
+                        <p class="text-xs leading-relaxed text-slate-600 dark:text-slate-300">
+                            Se a persona muda entre os avaliadores, a nota muda. Por isso, a calibração prévia do perfil é o fator que determina se o $IRR$ (Krippendorff's Alpha) será alto ou baixo.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="quote-box">
+                    "Treinar avaliadores na persona não é ensinar UX, é ensinar desapego do viés de especialista. O bom avaliador dá Nota 3 lembrando-se das limitações do seu cliente."
+                </div>
+            </div>
+            <div class="flex justify-between items-center text-xs text-slate-400 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <span>Treinamento PURE — Fundamentação da Persona</span>
+                <span>Slide 18 de 24</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 19: PASSOS 1 & 2 - FICHA DA PERSONA & BRIEFING -->
+        <div class="slide">
+            <div class="slide-content">
+                <span class="module-tag bg-purple-500/10 text-purple-500 border border-purple-500/30">
+                    <i class="fa-solid fa-passport"></i> Módulo 8 — Passos 1 & 2
+                </span>
+                <div class="space-y-1">
+                    <h2 class="text-2xl font-extrabold tracking-tight">Passos 1 & 2: Formalização da Ficha e Onboarding Coletivo</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Estruturação de dados empíricos e imersão dramatizada antes do teste</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-auto">
+                    <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-3">
+                        <strong class="text-sky-500 text-sm block font-bold"><i class="fa-solid fa-file-invoice mr-1.5"></i> Passo 1: Ficha da Persona (4 Dimensões)</strong>
+                        <ul class="text-xs space-y-1.5 text-slate-600 dark:text-slate-300 list-disc list-inside">
+                            <li><strong>Letramento Digital:</strong> Nível de fluência com apps e FinTechs.</li>
+                            <li><strong>Conhecimento do Domínio:</strong> Domínio de termos (MEC, Inscrição Estadual, Chave Pix EVP).</li>
+                            <li><strong>Contexto Físico de Uso:</strong> Em pé no balcão da loja, sob luz solar, com interrupções.</li>
+                            <li><strong>Dispositivo/Conexão:</strong> Celular intermediário com 4G oscilante.</li>
+                        </ul>
+                    </div>
+
+                    <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-3">
+                        <strong class="text-purple-500 text-sm block font-bold"><i class="fa-solid fa-bullhorn mr-1.5"></i> Passo 2: Onboarding & Briefing (10-15 min)</strong>
+                        <ul class="text-xs space-y-1.5 text-slate-600 dark:text-slate-300 list-disc list-inside">
+                            <li><strong>Storytelling Dramatizado:</strong> "Apresento a vocês o Seu Carlos, 45 anos, dono de mercadinho..."</li>
+                            <li><strong>Dores e Medos Primários:</strong> Medo de burocracia, taxas escondidas e erro na foto.</li>
+                            <li><strong>Aprovação Unânime:</strong> Todos os 3 especialistas concordam verbalmente com os limites da persona.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="quote-box">
+                    "O PURE obriga a organização a explicitar suas hipóteses sobre a persona, evitando julgamentos baseados em um 'usuário genérico'."
+                </div>
+            </div>
+            <div class="flex justify-between items-center text-xs text-slate-400 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <span>Treinamento PURE — Ficha & Briefing</span>
+                <span>Slide 19 de 24</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 20: PASSO 3 - QUADRO DE FRONTEIRAS DE CONHECIMENTO -->
+        <div class="slide">
+            <div class="slide-content">
+                <span class="module-tag bg-purple-500/10 text-purple-500 border border-purple-500/30">
+                    <i class="fa-solid fa-border-style"></i> Módulo 8 — Passo 3
+                </span>
+                <div class="space-y-1">
+                    <h2 class="text-2xl font-extrabold tracking-tight">Passo 3: Mapeamento da "Régua Empática" (Fronteiras de Conhecimento)</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Definição explícita do que a persona sabe versus o que ela não sabe</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-auto text-xs">
+                    <div class="p-5 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 space-y-3">
+                        <strong class="text-emerald-500 text-sm block font-bold flex items-center gap-2">
+                            <i class="fa-solid fa-circle-check"></i> O que a Persona SABE / DOMINA
+                        </strong>
+                        <ul class="space-y-2 text-slate-600 dark:text-slate-300 list-disc list-inside leading-relaxed">
+                            <li>Sabe usar WhatsApp e chave Pix simples no celular.</li>
+                            <li>Sabe a taxa percentual de cartão que deseja pagar.</li>
+                            <li>Sabe tirar fotos simples com a câmera do smartphone.</li>
+                        </ul>
+                    </div>
+
+                    <div class="p-5 rounded-2xl border border-red-500/30 bg-red-500/5 space-y-3">
+                        <strong class="text-red-500 text-sm block font-bold flex items-center gap-2">
+                            <i class="fa-solid fa-circle-xmark"></i> O que a Persona NÃO SABE / TRAVA
+                        </strong>
+                        <ul class="space-y-2 text-slate-600 dark:text-slate-300 list-disc list-inside leading-relaxed">
+                            <li>Não sabe siglas bancárias (MEC, TID, Adquirência PJ).</li>
+                            <li>Não possui Contrato Social registrado em junta comercial (é MEI).</li>
+                            <li>Não entende por que enviar Comprovante de Endereço em nome da empresa.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="quote-box">
+                    "Visualizar as fronteiras do conhecimento em um quadro comparativo evita que o avaliador dê Nota 1 para um termo técnico que a persona desconhece."
+                </div>
+            </div>
+            <div class="flex justify-between items-center text-xs text-slate-400 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <span>Treinamento PURE — Régua Empática</span>
+                <span>Slide 20 de 24</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 21: PASSO 4 - RODADA PILOTO DE CALIBRAÇÃO -->
+        <div class="slide">
+            <div class="slide-content">
+                <span class="module-tag bg-purple-500/10 text-purple-500 border border-purple-500/30">
+                    <i class="fa-solid fa-vial-circle-check"></i> Módulo 8 — Passo 4
+                </span>
+                <div class="space-y-1">
+                    <h2 class="text-2xl font-extrabold tracking-tight">Passo 4: Rodada Piloto de Calibração (Warm-up / Dry-Run)</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Teste de aquecimento em 1 ou 2 passos para afinar a sensibilidade do comitê</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-auto">
+                    <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-3">
+                        <strong class="text-sky-500 text-sm block font-bold"><i class="fa-solid fa-play mr-1.5"></i> A Dinâmica do Warm-Up</strong>
+                        <ol class="text-xs space-y-1.5 text-slate-600 dark:text-slate-300 list-decimal list-inside leading-relaxed">
+                            <li>O Piloto executa o Passo 1 na tela ao vivo.</li>
+                            <li>Cada um dos 3 especialistas marca sua nota (1, 2 ou 3) em silêncio.</li>
+                            <li>As notas são reveladas imediatamente para o grupo.</li>
+                            <li>Debate de alinhamento e justificativas citando o "Seu Carlos".</li>
+                        </ol>
+                    </div>
+
+                    <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-900 text-slate-200 text-xs font-mono space-y-2">
+                        <strong class="text-amber-400 block font-sans text-xs">Exemplo Prático de Ajuste do Warm-Up:</strong>
+                        <p class="text-sky-300"><strong>Ava A (Nota 1):</strong> "Dei 1 porque o botão 'Avançar' está bem destacado."</p>
+                        <p class="text-red-400"><strong>Ava B (Nota 3):</strong> "Mas o texto usa a sigla MEC sem ajuda. O Seu Carlos não sabe o que é isso."</p>
+                        <p class="text-emerald-400"><strong>Ava A:</strong> "Verdade! Me esqueci que ele é leigo nesse termo. Minha nota correta é 3!"</p>
+                    </div>
+                </div>
+
+                <div class="quote-box">
+                    "Essa rodada rápida de 5 minutos alinha a sensibilidade e calibra a régua do comitê para todos os 20 passos seguintes do roteiro."
+                </div>
+            </div>
+            <div class="flex justify-between items-center text-xs text-slate-400 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <span>Treinamento PURE — Warm-up de Calibração</span>
+                <span>Slide 21 de 24</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 22: PASSOS 5 & 6 - VOTAÇÃO GUIADA E CONSENSO -->
+        <div class="slide">
+            <div class="slide-content">
+                <span class="module-tag bg-purple-500/10 text-purple-500 border border-purple-500/30">
+                    <i class="fa-solid fa-comments"></i> Módulo 8 — Passos 5 & 6
+                </span>
+                <div class="space-y-1">
+                    <h2 class="text-2xl font-extrabold tracking-tight">Passos 5 & 6: Avaliação Silenciosa Guiada e Reunião de Consenso</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Aplicação do Cognitive Walkthrough e deliberação coletiva</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-auto">
+                    <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-3">
+                        <strong class="text-sky-500 text-sm block font-bold"><i class="fa-solid fa-clipboard-question mr-1.5"></i> Passo 5: Votação Guiada (Cognitive Walkthrough)</strong>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                            Responda a estas 4 perguntas de Wharton et al. antes de votar:
+                        </p>
+                        <ul class="text-[11px] space-y-1 text-slate-500 dark:text-slate-400 list-disc list-inside">
+                            <li>A persona tentará obter o efeito correto?</li>
+                            <li>A persona notará que a ação está disponível?</li>
+                            <li>A persona associará a ação ao efeito desejado?</li>
+                            <li>A persona entenderá o feedback retornado?</li>
+                        </ul>
+                    </div>
+
+                    <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-3">
+                        <strong class="text-purple-500 text-sm block font-bold"><i class="fa-solid fa-gavel mr-1.5"></i> Passo 6: Consenso com Mente Coletiva</strong>
+                        <ul class="text-xs space-y-2 text-slate-600 dark:text-slate-300 list-disc list-inside leading-relaxed">
+                            <li><strong>Regra de Ouro:</strong> Proibido gosto pessoal ("Achei feio"). Todo argumento deve citar o Seu Carlos.</li>
+                            <li><strong>A Deliberação Vence a Média:</strong> A Nota Consenso oficial é decidida por argumentação empática, nunca por média aritmética.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="quote-box">
+                    "O consenso é o fechamento do loop: onde a experiência individual se transforma na avaliação oficial padronizada do produto."
+                </div>
+            </div>
+            <div class="flex justify-between items-center text-xs text-slate-400 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <span>Treinamento PURE — Votação & Consenso</span>
+                <span>Slide 22 de 24</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 23: INDICADORES DE SUCESSO DO TREINAMENTO DE PERSONA -->
+        <div class="slide">
+            <div class="slide-content">
+                <span class="module-tag bg-emerald-500/10 text-emerald-500 border border-emerald-500/30">
+                    <i class="fa-solid fa-chart-line"></i> Módulo 8 — Indicadores
+                </span>
+                <div class="space-y-1">
+                    <h2 class="text-2xl font-extrabold tracking-tight">Indicadores de Sucesso do Treinamento de Persona</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Como comprovar que o alinhamento da persona funcionou matematicamente</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-auto">
+                    <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-3">
+                        <div class="text-emerald-500 font-bold text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-arrow-trend-up"></i> Evolução do Krippendorff's Alpha ($IRR$)
+                        </div>
+                        <div class="space-y-2 text-xs font-mono">
+                            <div class="p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-600 dark:text-red-400">
+                                <strong>1ª Rodada (Sem Treino/Calibração):</strong><br>
+                                $IRR \approx 0{,}40 \text{ a } 0{,}57$ (Notas divergentes por faltar alinhamento de persona).
+                            </div>
+                            <div class="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-600 dark:text-emerald-400">
+                                <strong>A partir da 2ª Rodada (Pós-Treino e Consenso):</strong><br>
+                                $IRR \ge 0{,}80$ (Indica que os 3 especialistas passaram a enxergar a tela exatamente com os mesmos olhos do Seu Carlos).
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-3">
+                        <strong class="text-sky-500 text-sm block font-bold"><i class="fa-solid fa-diagram-project mr-1"></i> Resumo Executivo do Fluxo de Treinamento</strong>
+                        <div class="p-3 bg-slate-900 text-slate-300 font-mono text-[11px] rounded-xl leading-relaxed space-y-1">
+                            <p class="text-sky-400">[Passo 1: Ficha da Persona] ➔ [Passo 2: Briefing & Imersão]</p>
+                            <p class="text-purple-400">➔ [Passo 3: Mapeamento da Régua Empática]</p>
+                            <p class="text-amber-400">➔ [Passo 4: Rodada Piloto Warm-up]</p>
+                            <p class="text-emerald-400">➔ [Passo 5: Votação Guiada] ➔ [Passo 6: Consenso PURE] 🔑</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quote-box">
+                    "O salto de Alpha de 0.50 para 0.85+ é a prova matemática de que o time eliminou o 'achismo' e assimilou com precisão a persona do produto."
+                </div>
+            </div>
+            <div class="flex justify-between items-center text-xs text-slate-400 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <span>Treinamento PURE — Indicadores de Persona</span>
+                <span>Slide 23 de 24</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 24: CONCLUSÃO E ENCERRAMENTO -->
+        <div class="slide justify-between">
+            <div class="my-auto text-center max-w-3xl mx-auto space-y-6">
+                <span class="module-tag bg-sky-500/10 text-sky-500 border border-sky-500/30">
+                    <i class="fa-solid fa-flag-checkered"></i> Conclusão do Treinamento
+                </span>
+                <h1 class="text-4xl font-extrabold tracking-tight">
+                    Vocês estão Prontos para a Sessão PURE!
+                </h1>
+                <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed max-w-xl mx-auto">
+                    Agora que dominamos as funções do Piloto, a perspectiva do "Seu Carlos", a rubrica 1-2-3, os 6 passos de calibração da persona e a dinâmica de consenso, podemos iniciar nossa auditoria com total confiança metodológica.
+                </p>
+
+                <div class="pt-4">
+                    <a href="https://epietragalla.com/projetos/pure.html" target="_blank" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs shadow-lg shadow-sky-600/30">
+                        <i class="fa-solid fa-gauge-high"></i> Abrir Analisador PURE
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center text-xs text-slate-400 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <span>Treinamento Operacional PURE</span>
+                <span>Slide 24 de 24</span>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const slideCounter = document.getElementById('slideCounter');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const progressBar = document.getElementById('progressBar');
+
+        function updateSlide() {
+            slides.forEach((slide, index) => {
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+
+            // Atualiza a Linha de Progresso
+            const progress = ((currentSlide + 1) / slides.length) * 100;
+            progressBar.style.width = `${progress}%`;
+
+            // Formatação do Contador de Slides (ex: 01 / 24)
+            const currentStr = String(currentSlide + 1).padStart(2, '0');
+            const totalStr = String(slides.length).padStart(2, '0');
+            slideCounter.innerText = `${currentStr} / ${totalStr}`;
+
+            // Estado dos Botões
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === slides.length - 1;
+
+            // Renderiza fórmulas do MathJax de forma segura
+            if (window.MathJax && MathJax.typesetPromise) {
+                MathJax.typesetPromise();
+            }
+        }
+
+        function changeSlide(dir) {
+            currentSlide += dir;
+            if (currentSlide < 0) currentSlide = 0;
+            if (currentSlide >= slides.length) currentSlide = slides.length - 1;
+            updateSlide();
+        }
+
+        // Função de Alternância de Tema (Light/Dark Mode)
+        function toggleTheme() {
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+
+            if (html.classList.contains('light')) {
+                html.classList.remove('light');
+                html.classList.add('dark');
+                themeIcon.className = "fa-solid fa-sun text-amber-500";
+                themeText.innerText = "Modo Claro";
+            } else {
+                html.classList.remove('dark');
+                html.classList.add('light');
+                themeIcon.className = "fa-solid fa-moon text-sky-500";
+                themeText.innerText = "Modo Escuro";
+            }
+        }
+
+        // Widget de Treino Interativo (Slide 10)
+        function evaluatePractice(score) {
+            const feedback = document.getElementById('practiceFeedback');
+            const btn1 = document.getElementById('practiceBtn1');
+            const btn2 = document.getElementById('practiceBtn2');
+            const btn3 = document.getElementById('practiceBtn3');
+
+            btn1.classList.remove('active-opt');
+            btn2.classList.remove('active-opt');
+            btn3.classList.remove('active-opt');
+
+            feedback.classList.remove('hidden', 'bg-emerald-500/10', 'border-emerald-500/30', 'text-emerald-600', 'dark:text-emerald-400', 'bg-amber-500/10', 'border-amber-500/30', 'text-amber-600', 'dark:text-amber-400', 'bg-red-500/10', 'border-red-500/30', 'text-red-600', 'dark:text-red-400');
+
+            if (score === 1) {
+                btn1.classList.add('active-opt');
+                feedback.classList.add('bg-amber-500/10', 'border-amber-500/30', 'text-amber-600', 'dark:text-amber-400');
+                feedback.innerHTML = `<strong>Incorreto (Muito Otimista):</strong> O Seu Carlos não sabe o que é "Adquirência PJ". Deixar essa escolha técnica sem explicações vai fazê-lo travar. A nota 1 ignora a limitação da persona.`;
+            } else if (score === 2) {
+                btn2.classList.add('active-opt');
+                feedback.classList.add('bg-amber-500/10', 'border-amber-500/30', 'text-amber-600', 'dark:text-amber-400');
+                feedback.innerHTML = `<strong>Parcialmente Aceitável:</strong> Representa hesitação, mas como o Seu Carlos pode chutar uma sigla errada e ter o cadastro reprovado depois, a melhor resposta é a Nota 3 (Bloqueio Crítico).`;
+            } else {
+                btn3.classList.add('active-opt');
+                feedback.classList.add('bg-red-500/10', 'border-red-500/30', 'text-red-600', 'dark:text-red-400');
+                feedback.innerHTML = `<strong>Correto! (Nota 3 — Vermelho):</strong> Exigir siglas bancárias sem ajuda cria risco iminente de abandono ou erro no cadastro. Excelente avaliação empática!`;
+            }
+        }
+
+        // Widget de Consenso Interativo (Slide 13)
+        function resolveConsensus(score) {
+            const feedback = document.getElementById('consensusFeedback');
+            const btn1 = document.getElementById('consensusBtn1');
+            const btn2 = document.getElementById('consensusBtn2');
+            const btn3 = document.getElementById('consensusBtn3');
+
+            btn1.className = "px-4 py-2 rounded-xl border text-xs font-bold hover:border-emerald-500";
+            btn2.className = "px-4 py-2 rounded-xl border text-xs font-bold hover:border-amber-500";
+            btn3.className = "px-4 py-2 rounded-xl border text-xs font-bold hover:border-red-500";
+
+            feedback.classList.remove('hidden', 'bg-emerald-500/10', 'border-emerald-500/30', 'text-emerald-600', 'dark:text-emerald-400', 'bg-amber-500/10', 'border-amber-500/30', 'text-amber-600', 'dark:text-amber-400', 'bg-red-500/10', 'border-red-500/30', 'text-red-600', 'dark:text-red-400');
+
+            if (score === 3) {
+                btn3.className = "px-4 py-2 rounded-xl border-2 border-red-500 bg-red-500/20 text-red-500 text-xs font-bold";
+                feedback.classList.add('bg-red-500/10', 'border-red-500/30', 'text-red-600', 'dark:text-red-400');
+                feedback.innerHTML = `<strong>Excelente Deliberação! (Consenso Nota 3):</strong> O Avaliador 2 argumentou corretamente que o MEI não possui Contrato Social. Exigir esse documento bloqueia o cadastro do Seu Carlos. A Nota 3 prevalece!`;
+            } else {
+                feedback.classList.add('bg-amber-500/10', 'border-amber-500/30', 'text-amber-600', 'dark:text-amber-400');
+                feedback.innerHTML = `<strong>Subestimado:</strong> Lembre-se que o MEI não possui Contrato Social com alteração na junta comercial. Se a tela exige o upload desse arquivo, o Seu Carlos é obrigado a abandonar o fluxo. A Nota Consenso deve ser 3!`;
+            }
+        }
+
+        // Navegação por Teclado (Setas Esquerda / Direita)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'Space' || e.key === 'PageDown') {
+                if (currentSlide < slides.length - 1) changeSlide(1);
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                if (currentSlide > 0) changeSlide(-1);
+            }
+        });
+
+        // Inicialização
+        updateSlide();
+    </script>
+</body>
+</html>
