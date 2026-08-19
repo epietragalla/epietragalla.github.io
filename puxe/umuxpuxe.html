@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="light" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Universal UX - Módulo UMUX & UMUX-LITE | CAIXA</title>
+
+    <!-- GARANTIA DE MODO CLARO PADRÃO ANTES DA RENDERIZAÇÃO DA PÁGINA -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('caixa_theme_pref') || 'light';
+            const html = document.documentElement;
+            if (savedTheme === 'dark') {
+                html.classList.add('dark');
+                html.classList.remove('light');
+                html.setAttribute('data-theme', 'dark');
+            } else {
+                html.classList.remove('dark');
+                html.classList.add('light');
+                html.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
+
+    <!-- Lucide Icons & FontAwesome para Ícones Oficiais -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js para Demonstração de Gráficos de Dados -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- CONFIGURAÇÃO DE TOKENS OFICIAIS DO TAILWIND CSS DO DSC -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        caixa: {
+                            // Paleta Fixa
+                            blue130: '#002A4D',
+                            blue110: '#00437A',
+                            blue90:  '#005CA9',   /* Principal Interativo / Oceano CAIXA */
+                            blue70:  '#2D8A0B',
+                            blue50:  '#60B1FA',
+                            blue30:  '#AED2FC',
+                            blue10:  '#E5F1FC',   /* Superfície de Item Ativo */
+
+                            orange130: '#663A00',
+                            orange110: '#A65E00',
+                            orange90:  '#D67B00',  /* Homologada p/ Botões c/ Texto Branco */
+                            orange70:  '#F39200',  /* Laranja Original */
+                            orange50:  '#FD854B',
+                            orange30:  '#FFD092',
+                            orange10:  '#FFEFD6',
+
+                            tertiary70: '#54B8A8', /* Turquesa CAIXA */
+
+                            // Neutros (Grayscale)
+                            gray130: '#22292E',    /* Texto Primário */
+                            gray110: '#404852',    /* Texto Secundário */
+                            gray90:  '#64747A',    /* Bordas e Ícones */
+                            gray70:  '#9EB2B8',    /* Divisores */
+                            gray50:  '#D0E0E3',    /* Bordas Suaves */
+                            gray30:  '#EBF1F2',    /* Inset Light */
+                            gray10:  '#F7FAFA',    /* Canvas Light */
+
+                            // Feedback
+                            success110: '#0D5B1C',
+                            success70:  '#179231',
+                            success10:  '#E7F4EA',
+
+                            warning110: '#977203',
+                            warning70:  '#FCBE05',
+                            warning10:  '#FFF9E6',
+
+                            danger110:  '#8C2323',
+                            danger70:   '#D93636',
+                            danger10:   '#FBEBEB',
+
+                            info110:    '#026173',
+                            info70:     '#04A2BF',
+                            info10:     '#E5F6F8',
+
+                            // Dark Mode Tokens
+                            darkBg:     '#0B1E36',
+                            darkCard:   '#132A4A',
+                            darkInset:  '#1A365D',
+                            darkBorder: '#2A4A75'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Arial', 'sans-serif']
+                    },
+                    borderRadius: {
+                        'xs': '2px',
+                        'sm': '4px',
+                        'badge': '8px',
+                        'inset': '12px',
+                        'card': '16px',
+                        'pill': '9999px'
+                    },
+                    boxShadow: {
+                        'elevation1': '0px 1px 3px 1px rgba(0, 0, 0, 0.15)',
+                        'elevation2': '0px 2px 6px 2px rgba(0, 0, 0, 0.15)',
+                        'elevation3': '0px 4px 8px 3px rgba(0, 0, 0, 0.15)',
+                        'elevation4': '0px 6px 10px 4px rgba(0, 0, 0, 0.15)',
+                        'elevation5': '0px 8px 12px 6px rgba(0, 0, 0, 0.15)',
+                        'cta': '0 4px 12px rgba(214, 123, 0, 0.35)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- VARIÁVEIS CSS ROOT E ESTILOS CUSTOMIZADOS DO DESIGN SYSTEM -->
+    <style>
+        :root {
+            --caixa-blue-90: #005CA9;
+            --caixa-blue-dark: #003366;
+            --caixa-orange-90: #D67B00;
+            --caixa-orange-70: #F39200;
+            --caixa-bg-canvas: #F7FAFA;
+            --caixa-bg-card: #F0F4F8;
+            --caixa-bg-inset: #EBF1F2;
+            --caixa-border: #CBD5E1;
+            --caixa-text-main: #22292E;
+            --caixa-text-muted: #404852;
+        }
+
+        .dark {
+            --caixa-bg-canvas: #0B1E36;
+            --caixa-bg-card: #132A4A;
+            --caixa-bg-inset: #1A365D;
+            --caixa-border: #2A4A75;
+            --caixa-text-main: #F8FAFC;
+            --caixa-text-muted: #94A3B8;
+        }
+
+        *, *::before, *::after {
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .caixa-glass {
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .dark .caixa-glass {
+            background: rgba(11, 30, 54, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .dsc-card {
+            background-color: var(--caixa-bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--caixa-border);
+            box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.05);
+        }
+
+        .dsc-card-inset {
+            background-color: var(--caixa-bg-inset);
+            border-radius: 12px;
+            border: 1px solid var(--caixa-border);
+        }
+
+        .dsc-dropzone {
+            border: 2px dashed var(--caixa-border);
+            border-radius: 12px;
+            background-color: var(--caixa-bg-inset);
+            transition: all 0.2s ease;
+        }
+        .dsc-dropzone:hover {
+            border-color: var(--caixa-blue-90);
+            background-color: rgba(0, 92, 169, 0.05);
+        }
+
+        .mode-container {
+            background-color: var(--caixa-bg-inset);
+            border-radius: 9999px;
+            padding: 4px;
+            border: 1px solid var(--caixa-border);
+        }
+
+        .mode-btn-active {
+            background-color: var(--caixa-blue-90);
+            color: #FFFFFF !important;
+            font-weight: 700;
+            border-radius: 9999px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .mode-btn-inactive {
+            color: var(--caixa-text-muted);
+            font-weight: 600;
+            border-radius: 9999px;
+        }
+
+        /* Tooltip Customizado */
+        .hint-tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .hint-tooltip .tooltip-text {
+            visibility: hidden;
+            width: 300px;
+            background-color: #FFFFFF;
+            color: #22292E;
+            text-align: left;
+            border-radius: 12px;
+            padding: 10px 14px;
+            position: absolute;
+            z-index: 50;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.2s, transform 0.2s;
+            font-size: 0.75rem;
+            line-height: 1.15rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border: 1px solid #CBD5E1;
+            pointer-events: none;
+        }
+
+        .dark .hint-tooltip .tooltip-text {
+            background-color: #132A4A;
+            color: #F8FAFC;
+            border: 1px solid #2A4A75;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+        }
+
+        .hint-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+            transform: translateX(-50%) translateY(-2px);
+        }
+    </style>
+</head>
+
+<body class="bg-caixa-gray10 dark:bg-caixa-darkBg text-caixa-gray130 dark:text-white font-sans antialiased selection:bg-caixa-blue90 selection:text-white min-h-screen">
+
+    <!-- HEADER INSTITUCIONAL DO PORTAL DSC -->
+    <header class="sticky top-0 z-40 caixa-glass border-b border-caixa-border dark:border-caixa-darkBorder px-6 py-3.5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-caixa-blue90 flex items-center justify-center text-white font-black text-xl shadow-md">
+                    X
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-caixa-blue110 dark:text-white flex items-center gap-2 leading-tight">
+                        Dashboard Analítico UMUX & UMUX-LITE 
+                        <span class="text-[10px] uppercase tracking-wider font-extrabold bg-caixa-orange90 text-white px-2 py-0.5 rounded-badge">ISO 9241-11</span>
+                    </h1>
+                    <p class="text-xs text-caixa-gray110 dark:text-gray-300">Processador de métricas ágeis de usabilidade com conversão para a escala equivalente do SUS</p>
+                </div>
+            </div>
+
+            <!-- NAVEGAÇÃO E CONTROLES -->
+            <div class="flex items-center gap-4 text-xs font-bold text-caixa-gray110 dark:text-gray-300">
+                <div class="hidden sm:flex items-center gap-2 bg-caixa-cardInset dark:bg-caixa-darkCardInset px-3 py-1.5 rounded-pill border border-caixa-border dark:border-caixa-darkBorder">
+                    <span class="font-bold text-caixa-blue110 dark:text-white">Normativa:</span> 
+                    <span class="text-caixa-gray110 dark:text-gray-300">Finstad (2010) | Lewis et al. (2013)</span>
+                </div>
+
+                <!-- Alternador Dark/Light Mode -->
+                <button type="button" id="themeToggleBtn" onclick="toggleTheme()" title="Alternar entre Modo Escuro e Modo Claro" class="w-9 h-9 rounded-full bg-caixa-cardInset dark:bg-caixa-darkCardInset flex items-center justify-center text-caixa-orange90 dark:text-caixa-warning70 hover:scale-105 transition-transform border border-caixa-border dark:border-caixa-darkBorder">
+                    <i data-lucide="moon" id="themeIcon" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+
+  
+
+        <!-- SEÇÃO 1: UPLOAD E CONFIGURAÇÃO DO TIPO DE MÉTRICA -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 dsc-card p-6 flex flex-col justify-between space-y-4">
+                <div>
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 border-b border-caixa-border dark:border-caixa-darkBorder pb-3">
+                        <h3 class="text-base font-bold text-caixa-blue110 dark:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-file-csv text-caixa-blue90"></i> Importar Planilha CSV (UMUX)
+                        </h3>
+
+                        <div class="mode-container flex">
+                            <button id="modeUmux" onclick="setMetricaMode('UMUX')"
+                                class="px-4 py-1.5 text-xs mode-btn-active">UMUX (4 Itens)</button>
+                            <button id="modeUmuxLite" onclick="setMetricaMode('UMUX-LITE')"
+                                class="px-4 py-1.5 text-xs mode-btn-inactive ml-1">UMUX-LITE (2 Itens)</button>
+                        </div>
+                    </div>
+
+                    <div class="dsc-card-inset p-3.5 mb-4">
+                        <p class="text-caixa-blue110 dark:text-blue-300 text-xs leading-relaxed flex items-start gap-2.5">
+                            <span class="hint-tooltip inline-block hover:opacity-80 transition-opacity">
+                                <i class="fa-solid fa-circle-info text-base mt-0.5 cursor-help text-caixa-blue90 dark:text-blue-400"></i>
+                                <span class="tooltip-text !w-[360px] !bottom-auto !top-full mt-2 p-4 dsc-card space-y-2">
+                                    <strong class="text-caixa-blue110 dark:text-white text-xs block border-b border-caixa-border dark:border-caixa-darkBorder pb-1">📋 Mapeamento Inteligente de Colunas</strong>
+                                    <span class="block text-caixa-gray110 dark:text-gray-300">O sistema descarta automaticamente metadados de sistema e identifica as respostas Likert do formulário, tanto numéricas (1 a 7) quanto por extenso em português.</span>
+                                </span>
+                            </span>
+                            <span>
+                                <strong>Motor Universal de CSV:</strong> Suporta exportações do Microsoft Forms, Google Forms e planilhas manuais. Identifica automaticamente as perguntas e interpreta respostas numéricas ou textuais.
+                            </span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="dsc-dropzone p-8 text-center cursor-pointer" id="dropZone">
+                    <input type="file" id="fileInput" accept=".csv" class="hidden">
+                    <label for="fileInput" class="cursor-pointer space-y-2 block" id="uploadLabel">
+                        <i class="fa-solid fa-cloud-arrow-up text-4xl text-caixa-gray90 dark:text-gray-400" id="uploadIcon"></i>
+                        <p class="text-sm font-bold text-caixa-gray130 dark:text-white" id="uploadText">Arraste seu arquivo CSV ou clique para buscar</p>
+                        <p class="text-xs text-caixa-gray110 dark:text-gray-400">Apenas arquivos no formato (.csv)</p>
+                    </label>
+                </div>
+            </div>
+
+            <!-- BOX METODOLÓGICO -->
+            <div class="dsc-card p-6 space-y-4">
+                <h3 class="text-sm font-bold text-caixa-blue110 dark:text-white flex items-center gap-2 border-b border-caixa-border dark:border-caixa-darkBorder pb-3 uppercase tracking-wider">
+                    <i class="fa-solid fa-calculator text-caixa-orange90"></i> Fórmulas de Cálculo
+                </h3>
+                <div id="formulaContainer" class="space-y-3 text-xs text-caixa-gray110 dark:text-gray-300 leading-relaxed">
+                </div>
+            </div>
+        </section>
+
+        <!-- RESULTADOS DASHBOARD (ACTIVATED VIA JS) -->
+        <section id="resultsSection" class="space-y-8 hidden">
+
+            <!-- CARDS DE KPI -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div class="dsc-card p-5 text-center flex flex-col justify-between">
+                    <div class="text-caixa-gray110 dark:text-gray-300 text-xs font-bold flex items-center justify-center gap-1.5">
+                        Média Equivalente SUS
+                        <div class="hint-tooltip">
+                            <i class="fa-solid fa-circle-question text-caixa-blue90"></i>
+                            <span class="tooltip-text">Nota normalizada na escala clássica de 0 a 100 pontos, permitindo a comparação direta com benchmarks históricos do SUS.</span>
+                        </div>
+                    </div>
+                    <div id="statMean" class="text-4xl font-black text-caixa-blue90 dark:text-blue-400 my-2">--</div>
+                    <div>
+                        <span id="statGrade" class="text-xs px-3 py-1 font-bold rounded-pill inline-block">--</span>
+                    </div>
+                </div>
+
+                <div class="dsc-card p-5 text-center flex flex-col justify-between">
+                    <div class="text-caixa-gray110 dark:text-gray-300 text-xs font-bold flex items-center justify-center gap-1.5">
+                        I.C. 95%
+                        <div class="hint-tooltip">
+                            <i class="fa-solid fa-circle-question text-caixa-blue90"></i>
+                            <span class="tooltip-text">Intervalo de Confiança t-Student (95%) calculado sobre os scores projetados.</span>
+                        </div>
+                    </div>
+                    <div id="statCI" class="text-2xl font-bold text-caixa-gray130 dark:text-white my-2">--</div>
+                    <p class="text-[10px] text-caixa-gray110 dark:text-gray-400 font-medium">Margem de Erro Amostral</p>
+                </div>
+
+                <div class="dsc-card p-5 text-center flex flex-col justify-between">
+                    <div class="text-caixa-gray110 dark:text-gray-300 text-xs font-bold flex items-center justify-center gap-1.5">
+                        Percentil Rank
+                        <div class="hint-tooltip">
+                            <i class="fa-solid fa-circle-question text-caixa-blue90"></i>
+                            <span class="tooltip-text">Porcentagem de soluções globais que o seu produto supera segundo os dados psicométricos de Sauro & Lewis.</span>
+                        </div>
+                    </div>
+                    <div id="statPercentile" class="text-2xl font-bold text-caixa-gray130 dark:text-white my-2">--</div>
+                    <p id="statAdjective" class="text-xs text-caixa-gray110 dark:text-gray-400 font-semibold">--</p>
+                </div>
+
+                <div class="dsc-card p-5 text-center flex flex-col justify-between">
+                    <div class="text-caixa-gray110 dark:text-gray-300 text-xs font-bold">Participantes (N)</div>
+                    <div id="statN" class="text-4xl font-extrabold text-caixa-gray130 dark:text-white my-2">--</div>
+                    <p class="text-[10px] text-caixa-gray110 dark:text-gray-400 font-medium">Respostas Processadas</p>
+                </div>
+
+                <div class="dsc-card p-5 text-center flex flex-col justify-between">
+                    <div class="text-caixa-gray110 dark:text-gray-300 text-xs font-bold">Desvio Padrão (s)</div>
+                    <div id="statStdDev" class="text-4xl font-extrabold text-caixa-gray130 dark:text-white my-2">--</div>
+                    <p class="text-[10px] text-caixa-gray110 dark:text-gray-400 font-medium">Dispersão Amostral</p>
+                </div>
+            </div>
+
+            <!-- GRÁFICO DA CURVA E RESUMO INTERPRETATIVO -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 dsc-card p-6">
+                    <h3 class="text-sm font-bold text-caixa-blue110 dark:text-white mb-4 flex items-center gap-2 border-b border-caixa-border dark:border-caixa-darkBorder pb-3 uppercase tracking-wider">
+                        <i class="fa-solid fa-chart-area text-caixa-blue90"></i> Distribuição Crescente de Scores Projetados
+                    </h3>
+                    <div class="relative h-80 w-full">
+                        <canvas id="metricChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="dsc-card p-6 space-y-4">
+                    <h3 class="text-sm font-bold text-caixa-blue110 dark:text-white border-b border-caixa-border dark:border-caixa-darkBorder pb-3 uppercase tracking-wider">
+                        Interpretação da Evidência
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center dsc-card-inset p-3">
+                            <span class="text-xs text-caixa-gray110 dark:text-gray-300 font-bold">Aceitabilidade:</span>
+                            <span id="interpAcceptability" class="text-xs font-bold px-3 py-1 rounded-pill">--</span>
+                        </div>
+                        <div class="flex justify-between items-center dsc-card-inset p-3">
+                            <span class="text-xs text-caixa-gray110 dark:text-gray-300 font-bold">Classificação NPS:</span>
+                            <span id="interpNps" class="text-xs font-bold px-3 py-1 rounded-pill">--</span>
+                        </div>
+                    </div>
+                    <div class="dsc-card-inset p-4 text-xs text-caixa-gray110 dark:text-gray-300 space-y-2">
+                        <strong class="font-bold text-caixa-blue110 dark:text-white block">Conclusão Metodológica:</strong>
+                        <p id="interpSummary" class="leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GRÁFICO DE RESPOSTAS EMPILHADAS POR OPÇÃO (1 A 7) -->
+            <div class="dsc-card p-6">
+                <div class="flex items-center gap-2 mb-4 border-b border-caixa-border dark:border-caixa-darkBorder pb-3">
+                    <h3 class="text-sm font-bold text-caixa-blue110 dark:text-white flex items-center gap-2 uppercase tracking-wider">
+                        <i class="fa-solid fa-chart-bar text-caixa-blue90"></i> Distribuição de Respostas por Pergunta (Escala Likert 1 a 7)
+                    </h3>
+                    <div class="hint-tooltip">
+                        <i class="fa-solid fa-circle-question text-caixa-blue90"></i>
+                        <span class="tooltip-text">Visualização do volume acumulado de respostas em cada nível da escala Likert (1 = Discordo Totalmente até 7 = Concordo Totalmente).</span>
+                    </div>
+                </div>
+                <div class="relative h-80 w-full">
+                    <canvas id="stackedResponsesChart"></canvas>
+                </div>
+            </div>
+
+            <!-- ANÁLISE DE SUBESCALAS DE USABILIDADE VS UTILIDADE -->
+            <div id="subscaleSection" class="dsc-card p-6">
+                <h3 class="text-sm font-bold text-caixa-blue110 dark:text-white mb-4 border-b border-caixa-border dark:border-caixa-darkBorder pb-3 flex items-center gap-2 uppercase tracking-wider">
+                    <i class="fa-solid fa-brain text-caixa-tertiary70"></i> Desmembramento de Pilares do UMUX (TAM Framework)
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="dsc-card-inset p-4 space-y-2">
+                        <div class="flex justify-between text-xs font-bold">
+                            <span class="text-caixa-blue110 dark:text-white">Utilidade Percebida (Item 1: Requisitos)</span>
+                            <span id="subUsefulnessVal" class="text-caixa-blue90 dark:text-blue-400 font-mono">--</span>
+                        </div>
+                        <div class="w-full bg-caixa-gray50 dark:bg-caixa-darkCardInset rounded-pill h-3 overflow-hidden">
+                            <div id="subUsefulnessBar" class="bg-caixa-blue90 h-3 rounded-pill transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <p class="text-[11px] text-caixa-gray110 dark:text-gray-400 mt-1">Mede se o sistema oferece as funcionalidades necessárias para os objetivos do usuário.</p>
+                    </div>
+
+                    <div class="dsc-card-inset p-4 space-y-2">
+                        <div class="flex justify-between text-xs font-bold">
+                            <span class="text-caixa-blue110 dark:text-white">Usabilidade Percebida (Item 3: Facilidade)</span>
+                            <span id="subEaseVal" class="text-caixa-tertiary70 font-mono">--</span>
+                        </div>
+                        <div class="w-full bg-caixa-gray50 dark:bg-caixa-darkCardInset rounded-pill h-3 overflow-hidden">
+                            <div id="subEaseBar" class="bg-caixa-tertiary70 h-3 rounded-pill transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <p class="text-[11px] text-caixa-gray110 dark:text-gray-400 mt-1">Mede a facilidade com que o usuário consegue navegar e operar a interface.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABELA DETALHADA POR USUÁRIO -->
+            <div class="dsc-card p-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 pb-4 border-b border-caixa-border dark:border-caixa-darkBorder">
+                    <div>
+                        <h3 class="text-sm font-bold text-caixa-blue110 dark:text-white uppercase tracking-wider">Notas Projetadas por Participante (Escala 0-100)</h3>
+                        <p class="text-xs text-caixa-gray110 dark:text-gray-400">Dados individuais normalizados usando criptografia em máscara sequencial de IDs.</p>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto rounded-inset border border-caixa-border dark:border-caixa-darkBorder">
+                    <table class="min-w-full divide-y divide-caixa-border dark:divide-caixa-darkBorder text-xs text-left">
+                        <thead class="bg-caixa-cardInset dark:bg-caixa-darkCardInset text-caixa-gray110 dark:text-gray-300 uppercase text-[10px] font-bold">
+                            <tr id="tableHeader"></tr>
+                        </thead>
+                        <tbody id="tableBody" class="divide-y divide-caixa-border dark:divide-caixa-darkBorder bg-transparent text-caixa-gray130 dark:text-gray-200"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER INSTITUCIONAL CAIXA -->
+    <footer class="bg-caixa-card dark:bg-[#132A4A] border-t border-caixa-border dark:border-caixa-darkBorder mt-16 py-8 px-6 text-xs text-caixa-gray110 dark:text-gray-300">
+        <div class="max-w-7xl mx-auto space-y-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-caixa-border dark:border-caixa-darkBorder pb-4">
+                <h4 class="text-sm font-bold text-caixa-blue110 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-caixa-blue90"></i> Validação Científica & Literatura de Suporte
+                </h4>
+                <span class="text-[11px] text-caixa-gray110 dark:text-gray-400 font-mono">Embasamento Teórico — UMUX, UMUX-LITE & Regressão SUS</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-[11px] leading-relaxed">
+                <div class="dsc-card-inset p-3.5 flex flex-col justify-between hover:border-caixa-blue90 transition-colors">
+                    <div>
+                        <strong class="text-caixa-blue110 dark:text-white block mb-1 font-bold">Paper Fundacional UMUX (2010)</strong>
+                        <p class="text-caixa-gray110 dark:text-gray-300">Finstad, K. (2010). <em>"The Usability Metric for User Experience (UMUX)"</em>. Interacting with Computers, ACM DL.</p>
+                    </div>
+                    <a href="https://dl.acm.org/doi/10.1016/j.intcom.2010.04.004" target="_blank" class="text-caixa-blue90 dark:text-blue-300 font-bold mt-3 inline-flex items-center gap-1 hover:underline">
+                        Acessar na ACM DL <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                    </a>
+                </div>
+
+                <div class="dsc-card-inset p-3.5 flex flex-col justify-between hover:border-caixa-blue90 transition-colors">
+                    <div>
+                        <strong class="text-caixa-blue110 dark:text-white block mb-1 font-bold">Validação UMUX (ACM)</strong>
+                        <p class="text-caixa-gray110 dark:text-gray-300">Estudos em Interação Humano-Computador & Métricas de Usabilidade. <em>ACM Digital Library</em>.</p>
+                    </div>
+                    <a href="https://dl.acm.org/doi/10.1145/3635059.3635075" target="_blank" class="text-caixa-blue90 dark:text-blue-300 font-bold mt-3 inline-flex items-center gap-1 hover:underline">
+                        Acessar na ACM DL <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                    </a>
+                </div>
+
+                <div class="dsc-card-inset p-3.5 flex flex-col justify-between hover:border-caixa-blue90 transition-colors">
+                    <div>
+                        <strong class="text-caixa-blue110 dark:text-white block mb-1 font-bold">Paridade UMUX-LITE / SUS</strong>
+                        <p class="text-caixa-gray110 dark:text-gray-300">Sauro, J. & Lewis, J. R. (2015). <em>"Measuring Usability with the UMUX-LITE: Regression & Benchmarks"</em>. MeasuringU.</p>
+                    </div>
+                    <a href="https://measuringu.com/umux-lite/" target="_blank" class="text-caixa-blue90 dark:text-blue-300 font-bold mt-3 inline-flex items-center gap-1 hover:underline">
+                        Acessar MeasuringU <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                    </a>
+                </div>
+
+                <div class="dsc-card-inset p-3.5 flex flex-col justify-between hover:border-caixa-blue90 transition-colors">
+                    <div>
+                        <strong class="text-caixa-blue110 dark:text-white block mb-1 font-bold">Avaliação de Aplicações (IIAI)</strong>
+                        <p class="text-caixa-gray110 dark:text-gray-300">Hastuti, I. et al. (2024). <em>"Measuring Usability on Mobile Education Game: the UMUX"</em>. IIAI Letters.</p>
+                    </div>
+                    <a href="https://iaiai.org/letters/index.php/liir/article/view/215" target="_blank" class="text-caixa-blue90 dark:text-blue-300 font-bold mt-3 inline-flex items-center gap-1 hover:underline">
+                        Ver no IIAI Letters <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="text-center space-y-1 pt-4 border-t border-caixa-border dark:border-caixa-darkBorder">
+                <div class="font-bold text-caixa-blue110 dark:text-white text-xs">CAIXA Econômica Federal — Governo Federal</div>
+                <p class="text-[10px] text-caixa-gray90 dark:text-gray-400">
+                    Módulo Analítico UMUX & UMUX-LITE — Desenvolvido em conformidade com o Design System CAIXA (DSC) e o modelo de regressão linear de Lewis et al.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- LÓGICA JAVASCRIPT DA APLICAÇÃO -->
+    <script>
+        // BANCO DE DADOS DE CLASSIFICAÇÃO SEMÂNTICA (MAPPED TO DSC COLOR TOKENS)
+        const scoringDatabase = [
+            { maxScore: 25.0, grade: 'F', percentile: '0 - 1.9%', adjective: 'Worst Imaginable', acceptability: 'Inaceitável', nps: 'Detrator', colorClass: 'bg-caixa-danger10 text-caixa-danger110 border border-caixa-danger70' },
+            { maxScore: 51.6, grade: 'F', percentile: '2 - 14%', adjective: 'Poor (Ruim)', acceptability: 'Inaceitável', nps: 'Detrator', colorClass: 'bg-caixa-danger10 text-caixa-danger110 border border-caixa-danger70' },
+            { maxScore: 62.6, grade: 'D', percentile: '15 - 34%', adjective: 'OK', acceptability: 'Marginalmente Aceitável', nps: 'Detrator', colorClass: 'bg-caixa-orange10 text-caixa-orange110 border border-caixa-orange70' },
+            { maxScore: 64.9, grade: 'C-', percentile: '35 - 40%', adjective: 'Good (Bom)', acceptability: 'Marginalmente Aceitável', nps: 'Passivo', colorClass: 'bg-caixa-warning10 text-caixa-warning110 border border-caixa-warning70' },
+            { maxScore: 71.0, grade: 'C', percentile: '41 - 59%', adjective: 'Good (Bom)', acceptability: 'Marginalmente Aceitável', nps: 'Passivo', colorClass: 'bg-caixa-warning10 text-caixa-warning110 border border-caixa-warning70' },
+            { maxScore: 72.5, grade: 'C+', percentile: '60 - 64%', adjective: 'Good (Bom)', acceptability: 'Aceitável', nps: 'Passivo', colorClass: 'bg-caixa-blue10 text-caixa-blue110 border border-caixa-blue50' },
+            { maxScore: 74.0, grade: 'B-', percentile: '65 - 69%', adjective: 'Good (Bom)', acceptability: 'Aceitável', nps: 'Passivo', colorClass: 'bg-caixa-blue10 text-caixa-blue110 border border-caixa-blue50' },
+            { maxScore: 77.1, grade: 'B', percentile: '70 - 79%', adjective: 'Excellent (Excelente)', acceptability: 'Aceitável', nps: 'Passivo', colorClass: 'bg-caixa-success10 text-caixa-success110 border border-caixa-success70' },
+            { maxScore: 78.8, grade: 'B+', percentile: '80 - 84%', adjective: 'Excellent (Excelente)', acceptability: 'Aceitável', nps: 'Passivo', colorClass: 'bg-caixa-success10 text-caixa-success110 border border-caixa-success70' },
+            { maxScore: 80.7, grade: 'A-', percentile: '85 - 89%', adjective: 'Excellent (Excelente)', acceptability: 'Aceitável', nps: 'Promotor', colorClass: 'bg-caixa-success10 text-caixa-success110 border border-caixa-success70' },
+            { maxScore: 84.0, grade: 'A', percentile: '90 - 95%', adjective: 'Excellent (Excelente)', acceptability: 'Aceitável', nps: 'Promotor', colorClass: 'bg-caixa-success10 text-caixa-success110 border border-caixa-success70' },
+            { maxScore: 100.0, grade: 'A+', percentile: '96 - 100%', adjective: 'Best Imaginable<br>(Melhor Possível)', acceptability: 'Aceitável', nps: 'Promotor', colorClass: 'bg-caixa-success10 text-caixa-success110 border border-caixa-success70' }
+        ];
+
+        let currentMode = 'UMUX';
+        let parsedParticipants = [];
+        let chartInstance = null;
+        let stackedChartInstance = null;
+
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const uploadIcon = document.getElementById('uploadIcon');
+        const uploadText = document.getElementById('uploadText');
+
+        // ALTERNADOR DE TEMA LIGHT/DARK MODE
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme') || (html.classList.contains('dark') ? 'dark' : 'light');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            aplicarTema(newTheme);
+            localStorage.setItem('caixa_theme_pref', newTheme);
+        }
+
+        function aplicarTema(theme) {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+
+            html.setAttribute('data-theme', theme);
+
+            if (theme === 'dark') {
+                html.classList.add('dark');
+                html.classList.remove('light');
+                if (icon) {
+                    icon.setAttribute('data-lucide', 'sun');
+                    icon.className = "w-4 h-4 text-caixa-warning70";
+                }
+            } else {
+                html.classList.remove('dark');
+                html.classList.add('light');
+                if (icon) {
+                    icon.setAttribute('data-lucide', 'moon');
+                    icon.className = "w-4 h-4 text-caixa-orange90";
+                }
+            }
+
+            if (window.lucide) { lucide.createIcons(); }
+            if (parsedParticipants.length > 0 && typeof atualizarDashboard === 'function') {
+                atualizarDashboard();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('caixa_theme_pref') || 'light';
+            aplicarTema(savedTheme);
+        });
+
+        function setMetricaMode(mode) {
+            currentMode = mode;
+            document.getElementById('modeUmux').className = mode === 'UMUX' ? "px-4 py-1.5 text-xs mode-btn-active" : "px-4 py-1.5 text-xs mode-btn-inactive ml-1";
+            document.getElementById('modeUmuxLite').className = mode === 'UMUX-LITE' ? "px-4 py-1.5 text-xs mode-btn-active ml-1" : "px-4 py-1.5 text-xs mode-btn-inactive ml-1";
+            renderizarFormulasDoc();
+            if (fileInput.files.length > 0) processarArquivo(fileInput.files[0]);
+        }
+
+        function renderizarFormulasDoc() {
+            const container = document.getElementById('formulaContainer');
+            if (currentMode === 'UMUX') {
+                container.innerHTML = `
+                    <div class="dsc-card-inset p-3">
+                        <span class="font-bold text-caixa-blue110 dark:text-blue-300">Itens Ímpares (Q1 - Requisitos | Q3 - Fácil):</span>
+                        <p class="text-caixa-gray130 dark:text-gray-300 mt-0.5">Pontos = Voto - 1</p>
+                    </div>
+                    <div class="dsc-card-inset p-3">
+                        <span class="font-bold text-caixa-danger110 dark:text-red-400">Itens Pares (Q2 - Frustrante | Q4 - Corrigir):</span>
+                        <p class="text-caixa-gray130 dark:text-gray-300 mt-0.5">Pontos = 7 - Voto</p>
+                    </div>
+                    <p class="text-[11px] text-caixa-gray110 dark:text-gray-400 italic">* Conversão Normalizada: (Soma de Pontos / 24) * 100 para equivalência no SUS (0-100).</p>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="dsc-card-inset p-3">
+                        <span class="font-bold text-caixa-tertiary70">Itens Positivos Diretos (Q1, Q2):</span>
+                        <p class="text-caixa-gray130 dark:text-gray-300 mt-0.5">Pontos = Voto - 1</p>
+                    </div>
+                    <div class="dsc-card-inset p-3">
+                        <span class="font-bold text-caixa-blue110 dark:text-blue-300">Regressão Linear de Lewis et al. (Paridade SUS):</span>
+                        <p class="text-caixa-gray130 dark:text-gray-300 mt-0.5">Score = 0.65 * ((Soma / 12) * 100) + 22.9</p>
+                    </div>
+                `;
+            }
+        }
+        renderizarFormulasDoc();
+
+        // DRAG & DROP MANIPULATION
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-caixa-blue90', 'bg-caixa-blue10/30'); });
+        dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('border-caixa-blue90', 'bg-caixa-blue10/30'); });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-caixa-blue90', 'bg-caixa-blue10/30');
+            if (e.dataTransfer.files.length > 0) {
+                fileInput.files = e.dataTransfer.files;
+                processarArquivo(e.dataTransfer.files[0]);
+            }
+        });
+        fileInput.addEventListener('change', (e) => { if (e.target.files.length > 0) processarArquivo(e.target.files[0]); });
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        function processarArquivo(file) {
+            uploadIcon.className = "fa-solid fa-spinner fa-spin text-4xl text-caixa-blue90";
+            uploadText.innerText = `Processando ${file.name}...`;
+            const reader = new FileReader();
+            reader.onload = function (e) { parseCSV(e.target.result); };
+            reader.readAsText(file, "UTF-8");
+        }
+
+        function parseCSV(text) {
+            let rows = [];
+            let row = [""];
+            let inQuotes = false;
+            let delimiter = text.split(/\r?\n/)[0].includes(";") ? ";" : ",";
+
+            for (let i = 0; i < text.length; i++) {
+                let c = text[i];
+                let next = text[i + 1];
+
+                if (c === '"') {
+                    if (inQuotes && next === '"') {
+                        row[row.length - 1] += '"';
+                        i++;
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (c === delimiter && !inQuotes) {
+                    row.push("");
+                } else if ((c === '\r' || c === '\n') && !inQuotes) {
+                    if (c === '\r' && next === '\n') { i++; }
+                    rows.push(row.map(cell => cell.trim().replace(/^"|"$/g, '')));
+                    row = [""];
+                } else {
+                    row[row.length - 1] += c;
+                }
+            }
+            if (row.length > 1 || row[0] !== "") {
+                rows.push(row.map(cell => cell.trim().replace(/^"|"$/g, '')));
+            }
+            processarDadosMatriz(rows);
+        }
+
+        function normalizarSetePontos(val) {
+            if (val === undefined || val === null) return NaN;
+            let str = String(val).trim();
+            if (str === "") return NaN;
+
+            let num = parseInt(str, 10);
+            if (!isNaN(num) && num >= 1 && num <= 7) return num;
+
+            let clean = str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+
+            if (clean.includes("de jeito nenhum") || clean.includes("discordo totalmente")) return 1;
+            if (clean.includes("com certeza") || clean.includes("concordo totalmente")) return 7;
+            if (clean.includes("acho que nao")) return 3;
+            if (clean.includes("acho que sim")) return 5;
+            if (clean.includes("mais ou menos") || clean.includes("nem concordo") || clean.includes("neutro")) return 4;
+
+            if (clean === "nao" || clean.includes("discordo parcialmente")) return 2;
+            if (clean === "sim" || clean.includes("concordo parcialmente")) return 6;
+
+            return NaN;
+        }
+
+        function processarDadosMatriz(rows) {
+            parsedParticipants = [];
+            const cleanRows = rows.filter(r => r.some(c => c !== ""));
+            if (cleanRows.length < 2) {
+                alert("O arquivo CSV precisa ter ao menos o cabeçalho e uma linha de respostas.");
+                return;
+            }
+
+            let numItensNecessarios = currentMode === 'UMUX' ? 4 : 2;
+            let colIndices = [];
+
+            let totalColumns = cleanRows[0].length;
+            let systemKeywords = ["id", "hora", "time", "email", "nome", "name", "modified", "modificacao", "inicio", "conclusao"];
+
+            for (let c = 0; c < totalColumns; c++) {
+                let headerName = cleanRows[0][c].trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                
+                let isSystemCol = systemKeywords.some(kw => headerName.includes(kw));
+                if (isSystemCol) continue;
+
+                let validCount = 0;
+                let sampleRows = Math.min(cleanRows.length, 6);
+                for (let r = 1; r < sampleRows; r++) {
+                    let val = normalizarSetePontos(cleanRows[r][c]);
+                    if (!isNaN(val)) validCount++;
+                }
+
+                if (validCount >= Math.floor((sampleRows - 1) / 2)) {
+                    colIndices.push(c);
+                    if (colIndices.length === numItensNecessarios) break;
+                }
+            }
+
+            if (colIndices.length < numItensNecessarios) {
+                alert(`Erro: Não foi possível identificar as ${numItensNecessarios} colunas de perguntas do modo ${currentMode} no arquivo CSV.`);
+                uploadIcon.className = "fa-solid fa-cloud-arrow-up text-4xl text-caixa-gray90";
+                uploadText.innerText = "Arraste seu arquivo CSV ou clique para buscar";
+                return;
+            }
+
+            let userIdx = 1;
+            for (let r = 1; r < cleanRows.length; r++) {
+                let row = cleanRows[r];
+                let answers = [];
+                let valid = true;
+
+                for (let i = 0; i < numItensNecessarios; i++) {
+                    let c = colIndices[i];
+                    let val = normalizarSetePontos(row[c]);
+                    if (!isNaN(val)) {
+                        answers.push(val);
+                    } else {
+                        valid = false;
+                        break;
+                    }
+                }
+
+                if (valid) {
+                    let score = 0;
+                    if (currentMode === 'UMUX') {
+                        let q1 = answers[0] - 1;
+                        let q2 = 7 - answers[1];
+                        let q3 = answers[2] - 1;
+                        let q4 = 7 - answers[3];
+                        score = ((q1 + q2 + q3 + q4) / 24) * 100;
+                    } else {
+                        let q1 = answers[0] - 1;
+                        let q2 = answers[1] - 1;
+                        let rawScore = ((q1 + q2) / 12) * 100;
+                        score = (0.65 * rawScore) + 22.9;
+                    }
+
+                    parsedParticipants.push({ id: `U${String(userIdx).padStart(2, '0')}`, raw: answers, score: score });
+                    userIdx++;
+                }
+            }
+
+            parsedParticipants.sort((a, b) => a.score - b.score);
+            uploadIcon.className = "fa-solid fa-cloud-arrow-up text-4xl text-caixa-gray90";
+            uploadText.innerText = "Arraste seu arquivo CSV ou clique para buscar";
+            atualizarDashboard();
+        }
+
+        function calcularEstatisticas() {
+            const scores = parsedParticipants.map(p => p.score);
+            const n = scores.length;
+            const mean = scores.reduce((a, b) => a + b, 0) / n;
+            const variance = n > 1 ? scores.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / (n - 1) : 0;
+            const stdDev = Math.sqrt(variance);
+            const margin = n > 1 ? 1.96 * (stdDev / Math.sqrt(n)) : 0;
+            return { n, mean, stdDev, margin };
+        }
+
+        function atualizarDashboard() {
+            const stats = calcularEstatisticas();
+            const interp = scoringDatabase.find(item => stats.mean <= item.maxScore) || scoringDatabase[scoringDatabase.length - 1];
+
+            document.getElementById('resultsSection').classList.remove('hidden');
+            document.getElementById('statMean').innerText = stats.mean.toFixed(1);
+            document.getElementById('statN').innerText = stats.n;
+            document.getElementById('statStdDev').innerText = stats.stdDev.toFixed(1);
+            document.getElementById('statCI').innerText = `± ${stats.margin.toFixed(1)}`;
+            document.getElementById('statPercentile').innerText = interp.percentile;
+            document.getElementById('statAdjective').innerHTML = `Adjetivo: ${interp.adjective}`;
+
+            const gradeEl = document.getElementById('statGrade');
+            gradeEl.innerText = `Grade: ${interp.grade}`;
+            gradeEl.className = `inline-flex items-center justify-center leading-none text-xs px-3 py-1 font-bold rounded-pill ${interp.colorClass}`;
+
+            const accEl = document.getElementById('interpAcceptability');
+            accEl.innerText = interp.acceptability;
+            accEl.className = `inline-flex items-center justify-center leading-none text-xs font-bold px-3 py-1 rounded-pill ${interp.colorClass}`;
+
+            const npsEl = document.getElementById('interpNps');
+            npsEl.innerText = interp.nps;
+            npsEl.className = `inline-flex items-center justify-center leading-none text-xs font-bold px-3 py-1 rounded-pill ${
+                interp.nps === 'Promotor' ? 'bg-caixa-success10 text-caixa-success110 border border-caixa-success70' : 'bg-caixa-danger10 text-caixa-danger110 border border-caixa-danger70'
+            }`;
+
+            document.getElementById('interpSummary').innerHTML = `A análise de <strong class="text-caixa-blue110 dark:text-white">${stats.n} respondentes</strong> via <strong class="text-caixa-blue90">${currentMode}</strong> gerou uma pontuação de usabilidade projetada em <strong class="text-caixa-blue110 dark:text-white">${stats.mean.toFixed(1)} / 100</strong> na régua equivalente do SUS. Isso classifica o produto como <strong class="text-caixa-blue110 dark:text-white">"${interp.adjective.replace('<br>', ' ')}"</strong> com aceitabilidade <strong class="text-caixa-blue110 dark:text-white">${interp.acceptability}</strong>.`;
+
+            renderizarTabela();
+            renderizarGrafico(stats.mean);
+            renderizarGraficoStacked();
+            renderizarSubescalas();
+            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function renderizarSubescalas() {
+            if (parsedParticipants.length === 0) return;
+            const n = parsedParticipants.length;
+
+            let sumQ1 = 0, sumQ3 = 0;
+            parsedParticipants.forEach(p => {
+                sumQ1 += (p.raw[0] - 1);
+                if (currentMode === 'UMUX' && p.raw.length >= 3) {
+                    sumQ3 += (p.raw[2] - 1);
+                }
+            });
+
+            const scoreUsefulness = ((sumQ1 / n) / 6) * 100;
+            const scoreEase = currentMode === 'UMUX' ? ((sumQ3 / n) / 6) * 100 : scoreUsefulness;
+
+            document.getElementById('subUsefulnessVal').innerText = `${scoreUsefulness.toFixed(1)} / 100`;
+            document.getElementById('subEaseVal').innerText = `${scoreEase.toFixed(1)} / 100`;
+
+            document.getElementById('subUsefulnessBar').style.width = `${scoreUsefulness}%`;
+            document.getElementById('subEaseBar').style.width = `${scoreEase}%`;
+        }
+
+        function renderizarTabela() {
+            const head = document.getElementById('tableHeader');
+            const body = document.getElementById('tableBody');
+            let numItens = currentMode === 'UMUX' ? 4 : 2;
+
+            let headHTML = `<th class="p-3 font-bold">Participante</th>`;
+            for (let i = 1; i <= numItens; i++) headHTML += `<th class="p-3 font-bold text-center">Q${i}</th>`;
+            headHTML += `<th class="p-3 font-bold text-right">Score Equiv. SUS</th><th class="p-3 font-bold text-center">Nota</th>`;
+            head.innerHTML = headHTML;
+
+            body.innerHTML = '';
+            parsedParticipants.forEach(p => {
+                const i = scoringDatabase.find(item => p.score <= item.maxScore) || scoringDatabase[scoringDatabase.length - 1];
+                let rowHTML = `<tr class="hover:bg-caixa-cardInset/50 dark:hover:bg-caixa-darkCardInset/50 transition-colors"><td class="p-3 font-bold text-caixa-blue110 dark:text-blue-300">${p.id}</td>`;
+                p.raw.forEach(v => { rowHTML += `<td class="p-3 text-center text-caixa-gray110 dark:text-gray-300 font-mono">${v}</td>`; });
+                rowHTML += `<td class="p-3 font-bold text-right text-caixa-blue90 dark:text-blue-400 font-mono">${p.score.toFixed(1)}</td><td class="p-3 text-center"><span class="inline-flex items-center justify-center leading-none text-[10px] font-bold px-2.5 py-1 rounded-pill ${i.colorClass}">${i.grade}</span></td></tr>`;
+                body.innerHTML += rowHTML;
+            });
+        }
+
+        function renderizarGrafico(scoreMedio) {
+            const ctx = document.getElementById('metricChart').getContext('2d');
+            if (chartInstance) chartInstance.destroy();
+
+            const isDark = document.documentElement.classList.contains('dark');
+            const colorGrid = isDark ? '#2A4A75' : '#CBD5E1';
+            const colorText = isDark ? '#94A3B8' : '#404852';
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: parsedParticipants.map(p => p.id),
+                    datasets: [
+                        { label: 'Curva de Scores Projetados', data: parsedParticipants.map(p => p.score), borderColor: isDark ? '#60B1FA' : '#005CA9', backgroundColor: isDark ? 'rgba(96, 177, 250, 0.15)' : 'rgba(0, 92, 169, 0.1)', fill: true, tension: 0.2, pointRadius: 5 },
+                        { label: 'Média Projetada', data: Array(parsedParticipants.length).fill(scoreMedio), borderColor: '#179231', borderWidth: 2, borderDash: [5, 5], pointRadius: 0 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { color: colorGrid }, ticks: { color: colorText } }, y: { min: 0, max: 100, grid: { color: colorGrid }, ticks: { color: colorText } } }, plugins: { legend: { labels: { color: colorText } } } }
+            });
+        }
+
+        function renderizarGraficoStacked() {
+            const ctx = document.getElementById('stackedResponsesChart').getContext('2d');
+            if (stackedChartInstance) stackedChartInstance.destroy();
+
+            const isDark = document.documentElement.classList.contains('dark');
+            const colorGrid = isDark ? '#2A4A75' : '#CBD5E1';
+            const colorText = isDark ? '#94A3B8' : '#404852';
+
+            const numQuestions = currentMode === 'UMUX' ? 4 : 2;
+            const labelsQ = Array.from({ length: numQuestions }, (_, i) => `Q${i + 1}`);
+            const totalRespondentes = parsedParticipants.length;
+
+            const counts = Array.from({ length: numQuestions }, () => ({ 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0 }));
+
+            parsedParticipants.forEach(p => {
+                p.raw.forEach((voto, qIdx) => {
+                    if (qIdx < numQuestions && counts[qIdx][voto] !== undefined) {
+                        counts[qIdx][voto]++;
+                    }
+                });
+            });
+
+            // PALETA DE CORES INTEGRADA AO DSC CAIXA
+            const colors = [
+                '#8C2323', // 1: Discordo Totalmente (Danger 110)
+                '#D93636', // 2: Discordo (Danger 70)
+                '#FD854B', // 3: Discordo Parcialmente (Orange 50)
+                '#9EB2B8', // 4: Neutro / Indiferente (Gray 70)
+                '#60B1FA', // 5: Concordo Parcialmente (Blue 50)
+                '#005CA9', // 6: Concordo (Blue 90)
+                '#179231'  // 7: Concordo Totalmente (Success 70)
+            ];
+
+            const optionLabels = [
+                '1: Discordo Totalmente',
+                '2: Discordo',
+                '3: Discordo Parcialmente',
+                '4: Neutro / Indiferente',
+                '5: Concordo Parcialmente',
+                '6: Concordo',
+                '7: Concordo Totalmente'
+            ];
+
+            const datasets = [1, 2, 3, 4, 5, 6, 7].map((numOption, idx) => {
+                return {
+                    label: optionLabels[idx],
+                    data: counts.map(q => (q[numOption] / totalRespondentes) * 100),
+                    backgroundColor: colors[idx],
+                    votosAbsolutos: counts.map(q => q[numOption])
+                };
+            });
+
+            stackedChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: { labels: labelsQ, datasets: datasets },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { stacked: true, min: 0, max: 100, ticks: { color: colorText, callback: v => v + "%" }, grid: { color: colorGrid } },
+                        y: { stacked: true, ticks: { color: colorText, font: { size: 12, weight: 'bold' } }, grid: { display: false } }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: colorText, boxWidth: 10, font: { size: 10 } } },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    const count = context.dataset.votosAbsolutos[context.dataIndex];
+                                    const pct = context.raw.toFixed(1);
+                                    return `${context.dataset.label}: ${count} votos (${pct}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

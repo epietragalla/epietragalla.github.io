@@ -302,15 +302,8 @@
                                     </span>
 
                                     <span class="block text-caixa-text dark:text-gray-200">
-                                        <strong class="block font-semibold">3. Exportação Textual (Microsoft Forms
-                                            Bruto):</strong>
-                                        Aceita o relatório bruto com colunas iniciais de sistema. O motor identifica as
-                                        perguntas pelas palavras-chave e converte automaticamente os textos por extenso
-                                        (<code
-                                            class="text-emerald-700 dark:text-emerald-400 font-bold">Discordo totalmente</code>
-                                        a <code
-                                            class="text-emerald-700 dark:text-emerald-400 font-bold">Concordo Totalmente</code>)
-                                        para notas.
+                                        <strong class="block font-semibold">3. Exportação Textual (Microsoft Forms Bruto):</strong>
+                                        Aceita o relatório bruto com colunas de sistema e cabeçalhos <code class="bg-blue-100 dark:bg-blue-900/50 px-1 py-0.5 rounded text-caixa-blue dark:text-blue-300">COLUMN</code>, <code class="bg-blue-100 dark:bg-blue-900/50 px-1 py-0.5 rounded text-caixa-blue dark:text-blue-300">2</code>, ..., <code class="bg-blue-100 dark:bg-blue-900/50 px-1 py-0.5 rounded text-caixa-blue dark:text-blue-300">10</code> contendo respostas por extenso (<code class="text-emerald-700 dark:text-emerald-400 font-bold">Discordo totalmente</code> a <code class="text-emerald-700 dark:text-emerald-400 font-bold">Concordo Totalmente</code>).
                                     </span>
 
                                     <span
@@ -491,9 +484,6 @@
                             <h3 class="text-base font-bold text-caixa-dark dark:text-white">Notas Individuais por Participante (Ordenado por Score)</h3>
                             <p class="text-xs text-caixa-muted dark:text-gray-400">Tabela de conferência ordenada do menor para o maior nível de usabilidade.</p>
                         </div>
-                        <!-- <button onclick="exportarCSV_Local()" class="apple-btn-primary text-xs flex items-center gap-2">
-                            <i class="fa-solid fa-file-export"></i> Exportar Resultados (CSV)
-                        </button> -->
                     </div>
                     <div class="overflow-x-auto rounded-xl border border-caixa-border dark:border-caixa-darkBorder">
                         <table class="min-w-full divide-y divide-caixa-border dark:divide-caixa-darkBorder text-xs text-left">
@@ -577,7 +567,7 @@
 
             <!-- BOTÃO DE EXPORTAÇÃO EM 3 PARTES -->
             <div class="flex justify-center pt-6 pb-2 border-t border-caixa-border dark:border-caixa-darkBorder">
-                <button type="button" onclick="exportarRelatorio3Partes()" id="btnExportImages" className="apple-btn-primary" class="apple-btn-primary text-xs py-3 px-8 flex items-center gap-2 !bg-caixa-orange hover:!bg-orange-600 shadow-lg cursor-pointer">
+                <button type="button" onclick="exportarRelatorio3Partes()" id="btnExportImages" class="apple-btn-primary text-xs py-3 px-8 flex items-center gap-2 !bg-caixa-orange hover:!bg-orange-600 shadow-lg cursor-pointer">
                     <i class="fa-solid fa-file-image"></i>
                     <span>Exportar Relatório</span>
                 </button>
@@ -704,7 +694,6 @@
             const isDark = html.classList.contains('dark');
 
             if (isDark) {
-                // Alterna para Modo Claro (Light) -> Ícone de LUA
                 html.classList.remove('dark');
                 html.classList.add('light');
                 html.setAttribute('data-theme', 'light');
@@ -714,7 +703,6 @@
                 }
                 localStorage.setItem('caixa_theme_pref', 'light');
             } else {
-                // Alterna para Modo Escuro (Dark) -> Ícone de SOL
                 html.classList.remove('light');
                 html.classList.add('dark');
                 html.setAttribute('data-theme', 'dark');
@@ -725,18 +713,15 @@
                 localStorage.setItem('caixa_theme_pref', 'dark');
             }
 
-            // Renderiza o novo SVG do Lucide Icons
             if (window.lucide) {
                 lucide.createIcons();
             }
 
-            // Re-renderiza os gráficos para adaptar as cores dos eixos
             if (parsedParticipants.length > 0 && typeof atualizarDashboard === 'function') {
                 atualizarDashboard();
             }
         }
 
-        // Carregar Preferência de Tema Salva no Carregamento
         (function carregarTemaSalvo() {
             const savedTheme = localStorage.getItem('caixa_theme_pref') || 'light';
             const html = document.documentElement;
@@ -867,33 +852,46 @@
 
         function normalizarValorLikert(val) {
             if (val === undefined || val === null) return null;
-            let texto = val.toString().trim().toLowerCase();
-            if (texto === "") return null;
-            if (texto === "discordo totalmente") return 1;
-            if (texto === "discordo parcialmente") return 2;
-            if (texto === "nem concordo nem discordo") return 3;
-            if (texto === "concordo parcialmente") return 4;
-            if (texto === "concordo totalmente") return 5;
-            let num = parseInt(texto);
-            if (!isNaN(num) && num >= 1 && num <= 5) {
-                return num;
-            }
+            let str = String(val).trim();
+            if (str === "") return null;
+
+            let num = parseInt(str, 10);
+            if (!isNaN(num) && num >= 1 && num <= 5) return num;
+
+            let clean = str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+
+            if (clean.includes("discordo totalmente") || clean === "1") return 1;
+            if (clean.includes("discordo parcialmente") || clean === "2") return 2;
+            if (clean.includes("nem concordo") || clean.includes("neutro") || clean === "3") return 3;
+            if (clean.includes("concordo parcialmente") || clean === "4") return 4;
+            if (clean.includes("concordo totalmente") || clean === "5") return 5;
+
             return null;
         }
 
         function detectarColunaQuestao(headerText) {
             if (!headerText) return null;
             let h = headerText.toLowerCase().trim();
+
+            if (h === "column" || h === "q1") return 1;
+
             let matchDirect = h.match(/^q(\d+)$/i);
             if (matchDirect) {
-                let n = parseInt(matchDirect[1]);
+                let n = parseInt(matchDirect[1], 10);
                 if (n >= 1 && n <= 10) return n;
             }
+
             let matchIndex = h.match(/^(\d+)\s*[\.\-\s]/);
             if (matchIndex) {
-                let n = parseInt(matchIndex[1]);
+                let n = parseInt(matchIndex[1], 10);
                 if (n >= 1 && n <= 10) return n;
             }
+
+            if (/^\d+$/.test(h)) {
+                let num = parseInt(h, 10);
+                if (num >= 2 && num <= 10) return num;
+            }
+
             if (h.includes("gostaria") && h.includes("frequ")) return 1;
             if (h.includes("complex")) return 2;
             if (h.includes("fácil") || h.includes("facil") || h.includes("cil de usar")) return 3;
@@ -915,8 +913,10 @@
                 atualizarUIStatusCarregando(false);
                 return;
             }
+
             let qPositions = {};
             const searchLimitRows = Math.min(cleanRows.length, 5);
+
             for (let r = 0; r < searchLimitRows; r++) {
                 for (let c = 0; c < cleanRows[r].length; c++) {
                     const cellValue = cleanRows[r][c];
@@ -926,16 +926,30 @@
                     }
                 }
             }
+
+            // Mapeamento sequencial se encontrou COLUMN / Q1
+            if (qPositions['Q1'] && Object.keys(qPositions).length < 10) {
+                let startCol = qPositions['Q1'].c;
+                let startRow = qPositions['Q1'].r;
+                for (let q = 1; q <= 10; q++) {
+                    if ((startCol + q - 1) < cleanRows[startRow].length) {
+                        qPositions[`Q${q}`] = { r: startRow, c: startCol + q - 1 };
+                    }
+                }
+            }
+
             const keysFound = Object.keys(qPositions);
             if (keysFound.length < 10) {
-                alert("Erro: Não conseguimos mapear as 10 colunas de perguntas padrão do SUS no cabeçalho do arquivo.\nPor favor, verifique se o arquivo possui os cabeçalhos obrigatórios do SUS.");
+                alert("Erro: Não conseguimos mapear as 10 colunas de perguntas padrão do SUS no cabeçalho do arquivo.\nPor favor, verifique se o arquivo possui os cabeçalhos do SUS.");
                 atualizarUIStatusCarregando(false);
                 return;
             }
+
             let maxHeaderRow = 0;
             for (let key in qPositions) {
                 if (qPositions[key].r > maxHeaderRow) maxHeaderRow = qPositions[key].r;
             }
+
             let userIndex = 1;
             for (let r = maxHeaderRow + 1; r < cleanRows.length; r++) {
                 const row = cleanRows[r];
@@ -943,6 +957,7 @@
                 let userId = "U" + String(userIndex).padStart(2, '0');
                 let rawAnswers = [];
                 let hasAllAnswers = true;
+
                 for (let qNum = 1; qNum <= 10; qNum++) {
                     const pos = qPositions[`Q${qNum}`];
                     if (pos.c >= row.length) {
@@ -957,16 +972,19 @@
                         break;
                     }
                 }
+
                 if (hasAllAnswers) {
                     adicionarParticipante(userId, rawAnswers);
                     userIndex++;
                 }
             }
+
             atualizarUIStatusCarregando(false);
             if (parsedParticipants.length === 0) {
                 alert("Nenhum registro com as 10 respostas completas válidas da escala Likert foi encontrado.");
                 return;
             }
+
             parsedParticipants.sort((a, b) => a.score - b.score);
             atualizarDashboard();
         }
@@ -1070,24 +1088,21 @@
             const interpretation = getInterpretation(stats.mean);
             document.getElementById('resultsSection').classList.remove('hidden');
             document.getElementById('statMean').innerText = stats.mean.toFixed(1);
-            
-            // Badge Grade
+
             const gradeEl = document.getElementById('statGrade');
             gradeEl.innerText = `Grade: ${interpretation.grade}`;
             gradeEl.className = `inline-flex items-center justify-center leading-none text-xs px-3 py-1.5 font-bold rounded-full mt-2 ${interpretation.colorClass}`;
-            
+
             document.getElementById('statN').innerText = stats.n;
             document.getElementById('statStdDev').innerText = stats.stdDev.toFixed(1);
             document.getElementById('statCI').innerText = `± ${stats.marginOfError.toFixed(1)}`;
             document.getElementById('statPercentile').innerText = interpretation.percentile;
-            document.getElementById('statAdjective').innerText = `Adjetivo: ${interpretation.adjective}`;
-            
-            // Badge Aceitabilidade
+            document.getElementById('statAdjective').innerText = `Adjetivo: ${interpretation.adjective.replace('\n', ' ')}`;
+
             const acceptEl = document.getElementById('interpAcceptability');
             acceptEl.innerText = interpretation.acceptability;
             acceptEl.className = `inline-flex items-center justify-center leading-none text-xs font-bold px-3 py-1.5 rounded-full ${interpretation.colorClass}`;
-            
-            // Badge NPS
+
             const npsEl = document.getElementById('interpNps');
             npsEl.innerText = interpretation.nps;
             npsEl.className = `inline-flex items-center justify-center leading-none text-xs font-bold px-3 py-1.5 rounded-full ${
@@ -1099,7 +1114,7 @@
             document.getElementById('interpSummary').innerHTML = `
                 A sua amostra de <strong class="text-caixa-dark dark:text-white">${stats.n} participantes</strong> obteve um SUS médio de 
                 <strong class="text-caixa-blue dark:text-blue-300">${stats.mean.toFixed(1)}</strong>. 
-                Isso significa que seu sistema é classificado como <strong class="text-caixa-dark dark:text-white">"${interpretation.adjective}"</strong> 
+                Isso significa que seu sistema é classificado como <strong class="text-caixa-dark dark:text-white">"${interpretation.adjective.replace('\n', ' ')}"</strong> 
                 e possui um nível de aceitação classificado como <strong class="text-caixa-dark dark:text-white">${interpretation.acceptability}</strong> pelo usuário final.
             `;
             construirTabela();
@@ -1110,7 +1125,7 @@
             document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
         }
 
-       function construirTabela() {
+        function construirTabela() {
             const header = document.getElementById('tableHeader');
             const body = document.getElementById('tableBody');
             let headerHTML = `<th class="px-4 py-3 font-bold">Participante</th>`;
@@ -1141,7 +1156,7 @@
             });
         }
 
-       function renderizarHeuristicas() {
+        function renderizarHeuristicas() {
             const list = calcularAnalyseHeuristica();
             const container = document.getElementById('heuristicsContainer');
             container.innerHTML = '';
