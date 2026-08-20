@@ -1,154 +1,215 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="light">
+<html lang="pt-BR" class="light" data-theme="light">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UX Team Skill Mapping — Apple Human Interface & NN/g Framework</title>
+    <title>UX Team Skill Mapping — CAIXA / NN/g Framework</title>
 
+    <!-- SCRIPT DE EXECUÇÃO IMEDIATA: Força o Light Mode como padrão -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('caixa_theme_pref') || 'light';
+            const html = document.documentElement;
+            if (savedTheme === 'dark') {
+                html.classList.add('dark');
+                html.classList.remove('light');
+                html.setAttribute('data-theme', 'dark');
+            } else {
+                html.classList.remove('dark');
+                html.classList.add('light');
+                html.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
+
+    <!-- Lucide Icons & FontAwesome para Ícones Oficiais -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Chart.js para Gráficos Radar -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- CONFIGURAÇÃO DE TOKENS OFICIAIS DO TAILWIND CSS DO DSC -->
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        apple: {
-                            blue: '#007AFF',
-                            darkBlue: '#0A84FF',
-                            gray: '#8E8E93',
-                            gray2: '#AEAEB2',
-                            gray3: '#C7C7CC',
-                            gray4: '#D1D1D6',
-                            gray5: '#E5E5EA',
-                            gray6: '#F2F2F7',
-                            darkBg: '#000000',
-                            darkCard: '#1C1C1E',
-                            darkCard2: '#2C2C2E',
-                            green: '#34C759',
-                            orange: '#FF9500',
-                            red: '#FF3B30',
-                            purple: '#AF52DE'
+                        caixa: {
+                            // Paleta Fixa Oficial
+                            blue130: '#002A4D',
+                            blue110: '#00437A',
+                            blue90:  '#005CA9',   /* Cor Principal Interativa / Oceano CAIXA */
+                            blue70:  '#2D8A0B',
+                            blue50:  '#60B1FA',
+                            blue30:  '#AED2FC',
+                            blue10:  '#E5F1FC',   /* Superfície de Item Ativo */
+
+                            orange130: '#663A00',
+                            orange110: '#A65E00',
+                            orange90:  '#D67B00',  /* Homologada p/ Botões c/ Texto Branco */
+                            orange70:  '#F39200',  /* Laranja Original */
+                            orange50:  '#FD854B',
+                            orange30:  '#FFD092',
+                            orange10:  '#FFEFD6',
+
+                            tertiary70: '#54B8A8', /* Turquesa CAIXA */
+
+                            // Neutros (Grayscale)
+                            gray130: '#22292E',    /* Texto Primário */
+                            gray110: '#404852',    /* Texto Secundário */
+                            gray90:  '#64747A',    /* Bordas e Ícones */
+                            gray70:  '#9EB2B8',    /* Divisores */
+                            gray50:  '#D0E0E3',    /* Bordas Suaves */
+                            gray30:  '#EBF1F2',    /* Inset Light */
+                            gray10:  '#F7FAFA',    /* Canvas Light */
+
+                            // Feedback Semântico
+                            success110: '#0D5B1C',
+                            success70:  '#179231',
+                            success10:  '#E7F4EA',
+
+                            warning110: '#977203',
+                            warning70:  '#FCBE05',
+                            warning10:  '#FFF9E6',
+
+                            danger110:  '#8C2323',
+                            danger70:   '#D93636',
+                            danger10:   '#FBEBEB',
+
+                            info110:    '#026173',
+                            info70:     '#04A2BF',
+                            info10:     '#E5F6F8',
+
+                            // Dark Mode Tokens
+                            darkBg:     '#0B1E36',
+                            darkCard:   '#132A4A',
+                            darkInset:  '#1A365D',
+                            darkBorder: '#2A4A75'
                         }
                     },
                     fontFamily: {
-                        sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', '"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif']
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Arial', 'sans-serif']
+                    },
+                    borderRadius: {
+                        'xs': '2px',
+                        'sm': '4px',
+                        'badge': '8px',
+                        'inset': '12px',
+                        'card': '16px',
+                        'pill': '9999px'
+                    },
+                    boxShadow: {
+                        'elevation1': '0px 1px 3px 1px rgba(0, 0, 0, 0.08)',
+                        'elevation2': '0px 2px 6px 2px rgba(0, 0, 0, 0.12)',
+                        'elevation3': '0px 4px 8px 3px rgba(0, 0, 0, 0.15)',
+                        'elevation4': '0px 6px 10px 4px rgba(0, 0, 0, 0.15)',
+                        'elevation5': '0px 8px 12px 6px rgba(0, 0, 0, 0.15)',
+                        'cta': '0 4px 12px rgba(214, 123, 0, 0.35)'
                     }
                 }
             }
         }
     </script>
 
-    <!-- FontAwesome para Ícones Estilo iOS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js para Gráficos Radar -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- Estilos CSS Centralizados (Apple HIG Pattern System) -->
+    <!-- VARIÁVEIS CSS ROOT E ESTILOS CUSTOMIZADOS DO DESIGN SYSTEM -->
     <style>
-        /* Transições suave de tema Apple HIG */
-        * {
-            transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+        :root {
+            --caixa-blue-90: #005CA9;
+            --caixa-blue-dark: #003366;
+            --caixa-orange-90: #D67B00;
+            --caixa-orange-70: #F39200;
+            --caixa-bg-canvas: #F7FAFA;
+            --caixa-bg-card: #FFFFFF;
+            --caixa-bg-inset: #EBF1F2;
+            --caixa-border: #D0E0E3;
+            --caixa-text-main: #22292E;
+            --caixa-text-muted: #404852;
         }
 
-        /* Glassmorphism / Vibrancy */
-        .apple-glass {
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-        }
-        .dark .apple-glass {
-            background: rgba(28, 28, 30, 0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+        .dark {
+            --caixa-bg-canvas: #0B1E36;
+            --caixa-bg-card: #132A4A;
+            --caixa-bg-inset: #1A365D;
+            --caixa-border: #2A4A75;
+            --caixa-text-main: #F8FAFC;
+            --caixa-text-muted: #94A3B8;
         }
 
-        /* Cartões Estilo Apple HIG Container */
-        .apple-card {
-            background-color: #FFFFFF;
-            border-radius: 20px;
-            border: 1px solid rgba(0, 0, 0, 0.06);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02);
-        }
-        .dark .apple-card {
-            background-color: #1C1C1E;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.3);
+        *, *::before, *::after {
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
         }
 
-        /* Botões Estilo iOS Segmented Control / Push Button */
-        .apple-btn-primary {
-            background-color: #007AFF;
-            color: #FFFFFF;
-            font-weight: 600;
+        .caixa-glass {
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .dark .caixa-glass {
+            background: rgba(11, 30, 54, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .dsc-card {
+            background-color: var(--caixa-bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--caixa-border);
+            box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.05);
+        }
+
+        .dsc-card-inset {
+            background-color: var(--caixa-bg-inset);
             border-radius: 12px;
-            padding: 8px 16px;
-            box-shadow: 0 2px 8px rgba(0, 122, 255, 0.25);
-        }
-        .apple-btn-primary:hover {
-            background-color: #0062CC;
-            transform: translateY(-0.5px);
-        }
-        .dark .apple-btn-primary {
-            background-color: #0A84FF;
-            box-shadow: 0 2px 10px rgba(10, 132, 255, 0.3);
+            border: 1px solid var(--caixa-border);
         }
 
-        .apple-btn-secondary {
-            background-color: #F2F2F7;
-            color: #1C1C1E;
-            font-weight: 500;
-            border-radius: 12px;
-            padding: 8px 16px;
-        }
-        .apple-btn-secondary:hover {
-            background-color: #E5E5EA;
-        }
-        .dark .apple-btn-secondary {
-            background-color: #2C2C2E;
-            color: #F2F2F7;
-        }
-        .dark .apple-btn-secondary:hover {
-            background-color: #3A3A3C;
-        }
-
-        /* Custom Inputs & Selects */
-        .apple-input {
-            background-color: #F2F2F7;
-            border: 1px solid transparent;
-            border-radius: 10px;
+        /* Inputs Estilo DSC */
+        .dsc-input {
+            background-color: var(--caixa-bg-inset);
+            border: 1px solid var(--caixa-border);
+            border-radius: 8px;
             padding: 8px 12px;
-            color: #1C1C1E;
+            color: var(--caixa-text-main);
             font-size: 0.875rem;
             outline: none;
         }
-        .apple-input:focus {
-            border-color: #007AFF;
+
+        .dsc-input:focus {
+            border-color: #005CA9;
             background-color: #FFFFFF;
-            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
-        }
-        .dark .apple-input {
-            background-color: #2C2C2E;
-            color: #F2F2F7;
-        }
-        .dark .apple-input:focus {
-            border-color: #0A84FF;
-            background-color: #1C1C1E;
-            box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.25);
+            box-shadow: 0 0 0 3px rgba(0, 92, 169, 0.15);
         }
 
-        /* Tooltip Customizado Apple */
+        .dark .dsc-input {
+            background-color: #1A365D;
+            border-color: #2A4A75;
+            color: #F8FAFC;
+        }
+
+        .dark .dsc-input:focus {
+            border-color: #60B1FA;
+            background-color: #132A4A;
+            box-shadow: 0 0 0 3px rgba(96, 177, 250, 0.25);
+        }
+
+        /* Tooltip Customizado */
         .hint-tooltip {
             position: relative;
             display: inline-block;
         }
+
         .hint-tooltip .tooltip-text {
             visibility: hidden;
             width: 280px;
-            background-color: rgba(30, 30, 32, 0.95);
-            color: #FFF;
+            background-color: #FFFFFF;
+            color: #22292E;
             text-align: left;
             border-radius: 12px;
             padding: 10px 14px;
@@ -161,9 +222,18 @@
             transition: opacity 0.2s, transform 0.2s;
             font-size: 0.75rem;
             line-height: 1.15rem;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border: 1px solid #CBD5E1;
             pointer-events: none;
         }
+
+        .dark .hint-tooltip .tooltip-text {
+            background-color: #132A4A;
+            color: #F8FAFC;
+            border: 1px solid #2A4A75;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+        }
+
         .hint-tooltip:hover .tooltip-text {
             visibility: visible;
             opacity: 1;
@@ -171,37 +241,38 @@
         }
     </style>
 </head>
-<body class="bg-[#F5F5F7] dark:bg-black text-[#1D1D1F] dark:text-[#F5F5F7] min-h-screen font-sans antialiased selection:bg-apple-blue selection:text-white">
 
-    <!-- Header Fixo Estilo iOS / macOS Navigation Bar -->
-    <header class="sticky top-0 z-40 apple-glass border-b border-black/5 dark:border-white/10 px-6 py-4">
+<body class="bg-caixa-gray10 dark:bg-caixa-darkBg text-caixa-gray130 dark:text-white font-sans antialiased selection:bg-caixa-blue90 selection:text-white min-h-screen">
+
+    <!-- Header Fixo Estilo CAIXA Design System -->
+    <header class="sticky top-0 z-40 caixa-glass border-b border-caixa-border dark:border-caixa-darkBorder px-6 py-3.5">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-2xl bg-apple-blue flex items-center justify-center text-white shadow-md shadow-apple-blue/20">
-                    <i class="fa-solid fa-chart-pie text-lg"></i>
+                <div class="w-10 h-10 rounded-xl bg-caixa-blue90 flex items-center justify-center text-white font-black text-xl shadow-md">
+                    X
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold tracking-tight text-black dark:text-white flex items-center gap-2">
-                        Skill Mapping <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-apple-blue/10 text-apple-blue dark:bg-apple-darkBlue/20 dark:text-apple-darkBlue">NN/g Framework</span>
+                    <h1 class="text-lg font-bold text-caixa-blue110 dark:text-white flex items-center gap-2 leading-tight">
+                        Skill Mapping <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-badge bg-blue-100 text-caixa-blue90 dark:bg-blue-900/40 dark:text-blue-300">NN/g Framework</span>
                     </h1>
-                    <p class="text-xs text-apple-gray">Mapeamento dinâmico de competências para times de UX & DesignOps</p>
+                    <p class="text-xs text-caixa-gray110 dark:text-gray-300">Mapeamento dinâmico de competências para times de UX & DesignOps</p>
                 </div>
             </div>
 
             <!-- Controles do Header & Dark Mode Toggle -->
             <div class="flex items-center gap-3">
-                <button onclick="abrirModalConfigSkills()" class="apple-btn-secondary text-xs flex items-center gap-2">
-                    <i class="fa-solid fa-sliders text-apple-blue dark:text-apple-darkBlue"></i>
+                <button onclick="abrirModalConfigSkills()" class="bg-caixa-gray30 dark:bg-caixa-darkCardInset hover:bg-caixa-gray50 text-caixa-blue110 dark:text-white border border-caixa-border dark:border-caixa-darkBorder font-bold text-xs py-2 px-4 rounded-pill transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-caixa-blue90 dark:text-blue-300"></i>
                     <span>Editar Competências</span>
                 </button>
-                <button onclick="abrirModalTabelaProficiencia()" class="apple-btn-secondary text-xs flex items-center gap-2">
-                    <i class="fa-solid fa-graduation-cap text-apple-purple"></i>
+                <button onclick="abrirModalTabelaProficiencia()" class="bg-caixa-gray30 dark:bg-caixa-darkCardInset hover:bg-caixa-gray50 text-caixa-blue110 dark:text-white border border-caixa-border dark:border-caixa-darkBorder font-bold text-xs py-2 px-4 rounded-pill transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-purple-600 dark:text-purple-400"></i>
                     <span>Escala NN/g (1-5)</span>
                 </button>
                 
                 <!-- Toggle Dark/Light Mode Switcher -->
-                <button type="button" id="themeToggleBtn" onclick="toggleTheme()" title="Alternar entre Modo Escuro e Modo Claro" class="w-10 h-10 rounded-full bg-apple-gray6 dark:bg-apple-darkCard2 flex items-center justify-center text-apple-gray hover:text-black dark:hover:text-white transition-all border border-black/5 dark:border-white/10">
-                    <i data-lucide="moon" id="themeIcon" class="w-4 h-4 text-apple-orange dark:text-apple-darkOrange"></i>
+                <button type="button" id="themeToggleBtn" onclick="toggleTheme()" title="Alternar entre Modo Escuro e Modo Claro" class="w-9 h-9 rounded-full bg-caixa-cardInset dark:bg-caixa-darkCardInset flex items-center justify-center text-caixa-orange90 dark:text-caixa-yellow hover:scale-105 transition-transform border border-caixa-border dark:border-caixa-darkBorder">
+                    <i data-lucide="moon" id="themeIcon" class="w-4 h-4"></i>
                 </button>
             </div>
         </div>
@@ -210,17 +281,17 @@
     <!-- Conteúdo Principal -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8">
 
-        <!-- Navegação em Abas (iOS Segmented Control Style) -->
+        <!-- Navegação em Abas (Segmented Control Style CAIXA) -->
         <div class="flex justify-center">
-            <div class="bg-apple-gray6 dark:bg-apple-darkCard2 p-1 rounded-2xl border border-black/5 dark:border-white/5 inline-flex gap-1">
-                <button id="tabBtn1" onclick="mudarAba('equipe')" class="px-5 py-2 text-xs font-semibold rounded-xl bg-white dark:bg-apple-darkCard text-black dark:text-white shadow-sm">
-                    <i class="fa-solid fa-users mr-1.5 text-apple-blue"></i>Visão Consolidada do Time (Team Shape)
+            <div class="bg-caixa-gray30 dark:bg-caixa-darkCardInset p-1.5 rounded-pill border border-caixa-border dark:border-caixa-darkBorder inline-flex gap-1">
+                <button id="tabBtn1" onclick="mudarAba('equipe')" class="px-5 py-2 text-xs font-bold rounded-pill bg-white dark:bg-caixa-darkCard text-caixa-blue90 dark:text-blue-300 shadow-xs">
+                    <i class="fa-solid fa-users mr-1.5 text-caixa-blue90 dark:text-blue-400"></i>Visão Consolidada do Time (Team Shape)
                 </button>
-                <button id="tabBtn2" onclick="mudarAba('individual')" class="px-5 py-2 text-xs font-semibold rounded-xl text-apple-gray hover:text-black dark:hover:text-white">
-                    <i class="fa-solid fa-user-pen mr-1.5 text-apple-purple"></i>Mapeamento Individual & Membros
+                <button id="tabBtn2" onclick="mudarAba('individual')" class="px-5 py-2 text-xs font-bold rounded-pill text-caixa-gray110 hover:text-caixa-gray130 dark:hover:text-white">
+                    <i class="fa-solid fa-user-pen mr-1.5 text-purple-600 dark:text-purple-400"></i>Mapeamento Individual & Membros
                 </button>
-                <button id="tabBtn3" onclick="mudarAba('diagnostico')" class="px-5 py-2 text-xs font-semibold rounded-xl text-apple-gray hover:text-black dark:hover:text-white">
-                    <i class="fa-solid fa-brain mr-1.5 text-apple-orange"></i>Diagnóstico DesignOps & Gaps
+                <button id="tabBtn3" onclick="mudarAba('diagnostico')" class="px-5 py-2 text-xs font-bold rounded-pill text-caixa-gray110 hover:text-caixa-gray130 dark:hover:text-white">
+                    <i class="fa-solid fa-brain mr-1.5 text-caixa-orange90"></i>Diagnóstico DesignOps & Gaps
                 </button>
             </div>
         </div>
@@ -230,51 +301,51 @@
             
             <!-- Cards de KPIs do Time -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="apple-card p-5 flex flex-col justify-between">
-                    <span class="text-xs font-semibold text-apple-gray">Tamanho da Equipe</span>
+                <div class="dsc-card p-5 flex flex-col justify-between shadow-elevation1">
+                    <span class="text-xs font-semibold text-caixa-gray110 dark:text-gray-300">Tamanho da Equipe</span>
                     <div class="flex items-baseline justify-between mt-2">
-                        <span id="kpiTotalMembros" class="text-3xl font-extrabold text-black dark:text-white">0</span>
-                        <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-apple-blue/10 text-apple-blue">Membros</span>
+                        <span id="kpiTotalMembros" class="text-3xl font-black text-caixa-gray130 dark:text-white">0</span>
+                        <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-blue-100 text-caixa-blue90 dark:bg-blue-900/40 dark:text-blue-300">Membros</span>
                     </div>
                 </div>
-                <div class="apple-card p-5 flex flex-col justify-between">
-                    <span class="text-xs font-semibold text-apple-gray">Maior Força Coletiva</span>
+                <div class="dsc-card p-5 flex flex-col justify-between shadow-elevation1">
+                    <span class="text-xs font-semibold text-caixa-gray110 dark:text-gray-300">Maior Força Coletiva</span>
                     <div class="mt-2">
-                        <span id="kpiMaiorForca" class="text-base font-bold text-apple-green truncate block">--</span>
-                        <span id="kpiMaiorForcaNota" class="text-xs text-apple-gray">Média: -- / 5.0</span>
+                        <span id="kpiMaiorForca" class="text-base font-bold text-emerald-700 dark:text-emerald-400 truncate block">--</span>
+                        <span id="kpiMaiorForcaNota" class="text-xs text-caixa-gray110 dark:text-gray-400">Média: -- / 5.0</span>
                     </div>
                 </div>
-                <div class="apple-card p-5 flex flex-col justify-between">
-                    <span class="text-xs font-semibold text-apple-gray">Maior Gap de Cobertura</span>
+                <div class="dsc-card p-5 flex flex-col justify-between shadow-elevation1">
+                    <span class="text-xs font-semibold text-caixa-gray110 dark:text-gray-300">Maior Gap de Cobertura</span>
                     <div class="mt-2">
-                        <span id="kpiMaiorGap" class="text-base font-bold text-apple-red truncate block">--</span>
-                        <span id="kpiMaiorGapNota" class="text-xs text-apple-gray">Média: -- / 5.0</span>
+                        <span id="kpiMaiorGap" class="text-base font-bold text-caixa-danger110 dark:text-red-400 truncate block">--</span>
+                        <span id="kpiMaiorGapNota" class="text-xs text-caixa-gray110 dark:text-gray-400">Média: -- / 5.0</span>
                     </div>
                 </div>
-                <div class="apple-card p-5 flex flex-col justify-between">
-                    <span class="text-xs font-semibold text-apple-gray">Gargalos de Pessoa Única</span>
+                <div class="dsc-card p-5 flex flex-col justify-between shadow-elevation1">
+                    <span class="text-xs font-semibold text-caixa-gray110 dark:text-gray-300">Gargalos de Pessoa Única</span>
                     <div class="flex items-baseline justify-between mt-2">
-                        <span id="kpiSinglePoints" class="text-3xl font-extrabold text-apple-orange">0</span>
-                        <span class="text-[10px] font-medium text-apple-gray">Habilidades Críticas</span>
+                        <span id="kpiSinglePoints" class="text-3xl font-black text-caixa-orange90">0</span>
+                        <span class="text-[10px] font-semibold text-caixa-gray110 dark:text-gray-400">Habilidades Críticas</span>
                     </div>
                 </div>
             </div>
 
             <!-- Gráfico Principal de Radar da Equipe (Team Overlay Shape) -->
-            <div class="apple-card p-6">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 pb-4 border-b border-black/5 dark:border-white/5">
+            <div class="dsc-card p-6 shadow-elevation1">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 pb-4 border-b border-caixa-border dark:border-caixa-darkBorder">
                     <div>
-                        <h2 class="text-lg font-bold text-black dark:text-white flex items-center gap-2">
-                            <i class="fa-solid fa-layer-group text-apple-blue"></i> Desenho Psicométrico da Equipe (Team Shape)
+                        <h2 class="text-lg font-bold text-caixa-blue110 dark:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-layer-group text-caixa-blue90 dark:text-blue-400"></i> Desenho Psicométrico da Equipe (Team Shape)
                         </h2>
-                        <p class="text-xs text-apple-gray mt-0.5">Sobreposição das competências dos designers para identificação do envelope de capacidades do time.</p>
+                        <p class="text-xs text-caixa-gray110 dark:text-gray-400 mt-0.5">Sobreposição das competências dos designers para identificação do envelope de capacidades do time.</p>
                     </div>
 
                     <!-- Controles do Radar (Current vs Future & Toggles) -->
                     <div class="flex items-center gap-3">
-                        <div class="bg-apple-gray6 dark:bg-apple-darkCard2 p-1 rounded-xl flex text-xs font-semibold">
-                            <button id="radarModeCurrent" onclick="setRadarModo('CURRENT')" class="px-3 py-1.5 rounded-lg bg-white dark:bg-apple-darkCard text-black dark:text-white shadow-sm">Estado Atual</button>
-                            <button id="radarModeFuture" onclick="setRadarModo('FUTURE')" class="px-3 py-1.5 rounded-lg text-apple-gray hover:text-black dark:hover:text-white">Estado Futuro</button>
+                        <div class="bg-caixa-gray30 dark:bg-caixa-darkCardInset p-1 rounded-pill border border-caixa-border dark:border-caixa-darkBorder flex text-xs font-bold">
+                            <button id="radarModeCurrent" onclick="setRadarModo('CURRENT')" class="px-3.5 py-1.5 rounded-pill bg-white dark:bg-caixa-darkCard text-caixa-blue90 dark:text-blue-300 shadow-xs">Estado Atual</button>
+                            <button id="radarModeFuture" onclick="setRadarModo('FUTURE')" class="px-3.5 py-1.5 rounded-pill text-caixa-gray110 hover:text-caixa-gray130 dark:hover:text-white">Estado Futuro</button>
                         </div>
                     </div>
                 </div>
@@ -287,7 +358,7 @@
 
                     <!-- Tabela Resumo de Médias por Habilidade -->
                     <div class="space-y-3">
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-apple-gray border-b border-black/5 dark:border-white/5 pb-2">Média da Equipe por Competência</h3>
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-caixa-gray110 dark:text-gray-400 border-b border-caixa-border dark:border-caixa-darkBorder pb-2">Média da Equipe por Competência</h3>
                         <div id="listaMediasEquipe" class="space-y-2 max-h-[360px] overflow-y-auto pr-1">
                             <!-- Injetado dinamicamente -->
                         </div>
@@ -305,26 +376,26 @@
                 <!-- Coluna 1: Formulário de Adição/Edição de Membro -->
                 <div class="space-y-6">
                     
-                    <div class="apple-card p-6 space-y-4">
-                        <div class="flex justify-between items-center border-b border-black/5 dark:border-white/5 pb-3">
-                            <h3 class="text-sm font-bold text-black dark:text-white flex items-center gap-2">
-                                <i class="fa-solid fa-user-plus text-apple-blue"></i> Cadastrar / Editar Membro
+                    <div class="dsc-card p-6 space-y-4 shadow-elevation1">
+                        <div class="flex justify-between items-center border-b border-caixa-border dark:border-caixa-darkBorder pb-3">
+                            <h3 class="text-sm font-bold text-caixa-blue110 dark:text-white flex items-center gap-2">
+                                <i class="fa-solid fa-user-plus text-caixa-blue90 dark:text-blue-400"></i> Cadastrar / Editar Membro
                             </h3>
-                            <button id="btnLimparForm" onclick="limparFormularioMembro()" class="text-[11px] text-apple-blue hover:underline hidden">Novo Membro</button>
+                            <button id="btnLimparForm" onclick="limparFormularioMembro()" class="text-[11px] font-bold text-caixa-blue90 dark:text-blue-300 hover:underline hidden">Novo Membro</button>
                         </div>
 
                         <input type="hidden" id="editMembroId" value="">
 
                         <div class="space-y-3">
                             <div>
-                                <label class="block text-xs font-medium text-apple-gray mb-1">Nome do Profissional / Designer</label>
-                                <input type="text" id="inputNomeMembro" class="apple-input w-full" placeholder="Ex: Ana Silva">
+                                <label class="block text-xs font-medium text-caixa-gray110 dark:text-gray-300 mb-1">Nome do Profissional / Designer</label>
+                                <input type="text" id="inputNomeMembro" class="dsc-input w-full" placeholder="Ex: Ana Silva">
                             </div>
 
                             <!-- Seletor de Perfil Profissional -->
                             <div>
-                                <label class="block text-xs font-medium text-apple-gray mb-1">Perfil Profissional</label>
-                                <select id="selectPerfilMembro" class="apple-input w-full cursor-pointer">
+                                <label class="block text-xs font-medium text-caixa-gray110 dark:text-gray-300 mb-1">Perfil Profissional</label>
+                                <select id="selectPerfilMembro" class="dsc-input w-full cursor-pointer">
                                     <option value="Liderança Técnica">Liderança Técnica</option>
                                     <option value="CX Pesquisa">CX Pesquisa</option>
                                     <option value="CX Writing">CX Writing</option>
@@ -337,8 +408,8 @@
                         <!-- Lista de Sliders de Competências (Current vs Future) -->
                         <div class="space-y-4 pt-2">
                             <div class="flex justify-between items-center">
-                                <span class="text-xs font-bold text-black dark:text-white">Competências (Escala 1 a 5)</span>
-                                <span class="text-[10px] text-apple-gray">Atual vs Futuro</span>
+                                <span class="text-xs font-bold text-caixa-gray130 dark:text-white">Competências (Escala 1 a 5)</span>
+                                <span class="text-[10px] text-caixa-gray110 dark:text-gray-400">Atual vs Futuro</span>
                             </div>
 
                             <div id="containerInputsSkills" class="space-y-3 max-h-[320px] overflow-y-auto pr-1 text-xs">
@@ -346,7 +417,7 @@
                             </div>
                         </div>
 
-                        <button onclick="salvarMembro()" class="apple-btn-primary w-full text-xs py-2.5 mt-2">
+                        <button onclick="salvarMembro()" class="bg-caixa-blue90 hover:bg-caixa-blue110 text-white font-bold text-xs py-2.5 px-4 rounded-pill w-full transition-all active:scale-95 shadow-md">
                             <i class="fa-solid fa-check mr-1.5"></i>Salvar Perfil de Competências
                         </button>
                     </div>
@@ -357,13 +428,13 @@
                 <div class="lg:col-span-2 space-y-6">
                     
                     <!-- Radar Comparativo do Integrante Selecionado -->
-                    <div class="apple-card p-6">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4 pb-3 border-b border-black/5 dark:border-white/5">
+                    <div class="dsc-card p-6 shadow-elevation1">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4 pb-3 border-b border-caixa-border dark:border-caixa-darkBorder">
                             <div>
-                                <h3 id="tituloRadarIndividual" class="text-base font-bold text-black dark:text-white">Perfil do Integrante</h3>
-                                <p class="text-xs text-apple-gray">Comparativo entre o Estado Atual e a Meta do Estado Futuro (1 Ano).</p>
+                                <h3 id="tituloRadarIndividual" class="text-base font-bold text-caixa-blue110 dark:text-white">Perfil do Integrante</h3>
+                                <p class="text-xs text-caixa-gray110 dark:text-gray-400">Comparativo entre o Estado Atual e a Meta do Estado Futuro (1 Ano).</p>
                             </div>
-                            <span id="badgeProgressoIndividual" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-apple-purple/10 text-apple-purple">Selecione um Membro</span>
+                            <span id="badgeProgressoIndividual" class="text-xs font-bold px-3 py-1 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300">Selecione um Membro</span>
                         </div>
 
                         <div class="relative h-[340px] w-full flex items-center justify-center">
@@ -372,21 +443,21 @@
                     </div>
 
                     <!-- Tabela de Membros Cadastrados -->
-                    <div class="apple-card p-6 space-y-4">
-                        <h3 class="text-sm font-bold text-black dark:text-white">Integrantes Mapeados no Time</h3>
-                        <div class="overflow-x-auto">
+                    <div class="dsc-card p-6 space-y-4 shadow-elevation1">
+                        <h3 class="text-sm font-bold text-caixa-blue110 dark:text-white">Integrantes Mapeados no Time</h3>
+                        <div class="overflow-x-auto rounded-inset border border-caixa-border dark:border-caixa-darkBorder">
                             <table class="w-full text-left text-xs">
-                                <thead class="text-apple-gray border-b border-black/5 dark:border-white/5 uppercase text-[10px]">
+                                <thead class="bg-caixa-gray30 dark:bg-caixa-darkCardInset text-caixa-gray110 dark:text-gray-300 uppercase text-[10px] font-bold">
                                     <tr>
-                                        <th class="pb-3 font-semibold">Nome</th>
-                                        <th class="pb-3 font-semibold">Perfil</th>
-                                        <th class="pb-3 font-semibold text-center">Média Atual</th>
-                                        <th class="pb-3 font-semibold text-center">Média Futura</th>
-                                        <th class="pb-3 font-semibold text-center">Delta</th>
-                                        <th class="pb-3 font-semibold text-right">Ações</th>
+                                        <th class="p-3">Nome</th>
+                                        <th class="p-3">Perfil</th>
+                                        <th class="p-3 text-center">Média Atual</th>
+                                        <th class="p-3 text-center">Média Futura</th>
+                                        <th class="p-3 text-center">Delta</th>
+                                        <th class="p-3 text-right">Ações</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tabelaMembrosBody" class="divide-y divide-black/5 dark:divide-white/5">
+                                <tbody id="tabelaMembrosBody" class="divide-y divide-caixa-border dark:divide-caixa-darkBorder bg-transparent text-caixa-gray130 dark:text-gray-200">
                                     <!-- Injetado dinamicamente -->
                                 </tbody>
                             </table>
@@ -405,14 +476,14 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
                 <!-- Card 1: Gargalos de Pessoa Única (Single Point of Failure) -->
-                <div class="apple-card p-6 space-y-4 border-l-4 border-l-apple-orange">
+                <div class="dsc-card p-6 space-y-4 border-l-4 border-l-caixa-orange90 shadow-elevation1">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-apple-orange/10 text-apple-orange flex items-center justify-center font-bold">
+                        <div class="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-900/40 text-caixa-orange90 flex items-center justify-center font-bold">
                             <i class="fa-solid fa-triangle-exclamation"></i>
                         </div>
                         <div>
-                            <h3 class="text-sm font-bold text-black dark:text-white">Single Point of Failure (Gargalos)</h3>
-                            <p class="text-xs text-apple-gray">Habilidades cobertas com excelência (nível $\ge 4$) por apenas 1 pessoa.</p>
+                            <h3 class="text-sm font-bold text-caixa-blue110 dark:text-white">Single Point of Failure (Gargalos)</h3>
+                            <p class="text-xs text-caixa-gray110 dark:text-gray-400">Habilidades cobertas com excelência (nível ≥ 4) por apenas 1 pessoa.</p>
                         </div>
                     </div>
                     <div id="listaSinglePoints" class="space-y-2 text-xs">
@@ -421,14 +492,14 @@
                 </div>
 
                 <!-- Card 2: Lacunas Coletivas Críticas (Gaps de Cobertura) -->
-                <div class="apple-card p-6 space-y-4 border-l-4 border-l-apple-red">
+                <div class="dsc-card p-6 space-y-4 border-l-4 border-l-caixa-danger70 shadow-elevation1">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-apple-red/10 text-apple-red flex items-center justify-center font-bold">
+                        <div class="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/40 text-caixa-danger110 dark:text-red-400 flex items-center justify-center font-bold">
                             <i class="fa-solid fa-circle-xmark"></i>
                         </div>
                         <div>
-                            <h3 class="text-sm font-bold text-black dark:text-white">Gaps de Cobertura do Time</h3>
-                            <p class="text-xs text-apple-gray">Competências com média geral da equipe abaixo de 2.5.</p>
+                            <h3 class="text-sm font-bold text-caixa-blue110 dark:text-white">Gaps de Cobertura do Time</h3>
+                            <p class="text-xs text-caixa-gray110 dark:text-gray-400">Competências com média geral da equipe abaixo de 2.5.</p>
                         </div>
                     </div>
                     <div id="listaGapsCriticos" class="space-y-2 text-xs">
@@ -439,11 +510,11 @@
             </div>
 
             <!-- Matriz de Oportunidades de Mentoria e PDI -->
-            <div class="apple-card p-6 space-y-4">
-                <h3 class="text-sm font-bold text-black dark:text-white flex items-center gap-2">
-                    <i class="fa-solid fa-handshake-angle text-apple-green"></i> Oportunidades de Mentoria Interna (Pair Ups)
+            <div class="dsc-card p-6 space-y-4 shadow-elevation1">
+                <h3 class="text-sm font-bold text-caixa-blue110 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-handshake-angle text-emerald-700 dark:text-emerald-400"></i> Oportunidades de Mentoria Interna (Pair Ups)
                 </h3>
-                <p class="text-xs text-apple-gray">Mapeamento automatizado cruzando especialistas do time (Nível 4 ou 5) com quem busca evoluir a mesma skill no Estado Futuro.</p>
+                <p class="text-xs text-caixa-gray110 dark:text-gray-400">Mapeamento automatizado cruzando especialistas do time (Nível 4 ou 5) com quem busca evoluir a mesma skill no Estado Futuro.</p>
 
                 <div id="containerOportunidadesMentoria" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
                     <!-- Injetado dinamicamente -->
@@ -456,117 +527,113 @@
 
     <!-- Modal de Configuração / Edição do Rol de Competências -->
     <div id="modalSkills" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="apple-card w-full max-w-lg p-6 space-y-4">
-            <div class="flex justify-between items-center border-b border-black/5 dark:border-white/5 pb-3">
-                <h3 class="text-base font-bold text-black dark:text-white">Personalizar Competências do Time</h3>
-                <button onclick="fecharModalConfigSkills()" class="text-apple-gray hover:text-black dark:hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+        <div class="dsc-card w-full max-w-lg p-6 space-y-4 shadow-elevation5">
+            <div class="flex justify-between items-center border-b border-caixa-border dark:border-caixa-darkBorder pb-3">
+                <h3 class="text-base font-bold text-caixa-blue110 dark:text-white">Personalizar Competências do Time</h3>
+                <button onclick="fecharModalConfigSkills()" class="text-caixa-gray110 hover:text-caixa-gray130 dark:hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             
-            <p class="text-xs text-apple-gray">Altere o nome das habilidades avaliadas. As mudanças serão salvas na aba "Competencias" do Google Sheets e refletidas no sistema.</p>
+            <p class="text-xs text-caixa-gray110 dark:text-gray-400">Altere o nome das habilidades avaliadas. As mudanças serão salvas na aba "Competencias" do Google Sheets e refletidas no sistema.</p>
 
             <div id="modalListaSkillsInput" class="space-y-2 max-h-[300px] overflow-y-auto pr-1">
                 <!-- Injetado dinamicamente -->
             </div>
 
             <div class="flex justify-end gap-2 pt-2">
-                <button onclick="adicionarNovaSkillModal()" class="apple-btn-secondary text-xs"><i class="fa-solid fa-plus mr-1"></i>Adicionar Habilidade</button>
-                <button onclick="salvarSkillsModal()" class="apple-btn-primary text-xs">Salvar Ajustes no Sheets</button>
+                <button onclick="adicionarNovaSkillModal()" class="bg-caixa-gray30 dark:bg-caixa-darkCardInset hover:bg-caixa-gray50 text-caixa-blue110 dark:text-white border border-caixa-border font-bold text-xs py-2 px-4 rounded-pill transition-all"><i class="fa-solid fa-plus mr-1"></i>Adicionar Habilidade</button>
+                <button onclick="salvarSkillsModal()" class="bg-caixa-blue90 hover:bg-caixa-blue110 text-white font-bold text-xs py-2 px-4 rounded-pill transition-all shadow-md">Salvar Ajustes no Sheets</button>
             </div>
         </div>
     </div>
 
     <!-- Modal Guia da Escala de Proficiência do Nielsen Norman Group -->
     <div id="modalTabelaProficiencia" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="apple-card w-full max-w-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center border-b border-black/5 dark:border-white/5 pb-3">
-                <h3 class="text-base font-bold text-black dark:text-white flex items-center gap-2">
-                    <i class="fa-solid fa-graduation-cap text-apple-purple"></i> Escala de Proficiência NN/g (1 a 5)
+        <div class="dsc-card w-full max-w-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto shadow-elevation5">
+            <div class="flex justify-between items-center border-b border-caixa-border dark:border-caixa-darkBorder pb-3">
+                <h3 class="text-base font-bold text-caixa-blue110 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-purple-600 dark:text-purple-400"></i> Escala de Proficiência NN/g (1 a 5)
                 </h3>
-                <button onclick="fecharModalTabelaProficiencia()" class="text-apple-gray hover:text-black dark:hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+                <button onclick="fecharModalTabelaProficiencia()" class="text-caixa-gray110 hover:text-caixa-gray130 dark:hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
 
             <div class="space-y-3 text-xs leading-relaxed">
-                <div class="p-3 rounded-xl bg-apple-gray6 dark:bg-apple-darkCard2">
-                    <strong class="text-apple-blue font-bold block mb-0.5">1 — Awareness (Consciência)</strong>
-                    <p class="text-apple-gray">Conhece o conceito e a relevância, mas não possui autonomia para executar tarefas de forma prática.</p>
+                <div class="dsc-card-inset p-3">
+                    <strong class="text-caixa-blue90 dark:text-blue-300 font-bold block mb-0.5">1 — Awareness (Consciência)</strong>
+                    <p class="text-caixa-gray110 dark:text-gray-300">Conhece o conceito e a relevância, mas não possui autonomia para executar tarefas de forma prática.</p>
                 </div>
-                <div class="p-3 rounded-xl bg-apple-gray6 dark:bg-apple-darkCard2">
-                    <strong class="text-apple-blue font-bold block mb-0.5">2 — Novice (Iniciante / Proficiência Limitada)</strong>
-                    <p class="text-apple-gray">Compreende os conceitos, terminologias básicas e participa de discussões, necessitando de supervisão contínua.</p>
+                <div class="dsc-card-inset p-3">
+                    <strong class="text-caixa-blue90 dark:text-blue-300 font-bold block mb-0.5">2 — Novice (Iniciante / Proficiência Limitada)</strong>
+                    <p class="text-caixa-gray110 dark:text-gray-300">Compreende os conceitos, terminologias básicas e participa de discussões, necessitando de supervisão contínua.</p>
                 </div>
-                <div class="p-3 rounded-xl bg-apple-gray6 dark:bg-apple-darkCard2">
-                    <strong class="text-apple-blue font-bold block mb-0.5">3 — Intermediate (Intermediário)</strong>
-                    <p class="text-apple-gray">Aplica a habilidade na rotina de projetos ocasionalmente e com autonomia, sem necessidade de orientação direta.</p>
+                <div class="dsc-card-inset p-3">
+                    <strong class="text-caixa-blue90 dark:text-blue-300 font-bold block mb-0.5">3 — Intermediate (Intermediário)</strong>
+                    <p class="text-caixa-gray110 dark:text-gray-300">Aplica a habilidade na rotina de projetos ocasionalmente e com autonomia, sem necessidade de orientação direta.</p>
                 </div>
-                <div class="p-3 rounded-xl bg-apple-gray6 dark:bg-apple-darkCard2">
-                    <strong class="text-apple-blue font-bold block mb-0.5">4 — Advanced (Avançado)</strong>
-                    <p class="text-apple-gray">Capaz de orientar e mentorar outros profissionais, explicando nuances estratégicas e melhores práticas.</p>
+                <div class="dsc-card-inset p-3">
+                    <strong class="text-caixa-blue90 dark:text-blue-300 font-bold block mb-0.5">4 — Advanced (Avançado)</strong>
+                    <p class="text-caixa-gray110 dark:text-gray-300">Capaz de orientar e mentorar outros profissionais, explicando nuances estratégicas e melhores práticas.</p>
                 </div>
-                <div class="p-3 rounded-xl bg-apple-gray6 dark:bg-apple-darkCard2">
-                    <strong class="text-apple-blue font-bold block mb-0.5">5 — Expert (Especialista)</strong>
-                    <p class="text-apple-gray">Demonstra excelência consistente e liderança reconhecida em múltiplos projetos de alta complexidade.</p>
+                <div class="dsc-card-inset p-3">
+                    <strong class="text-caixa-blue90 dark:text-blue-300 font-bold block mb-0.5">5 — Expert (Especialista)</strong>
+                    <p class="text-caixa-gray110 dark:text-gray-300">Demonstra excelência consistente e liderança reconhecida em múltiplos projetos de alta complexidade.</p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Footer com Referências Bibliográficas e Validação Científica -->
-    <footer class="bg-white dark:bg-[#1C1C1E] border-t border-black/5 dark:border-white/10 mt-16 py-8 px-4 text-xs text-apple-gray">
+    <footer class="bg-white dark:bg-caixa-darkCard border-t border-caixa-border dark:border-caixa-darkBorder mt-16 py-8 px-6 text-xs text-caixa-gray110 dark:text-gray-300">
         <div class="max-w-7xl mx-auto space-y-4">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-black/5 dark:border-white/5 pb-3">
-                <h4 class="text-sm font-bold text-black dark:text-white flex items-center gap-2">
-                    <i class="fa-solid fa-graduation-cap text-apple-blue"></i> Validação Científica & Literatura de Suporte
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-caixa-border dark:border-caixa-darkBorder pb-3">
+                <h4 class="text-sm font-bold text-caixa-blue110 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-caixa-blue90 dark:text-blue-400"></i> Validação Científica & Literatura de Suporte
                 </h4>
-                <span class="text-[11px] text-apple-gray font-mono">Embasamento Teórico — Skill Mapping & DesignOps Framework</span>
+                <span class="text-[11px] text-caixa-gray110 dark:text-gray-400 font-mono">Embasamento Teórico — Skill Mapping & DesignOps Framework</span>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-[11px] leading-relaxed">
-                <!-- Referência 1: NN/g Skill Mapping -->
-                <div class="apple-card p-3 flex flex-col justify-between hover:border-apple-gray3 dark:hover:border-apple-gray dark:bg-apple-darkCard">
+                <div class="dsc-card-inset p-3 flex flex-col justify-between hover:border-caixa-blue90 transition-colors">
                     <div>
-                        <strong class="text-apple-blue dark:text-apple-darkBlue block mb-1">Paper Seminal de Skill Mapping (NN/g)</strong>
-                        <p class="text-apple-gray">Krause, R. (2020). <em>"Skill Mapping: A Digital Template for Remote Teams"</em>. Nielsen Norman Group.</p>
+                        <strong class="text-caixa-blue90 dark:text-blue-300 block mb-1">Paper Seminal de Skill Mapping (NN/g)</strong>
+                        <p class="text-caixa-gray110 dark:text-gray-300">Krause, R. (2020). <em>"Skill Mapping: A Digital Template for Remote Teams"</em>. Nielsen Norman Group.</p>
                     </div>
-                    <a href="https://www.nngroup.com/articles/skill-mapping/" target="_blank" class="text-apple-blue font-semibold mt-3 inline-flex items-center gap-1">
+                    <a href="https://www.nngroup.com/articles/skill-mapping/" target="_blank" class="text-caixa-blue90 dark:text-blue-300 font-bold mt-3 inline-flex items-center gap-1">
                         Ler no NN/g Portal <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                     </a>
                 </div>
 
-                <!-- Referência 2: NN/g DesignOps 101 -->
-                <div class="apple-card p-3 flex flex-col justify-between hover:border-apple-gray3 dark:hover:border-apple-gray dark:bg-apple-darkCard">
+                <div class="dsc-card-inset p-3 flex flex-col justify-between hover:border-caixa-blue90 transition-colors">
                     <div>
-                        <strong class="text-apple-blue dark:text-apple-darkBlue block mb-1">Framework de DesignOps (NN/g)</strong>
-                        <p class="text-apple-gray">Kaplan, K. (2020). <em>"DesignOps 101: Design Operations & Scaling UX"</em>. Nielsen Norman Group.</p>
+                        <strong class="text-caixa-blue90 dark:text-blue-300 block mb-1">Framework de DesignOps (NN/g)</strong>
+                        <p class="text-caixa-gray110 dark:text-gray-300">Kaplan, K. (2020). <em>"DesignOps 101: Design Operations & Scaling UX"</em>. Nielsen Norman Group.</p>
                     </div>
-                    <a href="https://www.nngroup.com/articles/design-operations-101/" target="_blank" class="text-apple-blue font-semibold mt-3 inline-flex items-center gap-1">
+                    <a href="https://www.nngroup.com/articles/design-operations-101/" target="_blank" class="text-caixa-blue90 dark:text-blue-300 font-bold mt-3 inline-flex items-center gap-1">
                         Acessar no NN/g <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                     </a>
                 </div>
 
-                <!-- Referência 3: Medium / Shaping Design -->
-                <div class="apple-card p-3 flex flex-col justify-between hover:border-apple-gray3 dark:hover:border-apple-gray dark:bg-apple-darkCard">
+                <div class="dsc-card-inset p-3 flex flex-col justify-between hover:border-caixa-blue90 transition-colors">
                     <div>
-                        <strong class="text-apple-blue dark:text-apple-darkBlue block mb-1">The UX Spectrum (Shaping Design)</strong>
-                        <p class="text-apple-gray">Mesut, J. (2018). <em>"Shaping UX Designers and Teams: The UX Spectrum Framework"</em>. Medium / Shaping Design.</p>
+                        <strong class="text-caixa-blue90 dark:text-blue-300 block mb-1">The UX Spectrum (Shaping Design)</strong>
+                        <p class="text-caixa-gray110 dark:text-gray-300">Mesut, J. (2018). <em>"Shaping UX Designers and Teams: The UX Spectrum Framework"</em>. Medium / Shaping Design.</p>
                     </div>
-                    <a href="https://medium.com/shapingdesign/the-ux-spectrum-cb29f048faf9" target="_blank" class="text-apple-blue font-semibold mt-3 inline-flex items-center gap-1">
+                    <a href="https://medium.com/shapingdesign/the-ux-spectrum-cb29f048faf9" target="_blank" class="text-caixa-blue90 dark:text-blue-300 font-bold mt-3 inline-flex items-center gap-1">
                         Ver Artigo no Medium <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                     </a>
                 </div>
 
-                <!-- Referência 4: UX Collective Scorecard -->
-                <div class="apple-card p-3 flex flex-col justify-between hover:border-apple-gray3 dark:hover:border-apple-gray dark:bg-apple-darkCard">
+                <div class="dsc-card-inset p-3 flex flex-col justify-between hover:border-caixa-blue90 transition-colors">
                     <div>
-                        <strong class="text-apple-blue dark:text-apple-darkBlue block mb-1">UX Team Skill Scorecard (UX Collective)</strong>
-                        <p class="text-apple-gray">UX Design Collective. <em>"The Complete UX Team Skill Mapping Scorecard & Matrix"</em>. UX Collective.</p>
+                        <strong class="text-caixa-blue90 dark:text-blue-300 block mb-1">UX Team Skill Scorecard (UX Collective)</strong>
+                        <p class="text-caixa-gray110 dark:text-gray-300">UX Design Collective. <em>"The Complete UX Team Skill Mapping Scorecard & Matrix"</em>. UX Collective.</p>
                     </div>
-                    <a href="https://uxdesign.cc/the-complete-ux-team-skill-mapping-scorecard-3c13c7b511be?gi=1a931a1ec734" target="_blank" class="text-apple-blue font-semibold mt-3 inline-flex items-center gap-1">
+                    <a href="https://uxdesign.cc/the-complete-ux-team-skill-mapping-scorecard-3c13c7b511be?gi=1a931a1ec734" target="_blank" class="text-caixa-blue90 dark:text-blue-300 font-bold mt-3 inline-flex items-center gap-1">
                         Ler no UX Collective <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                     </a>
                 </div>
             </div>
 
-            <div class="text-center text-[10px] text-apple-gray pt-2">
+            <div class="text-center text-[10px] text-caixa-gray110 dark:text-gray-400 pt-2">
                 Plataforma Analítica de Competências UX — Desenvolvida em conformidade com o padrão psicométrico de mapeamento de habilidades do Nielsen Norman Group.
             </div>
         </div>
@@ -574,10 +641,8 @@
 
     <!-- Script Lógico da Aplicação -->
     <script>
-        // URL da Web App da API do Google Apps Script
         const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbzrLxn5ywS68PkFHZHvDiWUdEmyqNeXb8IzCJ4X5HWRgw15AqewESExDbh2Smy_LSaY/exec";
 
-        // Rol de Competências (Carregado Dinamicamente da aba 'Competencias' do Google Sheets)
         let skillList = [
             "Qualitative research",
             "Quantitative research",
@@ -589,28 +654,25 @@
             "Information architecture"
         ];
 
-        // Base de Dados dos Membros da Equipe
         let teamMembers = [];
 
-        let modoRadarAtual = 'CURRENT'; // 'CURRENT' ou 'FUTURE'
+        let modoRadarAtual = 'CURRENT';
         let membroSelecionadoId = null;
         let teamChartInstance = null;
         let individualChartInstance = null;
 
-        // Inicialização do Sistema
         document.addEventListener('DOMContentLoaded', () => {
             carregarTemaSalvo();
             carregarDadosGoogleSheets();
         });
 
-       // --- SISTEMA DE ALTERNÂNCIA DE TEMA APPLE (LIGHT / DARK) - LUCIDE OUTLINE LARANJA ---
         function toggleTheme() {
             const html = document.documentElement;
             const currentTheme = html.getAttribute('data-theme') || (html.classList.contains('dark') ? 'dark' : 'light');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
 
             aplicarTema(newTheme);
-            localStorage.setItem('apple_theme_pref', newTheme);
+            localStorage.setItem('caixa_theme_pref', newTheme);
 
             atualizarDashboard();
         }
@@ -626,34 +688,30 @@
                 html.classList.remove('light');
                 if (icon) {
                     icon.setAttribute('data-lucide', 'sun');
-                    icon.className = "w-4 h-4 text-apple-darkOrange";
+                    icon.className = "w-4 h-4 text-caixa-yellow";
                 }
             } else {
                 html.classList.remove('dark');
                 html.classList.add('light');
                 if (icon) {
                     icon.setAttribute('data-lucide', 'moon');
-                    icon.className = "w-4 h-4 text-apple-orange";
+                    icon.className = "w-4 h-4 text-caixa-orange90";
                 }
             }
 
-            if (window.lucide) {
-                lucide.createIcons();
-            }
+            if (window.lucide) { lucide.createIcons(); }
         }
 
         function carregarTemaSalvo() {
-            const savedTheme = localStorage.getItem('apple_theme_pref') || 'light';
+            const savedTheme = localStorage.getItem('caixa_theme_pref') || 'light';
             aplicarTema(savedTheme);
         }
 
-        // Buscar membros E competências gravados na planilha Google Sheets
         async function carregarDadosGoogleSheets() {
             try {
                 const res = await fetch(GOOGLE_SHEETS_URL);
                 const data = await res.json();
                 
-                // Se a API retornar a estrutura combinada { members, skills }
                 if (data && typeof data === 'object') {
                     if (Array.isArray(data.skills) && data.skills.length > 0) {
                         skillList = data.skills;
@@ -662,7 +720,6 @@
                         teamMembers = data.members;
                     }
                 } else if (Array.isArray(data)) {
-                    // Fallback para caso retorne apenas o array de membros
                     teamMembers = data;
                 }
 
@@ -679,45 +736,43 @@
             }
         }
 
-        // Troca de Abas (iOS Segmented Control)
         function mudarAba(aba) {
             document.getElementById('abaEquipe').classList.add('hidden');
             document.getElementById('abaIndividual').classList.add('hidden');
             document.getElementById('abaDiagnostico').classList.add('hidden');
 
-            document.getElementById('tabBtn1').className = "px-5 py-2 text-xs font-semibold rounded-xl text-apple-gray hover:text-black dark:hover:text-white";
-            document.getElementById('tabBtn2').className = "px-5 py-2 text-xs font-semibold rounded-xl text-apple-gray hover:text-black dark:hover:text-white";
-            document.getElementById('tabBtn3').className = "px-5 py-2 text-xs font-semibold rounded-xl text-apple-gray hover:text-black dark:hover:text-white";
+            document.getElementById('tabBtn1').className = "px-5 py-2 text-xs font-bold rounded-pill text-caixa-gray110 hover:text-caixa-gray130 dark:hover:text-white";
+            document.getElementById('tabBtn2').className = "px-5 py-2 text-xs font-bold rounded-pill text-caixa-gray110 hover:text-caixa-gray130 dark:hover:text-white";
+            document.getElementById('tabBtn3').className = "px-5 py-2 text-xs font-bold rounded-pill text-caixa-gray110 hover:text-caixa-gray130 dark:hover:text-white";
 
             if (aba === 'equipe') {
                 document.getElementById('abaEquipe').classList.remove('hidden');
-                document.getElementById('tabBtn1').className = "px-5 py-2 text-xs font-semibold rounded-xl bg-white dark:bg-apple-darkCard text-black dark:text-white shadow-sm";
+                document.getElementById('tabBtn1').className = "px-5 py-2 text-xs font-bold rounded-pill bg-white dark:bg-caixa-darkCard text-caixa-blue90 dark:text-blue-300 shadow-xs";
             } else if (aba === 'individual') {
                 document.getElementById('abaIndividual').classList.remove('hidden');
-                document.getElementById('tabBtn2').className = "px-5 py-2 text-xs font-semibold rounded-xl bg-white dark:bg-apple-darkCard text-black dark:text-white shadow-sm";
+                document.getElementById('tabBtn2').className = "px-5 py-2 text-xs font-bold rounded-pill bg-white dark:bg-caixa-darkCard text-caixa-blue90 dark:text-blue-300 shadow-xs";
             } else if (aba === 'diagnostico') {
                 document.getElementById('abaDiagnostico').classList.remove('hidden');
-                document.getElementById('tabBtn3').className = "px-5 py-2 text-xs font-semibold rounded-xl bg-white dark:bg-apple-darkCard text-black dark:text-white shadow-sm";
+                document.getElementById('tabBtn3').className = "px-5 py-2 text-xs font-bold rounded-pill bg-white dark:bg-caixa-darkCard text-caixa-blue90 dark:text-blue-300 shadow-xs";
             }
         }
 
-        // Renderização dos Sliders no Formulário com base na skillList do Sheets
         function renderizarFormularioInputs() {
             const container = document.getElementById('containerInputsSkills');
             container.innerHTML = '';
 
             skillList.forEach((skill, index) => {
                 const itemHtml = `
-                    <div class="bg-apple-gray6 dark:bg-apple-darkCard2 p-2.5 rounded-xl space-y-1.5">
-                        <span class="font-semibold text-black dark:text-white block truncate">${skill}</span>
+                    <div class="dsc-card-inset p-2.5 space-y-1.5">
+                        <span class="font-bold text-caixa-blue110 dark:text-white block truncate">${skill}</span>
                         <div class="grid grid-cols-2 gap-2">
                             <div>
-                                <label class="text-[10px] text-apple-gray block">Atual: <span id="valCur_${index}" class="font-bold text-apple-blue">3</span></label>
-                                <input type="range" id="inputCur_${index}" min="1" max="5" value="3" oninput="document.getElementById('valCur_${index}').innerText=this.value" class="w-full accent-apple-blue">
+                                <label class="text-[10px] text-caixa-gray110 dark:text-gray-300 block">Atual: <span id="valCur_${index}" class="font-bold text-caixa-blue90 dark:text-blue-300">3</span></label>
+                                <input type="range" id="inputCur_${index}" min="1" max="5" value="3" oninput="document.getElementById('valCur_${index}').innerText=this.value" class="w-full accent-caixa-blue90">
                             </div>
                             <div>
-                                <label class="text-[10px] text-apple-gray block">Futuro: <span id="valFut_${index}" class="font-bold text-apple-purple">4</span></label>
-                                <input type="range" id="inputFut_${index}" min="1" max="5" value="4" oninput="document.getElementById('valFut_${index}').innerText=this.value" class="w-full accent-apple-purple">
+                                <label class="text-[10px] text-caixa-gray110 dark:text-gray-300 block">Futuro: <span id="valFut_${index}" class="font-bold text-purple-600 dark:text-purple-400">4</span></label>
+                                <input type="range" id="inputFut_${index}" min="1" max="5" value="4" oninput="document.getElementById('valFut_${index}').innerText=this.value" class="w-full accent-purple-600">
                             </div>
                         </div>
                     </div>
@@ -726,7 +781,6 @@
             });
         }
 
-        // Salvar ou Atualizar Membro
         async function salvarMembro() {
             const nomeInput = document.getElementById('inputNomeMembro').value.trim();
             const perfilInput = document.getElementById('selectPerfilMembro').value;
@@ -802,7 +856,6 @@
             renderizarRadarIndividual();
         }
 
-        // Excluir Membro
         async function excluirMembro(id) {
             if (confirm("Tem certeza que deseja remover este membro da equipe PUXE?")) {
                 teamMembers = teamMembers.filter(x => x.id !== id);
@@ -844,15 +897,15 @@
                 const perfilNome = m.perfil || 'Não Definido';
 
                 const row = `
-                    <tr class="hover:bg-apple-gray6 dark:hover:bg-apple-darkCard2/50 cursor-pointer" onclick="editarMembro('${m.id}')">
-                        <td class="py-2.5 font-bold text-black dark:text-white">${m.nome}</td>
-                        <td class="py-2.5 text-apple-gray font-medium">${perfilNome}</td>
-                        <td class="py-2.5 text-center text-apple-blue font-semibold">${avgCur}</td>
-                        <td class="py-2.5 text-center text-apple-purple font-semibold">${avgFut}</td>
-                        <td class="py-2.5 text-center"><span class="px-2 py-0.5 rounded-full bg-apple-green/10 text-apple-green font-bold text-[10px]">+${delta}</span></td>
-                        <td class="py-2.5 text-right space-x-2">
-                            <button onclick="event.stopPropagation(); editarMembro('${m.id}')" class="text-apple-blue hover:underline"><i class="fa-solid fa-pen-to-square"></i></button>
-                            <button onclick="event.stopPropagation(); excluirMembro('${m.id}')" class="text-apple-red hover:underline"><i class="fa-solid fa-trash-can"></i></button>
+                    <tr class="hover:bg-caixa-cardInset/50 dark:hover:bg-caixa-darkCardInset/50 cursor-pointer transition-colors" onclick="editarMembro('${m.id}')">
+                        <td class="p-3 font-bold text-caixa-blue110 dark:text-gray-200">${m.nome}</td>
+                        <td class="p-3 text-caixa-gray110 dark:text-gray-400 font-medium">${perfilNome}</td>
+                        <td class="p-3 text-center text-caixa-blue90 dark:text-blue-300 font-bold">${avgCur}</td>
+                        <td class="p-3 text-center text-purple-600 dark:text-purple-400 font-bold">${avgFut}</td>
+                        <td class="p-3 text-center"><span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300 font-bold text-[10px]">+${delta}</span></td>
+                        <td class="p-3 text-right space-x-2">
+                            <button onclick="event.stopPropagation(); editarMembro('${m.id}')" class="text-caixa-blue90 dark:text-blue-300 hover:underline"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button onclick="event.stopPropagation(); excluirMembro('${m.id}')" class="text-caixa-danger110 dark:text-red-400 hover:underline"><i class="fa-solid fa-trash-can"></i></button>
                         </td>
                     </tr>
                 `;
@@ -862,8 +915,8 @@
 
         function setRadarModo(modo) {
             modoRadarAtual = modo;
-            document.getElementById('radarModeCurrent').className = modo === 'CURRENT' ? "px-3 py-1.5 rounded-lg bg-white dark:bg-apple-darkCard text-black dark:text-white shadow-sm" : "px-3 py-1.5 rounded-lg text-apple-gray hover:text-black dark:hover:text-white";
-            document.getElementById('radarModeFuture').className = modo === 'FUTURE' ? "px-3 py-1.5 rounded-lg bg-white dark:bg-apple-darkCard text-black dark:text-white shadow-sm" : "px-3 py-1.5 rounded-lg text-apple-gray hover:text-black dark:hover:text-white";
+            document.getElementById('radarModeCurrent').className = modo === 'CURRENT' ? "px-3.5 py-1.5 rounded-pill bg-white dark:bg-caixa-darkCard text-caixa-blue90 dark:text-blue-300 shadow-xs" : "px-3.5 py-1.5 rounded-pill text-caixa-gray110 hover:text-caixa-gray130 dark:hover:text-white";
+            document.getElementById('radarModeFuture').className = modo === 'FUTURE' ? "px-3.5 py-1.5 rounded-pill bg-white dark:bg-caixa-darkCard text-caixa-blue90 dark:text-blue-300 shadow-xs" : "px-3.5 py-1.5 rounded-pill text-caixa-gray110 hover:text-caixa-gray130 dark:hover:text-white";
             renderizarRadarTime();
         }
 
@@ -900,9 +953,9 @@
             skillList.forEach((sk, idx) => {
                 const val = (medias[idx] || 0).toFixed(1);
                 const item = `
-                    <div class="flex justify-between items-center text-xs p-2 rounded-lg bg-apple-gray6 dark:bg-apple-darkCard2">
-                        <span class="text-black dark:text-white font-medium truncate">${sk}</span>
-                        <span class="font-bold text-apple-blue">${val}</span>
+                    <div class="flex justify-between items-center text-xs p-2.5 rounded-inset bg-caixa-cardInset dark:bg-caixa-darkCardInset border border-caixa-border dark:border-caixa-darkBorder">
+                        <span class="text-caixa-blue110 dark:text-gray-200 font-bold truncate">${sk}</span>
+                        <span class="font-black text-caixa-blue90 dark:text-blue-300">${val}</span>
                     </div>
                 `;
                 containerMedias.innerHTML += item;
@@ -914,10 +967,10 @@
             if (teamChartInstance) teamChartInstance.destroy();
 
             const isDark = document.documentElement.classList.contains('dark');
-            const colorGrid = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)';
-            const colorText = isDark ? '#F5F5F7' : '#1D1D1F';
+            const colorGrid = isDark ? '#2A4A75' : '#D0E0E3';
+            const colorText = isDark ? '#94A3B8' : '#404852';
 
-            const cores = ['#007AFF', '#AF52DE', '#FF9500', '#34C759', '#FF3B30', '#5856D6'];
+            const cores = ['#005CA9', '#D67B00', '#8B5CF6', '#179231', '#D93636', '#002A4D'];
 
             let datasets = teamMembers.map((m, idx) => {
                 const dataVals = modoRadarAtual === 'CURRENT' ? m.current : m.future;
@@ -963,16 +1016,16 @@
             document.getElementById('tituloRadarIndividual').innerText = `Perfil de Competências — ${m.nome} (${m.perfil || 'Não Definido'})`;
 
             const isDark = document.documentElement.classList.contains('dark');
-            const colorGrid = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)';
-            const colorText = isDark ? '#F5F5F7' : '#1D1D1F';
+            const colorGrid = isDark ? '#2A4A75' : '#D0E0E3';
+            const colorText = isDark ? '#94A3B8' : '#404852';
 
             individualChartInstance = new Chart(ctx, {
                 type: 'radar',
                 data: {
                     labels: skillList,
                     datasets: [
-                        { label: 'Estado Atual', data: m.current, borderColor: '#007AFF', backgroundColor: 'rgba(0, 122, 255, 0.2)', borderWidth: 2 },
-                        { label: 'Meta Estado Futuro (1 Ano)', data: m.future, borderColor: '#AF52DE', backgroundColor: 'rgba(175, 82, 222, 0.2)', borderWidth: 2, borderDash: [4, 4] }
+                        { label: 'Estado Atual', data: m.current, borderColor: '#005CA9', backgroundColor: 'rgba(0, 92, 169, 0.2)', borderWidth: 2 },
+                        { label: 'Meta Estado Futuro (1 Ano)', data: m.future, borderColor: '#8B5CF6', backgroundColor: 'rgba(139, 92, 246, 0.2)', borderWidth: 2, borderDash: [4, 4] }
                     ]
                 },
                 options: {
@@ -1010,18 +1063,18 @@
                 if (experts.length === 1) {
                     singlePointsCount++;
                     containerSingle.innerHTML += `
-                        <div class="p-2.5 rounded-xl bg-apple-orange/10 text-black dark:text-white flex justify-between items-center">
-                            <span><strong>${sk}</strong> — Retido apenas por <span class="text-apple-orange font-bold">${experts[0].nome}</span></span>
-                            <span class="text-[10px] bg-apple-orange text-white font-bold px-2 py-0.5 rounded-full">Risco Alto</span>
+                        <div class="p-2.5 rounded-inset bg-orange-100 text-orange-900 dark:bg-orange-900/40 dark:text-orange-200 border border-orange-300 flex justify-between items-center">
+                            <span><strong>${sk}</strong> — Retido apenas por <span class="font-bold">${experts[0].nome}</span></span>
+                            <span class="text-[10px] bg-caixa-orange90 text-white font-bold px-2.5 py-0.5 rounded-full">Risco Alto</span>
                         </div>
                     `;
                 }
 
                 if (mediaSk < 2.5) {
                     containerGaps.innerHTML += `
-                        <div class="p-2.5 rounded-xl bg-apple-red/10 text-black dark:text-white flex justify-between items-center">
+                        <div class="p-2.5 rounded-inset bg-red-100 text-red-900 dark:bg-red-900/40 dark:text-red-200 border border-red-300 flex justify-between items-center">
                             <span><strong>${sk}</strong> (Média: ${mediaSk.toFixed(1)})</span>
-                            <span class="text-[10px] bg-apple-red text-white font-bold px-2 py-0.5 rounded-full">Déficit</span>
+                            <span class="text-[10px] bg-caixa-danger70 text-white font-bold px-2.5 py-0.5 rounded-full">Déficit</span>
                         </div>
                     `;
                 }
@@ -1030,32 +1083,31 @@
                 if (experts.length > 0 && aprendizes.length > 0) {
                     aprendizes.forEach(ap => {
                         containerMentoria.innerHTML += `
-                            <div class="apple-card p-3 space-y-1 text-xs">
-                                <span class="text-[10px] font-bold text-apple-purple block uppercase">${sk}</span>
-                                <p class="text-black dark:text-white"><strong>Mentor:</strong> ${experts[0].nome}</p>
-                                <p class="text-apple-gray"><strong>Mentorado:</strong> ${ap.nome} (Atual: ${ap.current[sIdx]} ➔ Meta: ${ap.future[sIdx]})</p>
+                            <div class="dsc-card-inset p-3 space-y-1 text-xs">
+                                <span class="text-[10px] font-bold text-caixa-blue90 dark:text-blue-300 block uppercase tracking-wider">${sk}</span>
+                                <p class="text-caixa-blue110 dark:text-white"><strong>Mentor:</strong> ${experts[0].nome}</p>
+                                <p class="text-caixa-gray110 dark:text-gray-300"><strong>Mentorado:</strong> ${ap.nome} (Atual: ${ap.current[sIdx]} ➔ Meta: ${ap.future[sIdx]})</p>
                             </div>
                         `;
                     });
                 }
             });
 
-            if (containerSingle.innerHTML === '') containerSingle.innerHTML = '<p class="text-apple-gray italic">Nenhum ponto único de falha detectado.</p>';
-            if (containerGaps.innerHTML === '') containerGaps.innerHTML = '<p class="text-apple-gray italic">Nenhuma lacuna crítica encontrada no time.</p>';
-            if (containerMentoria.innerHTML === '') containerMentoria.innerHTML = '<p class="text-apple-gray italic">Sem combinações de mentoria sugeridas no momento.</p>';
+            if (containerSingle.innerHTML === '') containerSingle.innerHTML = '<p class="text-caixa-gray110 dark:text-gray-400 italic">Nenhum ponto único de falha detectado.</p>';
+            if (containerGaps.innerHTML === '') containerGaps.innerHTML = '<p class="text-caixa-gray110 dark:text-gray-400 italic">Nenhuma lacuna crítica encontrada no time.</p>';
+            if (containerMentoria.innerHTML === '') containerMentoria.innerHTML = '<p class="text-caixa-gray110 dark:text-gray-400 italic">Sem combinações de mentoria sugeridas no momento.</p>';
 
             document.getElementById('kpiSinglePoints').innerText = singlePointsCount;
         }
 
-        // Modais de Edição de Competências
         function abrirModalConfigSkills() {
             const container = document.getElementById('modalListaSkillsInput');
             container.innerHTML = '';
             skillList.forEach((sk, i) => {
                 container.innerHTML += `
                     <div class="flex items-center gap-2">
-                        <input type="text" id="skillModInput_${i}" value="${sk}" class="apple-input flex-1">
-                        <button onclick="removerSkillModal(${i})" class="text-apple-red p-2"><i class="fa-solid fa-trash-can"></i></button>
+                        <input type="text" id="skillModInput_${i}" value="${sk}" class="dsc-input flex-1">
+                        <button onclick="removerSkillModal(${i})" class="text-caixa-danger110 dark:text-red-400 p-2"><i class="fa-solid fa-trash-can"></i></button>
                     </div>
                 `;
             });
@@ -1071,8 +1123,8 @@
             const i = container.children.length;
             container.innerHTML += `
                 <div class="flex items-center gap-2">
-                    <input type="text" id="skillModInput_${i}" value="Nova Competência" class="apple-input flex-1">
-                    <button onclick="removerSkillModal(${i})" class="text-apple-red p-2"><i class="fa-solid fa-trash-can"></i></button>
+                    <input type="text" id="skillModInput_${i}" value="Nova Competência" class="dsc-input flex-1">
+                    <button onclick="removerSkillModal(${i})" class="text-caixa-danger110 dark:text-red-400 p-2"><i class="fa-solid fa-trash-can"></i></button>
                 </div>
             `;
         }
@@ -1086,7 +1138,6 @@
             container.children[idx].remove();
         }
 
-        // Salvar Lista de Competências na aba 'Competencias' do Google Sheets
         async function salvarSkillsModal() {
             const container = document.getElementById('modalListaSkillsInput');
             let novasSkills = [];
@@ -1102,7 +1153,6 @@
 
             skillList = novasSkills;
             
-            // Ajustar tamanhos dos vetores de cada membro localmente
             teamMembers.forEach(m => {
                 while (m.current.length < skillList.length) m.current.push(3);
                 while (m.future.length < skillList.length) m.future.push(4);
@@ -1114,7 +1164,6 @@
             renderizarFormularioInputs();
             atualizarDashboard();
 
-            // Grava a nova lista de competências no Google Sheets
             try {
                 await fetch(GOOGLE_SHEETS_URL, {
                     method: 'POST',
@@ -1126,6 +1175,25 @@
                 console.error("Erro ao salvar competências no Google Sheets:", err);
             }
         }
+
+        window.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'CHANGE_THEME') {
+                const novoTema = event.data.theme;
+                
+                if (event.data.hideThemeBtn) {
+                    const btnLocal = document.getElementById('btnToggleTheme') || document.getElementById('themeToggleBtn');
+                    if (btnLocal) {
+                        btnLocal.style.display = 'none';
+                    }
+                }
+                
+                if (typeof aplicarTema === 'function') {
+                    aplicarTema(novoTema);
+                    if (typeof atualizarDashboard === 'function') atualizarDashboard();
+                }
+            }
+        });
     </script>
 </body>
+
 </html>

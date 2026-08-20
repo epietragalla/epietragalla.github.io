@@ -1,389 +1,350 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="light">
+<html lang="pt-BR" class="light" data-theme="light">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maturidade UX — NN/g Living System</title>
 
-     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- GARANTIA DE MODO CLARO PADRÃO ANTES DA RENDERIZAÇÃO DA PÁGINA -->
+  <script>
+    (function() {
+        // Se desejar forçar o Light Mode no primeiro acesso/refresh, usamos 'light' como padrão
+        const savedTheme = localStorage.getItem('caixa_theme_pref') || 'light';
+        const html = document.documentElement;
+        
+        if (savedTheme === 'dark') {
+            html.classList.add('dark');
+            html.classList.remove('light');
+            html.setAttribute('data-theme', 'dark');
+        } else {
+            html.classList.remove('dark');
+            html.classList.add('light');
+            html.setAttribute('data-theme', 'light');
+        }
+    })();
+</script>
 
-    <!-- Tailwind CSS CDN com Extensão de Tokens do Apple Design System -->
+    <!-- Lucide Icons & FontAwesome para Ícones Oficiais -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js para Gráficos Radar -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- CONFIGURAÇÃO DE TOKENS OFICIAIS DO TAILWIND CSS DO DSC -->
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        apple: {
-                            blue: '#007AFF',
-                            darkBlue: '#0A84FF',
-                            gray: '#8E8E93',
-                            gray2: '#AEAEB2',
-                            gray3: '#C7C7CC',
-                            gray4: '#D1D1D6',
-                            gray5: '#E5E5EA',
-                            gray6: '#F2F2F7',
-                            darkBg: '#000000',
-                            darkCard: '#1C1C1E',
-                            darkCard2: '#2C2C2E',
-                            darkCard3: '#3A3A3C',
-                            green: '#34C759',
-                            darkGreen: '#30D158',
-                            orange: '#FF9500',
-                            darkOrange: '#FF9F0A',
-                            red: '#FF3B30',
-                            darkRed: '#FF453A',
-                            purple: '#AF52DE',
-                            darkPurple: '#BF5AF2'
+                        caixa: {
+                            // Paleta Fixa
+                            blue130: '#002A4D',
+                            blue110: '#00437A',
+                            blue90:  '#005CA9',   /* Principal Interativo / Oceano CAIXA */
+                            blue70:  '#2D8A0B',
+                            blue50:  '#60B1FA',
+                            blue30:  '#AED2FC',
+                            blue10:  '#E5F1FC',   /* Superfície de Item Ativo */
+
+                            orange130: '#663A00',
+                            orange110: '#A65E00',
+                            orange90:  '#D67B00',  /* Homologada p/ Botões c/ Texto Branco */
+                            orange70:  '#F39200',  /* Laranja Original */
+                            orange50:  '#FD854B',
+                            orange30:  '#FFD092',
+                            orange10:  '#FFEFD6',
+
+                            tertiary70: '#54B8A8', /* Turquesa CAIXA */
+
+                            // Neutros (Grayscale)
+                            gray130: '#22292E',    /* Texto Primário */
+                            gray110: '#404852',    /* Texto Secundário */
+                            gray90:  '#64747A',    /* Bordas e Ícones */
+                            gray70:  '#9EB2B8',    /* Divisores */
+                            gray50:  '#D0E0E3',    /* Bordas Suaves */
+                            gray30:  '#EBF1F2',    /* Inset Light */
+                            gray10:  '#F7FAFA',    /* Canvas Light */
+
+                            // Feedback
+                            success110: '#0D5B1C',
+                            success70:  '#179231',
+                            success10:  '#E7F4EA',
+
+                            warning110: '#977203',
+                            warning70:  '#FCBE05',
+                            warning10:  '#FFF9E6',
+
+                            danger110:  '#8C2323',
+                            danger70:   '#D93636',
+                            danger10:   '#FBEBEB',
+
+                            info110:    '#026173',
+                            info70:     '#04A2BF',
+                            info10:     '#E5F6F8',
+
+                            // Dark Mode Tokens
+                            darkBg:        '#0B1E36',
+                            darkCard:      '#132A4A',
+                            darkInset:     '#1A365D',
+                            darkCardInset: '#1A365D',
+                            cardInset:     '#EBF1F2',
+                            darkBorder:    '#2A4A75'
                         }
                     },
                     fontFamily: {
-                        sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', '"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif']
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Arial', 'sans-serif']
+                    },
+                    borderRadius: {
+                        'xs': '2px',
+                        'sm': '4px',
+                        'badge': '8px',
+                        'inset': '12px',
+                        'card': '16px',
+                        'pill': '9999px'
+                    },
+                    boxShadow: {
+                        'elevation1': '0px 1px 3px 1px rgba(0, 0, 0, 0.08)',
+                        'elevation2': '0px 2px 6px 2px rgba(0, 0, 0, 0.12)',
+                        'elevation3': '0px 4px 8px 3px rgba(0, 0, 0, 0.15)',
+                        'elevation4': '0px 6px 10px 4px rgba(0, 0, 0, 0.15)',
+                        'elevation5': '0px 8px 12px 6px rgba(0, 0, 0, 0.15)',
+                        'cta': '0 4px 12px rgba(214, 123, 0, 0.35)'
                     }
                 }
             }
         }
     </script>
 
-    <!-- FontAwesome para Ícones Estilo SF Symbols -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js para Gráficos -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- Estilos CSS Centralizados (Apple HIG Pattern System) -->
+    <!-- VARIÁVEIS CSS ROOT E ESTILOS CUSTOMIZADOS DO DESIGN SYSTEM -->
     <style>
-        /* Transições suave de tema Apple HIG */
+        :root {
+            --caixa-blue-90: #005CA9;
+            --caixa-blue-dark: #003366;
+            --caixa-orange-90: #D67B00;
+            --caixa-orange-70: #F39200;
+            --caixa-bg-canvas: #F7FAFA;
+            --caixa-bg-card: #FFFFFF;
+            --caixa-bg-inset: #EBF1F2;
+            --caixa-border: #D0E0E3;
+            --caixa-text-main: #22292E;
+            --caixa-text-muted: #404852;
+        }
+
+        .dark {
+            --caixa-bg-canvas: #0B1E36;
+            --caixa-bg-card: #132A4A;
+            --caixa-bg-inset: #1A365D;
+            --caixa-border: #2A4A75;
+            --caixa-text-main: #F8FAFC;
+            --caixa-text-muted: #94A3B8;
+        }
+
         *, *::before, *::after {
-            transition: background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
-                        border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
-                        color 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
-                        box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
         }
 
-        /* Glassmorphism / Vibrancy Nativam macOS/iOS */
-        .apple-glass {
-            background: rgba(255, 255, 255, 0.78);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-        }
-        .dark .apple-glass {
-            background: rgba(28, 28, 30, 0.78);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+        .caixa-glass {
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
         }
 
-        /* Cartões Estilo Apple HIG Container */
-        .apple-card {
-            background-color: #FFFFFF;
-            border-radius: 20px;
-            border: 1px solid rgba(0, 0, 0, 0.06);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02);
-        }
-        .dark .apple-card {
-            background-color: #1C1C1E;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        .dark .caixa-glass {
+            background: rgba(11, 30, 54, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
         }
 
-        .apple-card-inset {
-            background-color: #F2F2F7;
-            border-radius: 14px;
-            border: 1px solid rgba(0, 0, 0, 0.04);
-        }
-        .dark .apple-card-inset {
-            background-color: #2C2C2E;
-            border: 1px solid rgba(255, 255, 255, 0.06);
+        .dsc-card {
+            background-color: var(--caixa-bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--caixa-border);
+            box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.05);
         }
 
-        /* Botões Estilo Push Button / Pill */
-        .apple-btn-primary {
-            background-color: #007AFF;
-            color: #FFFFFF !important;
-            font-weight: 600;
-            border-radius: 980px;
-            padding: 8px 18px;
-            box-shadow: 0 2px 8px rgba(0, 122, 255, 0.25);
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .apple-btn-primary:hover {
-            background-color: #0062CC;
-            transform: scale(1.02);
-        }
-        .dark .apple-btn-primary {
-            background-color: #0A84FF;
-            box-shadow: 0 2px 10px rgba(10, 132, 255, 0.3);
-        }
-        .dark .apple-btn-primary:hover {
-            background-color: #409CFF;
-        }
-
-        .apple-btn-secondary {
-            background-color: #F2F2F7;
-            color: #1C1C1E;
-            font-weight: 500;
-            border-radius: 980px;
-            padding: 8px 16px;
-            border: 1px solid rgba(0,0,0,0.05);
-        }
-        .apple-btn-secondary:hover {
-            background-color: #E5E5EA;
-        }
-        .dark .apple-btn-secondary {
-            background-color: #2C2C2E;
-            color: #F2F2F7;
-            border: 1px solid rgba(255,255,255,0.08);
-        }
-        .dark .apple-btn-secondary:hover {
-            background-color: #3A3A3C;
-        }
-
-        /* Form Inputs & Controls */
-        .apple-input {
-            background-color: #F2F2F7;
-            border: 1px solid transparent;
+        .dsc-card-inset {
+            background-color: var(--caixa-bg-inset);
             border-radius: 12px;
-            padding: 10px 14px;
-            color: #1C1C1E;
+            border: 1px solid var(--caixa-border);
+        }
+
+        /* Inputs Estilo DSC */
+        .dsc-input {
+            background-color: var(--caixa-bg-inset);
+            border: 1px solid var(--caixa-border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: var(--caixa-text-main);
             font-size: 0.875rem;
             outline: none;
-            transition: all 0.2s ease;
-            pointer-events: auto !important;
-            user-select: text !important;
-            cursor: text !important;
         }
-        .apple-input:focus {
-            border-color: #007AFF;
+
+        .dsc-input:focus {
+            border-color: #005CA9;
             background-color: #FFFFFF;
-            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.18);
-        }
-        .dark .apple-input {
-            background-color: #2C2C2E;
-            color: #F2F2F7;
-        }
-        .dark .apple-input:focus {
-            border-color: #0A84FF;
-            background-color: #1C1C1E;
-            box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.25);
+            box-shadow: 0 0 0 3px rgba(0, 92, 169, 0.15);
         }
 
-        /* Quiz Buttons & Items */
-        .quiz-card {
-            background-color: #F2F2F7;
-            border: 1px solid rgba(0,0,0,0.04);
-            border-radius: 14px;
-        }
-        .dark .quiz-card {
-            background-color: #2C2C2E;
-            border: 1px solid rgba(255,255,255,0.06);
+        .dark .dsc-input {
+            background-color: #1A365D;
+            border-color: #2A4A75;
+            color: #F8FAFC;
         }
 
-        .quiz-btn {
+        .dark .dsc-input:focus {
+            border-color: #60B1FA;
+            background-color: #132A4A;
+            box-shadow: 0 0 0 3px rgba(96, 177, 250, 0.25);
+        }
+
+        /* Tooltip Customizado */
+        .hint-tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .hint-tooltip .tooltip-text {
+            visibility: hidden;
+            width: 280px;
             background-color: #FFFFFF;
-            border: 1px solid rgba(0, 0, 0, 0.08);
-            border-radius: 10px;
-            color: #8E8E93;
-            transition: all 0.2s ease;
-        }
-        .quiz-btn:hover {
-            border-color: rgba(0,0,0,0.2);
-            color: #1D1D1F;
-        }
-        .dark .quiz-btn {
-            background-color: #1C1C1E;
-            border: 1px solid rgba(255,255,255,0.08);
-            color: #8E8E93;
-        }
-        .dark .quiz-btn:hover {
-            border-color: rgba(255,255,255,0.2);
-            color: #F5F5F7;
-        }
-
-        /* Banner & Score Components */
-        .banner-maturidade {
-            background: linear-gradient(135deg, rgba(0, 122, 255, 0.08), rgba(255, 255, 255, 0.9), rgba(175, 82, 222, 0.08));
-            border: 2px solid #007AFF;
-            border-radius: 20px;
-        }
-        .dark .banner-maturidade {
-            background: linear-gradient(135deg, rgba(10, 132, 255, 0.12), rgba(28, 28, 30, 0.85), rgba(191, 90, 242, 0.12));
-            border: 2px solid #0A84FF;
+            color: #22292E;
+            text-align: left;
+            border-radius: 12px;
+            padding: 10px 14px;
+            position: absolute;
+            z-index: 50;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.2s, transform 0.2s;
+            font-size: 0.75rem;
+            line-height: 1.15rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border: 1px solid #CBD5E1;
+            pointer-events: none;
         }
 
-        .score-pill {
-            background-color: #F2F2F7;
-            border: 1px solid rgba(0,0,0,0.06);
-            border-radius: 14px;
-        }
-        .dark .score-pill {
-            background-color: #2C2C2E;
-            border: 1px solid rgba(255,255,255,0.08);
+        .dark .hint-tooltip .tooltip-text {
+            background-color: #132A4A;
+            color: #F8FAFC;
+            border: 1px solid #2A4A75;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.5);
         }
 
-        .gap-alert {
-            background-color: rgba(255, 149, 0, 0.12);
-            border: 1px solid rgba(255, 149, 0, 0.25);
-            color: #FF9500;
-            border-radius: 14px;
-        }
-        .dark .gap-alert {
-            background-color: rgba(255, 159, 10, 0.12);
-            border: 1px solid rgba(255, 159, 10, 0.25);
-            color: #FF9F0A;
+        .hint-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+            transform: translateX(-50%) translateY(-2px);
         }
 
         .sim-slider {
-            accent-color: #007AFF;
-        }
-        .dark .sim-slider {
-            accent-color: #0A84FF;
-        }
-
-        /* Likert Scale Guide */
-        .likert-guide-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 6px 4px;
-            background-color: #F2F2F7;
-            border-radius: 10px;
-            border: 1px solid rgba(0,0,0,0.04);
-        }
-        .dark .likert-guide-item {
-            background-color: #2C2C2E;
-            border: 1px solid rgba(255,255,255,0.06);
-        }
-
-        .likert-badge {
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            font-size: 11px;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid;
-            margin-bottom: 4px;
-        }
-
-        .likert-label {
-            font-size: 10px;
-            font-weight: 700;
-            color: #1D1D1F;
-            line-height: 1.1;
-        }
-        .dark .likert-label {
-            color: #F5F5F7;
-        }
-
-        .likert-sub {
-            font-size: 9px;
-            color: #86868B;
-            margin-top: 2px;
-        }
-        .dark .likert-sub {
-            color: #8E8E93;
+            accent-color: #005CA9;
         }
     </style>
 </head>
 
-<body class="bg-[#F5F5F7] dark:bg-black text-[#1D1D1F] dark:text-[#F5F5F7] min-h-screen font-sans antialiased selection:bg-apple-blue selection:text-white">
+<body class="bg-caixa-gray10 dark:bg-caixa-darkBg text-caixa-gray130 dark:text-white font-sans antialiased selection:bg-caixa-blue90 selection:text-white min-h-screen">
 
-    <!-- Header Fixo Estilo iOS / macOS Navigation Bar -->
-    <header class="sticky top-0 z-40 apple-glass border-b border-black/5 dark:border-white/10 px-6 py-4 print:hidden">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+    <!-- HEADER INSTITUCIONAL DO PORTAL (PADRÃO DSC) -->
+    <header class="sticky top-0 z-40 caixa-glass border-b border-caixa-border dark:border-caixa-darkBorder px-6 py-3.5 print:hidden">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-2xl bg-apple-green dark:bg-apple-darkGreen flex items-center justify-center text-white shadow-md shadow-apple-green/20">
-                    <i class="fa-solid fa-seedling text-lg"></i>
+                <div class="w-10 h-10 rounded-xl bg-caixa-blue90 flex items-center justify-center text-white font-black text-xl shadow-md">
+                    X
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold tracking-tight text-black dark:text-white flex items-center gap-2">
-                        Maturidade UX <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-apple-green/10 text-apple-green dark:bg-apple-darkGreen/20 dark:text-apple-darkGreen">NN/g Living System</span>
+                    <h1 class="text-lg font-bold text-caixa-blue110 dark:text-white flex items-center gap-2 leading-tight">
+                        Maturidade UX <span class="text-[10px] uppercase tracking-wider font-extrabold bg-caixa-orange90 text-white px-2 py-0.5 rounded-badge">NN/g Framework</span>
                     </h1>
-                    <p class="text-xs text-apple-gray">Gestão contínua de saúde, sinais de regressão e diagnóstico colaborativo por time (NN/g Framework).</p>
+                    <p class="text-xs text-caixa-gray110 dark:text-gray-300">Gestão contínua de saúde, sinais de regressão e diagnóstico colaborativo por time</p>
                 </div>
             </div>
 
-            <!-- Controles do Header & Dark Mode Toggle -->
-            <div class="flex items-center gap-3">
-                <button onclick="carregarDadosServidor()" class="apple-btn-secondary text-xs flex items-center gap-2">
-                    <i class="fa-solid fa-rotate text-apple-blue dark:text-apple-darkBlue"></i>
+            <!-- NAVEGAÇÃO / AÇÕES -->
+            <nav class="flex flex-wrap items-center gap-3 text-xs font-bold text-caixa-gray110 dark:text-gray-300">
+                <button onclick="carregarDadosServidor()" class="dsc-card-inset hover:bg-caixa-gray50 dark:hover:bg-caixa-darkCard text-caixa-blue110 dark:text-white font-bold text-xs py-2 px-4 rounded-pill transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-rotate text-caixa-blue90 dark:text-blue-300"></i>
                     <span>Sincronizar Nuvem</span>
                 </button>
-                <button onclick="window.print()" class="apple-btn-primary text-xs flex items-center gap-2">
+                <button onclick="window.print()" class="bg-caixa-blue90 hover:bg-caixa-blue110 text-white font-bold text-xs py-2 px-4 rounded-pill transition-all shadow-md flex items-center gap-2">
                     <i class="fa-solid fa-print"></i>
                     <span>Exportar PDF</span>
                 </button>
 
-                <!-- Toggle Dark/Light Mode Switcher -->
-                  <button type="button" id="themeToggleBtn" onclick="toggleTheme()" title="Alternar entre Modo Escuro e Modo Claro" class="w-10 h-10 rounded-full bg-apple-gray6 dark:bg-apple-darkCard2 flex items-center justify-center text-apple-gray hover:text-black dark:hover:text-white transition-all border border-black/5 dark:border-white/10">
-                    <i data-lucide="moon" id="themeIcon" class="w-4 h-4 text-indigo-500"></i>
+                <!-- Alternador Dark/Light Mode -->
+                <button type="button" id="themeToggleBtn" onclick="toggleTheme()" title="Alternar entre Modo Escuro e Modo Claro" class="w-9 h-9 rounded-full bg-caixa-cardInset dark:bg-caixa-darkCardInset flex items-center justify-center text-caixa-orange90 dark:text-caixa-yellow hover:scale-105 transition-transform border border-caixa-border dark:border-caixa-darkBorder">
+                    <i data-lucide="moon" id="themeIcon" class="w-4 h-4"></i>
                 </button>
-            </div>
+            </nav>
+
         </div>
     </header>
 
+    <!-- CONTEÚDO PRINCIPAL -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8">
 
         <!-- MODAL DE CARREGAMENTO / LOADING -->
-        <div id="modalLoading"
-            class="fixed inset-0 bg-black/40 backdrop-blur-md z-50 hidden flex flex-col items-center justify-center transition-all duration-300">
-            <div class="apple-card p-6 flex flex-col items-center gap-4 text-center max-w-xs shadow-2xl">
-                <i class="fa-solid fa-circle-notch fa-spin text-3xl text-apple-blue dark:text-apple-darkBlue"></i>
+        <div id="modalLoading" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden flex flex-col items-center justify-center transition-all duration-300">
+            <div class="dsc-card p-6 flex flex-col items-center gap-4 text-center max-w-xs shadow-elevation5">
+                <i class="fa-solid fa-circle-notch fa-spin text-3xl text-caixa-blue90 dark:text-blue-400"></i>
                 <div>
-                    <h4 class="text-sm font-bold text-black dark:text-white">Sincronizando com a Nuvem</h4>
-                    <p class="text-xs text-apple-gray mt-1">Carregando quadro de avaliadores do time...</p>
+                    <h4 class="text-sm font-bold text-caixa-blue110 dark:text-white">Sincronizando com a Nuvem</h4>
+                    <p class="text-xs text-caixa-gray110 dark:text-gray-300 mt-1">Carregando quadro de avaliadores do time...</p>
                 </div>
             </div>
         </div>
 
         <!-- PAINEL FILOSÓFICO NN/G -->
-        <section class="apple-card p-5 border-l-4 border-l-apple-purple dark:border-l-apple-darkPurple print:hidden">
+        <section class="dsc-card p-5 border-l-4 border-l-purple-600 dark:border-l-purple-400 print:hidden shadow-elevation1">
             <div class="flex items-start gap-3">
-                <i class="fa-solid fa-arrows-spin text-apple-purple dark:text-apple-darkPurple text-xl mt-1 shrink-0"></i>
+                <i class="fa-solid fa-arrows-spin text-purple-600 dark:text-purple-400 text-xl mt-1 shrink-0"></i>
                 <div class="text-xs space-y-1">
-                    <strong class="text-black dark:text-white text-sm block">Princípio NN/g: Maturidade UX é um Sistema Vivo, não uma Escala Rígida</strong>
-                    <p class="text-apple-gray leading-relaxed">
-                        Avançar de nível não é uma conquista permanente. Alterações de liderança, metas de curto prazo
-                        ou "rituais robóticos" causam regressões silenciosas (<em>UX Drift</em>). Este sistema mede a
-                        saúde atual e mapeia desalinhamentos entre áreas para garantir a sustentabilidade do
-                        ecossistema.
+                    <strong class="text-caixa-blue110 dark:text-white text-sm block">Princípio NN/g: Maturidade UX é um Sistema Vivo, não uma Escala Rígida</strong>
+                    <p class="text-caixa-gray110 dark:text-gray-300 leading-relaxed">
+                        Avançar de nível não é uma conquista permanente. Alterações de liderança, metas de curto prazo ou "rituais robóticos" causam regressões silenciosas (<em>UX Drift</em>). Este sistema mede a saúde atual e mapeia desalinhamentos entre áreas para garantir a sustentabilidade do ecossistema.
                     </p>
                 </div>
             </div>
         </section>
 
         <!-- PAINEL DE IDENTIFICAÇÃO DO TIME / AVALIADOR -->
-        <section class="apple-card p-6 print:hidden">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-black/5 dark:border-white/10 pb-4">
+        <section class="dsc-card p-6 print:hidden shadow-elevation1">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-caixa-border dark:border-caixa-darkBorder pb-4">
                 <div>
-                    <h2 class="text-base font-bold text-black dark:text-white flex items-center gap-2">
-                        <i class="fa-solid fa-id-card text-apple-blue dark:text-apple-darkBlue"></i> Identificação da Sessão de Avaliação
+                    <h2 class="text-base font-bold text-caixa-blue110 dark:text-white flex items-center gap-2">
+                        <i class="fa-solid fa-id-card text-caixa-blue90 dark:text-blue-400"></i> Identificação da Sessão de Avaliação
                     </h2>
-                    <p class="text-xs text-apple-gray mt-0.5">Preencha com o nome da sua equipe e os seus dados para registrar sua avaliação no conselho do time.</p>
+                    <p class="text-xs text-caixa-gray110 dark:text-gray-300 mt-0.5">Preencha com o nome da sua equipe e os seus dados para registrar sua avaliação no conselho do time.</p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span class="text-xs text-apple-gray font-medium">Time Atual do Avaliador:</span>
-                    <span id="labelNomeTime" class="text-xs font-bold px-3 py-1 rounded-full bg-apple-blue/10 text-apple-blue dark:bg-apple-darkBlue/20 dark:text-apple-darkBlue">Nenhum</span>
+                    <span class="text-xs text-caixa-gray110 dark:text-gray-300 font-medium">Time Atual do Avaliador:</span>
+                    <span id="labelNomeTime" class="text-xs font-bold px-3 py-1 rounded-full bg-blue-100 text-caixa-blue90 dark:bg-blue-900/40 dark:text-blue-300">Nenhum</span>
                 </div>
             </div>
 
             <form id="formUsuario" onsubmit="confirmarIdentificacao(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4 pt-4">
                 <div>
-                    <label class="block text-xs font-medium text-apple-gray mb-1">Nome do Time / Squad *</label>
-                    <select id="inputTime" required class="apple-input w-full text-xs cursor-pointer">
+                    <label class="block text-xs font-medium text-caixa-gray110 dark:text-gray-300 mb-1">Nome do Time / Squad *</label>
+                    <select id="inputTime" required class="dsc-input w-full cursor-pointer">
                         <option value="">Selecione o Time...</option>
                         <option value="PUXE">PUXE</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-apple-gray mb-1">Seu Nome *</label>
-                    <input type="text" id="inputNome" placeholder="Ex: Ana Silva" class="apple-input w-full text-xs">
+                    <label class="block text-xs font-medium text-caixa-gray110 dark:text-gray-300 mb-1">Seu Nome *</label>
+                    <input type="text" id="inputNome" placeholder="Ex: Ana Silva" class="dsc-input w-full">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-apple-gray mb-1">Perfil *</label>
-                    <select id="inputCargo" class="apple-input w-full text-xs cursor-pointer">
+                    <label class="block text-xs font-medium text-caixa-gray110 dark:text-gray-300 mb-1">Perfil *</label>
+                    <select id="inputCargo" class="dsc-input w-full cursor-pointer">
                         <option value="">Selecione...</option>
                         <option value="Liderança Técnica">Liderança Técnica</option>
                         <option value="CX Pesquisa">CX Pesquisa</option>
@@ -393,7 +354,7 @@
                     </select>
                 </div>
                 <div class="flex items-end">
-                    <button type="submit" class="apple-btn-primary text-xs py-2.5 px-5 w-full flex items-center justify-center gap-2">
+                    <button type="submit" class="bg-caixa-blue90 hover:bg-caixa-blue110 text-white font-bold text-xs py-2.5 px-5 rounded-pill w-full transition-all active:scale-95 shadow-md flex items-center justify-center gap-2">
                         <i class="fa-solid fa-check"></i> Iniciar / Trocar Avaliador
                     </button>
                 </div>
@@ -402,48 +363,48 @@
 
         <!-- FORMULÁRIO DE AVALIAÇÃO -->
         <section id="secaoQuestionario" class="grid grid-cols-1 lg:grid-cols-3 gap-8 print:hidden opacity-50 pointer-events-none transition-all">
-            <div class="lg:col-span-2 apple-card p-6 space-y-6">
-                <div class="border-b border-black/5 dark:border-white/10 pb-3 flex justify-between items-center">
-                    <h2 class="text-lg font-bold text-black dark:text-white flex items-center gap-2">
-                        <i class="fa-solid fa-clipboard-list text-apple-blue dark:text-apple-darkBlue"></i> Questionário Multidisciplinar de Pilares
+            <div class="lg:col-span-2 dsc-card p-6 space-y-6 shadow-elevation1">
+                <div class="border-b border-caixa-border dark:border-caixa-darkBorder pb-3 flex justify-between items-center">
+                    <h2 class="text-lg font-bold text-caixa-blue110 dark:text-white flex items-center gap-2">
+                        <i class="fa-solid fa-clipboard-list text-caixa-blue90 dark:text-blue-400"></i> Questionário Multidisciplinar de Pilares
                     </h2>
-                    <span id="progressText" class="text-xs text-apple-gray font-medium">Progresso: 0 / 16</span>
+                    <span id="progressText" class="text-xs text-caixa-gray110 dark:text-gray-300 font-medium">Progresso: 0 / 16</span>
                 </div>
 
                 <!-- BARRA DE LEGENDA EXPLICATIVA DA ESCALA 1 A 5 -->
-                <div class="apple-card-inset p-4 space-y-2">
+                <div class="dsc-card-inset p-4 space-y-2">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-black dark:text-white flex items-center gap-1.5">
-                            <i class="fa-solid fa-circle-info text-apple-blue dark:text-apple-darkBlue"></i> Como avaliar cada afirmação (Escala de 1 a 5):
+                        <span class="text-xs font-semibold text-caixa-blue110 dark:text-white flex items-center gap-1.5">
+                            <i class="fa-solid fa-circle-info text-caixa-blue90 dark:text-blue-300"></i> Como avaliar cada afirmação (Escala de 1 a 5):
                         </span>
-                        <span class="text-[10px] text-apple-gray">Escala de concordância organizacional</span>
+                        <span class="text-[10px] text-caixa-gray110 dark:text-gray-400">Escala de concordância organizacional</span>
                     </div>
 
-                    <div class="grid grid-cols-5 gap-2 text-center pt-1">
-                        <div class="likert-guide-item">
-                            <span class="likert-badge bg-rose-500/15 text-apple-red dark:text-apple-darkRed border-rose-500/30">1</span>
-                            <span class="likert-label">Discordo Totalmente</span>
-                            <span class="likert-sub">Inexistente</span>
+                    <div class="grid grid-cols-5 gap-2 text-center pt-1 text-xs">
+                        <div class="dsc-card-inset p-2 flex flex-col items-center">
+                            <span class="w-5 h-5 rounded-full bg-red-100 text-caixa-danger110 font-extrabold text-[11px] flex items-center justify-center mb-1">1</span>
+                            <span class="font-bold text-[10px] text-caixa-gray130 dark:text-white leading-tight">Discordo Totalmente</span>
+                            <span class="text-[9px] text-caixa-gray110 dark:text-gray-400">Inexistente</span>
                         </div>
-                        <div class="likert-guide-item">
-                            <span class="likert-badge bg-orange-500/15 text-apple-orange dark:text-apple-darkOrange border-orange-500/30">2</span>
-                            <span class="likert-label">Discordo Parcialmente</span>
-                            <span class="likert-sub">Raro / Ad hoc</span>
+                        <div class="dsc-card-inset p-2 flex flex-col items-center">
+                            <span class="w-5 h-5 rounded-full bg-amber-100 text-caixa-warning110 font-extrabold text-[11px] flex items-center justify-center mb-1">2</span>
+                            <span class="font-bold text-[10px] text-caixa-gray130 dark:text-white leading-tight">Discordo Parcialmente</span>
+                            <span class="text-[9px] text-caixa-gray110 dark:text-gray-400">Raro / Ad hoc</span>
                         </div>
-                        <div class="likert-guide-item">
-                            <span class="likert-badge bg-black/5 dark:bg-white/10 text-black dark:text-gray-300 border-black/10 dark:border-white/10">3</span>
-                            <span class="likert-label">Neutro</span>
-                            <span class="likert-sub">Às vezes</span>
+                        <div class="dsc-card-inset p-2 flex flex-col items-center">
+                            <span class="w-5 h-5 rounded-full bg-caixa-gray30 dark:bg-caixa-darkCardInset text-caixa-gray130 dark:text-white font-extrabold text-[11px] flex items-center justify-center mb-1">3</span>
+                            <span class="font-bold text-[10px] text-caixa-gray130 dark:text-white leading-tight">Neutro</span>
+                            <span class="text-[9px] text-caixa-gray110 dark:text-gray-400">Às vezes</span>
                         </div>
-                        <div class="likert-guide-item">
-                            <span class="likert-badge bg-blue-500/15 text-apple-blue dark:text-apple-darkBlue border-blue-500/30">4</span>
-                            <span class="likert-label">Concordo Parcialmente</span>
-                            <span class="likert-sub">Frequente</span>
+                        <div class="dsc-card-inset p-2 flex flex-col items-center">
+                            <span class="w-5 h-5 rounded-full bg-blue-100 text-caixa-blue90 font-extrabold text-[11px] flex items-center justify-center mb-1">4</span>
+                            <span class="font-bold text-[10px] text-caixa-gray130 dark:text-white leading-tight">Concordo Parcialmente</span>
+                            <span class="text-[9px] text-caixa-gray110 dark:text-gray-400">Frequente</span>
                         </div>
-                        <div class="likert-guide-item">
-                            <span class="likert-badge bg-emerald-500/15 text-apple-green dark:text-apple-darkGreen border-emerald-500/30">5</span>
-                            <span class="likert-label">Concordo Totalmente</span>
-                            <span class="likert-sub">Padrão / Consolidado</span>
+                        <div class="dsc-card-inset p-2 flex flex-col items-center">
+                            <span class="w-5 h-5 rounded-full bg-emerald-100 text-caixa-success110 font-extrabold text-[11px] flex items-center justify-center mb-1">5</span>
+                            <span class="font-bold text-[10px] text-caixa-gray130 dark:text-white leading-tight">Concordo Totalmente</span>
+                            <span class="text-[9px] text-caixa-gray110 dark:text-gray-400">Padrão / Consolidado</span>
                         </div>
                     </div>
                 </div>
@@ -453,24 +414,23 @@
                 </div>
 
                 <div class="pt-2 flex justify-end gap-3">
-                    <button id="btnSalvarVoto" onclick="salvarAvaliacaoIndividual()" class="apple-btn-primary text-sm py-3 px-6 flex items-center gap-2">
+                    <button id="btnSalvarVoto" onclick="salvarAvaliacaoIndividual()" class="bg-caixa-blue90 hover:bg-caixa-blue110 text-white font-bold text-xs py-3 px-6 rounded-pill shadow-md transition-all flex items-center gap-2">
                         <i class="fa-solid fa-cloud-arrow-up"></i> Salvar Avaliação na Nuvem
                     </button>
                 </div>
             </div>
 
-            <div class="apple-card p-6 flex flex-col justify-between">
+            <div class="dsc-card p-6 flex flex-col justify-between shadow-elevation1">
                 <div class="space-y-4">
-                    <h3 class="text-base font-bold text-black dark:text-white flex items-center gap-2 border-b border-black/5 dark:border-white/10 pb-2">
-                        <i class="fa-solid fa-circle-nodes text-apple-purple dark:text-apple-darkPurple"></i> Estrutura do Time NN/g
+                    <h3 class="text-base font-bold text-caixa-blue110 dark:text-white flex items-center gap-2 border-b border-caixa-border dark:border-caixa-darkBorder pb-2">
+                        <i class="fa-solid fa-circle-nodes text-purple-600 dark:text-purple-400"></i> Estrutura do Time NN/g
                     </h3>
-                    <p class="text-xs text-apple-gray leading-relaxed">
-                        A avaliação por time permite capturar a média real da maturidade organizacional, mitigando
-                        vieses individuais e expondo diferenças de visão entre Design, Engenharia e Gestão.
+                    <p class="text-xs text-caixa-gray110 dark:text-gray-300 leading-relaxed">
+                        A avaliação por time permite capturar a média real da maturidade organizacional, mitigando vieses individuais e expondo diferenças de visão entre Design, Engenharia e Gestão.
                     </p>
-                    <div class="apple-card-inset p-3 text-[11px] text-black dark:text-gray-300 space-y-2">
-                        <strong class="text-apple-purple dark:text-apple-darkPurple block"><i class="fa-solid fa-layer-group"></i> 4 Pilares Fundamentais</strong>
-                        <ul class="list-disc list-inside text-apple-gray space-y-1">
+                    <div class="dsc-card-inset p-3 text-[11px] text-caixa-gray130 dark:text-gray-200 space-y-2">
+                        <strong class="text-purple-600 dark:text-purple-300 block"><i class="fa-solid fa-layer-group"></i> 4 Pilares Fundamentais</strong>
+                        <ul class="list-disc list-inside text-caixa-gray110 dark:text-gray-300 space-y-1">
                             <li><strong>Estratégia:</strong> Orçamento, metas e visão executiva.</li>
                             <li><strong>Cultura:</strong> Empatia, letramento e aceitação do erro.</li>
                             <li><strong>Processo:</strong> Métodos de pesquisa, testes e Design System.</li>
@@ -478,88 +438,88 @@
                         </ul>
                     </div>
                 </div>
-                <div class="apple-card-inset p-3 text-[11px] text-apple-gray italic">
+                <div class="dsc-card-inset p-3 text-[11px] text-caixa-gray110 dark:text-gray-400 italic">
                     Cada integrante do time deve preencher o questionário individualmente para que a média geral seja calculada com precisão.
                 </div>
             </div>
         </section>
 
         <!-- SEÇÃO DE VOTOS DO TIME -->
-        <section class="apple-card p-6 space-y-4">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-black/5 dark:border-white/10 pb-4">
+        <section class="dsc-card p-6 space-y-4 shadow-elevation1">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-caixa-border dark:border-caixa-darkBorder pb-4">
                 <div>
-                    <h3 class="text-base font-bold text-black dark:text-white flex items-center gap-2">
-                        <i class="fa-solid fa-users text-apple-green dark:text-apple-darkGreen"></i> Quadro de Avaliadores do Time
+                    <h3 class="text-base font-bold text-caixa-blue110 dark:text-white flex items-center gap-2">
+                        <i class="fa-solid fa-users text-caixa-success110 dark:text-emerald-400"></i> Quadro de Avaliadores do Time
                     </h3>
-                    <p class="text-xs text-apple-gray">Listagem das notas individuais salvas na nuvem por cada integrante da equipe.</p>
+                    <p class="text-xs text-caixa-gray110 dark:text-gray-300">Listagem das notas individuais salvas na nuvem por cada integrante da equipe.</p>
                 </div>
 
                 <!-- SELETOR E BOTÕES DO QUADRO -->
                 <div class="flex items-center gap-2 flex-wrap justify-end">
                     <div class="flex items-center gap-1.5 mr-2">
-                        <label for="selectTimeConsulta" class="text-xs text-apple-gray font-medium">Exibir Time:</label>
-                        <select id="selectTimeConsulta" onchange="alterarTimeConsulta(this.value)" class="apple-input text-xs py-2 px-3 cursor-pointer">
+                        <label for="selectTimeConsulta" class="text-xs text-caixa-gray110 dark:text-gray-300 font-medium">Exibir Time:</label>
+                        <select id="selectTimeConsulta" onchange="alterarTimeConsulta(this.value)" class="dsc-input text-xs py-2 px-3 cursor-pointer">
                             <option value="">Selecione o Time...</option>
                             <option value="PUXE">PUXE</option>
                         </select>
                     </div>
 
-                    <button onclick="limparQuadroConsulta()" class="apple-btn-secondary text-xs py-2.5 px-4 flex items-center gap-2">
-                        <i class="fa-solid fa-broom text-apple-red dark:text-apple-darkRed"></i> Limpar Quadro
+                    <button onclick="limparQuadroConsulta()" class="dsc-card-inset hover:bg-caixa-gray50 dark:hover:bg-caixa-darkCard text-caixa-blue110 dark:text-white font-bold text-xs py-2.5 px-4 rounded-pill transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-broom text-caixa-danger110 dark:text-red-400"></i> Limpar Quadro
                     </button>
 
-                    <button onclick="calcularMediaGeralDoTime()" class="apple-btn-primary text-xs py-2.5 px-5 flex items-center gap-2 !bg-apple-green hover:!bg-emerald-600">
+                    <button onclick="calcularMediaGeralDoTime()" class="bg-caixa-success70 hover:bg-caixa-success110 text-white font-bold text-xs py-2.5 px-5 rounded-pill transition-all shadow-md flex items-center gap-2">
                         <i class="fa-solid fa-calculator"></i> Calcular Média Geral do Time
                     </button>
                 </div>
             </div>
 
-            <div class="overflow-x-auto">
-    <table class="w-full text-left text-xs border-collapse">
-        <thead class="bg-black/5 dark:bg-white/5 text-apple-gray uppercase text-[10px] font-bold border-b border-black/5 dark:border-white/10">
-            <tr>
-                <th rowspan="2" class="p-3 border-r border-black/5 dark:border-white/10">Avaliador / Perfil</th>
-                <th colspan="5" class="p-2 text-center text-apple-blue dark:text-apple-darkBlue border-r border-black/5 dark:border-white/10 bg-blue-500/5">Estratégia</th>
-                <th colspan="5" class="p-2 text-center text-apple-purple dark:text-apple-darkPurple border-r border-black/5 dark:border-white/10 bg-purple-500/5">Cultura</th>
-                <th colspan="5" class="p-2 text-center text-apple-orange dark:text-apple-darkOrange border-r border-black/5 dark:border-white/10 bg-orange-500/5">Processo</th>
-                <th colspan="5" class="p-2 text-center text-apple-green dark:text-apple-darkGreen border-r border-black/5 dark:border-white/10 bg-green-500/5">Resultados</th>
-                <th rowspan="2" class="p-3 text-center min-w-[90px]">Score Indiv.</th>
-            </tr>
-            <tr class="text-[9px]">
-                <!-- Estratégia -->
-                <th class="p-1 text-center font-mono">Q1</th><th class="p-1 text-center font-mono">Q2</th><th class="p-1 text-center font-mono">Q3</th><th class="p-1 text-center font-mono">Q4</th><th class="p-1 text-center font-bold text-apple-blue dark:text-apple-darkBlue border-r border-black/5 dark:border-white/10 bg-blue-500/10">Média</th>
-                <!-- Cultura -->
-                <th class="p-1 text-center font-mono">Q5</th><th class="p-1 text-center font-mono">Q6</th><th class="p-1 text-center font-mono">Q7</th><th class="p-1 text-center font-mono">Q8</th><th class="p-1 text-center font-bold text-apple-purple dark:text-apple-darkPurple border-r border-black/5 dark:border-white/10 bg-purple-500/10">Média</th>
-                <!-- Processo -->
-                <th class="p-1 text-center font-mono">Q9</th><th class="p-1 text-center font-mono">Q10</th><th class="p-1 text-center font-mono">Q11</th><th class="p-1 text-center font-mono">Q12</th><th class="p-1 text-center font-bold text-apple-orange dark:text-apple-darkOrange border-r border-black/5 dark:border-white/10 bg-orange-500/10">Média</th>
-                <!-- Resultados -->
-                <th class="p-1 text-center font-mono">Q13</th><th class="p-1 text-center font-mono">Q14</th><th class="p-1 text-center font-mono">Q15</th><th class="p-1 text-center font-mono">Q16</th><th class="p-1 text-center font-bold text-apple-green dark:text-apple-darkGreen border-r border-black/5 dark:border-white/10 bg-green-500/10">Média</th>
-            </tr>
-        </thead>
-        <tbody id="tabelaVotosBody" class="divide-y divide-black/5 dark:divide-white/5">
-            <!-- Gerado dinamicamente -->
-        </tbody>
-    </table>
-</div>
+            <div class="overflow-x-auto rounded-inset border border-caixa-border dark:border-caixa-darkBorder">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead class="dsc-card-inset text-caixa-gray130 dark:text-gray-200 uppercase text-[10px] font-bold border-b border-caixa-border dark:border-caixa-darkBorder">
+                        <tr>
+                            <th rowspan="2" class="p-3 border-r border-caixa-border dark:border-caixa-darkBorder">Avaliador / Perfil</th>
+                            <th colspan="5" class="p-2 text-center text-caixa-blue90 dark:text-blue-300 border-r border-caixa-border dark:border-caixa-darkBorder bg-blue-500/10">Estratégia</th>
+                            <th colspan="5" class="p-2 text-center text-purple-700 dark:text-purple-300 border-r border-caixa-border dark:border-caixa-darkBorder bg-purple-500/10">Cultura</th>
+                            <th colspan="5" class="p-2 text-center text-caixa-orange90 dark:text-orange-300 border-r border-caixa-border dark:border-caixa-darkBorder bg-orange-500/10">Processo</th>
+                            <th colspan="5" class="p-2 text-center text-emerald-700 dark:text-emerald-400 border-r border-caixa-border dark:border-caixa-darkBorder bg-green-500/10">Resultados</th>
+                            <th rowspan="2" class="p-3 text-center min-w-[90px]">Score Indiv.</th>
+                        </tr>
+                        <tr class="text-[9px]">
+                            <!-- Estratégia -->
+                            <th class="p-1 text-center font-mono">Q1</th><th class="p-1 text-center font-mono">Q2</th><th class="p-1 text-center font-mono">Q3</th><th class="p-1 text-center font-mono">Q4</th><th class="p-1 text-center font-bold text-caixa-blue90 dark:text-blue-300 border-r border-caixa-border dark:border-caixa-darkBorder bg-blue-500/20">Média</th>
+                            <!-- Cultura -->
+                            <th class="p-1 text-center font-mono">Q5</th><th class="p-1 text-center font-mono">Q6</th><th class="p-1 text-center font-mono">Q7</th><th class="p-1 text-center font-mono">Q8</th><th class="p-1 text-center font-bold text-purple-700 dark:text-purple-300 border-r border-caixa-border dark:border-caixa-darkBorder bg-purple-500/20">Média</th>
+                            <!-- Processo -->
+                            <th class="p-1 text-center font-mono">Q9</th><th class="p-1 text-center font-mono">Q10</th><th class="p-1 text-center font-mono">Q11</th><th class="p-1 text-center font-mono">Q12</th><th class="p-1 text-center font-bold text-caixa-orange90 dark:text-orange-300 border-r border-caixa-border dark:border-caixa-darkBorder bg-orange-500/20">Média</th>
+                            <!-- Resultados -->
+                            <th class="p-1 text-center font-mono">Q13</th><th class="p-1 text-center font-mono">Q14</th><th class="p-1 text-center font-mono">Q15</th><th class="p-1 text-center font-mono">Q16</th><th class="p-1 text-center font-bold text-emerald-700 dark:text-emerald-400 border-r border-caixa-border dark:border-caixa-darkBorder bg-green-500/20">Média</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaVotosBody" class="divide-y divide-caixa-border dark:divide-caixa-darkBorder">
+                        <!-- Gerado dinamicamente -->
+                    </tbody>
+                </table>
+            </div>
         </section>
 
         <!-- LOG DE SAÚDE TRIMESTRAL DO TIME -->
-        <section id="secaoHealthLog" class="apple-card p-6 space-y-4 print:hidden">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-black/5 dark:border-white/10 pb-4">
+        <section id="secaoHealthLog" class="dsc-card p-6 space-y-4 print:hidden shadow-elevation1">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-caixa-border dark:border-caixa-darkBorder pb-4">
                 <div>
-                    <h3 class="text-base font-bold text-black dark:text-white flex items-center gap-2">
-                        <i class="fa-solid fa-notes-medical text-apple-purple dark:text-apple-darkPurple"></i> Log de Saúde Trimestral do Time (UX Health Log)
+                    <h3 class="text-base font-bold text-caixa-blue110 dark:text-white flex items-center gap-2">
+                        <i class="fa-solid fa-notes-medical text-purple-600 dark:text-purple-400"></i> Log de Saúde Trimestral do Time (UX Health Log)
                     </h3>
-                    <p class="text-xs text-apple-gray">Acompanhamento continuado recomendado pelo NN/g para evitar regressões e manter a resiliência das práticas.</p>
+                    <p class="text-xs text-caixa-gray110 dark:text-gray-300">Acompanhamento continuado recomendado pelo NN/g para evitar regressões e manter a resiliência das práticas.</p>
                 </div>
-                <button onclick="salvarFechamentoTrimestral()" class="apple-btn-secondary text-xs py-2.5 px-4 flex items-center gap-2 text-apple-purple border-apple-purple/30">
+                <button onclick="salvarFechamentoTrimestral()" class="dsc-card-inset hover:bg-caixa-gray50 dark:hover:bg-caixa-darkCard text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-800 font-bold text-xs py-2.5 px-4 rounded-pill transition-all flex items-center gap-2">
                     <i class="fa-solid fa-bookmark"></i> Registrar Fechamento Trimestral na Nuvem
                 </button>
             </div>
 
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto rounded-inset border border-caixa-border dark:border-caixa-darkBorder">
                 <table class="w-full text-left text-xs">
-                    <thead class="bg-black/5 dark:bg-white/5 text-apple-gray uppercase text-[10px] font-bold border-b border-black/5 dark:border-white/10">
+                    <thead class="dsc-card-inset text-caixa-gray130 dark:text-gray-200 uppercase text-[10px] font-bold border-b border-caixa-border dark:border-caixa-darkBorder">
                         <tr>
                             <th class="p-3">Data / Registro</th>
                             <th class="p-3 text-center">Estratégia</th>
@@ -570,7 +530,7 @@
                             <th class="p-3 text-center">Estágio NN/g</th>
                         </tr>
                     </thead>
-                    <tbody id="tabelaHealthLogBody" class="divide-y divide-black/5 dark:divide-white/5">
+                    <tbody id="tabelaHealthLogBody" class="divide-y divide-caixa-border dark:divide-caixa-darkBorder">
                         <!-- Gerado dinamicamente -->
                     </tbody>
                 </table>
@@ -580,32 +540,32 @@
         <!-- CENTRAL DE INTELIGÊNCIA E RESULTADOS (DASHBOARD) -->
         <section id="dashboardSection" class="space-y-8 hidden">
             <!-- Banner do Estágio Calculado do Time -->
-            <div class="banner-maturidade p-6">
+            <div class="dsc-card p-6 border-l-4 border-l-caixa-blue90 shadow-elevation2">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                        <span class="text-apple-blue dark:text-apple-darkBlue text-xs font-bold tracking-wider uppercase block">Diagnóstico Consolidado do Time</span>
-                        <h2 id="resultEstagioTitle" class="text-3xl font-black text-black dark:text-white mt-1">--</h2>
-                        <p id="resultEstagioDesc" class="text-apple-gray dark:text-gray-300 text-xs mt-1.5 max-w-3xl leading-relaxed">--</p>
+                        <span class="text-caixa-blue90 dark:text-blue-300 text-xs font-bold tracking-wider uppercase block">Diagnóstico Consolidado do Time</span>
+                        <h2 id="resultEstagioTitle" class="text-2xl md:text-3xl font-black text-caixa-blue110 dark:text-white mt-1">--</h2>
+                        <p id="resultEstagioDesc" class="text-caixa-gray110 dark:text-gray-300 text-xs mt-1.5 max-w-3xl leading-relaxed">--</p>
                     </div>
-                    <div class="score-pill px-5 py-3 text-center min-w-[170px] shrink-0">
-                        <span class="text-apple-gray text-[10px] font-bold uppercase block tracking-wider">Score Geral do Time</span>
-                        <div id="resultScoreMedio" class="text-3xl font-black text-apple-blue dark:text-apple-darkBlue mt-0.5">0.0 / 100</div>
+                    <div class="dsc-card-inset px-5 py-3 text-center min-w-[170px] shrink-0 border border-caixa-border">
+                        <span class="text-caixa-gray110 dark:text-gray-400 text-[10px] font-bold uppercase block tracking-wider">Score Geral do Time</span>
+                        <div id="resultScoreMedio" class="text-3xl font-black text-caixa-blue90 dark:text-blue-300 mt-0.5">0.0 / 100</div>
                     </div>
                 </div>
 
                 <!-- Bloco de Barras de Evolução -->
-                <div class="mt-6 pt-4 border-t border-black/10 dark:border-white/10 space-y-4">
+                <div class="mt-6 pt-4 border-t border-caixa-border dark:border-caixa-darkBorder space-y-4">
 
-                    <!-- 1. BARRA MACRO: Nível Geral do Time (Estágios 1 ao 6) -->
+                    <!-- 1. BARRA MACRO -->
                     <div>
-                        <div class="flex justify-between text-[11px] text-apple-gray mb-1.5">
-                            <span class="font-semibold text-black dark:text-gray-200"><i class="fa-solid fa-chart-line text-apple-blue dark:text-apple-darkBlue mr-1"></i> Maturidade Geral Macro (Escala NN/g)</span>
-                            <span id="macroLevelText" class="font-mono text-apple-blue dark:text-apple-darkBlue">Nível 1 de 6</span>
+                        <div class="flex justify-between text-[11px] text-caixa-gray110 dark:text-gray-300 mb-1.5">
+                            <span class="font-semibold text-caixa-blue110 dark:text-white"><i class="fa-solid fa-chart-line text-caixa-blue90 mr-1"></i> Maturidade Geral Macro (Escala NN/g)</span>
+                            <span id="macroLevelText" class="font-mono text-caixa-blue90 dark:text-blue-300 font-bold">Nível 1 de 6</span>
                         </div>
-                        <div class="w-full bg-black/10 dark:bg-black/60 rounded-full h-2.5 overflow-hidden border border-black/5 dark:border-white/10">
-                            <div id="macroProgressBar" class="bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-500 h-full transition-all duration-500" style="width: 0%"></div>
+                        <div class="w-full bg-caixa-gray30 dark:bg-caixa-darkCardInset rounded-full h-2.5 overflow-hidden border border-caixa-border dark:border-caixa-darkBorder">
+                            <div id="macroProgressBar" class="bg-gradient-to-r from-blue-700 via-caixa-blue90 to-purple-600 h-full transition-all duration-500" style="width: 0%"></div>
                         </div>
-                        <div class="flex justify-between text-[9px] text-apple-gray mt-1 font-mono uppercase">
+                        <div class="flex justify-between text-[9px] text-caixa-gray110 dark:text-gray-400 mt-1 font-mono uppercase">
                             <span>E1: Ausente</span>
                             <span>E2: Limitado</span>
                             <span>E3: Emergente</span>
@@ -615,91 +575,91 @@
                         </div>
                     </div>
 
-                    <!-- 2. BARRA MICRO: Progresso Interno do Estágio Atual -->
+                    <!-- 2. BARRA MICRO -->
                     <div>
-                        <div class="flex justify-between text-[11px] text-apple-gray mb-1.5">
-                            <span class="font-semibold text-black dark:text-gray-200"><i class="fa-solid fa-bolt text-apple-orange dark:text-apple-darkOrange mr-1"></i> Avanço Interno no Estágio Atual</span>
-                            <span id="evolutionPercentage">0% concluído neste estágio</span>
+                        <div class="flex justify-between text-[11px] text-caixa-gray110 dark:text-gray-300 mb-1.5">
+                            <span class="font-semibold text-caixa-blue110 dark:text-white"><i class="fa-solid fa-bolt text-caixa-orange90 mr-1"></i> Avanço Interno no Estágio Atual</span>
+                            <span id="evolutionPercentage" class="font-medium">0% concluído neste estágio</span>
                         </div>
-                        <div class="w-full bg-black/10 dark:bg-black/60 rounded-full h-2.5 overflow-hidden border border-black/5 dark:border-white/10">
-                            <div id="evolutionBar" class="bg-apple-green dark:bg-apple-darkGreen h-full transition-all duration-500" style="width: 0%"></div>
+                        <div class="w-full bg-caixa-gray30 dark:bg-caixa-darkCardInset rounded-full h-2.5 overflow-hidden border border-caixa-border dark:border-caixa-darkBorder">
+                            <div id="evolutionBar" class="bg-caixa-success70 h-full transition-all duration-500" style="width: 0%"></div>
                         </div>
                     </div>
 
                 </div>
 
                 <!-- Alertas Dinâmicos de Regressão e Gap (Sinais NN/g) -->
-                <div id="gapAlertBox" class="gap-alert mt-4 p-3 text-xs hidden flex items-start gap-2">
+                <div id="gapAlertBox" class="p-3 text-xs rounded-inset bg-amber-100 text-amber-900 border border-amber-300 dark:bg-amber-900/40 dark:text-amber-200 dark:border-amber-700 mt-4 hidden flex items-start gap-2">
                     <i class="fa-solid fa-triangle-exclamation mt-0.5 text-base shrink-0"></i>
                     <div>
-                        <strong class="block text-apple-orange dark:text-amber-300">Detecção de Regressão Silenciosa (Sinais de Drift NN/g):</strong>
+                        <strong class="block font-bold">Detecção de Regressão Silenciosa (Sinais de Drift NN/g):</strong>
                         <span id="gapAlertMessage">--</span>
                     </div>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div class="lg:col-span-1 apple-card p-6 flex flex-col justify-between">
+                <div class="lg:col-span-1 dsc-card p-6 flex flex-col justify-between shadow-elevation1">
                     <div>
-                        <h3 class="text-sm font-bold text-black dark:text-white mb-1 flex items-center gap-2 border-b border-black/5 dark:border-white/10 pb-2">
-                            <i class="fa-solid fa-chart-radar text-apple-purple dark:text-apple-darkPurple"></i> Percepção por Perfil vs Média do Time
+                        <h3 class="text-sm font-bold text-caixa-blue110 dark:text-white mb-1 flex items-center gap-2 border-b border-caixa-border dark:border-caixa-darkBorder pb-2">
+                            <i class="fa-solid fa-chart-radar text-purple-600 dark:text-purple-400"></i> Percepção por Perfil vs Média do Time
                         </h3>
-                        <p class="text-[10px] text-apple-gray mb-2">Compara as visões individuais dos perfis com a média consolidada.</p>
+                        <p class="text-[10px] text-caixa-gray110 dark:text-gray-400 mb-2">Compara as visões individuais dos perfis com a média consolidada.</p>
                     </div>
                     <div class="relative h-64 w-full flex items-center justify-center">
                         <canvas id="radarChart"></canvas>
                     </div>
                 </div>
 
-                <div class="lg:col-span-2 apple-card p-6 flex flex-col justify-between">
+                <div class="lg:col-span-2 dsc-card p-6 flex flex-col justify-between shadow-elevation1">
                     <div>
-                        <h3 class="text-sm font-bold text-black dark:text-white mb-3 flex items-center gap-2 border-b border-black/5 dark:border-white/10 pb-2">
-                            <i class="fa-solid fa-route text-apple-green dark:text-apple-darkGreen"></i> Plano de Manutenção e Evolução Contínua
+                        <h3 class="text-sm font-bold text-caixa-blue110 dark:text-white mb-3 flex items-center gap-2 border-b border-caixa-border dark:border-caixa-darkBorder pb-2">
+                            <i class="fa-solid fa-route text-emerald-700 dark:text-emerald-400"></i> Plano de Manutenção e Evolução Contínua
                         </h3>
-                        <div id="recommendationsList" class="space-y-3 text-xs text-black dark:text-gray-300">
+                        <div id="recommendationsList" class="space-y-3 text-xs text-caixa-gray130 dark:text-gray-300">
                             <!-- Gerado dinamicamente -->
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="apple-card p-6 space-y-4 print:hidden">
+            <div class="dsc-card p-6 space-y-4 print:hidden shadow-elevation1">
                 <div>
-                    <h3 class="text-base font-bold text-black dark:text-white flex items-center gap-2">
-                        <i class="fa-solid fa-sliders text-apple-blue dark:text-apple-darkBlue"></i> Simulador de Cenários ("What-If") do Time
+                    <h3 class="text-base font-bold text-caixa-blue110 dark:text-white flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-caixa-blue90 dark:text-blue-300"></i> Simulador de Cenários ("What-If") do Time
                     </h3>
-                    <p class="text-xs text-apple-gray mt-1">Simule como melhorias estruturais afetam o score consolidado do time.</p>
+                    <p class="text-xs text-caixa-gray110 dark:text-gray-300 mt-1">Simule como melhorias estruturais afetam o score consolidado do time.</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 pt-2">
-                    <div class="space-y-2 apple-card-inset p-3">
-                        <div class="flex justify-between text-xs font-semibold text-black dark:text-gray-300">
+                    <div class="space-y-2 dsc-card-inset p-3">
+                        <div class="flex justify-between text-xs font-semibold text-caixa-gray130 dark:text-gray-300">
                             <span>Estratégia</span>
-                            <span id="sliderValEstrat" class="text-apple-blue dark:text-apple-darkBlue">1.0</span>
+                            <span id="sliderValEstrat" class="text-caixa-blue90 dark:text-blue-300 font-bold">1.0</span>
                         </div>
                         <input type="range" id="sliderEstrat" min="1" max="5" step="0.1" oninput="simularWhatIf()" class="sim-slider w-full h-1.5 rounded-lg appearance-none cursor-pointer">
                     </div>
 
-                    <div class="space-y-2 apple-card-inset p-3">
-                        <div class="flex justify-between text-xs font-semibold text-black dark:text-gray-300">
+                    <div class="space-y-2 dsc-card-inset p-3">
+                        <div class="flex justify-between text-xs font-semibold text-caixa-gray130 dark:text-gray-300">
                             <span>Cultura</span>
-                            <span id="sliderValCult" class="text-apple-blue dark:text-apple-darkBlue">1.0</span>
+                            <span id="sliderValCult" class="text-caixa-blue90 dark:text-blue-300 font-bold">1.0</span>
                         </div>
                         <input type="range" id="sliderCult" min="1" max="5" step="0.1" oninput="simularWhatIf()" class="sim-slider w-full h-1.5 rounded-lg appearance-none cursor-pointer">
                     </div>
 
-                    <div class="space-y-2 apple-card-inset p-3">
-                        <div class="flex justify-between text-xs font-semibold text-black dark:text-gray-300">
+                    <div class="space-y-2 dsc-card-inset p-3">
+                        <div class="flex justify-between text-xs font-semibold text-caixa-gray130 dark:text-gray-300">
                             <span>Processo</span>
-                            <span id="sliderValProc" class="text-apple-blue dark:text-apple-darkBlue">1.0</span>
+                            <span id="sliderValProc" class="text-caixa-blue90 dark:text-blue-300 font-bold">1.0</span>
                         </div>
                         <input type="range" id="sliderProc" min="1" max="5" step="0.1" oninput="simularWhatIf()" class="sim-slider w-full h-1.5 rounded-lg appearance-none cursor-pointer">
                     </div>
 
-                    <div class="space-y-2 apple-card-inset p-3">
-                        <div class="flex justify-between text-xs font-semibold text-black dark:text-gray-300">
+                    <div class="space-y-2 dsc-card-inset p-3">
+                        <div class="flex justify-between text-xs font-semibold text-caixa-gray130 dark:text-gray-300">
                             <span>Resultados</span>
-                            <span id="sliderValResult" class="text-apple-blue dark:text-apple-darkBlue">1.0</span>
+                            <span id="sliderValResult" class="text-caixa-blue90 dark:text-blue-300 font-bold">1.0</span>
                         </div>
                         <input type="range" id="sliderResult" min="1" max="5" step="0.1" oninput="simularWhatIf()" class="sim-slider w-full h-1.5 rounded-lg appearance-none cursor-pointer">
                     </div>
@@ -709,69 +669,68 @@
 
     </main>
 
-    <!-- FOOTER -->
-    <footer class="bg-white dark:bg-[#1C1C1E] border-t border-black/5 dark:border-white/10 mt-16 py-8 px-4 text-xs text-apple-gray print:hidden">
+    <!-- FOOTER INSTITUCIONAL CAIXA -->
+    <footer class="bg-white dark:bg-caixa-darkCard border-t border-caixa-border dark:border-caixa-darkBorder mt-16 py-8 px-6 text-xs text-caixa-gray110 dark:text-gray-300 print:hidden">
         <div class="max-w-7xl mx-auto space-y-4">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-black/5 dark:border-white/5 pb-3">
-                <h4 class="text-sm font-bold text-black dark:text-white flex items-center gap-2">
-                    <i class="fa-solid fa-graduation-cap text-apple-blue dark:text-apple-darkBlue"></i> Validação Científica & Frameworks de Maturidade
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-caixa-border dark:border-caixa-darkBorder pb-3">
+                <h4 class="text-sm font-bold text-caixa-blue110 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-caixa-blue90 dark:text-blue-400"></i> Validação Científica & Frameworks de Maturidade
                 </h4>
-                <span class="text-[11px] text-apple-gray font-mono">Embasamento Teórico — Design Operations & Governance</span>
+                <span class="text-[11px] text-caixa-gray110 dark:text-gray-400 font-mono">Embasamento Teórico — Design Operations & Governance</span>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-[11px] leading-relaxed">
-                <div class="apple-card-inset p-3 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/20 transition-colors">
+                <div class="dsc-card-inset p-3 flex flex-col justify-between hover:border-caixa-blue90 transition-colors">
                     <div>
-                        <strong class="text-apple-blue dark:text-apple-darkBlue block mb-1">Modelo de 6 Estágios (NN/g)</strong>
-                        <p class="text-apple-gray">Rosala, M. & Moran, K. (2021). <em>"The 6 Stages of UX Maturity"</em>. Nielsen Norman Group.</p>
+                        <strong class="text-caixa-blue90 dark:text-blue-300 block mb-1">Modelo de 6 Estágios (NN/g)</strong>
+                        <p class="text-caixa-gray110 dark:text-gray-300">Rosala, M. & Moran, K. (2021). <em>"The 6 Stages of UX Maturity"</em>. Nielsen Norman Group.</p>
                     </div>
-                    <a href="https://www.nngroup.com/articles/ux-maturity-stages/" target="_blank" class="text-apple-blue dark:text-apple-darkBlue font-semibold mt-3 inline-flex items-center gap-1">
+                    <a href="https://www.nngroup.com/articles/ux-maturity-stages/" target="_blank" class="text-caixa-blue90 dark:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
                         Ler no NN/g <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                     </a>
                 </div>
 
-                <div class="apple-card-inset p-3 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/20 transition-colors">
+                <div class="dsc-card-inset p-3 flex flex-col justify-between hover:border-caixa-blue90 transition-colors">
                     <div>
-                        <strong class="text-apple-blue dark:text-apple-darkBlue block mb-1">Impacto de Negócio (McKinsey)</strong>
-                        <p class="text-apple-gray">Sheppard, B. et al. (2018). <em>"The Business Value of Design"</em>. McKinsey & Company.</p>
+                        <strong class="text-caixa-blue90 dark:text-blue-300 block mb-1">Impacto de Negócio (McKinsey)</strong>
+                        <p class="text-caixa-gray110 dark:text-gray-300">Sheppard, B. et al. (2018). <em>"The Business Value of Design"</em>. McKinsey & Company.</p>
                     </div>
-                    <a href="https://www.mckinsey.com/capabilities/mckinsey-design/our-insights/the-business-value-of-design" target="_blank" class="text-apple-blue dark:text-apple-darkBlue font-semibold mt-3 inline-flex items-center gap-1">
+                    <a href="https://www.mckinsey.com/capabilities/mckinsey-design/our-insights/the-business-value-of-design" target="_blank" class="text-caixa-blue90 dark:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
                         Ver Estudo McKinsey <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                     </a>
                 </div>
 
-                <div class="apple-card-inset p-3 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/20 transition-colors">
+                <div class="dsc-card-inset p-3 flex flex-col justify-between hover:border-caixa-blue90 transition-colors">
                     <div>
-                        <strong class="text-apple-blue dark:text-apple-darkBlue block mb-1">Design Value Index (DMI)</strong>
-                        <p class="text-apple-gray">Westcott, M. et al. (2015). <em>"The DMI Design Value Index: Results and Methodologies"</em>. Design Management Institute.</p>
+                        <strong class="text-caixa-blue90 dark:text-blue-300 block mb-1">Design Value Index (DMI)</strong>
+                        <p class="text-caixa-gray110 dark:text-gray-300">Westcott, M. et al. (2015). <em>"The DMI Design Value Index: Results and Methodologies"</em>. Design Management Institute.</p>
                     </div>
-                    <a href="https://www.dmi.org/page/DesignValue" target="_blank" class="text-apple-blue dark:text-apple-darkBlue font-semibold mt-3 inline-flex items-center gap-1">
+                    <a href="https://www.dmi.org/page/DesignValue" target="_blank" class="text-caixa-blue90 dark:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
                         Acessar DMI <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                     </a>
                 </div>
 
-                <div class="apple-card-inset p-3 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/20 transition-colors">
+                <div class="dsc-card-inset p-3 flex flex-col justify-between hover:border-caixa-blue90 transition-colors">
                     <div>
-                        <strong class="text-apple-blue dark:text-apple-darkBlue block mb-1">Integração Ágil & Engenharia</strong>
-                        <p class="text-apple-gray">Silva, T. S. et al. (2018). <em>"A UX Integration Model for Agile Software Development Environments"</em>. ACM / IEEE.</p>
+                        <strong class="text-caixa-blue90 dark:text-blue-300 block mb-1">Integração Ágil & Engenharia</strong>
+                        <p class="text-caixa-gray110 dark:text-gray-300">Silva, T. S. et al. (2018). <em>"A UX Integration Model for Agile Software Development Environments"</em>. ACM / IEEE.</p>
                     </div>
-                    <a href="https://dl.acm.org/doi/10.1145/3234152.3234181" target="_blank" class="text-apple-blue dark:text-apple-darkBlue font-semibold mt-3 inline-flex items-center gap-1">
+                    <a href="https://dl.acm.org/doi/10.1145/3234152.3234181" target="_blank" class="text-caixa-blue90 dark:text-blue-300 font-semibold mt-3 inline-flex items-center gap-1">
                         Acessar ACM DL <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                     </a>
                 </div>
             </div>
 
-            <div class="text-center text-[10px] text-apple-gray pt-2">
+            <div class="text-center text-[10px] text-caixa-gray110 dark:text-gray-400 pt-2">
                 Auditoria de Maturidade UX em Equipe — Desenvolvida em conformidade com o modelo de 4 pilares e 6 estágios evolutivos do Nielsen Norman Group (NN/g).
             </div>
         </div>
     </footer>
 
+    <!-- LÓGICA JAVASCRIPT DA APLICAÇÃO -->
     <script>
-        // CONFIGURAÇÃO DO GOOGLE APPS SCRIPT WEBHOOK
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwtRuGYmSV7bVQ7viAZKDYsvJP63tuw4xSpTwwyFzaV6hk3RiNLqoC_YWqAF1gwMGM6KQ/exec";
 
-        // ESTADO GLOBAL DA APLICAÇÃO
         let usuarioAtual = { time: "", nome: "", cargo: "" };
         let timeConsultaAtual = ""; 
         let votosAtuais = {};
@@ -779,31 +738,31 @@
         let bancoVotosNuvem = [];
         let bancoHealthLogNuvem = [];
 
-    const bancoQuestoes = [
-    // 🎯 ESTRATÉGIA
-    { id: 1, pilar: "Estratégia", texto: "O time PUXE possui orçamento previsível e contínuo para o recrutamento de usuários e assinatura de ferramentas essenciais de pesquisa e teste (ex: Maze, painéis de recrutamento)." },
-    { id: 2, pilar: "Estratégia", texto: "As lideranças executivas e gestores de produto consideram as evidências de pesquisa e as diretrizes de linguagem (Writing) como requisitos obrigatórios antes de aprovar novas iniciativas." },
-    { id: 3, pilar: "Estratégia", texto: "As oportunidades, dores de CX/UX e hipóteses mapeadas pelo time PUXE estão formalmente integradas aos OKRs e ao roadmap estratégico da empresa." },
-    { id: 4, pilar: "Estratégia", texto: "O dimensionamento da equipe de Pesquisadores e Writers é equilibrado em relação às demandas do projeto, permitindo atuar com profundidade técnica." },
+        const bancoQuestoes = [
+            // 🎯 ESTRATÉGIA
+            { id: 1, pilar: "Estratégia", texto: "O time PUXE possui orçamento previsível e contínuo para o recrutamento de usuários e assinatura de ferramentas essenciais de pesquisa e teste (ex: Maze, painéis de recrutamento)." },
+            { id: 2, pilar: "Estratégia", texto: "As lideranças executivas e gestores de produto consideram as evidências de pesquisa e as diretrizes de linguagem (Writing) como requisitos obrigatórios antes de aprovar novas iniciativas." },
+            { id: 3, pilar: "Estratégia", texto: "As oportunidades, dores de CX/UX e hipóteses mapeadas pelo time PUXE estão formalmente integradas aos OKRs e ao roadmap estratégico da empresa." },
+            { id: 4, pilar: "Estratégia", texto: "O dimensionamento da equipe de Pesquisadores e Writers é equilibrado em relação às demandas do projeto, permitindo atuar com profundidade técnica." },
 
-    // 🧠 CULTURA
-    { id: 5, pilar: "Cultura", texto: "Os Product Owners (P.Os) e Stakeholders do projeto compreendem o papel de CX/UX e valorizam os relatórios de pesquisa e manuais de tom de voz na tomada de decisão." },
-    { id: 6, pilar: "Cultura", texto: "Quando um teste invalida uma ideia ou descobre que uma comunicação não funciona, o resultado é acolhido como um aprendizado positivo, sem pressão por forçar conclusões." },
-    { id: 7, pilar: "Cultura", texto: "Existe uma rotina de troca fluida entre UX Researchers, CX Researchers, UX Writers e CX Writers, garantindo alinhamento entre a jornada ponta a ponta e as telas digitais." },
-    { id: 8, pilar: "Cultura", texto: "As personas, mapas de jornada, relatórios de pesquisa e manuais de redação ficam centralizados em locais públicos e acessíveis a qualquer pessoa da empresa." },
+            // 🧠 CULTURA
+            { id: 5, pilar: "Cultura", texto: "Os Product Owners (P.Os) e Stakeholders do projeto compreendem o papel de CX/UX e valorizam os relatórios de pesquisa e manuais de tom de voz na tomada de decisão." },
+            { id: 6, pilar: "Cultura", texto: "Quando um teste invalida uma ideia ou descobre que uma comunicação não funciona, o resultado é acolhido como um aprendizado positivo, sem pressão por forçar conclusões." },
+            { id: 7, pilar: "Cultura", texto: "Existe uma rotina de troca fluida entre UX Researchers, CX Researchers, UX Writers e CX Writers, garantindo alinhamento entre a jornada ponta a ponta e as telas digitais." },
+            { id: 8, pilar: "Cultura", texto: "As personas, mapas de jornada, relatórios de pesquisa e manuais de redação ficam centralizados em locais públicos e acessíveis a qualquer pessoa da empresa." },
 
-    // 🔄 PROCESSO
-    { id: 9, pilar: "Processo", texto: "O trabalho de investigação (UX/CX Pesquisa) e a definição de diretrizes de linguagem (UX/CX Writing) acontecem no início das demandas (Discovery), antes de qualquer desenho de interface final." },
-    { id: 10, pilar: "Processo", texto: "O time utiliza e alimenta padronizadamente um repositório central de pesquisas anteriores e guias/matrizes de tom de voz e redação (ResearchOps & ContentOps)." },
-    { id: 11, pilar: "Processo", texto: "O time realiza rotinas de testes de usabilidade, clareza e compreensão (usando protótipos de UI e copys de Writing) com usuários reais antes de aprovar uma entrega." },
-    { id: 12, pilar: "Processo", texto: "A etapa de geração de soluções e ideação é realizada de forma colaborativa através de workshops estruturados com a participação do time PUXE, P.Os e Stakeholders." },
+            // 🔄 PROCESSO
+            { id: 9, pilar: "Processo", texto: "O trabalho de investigação (UX/CX Pesquisa) e a definição de diretrizes de linguagem (UX/CX Writing) acontecem no início das demandas (Discovery), antes de qualquer desenho de interface final." },
+            { id: 10, pilar: "Processo", texto: "O time utiliza e alimenta padronizadamente um repositório central de pesquisas anteriores e guias/matrizes de tom de voz e redação (ResearchOps & ContentOps)." },
+            { id: 11, pilar: "Processo", texto: "O time realiza rotinas de testes de usabilidade, clareza e compreensão (usando protótipos de UI e copys de Writing) com usuários reais antes de aprovar uma entrega." },
+            { id: 12, pilar: "Processo", texto: "A etapa de geração de soluções e ideação é realizada de forma colaborativa através de workshops estruturados com a participação do time PUXE, P.Os e Stakeholders." },
 
-    // 📈 RESULTADOS
-    { id: 13, pilar: "Resultados", texto: "O time mensura e acompanha sistematicamente indicadores de usabilidade e conteúdo nos testes (como SUS, SEQ, NPS do teste e taxas de sucesso em tarefas do Maze)." },
-    { id: 14, pilar: "Resultados", texto: "O sucesso do trabalho do time PUXE é avaliado pela clareza, profundidade e utilidade dos insights gerados, e não apenas pelo cumprimento cego de prazos de entrega." },
-    { id: 15, pilar: "Resultados", texto: "Os relatórios de pesquisa e diretrizes de linguagem entregues pelo time PUXE são claros e estruturados o suficiente para orientar diretamente as decisões de produto dos P.Os e Stakeholders." },
-    { id: 16, pilar: "Resultados", texto: "A liderança e os P.Os do projeto possuem visibilidade clara do valor gerado pelo time PUXE, reconhecendo que as pesquisas e conteúdos evitam erros e melhoram os resultados do projeto." }
-];
+            // 📈 RESULTADOS
+            { id: 13, pilar: "Resultados", texto: "O time mensura e acompanha sistematicamente indicadores de usabilidade e conteúdo nos testes (como SUS, SEQ, NPS do teste e taxas de sucesso em tarefas do Maze)." },
+            { id: 14, pilar: "Resultados", texto: "O sucesso do trabalho do time PUXE é avaliado pela clareza, profundidade e utilidade dos insights gerados, e não apenas pelo cumprimento cego de prazos de entrega." },
+            { id: 15, pilar: "Resultados", texto: "Os relatórios de pesquisa e diretrizes de linguagem entregues pelo time PUXE são claros e estruturados o suficiente para orientar diretamente as decisões de produto dos P.Os e Stakeholders." },
+            { id: 16, pilar: "Resultados", texto: "A liderança e os P.Os do projeto possuem visibilidade clara do valor gerado pelo time PUXE, reconhecendo que as pesquisas e conteúdos evitam erros e melhoram os resultados do projeto." }
+        ];
 
         const estagiosNNG = [
             { nivel: 1, maxScore: 16.6, nome: "Estágio 1: Ausente (Absent)", desc: "A experiência do usuário é totalmente ignorada ou não reconhecida pela organização. O foco corporativo é puramente técnico e funcional.", recs: ["Evite termos acadêmicos de UX. Exponha reclamações reais recebidas no suporte.", "Grave vídeos curtos de testes de guerrilha mostrando usuários travados na interface atual.", "Foque em vencer pequenas batalhas de usabilidade para demonstrar valor inicial."] },
@@ -819,17 +778,17 @@
             container.innerHTML = '';
 
             bancoQuestoes.forEach(q => {
-                const corPilar = q.pilar === "Estratégia" ? "text-[#0a84ff]" : q.pilar === "Cultura" ? "text-[#bf5af2]" : q.pilar === "Processo" ? "text-[#ff9f0a]" : "text-[#30d158]";
+                const corPilar = q.pilar === "Estratégia" ? "text-caixa-blue90 dark:text-blue-300" : q.pilar === "Cultura" ? "text-purple-600 dark:text-purple-300" : q.pilar === "Processo" ? "text-caixa-orange90" : "text-emerald-700 dark:text-emerald-400";
                 container.innerHTML += `
-                    <div class="quiz-card p-4 space-y-3" id="cardQ_${q.id}">
+                    <div class="dsc-card-inset p-4 space-y-3" id="cardQ_${q.id}">
                         <div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider">
                             <span class="${corPilar}"><i class="fa-solid fa-layer-group mr-1"></i> ${q.pilar}</span>
-                            <span class="text-apple-gray font-mono">Q${String(q.id).padStart(2, '0')}</span>
+                            <span class="text-caixa-gray110 font-mono">Q${String(q.id).padStart(2, '0')}</span>
                         </div>
-                        <p class="text-xs text-black dark:text-gray-200 font-medium leading-relaxed">${q.texto}</p>
+                        <p class="text-xs text-caixa-gray130 dark:text-gray-200 font-medium leading-relaxed">${q.texto}</p>
                         <div class="grid grid-cols-5 gap-1.5 pt-1">
                             ${[1, 2, 3, 4, 5].map(v => `
-                                <button type="button" onclick="votar(${q.id}, ${v})" id="btn_${q.id}_${v}" class="quiz-btn py-2 text-center text-xs font-bold">
+                                <button type="button" onclick="votar(${q.id}, ${v})" id="btn_${q.id}_${v}" class="dsc-card-inset py-2 text-center text-xs font-bold rounded text-caixa-gray110 dark:text-gray-300 hover:border-caixa-blue90 transition-all">
                                     ${v}
                                 </button>
                             `).join('')}
@@ -888,9 +847,9 @@
                 const btn = document.getElementById(`btn_${qId}_${v}`);
                 if (btn) {
                     if (v === valor) {
-                        btn.className = "py-2 text-center text-xs font-bold rounded-lg border-2 border-apple-blue bg-apple-blue/10 dark:bg-apple-darkBlue/20 text-apple-blue dark:text-apple-darkBlue transition-all shadow-sm";
+                        btn.className = "py-2 text-center text-xs font-bold rounded border-2 border-caixa-blue90 bg-caixa-blue10 dark:bg-caixa-darkCardInset text-caixa-blue90 dark:text-blue-300 transition-all shadow-xs";
                     } else {
-                        btn.className = "quiz-btn py-2 text-center text-xs font-bold";
+                        btn.className = "dsc-card-inset py-2 text-center text-xs font-bold rounded text-caixa-gray110 dark:text-gray-300 hover:border-caixa-blue90 transition-all";
                     }
                 }
             }
@@ -903,183 +862,175 @@
         }
 
         async function carregarDadosServidor() {
-    if (!timeConsultaAtual) return;
+            if (!timeConsultaAtual) return;
 
-    const modal = document.getElementById('modalLoading');
-    if (modal) modal.classList.remove('hidden');
+            const modal = document.getElementById('modalLoading');
+            if (modal) modal.classList.remove('hidden');
 
-    try {
-        const response = await fetch(GOOGLE_SCRIPT_URL);
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL);
 
-        if (!response.ok) {
-            throw new Error(`Status da resposta HTTP: ${response.status}`);
+                if (!response.ok) {
+                    throw new Error(`Status da resposta HTTP: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data && data.votos) {
+                    bancoVotosNuvem = data.votos.filter(v => v.time === timeConsultaAtual);
+                    atualizarTabelaVotos();
+                }
+
+                if (data && data.healthLogs) {
+                    bancoHealthLogNuvem = data.healthLogs.filter(h => h.time === timeConsultaAtual);
+                    atualizarTabelaHealthLog();
+                }
+            } catch (err) {
+                console.error("Erro detalhado ao sincronizar com o Google Sheets:", err);
+                alert("Não foi possível carregar os dados. Verifique a URL do Google Script ou o console do navegador.");
+            } finally {
+                if (modal) modal.classList.add('hidden');
+            }
         }
 
-        const data = await response.json();
+        async function salvarAvaliacaoIndividual() {
+            if (!usuarioAtual.nome || !usuarioAtual.time || !usuarioAtual.cargo) {
+                alert("Por favor, confirme seus dados (Time, Nome e Perfil) clicando em 'Iniciar / Trocar Avaliador' no topo antes de salvar.");
+                return;
+            }
 
-        if (data && data.votos) {
-            // Filtra os votos do time selecionado para o Quadro de Avaliadores
-            bancoVotosNuvem = data.votos.filter(v => v.time === timeConsultaAtual);
-            atualizarTabelaVotos();
+            if (Object.keys(votosAtuais).length < 16) {
+                alert("Por favor, responda a todas as 16 afirmações antes de salvar.");
+                return;
+            }
+
+            const btn = document.getElementById('btnSalvarVoto');
+            btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Salvando no Google Sheets...`;
+            btn.disabled = true;
+
+            let totais = { "Estratégia": 0, "Cultura": 0, "Processo": 0, "Resultados": 0 };
+            bancoQuestoes.forEach(q => {
+                totais[q.pilar] += (votosAtuais[q.id] || 0);
+            });
+
+            const pilares = {
+                "Estratégia": totais["Estratégia"] / 4,
+                "Cultura": totais["Cultura"] / 4,
+                "Processo": totais["Processo"] / 4,
+                "Resultados": totais["Resultados"] / 4
+            };
+
+            const mediaIndiv = (pilares["Estratégia"] + pilares["Cultura"] + pilares["Processo"] + pilares["Resultados"]) / 4;
+            const scoreIndiv = ((mediaIndiv - 1) / 4) * 100;
+
+            const payload = {
+                tipo: "voto",
+                data: new Date().toLocaleDateString('pt-BR'),
+                time: usuarioAtual.time,
+                nome: usuarioAtual.nome,
+                cargo: usuarioAtual.cargo,
+                pilares: pilares,
+                score: scoreIndiv,
+                respostas: { ...votosAtuais }
+            };
+
+            try {
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify(payload)
+                });
+
+                alert(`Avaliação de "${usuarioAtual.nome}" registrada na nuvem com sucesso!`);
+                
+                timeConsultaAtual = usuarioAtual.time;
+                document.getElementById('selectTimeConsulta').value = usuarioAtual.time;
+                
+                setTimeout(async () => {
+                    await carregarDadosServidor();
+                }, 1200);
+
+            } catch (err) {
+                console.error("Erro ao salvar no Google Sheets:", err);
+                alert("Erro ao conectar com o Google Sheets. Tente novamente.");
+            } finally {
+                btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Salvar Avaliação na Nuvem`;
+                btn.disabled = false;
+            }
         }
-
-        if (data && data.healthLogs) {
-            bancoHealthLogNuvem = data.healthLogs.filter(h => h.time === timeConsultaAtual);
-            atualizarTabelaHealthLog();
-        }
-    } catch (err) {
-        console.error("Erro detalhado ao sincronizar com o Google Sheets:", err);
-        alert("Não foi possível carregar os dados. Verifique a URL do Google Script ou o console do navegador.");
-    } finally {
-        if (modal) modal.classList.add('hidden');
-    }
-}
-
-async function salvarAvaliacaoIndividual() {
-    if (!usuarioAtual.nome || !usuarioAtual.time || !usuarioAtual.cargo) {
-        alert("Por favor, confirme seus dados (Time, Nome e Perfil) clicando em 'Iniciar / Trocar Avaliador' no topo antes de salvar.");
-        return;
-    }
-
-    if (Object.keys(votosAtuais).length < 16) {
-        alert("Por favor, responda a todas as 16 afirmações antes de salvar.");
-        return;
-    }
-
-    const btn = document.getElementById('btnSalvarVoto');
-    btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Salvando no Google Sheets...`;
-    btn.disabled = true;
-
-    let totais = { "Estratégia": 0, "Cultura": 0, "Processo": 0, "Resultados": 0 };
-    bancoQuestoes.forEach(q => {
-        totais[q.pilar] += (votosAtuais[q.id] || 0);
-    });
-
-    const pilares = {
-        "Estratégia": totais["Estratégia"] / 4,
-        "Cultura": totais["Cultura"] / 4,
-        "Processo": totais["Processo"] / 4,
-        "Resultados": totais["Resultados"] / 4
-    };
-
-    const mediaIndiv = (pilares["Estratégia"] + pilares["Cultura"] + pilares["Processo"] + pilares["Resultados"]) / 4;
-    const scoreIndiv = ((mediaIndiv - 1) / 4) * 100;
-
-    const payload = {
-        tipo: "voto",
-        data: new Date().toLocaleDateString('pt-BR'),
-        time: usuarioAtual.time,
-        nome: usuarioAtual.nome,
-        cargo: usuarioAtual.cargo,
-        pilares: pilares,
-        score: scoreIndiv,
-        respostas: { ...votosAtuais }
-    };
-
-    try {
-        await fetch(GOOGLE_SCRIPT_URL, {
-            method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify(payload)
-        });
-
-        alert(`Avaliação de "${usuarioAtual.nome}" registrada na nuvem com sucesso!`);
-        
-        // Garante que o quadro passe a consultar o time recém salvo
-        timeConsultaAtual = usuarioAtual.time;
-        document.getElementById('selectTimeConsulta').value = usuarioAtual.time;
-        
-        // Aguarda 1.2 segundos para o Google Sheets processar o append da linha antes de sincronizar a tela
-        setTimeout(async () => {
-            await carregarDadosServidor();
-        }, 1200);
-
-    } catch (err) {
-        console.error("Erro ao salvar no Google Sheets:", err);
-        alert("Erro ao conectar com o Google Sheets. Tente novamente.");
-    } finally {
-        btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Salvar Avaliação na Nuvem`;
-        btn.disabled = false;
-    }
-}
 
         function atualizarTabelaVotos() {
-    const tbody = document.getElementById('tabelaVotosBody');
-    tbody.innerHTML = '';
+            const tbody = document.getElementById('tabelaVotosBody');
+            tbody.innerHTML = '';
 
-    if (!timeConsultaAtual) {
-        tbody.innerHTML = `<tr><td colspan="22" class="p-4 text-center text-apple-gray">Selecione um time no menu ao lado do botão de calcular para visualizar o quadro.</td></tr>`;
-        return;
-    }
+            if (!timeConsultaAtual) {
+                tbody.innerHTML = `<tr><td colspan="22" class="p-4 text-center text-caixa-gray110">Selecione um time no menu ao lado do botão de calcular para visualizar o quadro.</td></tr>`;
+                return;
+            }
 
-    if (bancoVotosNuvem.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="22" class="p-4 text-center text-apple-gray">Nenhum integrante deste time realizou a avaliação ainda.</td></tr>`;
-        return;
-    }
+            if (bancoVotosNuvem.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="22" class="p-4 text-center text-caixa-gray110">Nenhum integrante deste time realizou a avaliação ainda.</td></tr>`;
+                return;
+            }
 
-    const getNota = (obj, q) => {
-        if (!obj) return '-';
-        const val = obj[q] !== undefined ? obj[q] : obj[String(q)];
-        return (val !== undefined && val !== null && val !== '') ? val : '-';
-    };
+            const getNota = (obj, q) => {
+                if (!obj) return '-';
+                const val = obj[q] !== undefined ? obj[q] : obj[String(q)];
+                return (val !== undefined && val !== null && val !== '') ? val : '-';
+            };
 
-    bancoVotosNuvem.forEach(v => {
-        const r = v.respostas || {};
+            bancoVotosNuvem.forEach(v => {
+                const r = v.respostas || {};
 
-        tbody.innerHTML += `
-            <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
-                <td class="p-3 border-r border-black/5 dark:border-white/10 min-w-[140px]">
-                    <div class="font-semibold text-black dark:text-white flex items-center gap-1.5">
-                        <i class="fa-solid fa-user-circle text-apple-gray text-xs"></i> ${v.nome}
-                    </div>
-                    <div class="text-[10px] text-apple-gray">${v.cargo}</div>
-                </td>
+                tbody.innerHTML += `
+                    <tr class="hover:bg-caixa-cardInset/50 dark:hover:bg-caixa-darkCardInset/50 transition-colors">
+                        <td class="p-3 border-r border-caixa-border dark:border-caixa-darkBorder min-w-[140px]">
+                            <div class="font-semibold text-caixa-blue110 dark:text-white flex items-center gap-1.5">
+                                <i class="fa-solid fa-user-circle text-caixa-gray90 text-xs"></i> ${v.nome}
+                            </div>
+                            <div class="text-[10px] text-caixa-gray110 dark:text-gray-400">${v.cargo}</div>
+                        </td>
 
-                <!-- Estratégia: Q1, Q2, Q3, Q4 + Coluna de Média em separado -->
-                <td class="p-2 text-center font-mono bg-blue-500/5">${getNota(r, 1)}</td>
-                <td class="p-2 text-center font-mono bg-blue-500/5">${getNota(r, 2)}</td>
-                <td class="p-2 text-center font-mono bg-blue-500/5">${getNota(r, 3)}</td>
-                <td class="p-2 text-center font-mono bg-blue-500/5">${getNota(r, 4)}</td>
-                <td class="p-2 text-center font-mono font-bold text-apple-blue dark:text-apple-darkBlue border-r border-black/5 dark:border-white/10 bg-blue-500/10">
-                    ${v.pilares && v.pilares["Estratégia"] ? v.pilares["Estratégia"].toFixed(1) : '-'}
-                </td>
+                        <td class="p-2 text-center font-mono bg-blue-500/5">${getNota(r, 1)}</td>
+                        <td class="p-2 text-center font-mono bg-blue-500/5">${getNota(r, 2)}</td>
+                        <td class="p-2 text-center font-mono bg-blue-500/5">${getNota(r, 3)}</td>
+                        <td class="p-2 text-center font-mono bg-blue-500/5">${getNota(r, 4)}</td>
+                        <td class="p-2 text-center font-mono font-bold text-caixa-blue90 dark:text-blue-300 border-r border-caixa-border dark:border-caixa-darkBorder bg-blue-500/10">
+                            ${v.pilares && v.pilares["Estratégia"] ? v.pilares["Estratégia"].toFixed(1) : '-'}
+                        </td>
 
-                <!-- Cultura: Q5, Q6, Q7, Q8 + Coluna de Média em separado -->
-                <td class="p-2 text-center font-mono bg-purple-500/5">${getNota(r, 5)}</td>
-                <td class="p-2 text-center font-mono bg-purple-500/5">${getNota(r, 6)}</td>
-                <td class="p-2 text-center font-mono bg-purple-500/5">${getNota(r, 7)}</td>
-                <td class="p-2 text-center font-mono bg-purple-500/5">${getNota(r, 8)}</td>
-                <td class="p-2 text-center font-mono font-bold text-apple-purple dark:text-apple-darkPurple border-r border-black/5 dark:border-white/10 bg-purple-500/10">
-                    ${v.pilares && v.pilares["Cultura"] ? v.pilares["Cultura"].toFixed(1) : '-'}
-                </td>
+                        <td class="p-2 text-center font-mono bg-purple-500/5">${getNota(r, 5)}</td>
+                        <td class="p-2 text-center font-mono bg-purple-500/5">${getNota(r, 6)}</td>
+                        <td class="p-2 text-center font-mono bg-purple-500/5">${getNota(r, 7)}</td>
+                        <td class="p-2 text-center font-mono bg-purple-500/5">${getNota(r, 8)}</td>
+                        <td class="p-2 text-center font-mono font-bold text-purple-600 dark:text-purple-300 border-r border-caixa-border dark:border-caixa-darkBorder bg-purple-500/10">
+                            ${v.pilares && v.pilares["Cultura"] ? v.pilares["Cultura"].toFixed(1) : '-'}
+                        </td>
 
-                <!-- Processo: Q9, Q10, Q11, Q12 + Coluna de Média em separado -->
-                <td class="p-2 text-center font-mono bg-orange-500/5">${getNota(r, 9)}</td>
-                <td class="p-2 text-center font-mono bg-orange-500/5">${getNota(r, 10)}</td>
-                <td class="p-2 text-center font-mono bg-orange-500/5">${getNota(r, 11)}</td>
-                <td class="p-2 text-center font-mono bg-orange-500/5">${getNota(r, 12)}</td>
-                <td class="p-2 text-center font-mono font-bold text-apple-orange dark:text-apple-darkOrange border-r border-black/5 dark:border-white/10 bg-orange-500/10">
-                    ${v.pilares && v.pilares["Processo"] ? v.pilares["Processo"].toFixed(1) : '-'}
-                </td>
+                        <td class="p-2 text-center font-mono bg-orange-500/5">${getNota(r, 9)}</td>
+                        <td class="p-2 text-center font-mono bg-orange-500/5">${getNota(r, 10)}</td>
+                        <td class="p-2 text-center font-mono bg-orange-500/5">${getNota(r, 11)}</td>
+                        <td class="p-2 text-center font-mono bg-orange-500/5">${getNota(r, 12)}</td>
+                        <td class="p-2 text-center font-mono font-bold text-caixa-orange90 border-r border-caixa-border dark:border-caixa-darkBorder bg-orange-500/10">
+                            ${v.pilares && v.pilares["Processo"] ? v.pilares["Processo"].toFixed(1) : '-'}
+                        </td>
 
-                <!-- Resultados: Q13, Q14, Q15, Q16 + Coluna de Média em separado -->
-                <td class="p-2 text-center font-mono bg-green-500/5">${getNota(r, 13)}</td>
-                <td class="p-2 text-center font-mono bg-green-500/5">${getNota(r, 14)}</td>
-                <td class="p-2 text-center font-mono bg-green-500/5">${getNota(r, 15)}</td>
-                <td class="p-2 text-center font-mono bg-green-500/5">${getNota(r, 16)}</td>
-                <td class="p-2 text-center font-mono font-bold text-apple-green dark:text-apple-darkGreen border-r border-black/5 dark:border-white/10 bg-green-500/10">
-                    ${v.pilares && v.pilares["Resultados"] ? v.pilares["Resultados"].toFixed(1) : '-'}
-                </td>
+                        <td class="p-2 text-center font-mono bg-green-500/5">${getNota(r, 13)}</td>
+                        <td class="p-2 text-center font-mono bg-green-500/5">${getNota(r, 14)}</td>
+                        <td class="p-2 text-center font-mono bg-green-500/5">${getNota(r, 15)}</td>
+                        <td class="p-2 text-center font-mono bg-green-500/5">${getNota(r, 16)}</td>
+                        <td class="p-2 text-center font-mono font-bold text-emerald-700 dark:text-emerald-400 border-r border-caixa-border dark:border-caixa-darkBorder bg-green-500/10">
+                            ${v.pilares && v.pilares["Resultados"] ? v.pilares["Resultados"].toFixed(1) : '-'}
+                        </td>
 
-                <!-- Score Individual -->
-                <td class="p-3 text-center font-bold text-apple-blue dark:text-apple-darkBlue text-sm">
-                    ${v.score ? v.score.toFixed(1) : '0.0'}%
-                </td>
-            </tr>
-        `;
-    });
-}
+                        <td class="p-3 text-center font-bold text-caixa-blue90 dark:text-blue-300 text-sm">
+                            ${v.score ? v.score.toFixed(1) : '0.0'}%
+                        </td>
+                    </tr>
+                `;
+            });
+        }
 
         async function salvarFechamentoTrimestral() {
             if (!timeConsultaAtual) {
@@ -1142,25 +1093,25 @@ async function salvarAvaliacaoIndividual() {
             tbody.innerHTML = '';
 
             if (!timeConsultaAtual) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-apple-gray">Selecione um time para visualizar os registros trimestrais.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-caixa-gray110">Selecione um time para visualizar os registros trimestrais.</td></tr>`;
                 return;
             }
 
             if (bancoHealthLogNuvem.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-apple-gray">Nenhum fechamento trimestral registrado ainda. Clique no botão acima para congelar o momento da equipe.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-caixa-gray110">Nenhum fechamento trimestral registrado ainda. Clique no botão acima para congelar o momento da equipe.</td></tr>`;
                 return;
             }
 
             bancoHealthLogNuvem.forEach(h => {
                 tbody.innerHTML += `
-                    <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
-                        <td class="p-3 font-mono text-black dark:text-gray-300">${h.data} (${h.avaliadoresQtd} votos)</td>
+                    <tr class="hover:bg-caixa-cardInset/50 dark:hover:bg-caixa-darkCardInset/50 transition-colors">
+                        <td class="p-3 font-mono text-caixa-blue110 dark:text-gray-300">${h.data} (${h.avaliadoresQtd} votos)</td>
                         <td class="p-3 text-center font-mono">${h.pilares["Estratégia"].toFixed(1)}</td>
                         <td class="p-3 text-center font-mono">${h.pilares["Cultura"].toFixed(1)}</td>
                         <td class="p-3 text-center font-mono">${h.pilares["Processo"].toFixed(1)}</td>
                         <td class="p-3 text-center font-mono">${h.pilares["Resultados"].toFixed(1)}</td>
-                        <td class="p-3 text-center font-bold text-apple-blue dark:text-apple-darkBlue">${h.score.toFixed(1)}%</td>
-                        <td class="p-3 text-center font-medium text-apple-purple dark:text-apple-darkPurple">${h.estagioNome.split(':')[0]}</td>
+                        <td class="p-3 text-center font-bold text-caixa-blue90 dark:text-blue-300">${h.score.toFixed(1)}%</td>
+                        <td class="p-3 text-center font-medium text-purple-600 dark:text-purple-300">${h.estagioNome.split(':')[0]}</td>
                     </tr>
                 `;
             });
@@ -1277,32 +1228,32 @@ async function salvarAvaliacaoIndividual() {
             recsList.innerHTML = '';
             estagio.recs.forEach((r, idx) => {
                 recsList.innerHTML += `
-                    <div class="flex items-start gap-3 apple-card-inset p-3">
-                        <span class="w-5 h-5 rounded-full bg-blue-500/20 text-[#0a84ff] border border-blue-500/30 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">${idx + 1}</span>
-                        <p class="text-black dark:text-gray-300 leading-relaxed">${r}</p>
+                    <div class="flex items-start gap-3 dsc-card-inset p-3">
+                        <span class="w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-900/40 text-caixa-blue90 dark:text-blue-300 border border-blue-300 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">${idx + 1}</span>
+                        <p class="text-caixa-gray130 dark:text-gray-300 leading-relaxed">${r}</p>
                     </div>
                 `;
             });
 
-            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
 
             let datasetsRadar = [{
                 label: 'Média Geral do Time',
                 data: [pilares["Estratégia"], pilares["Cultura"], pilares["Processo"], pilares["Resultados"]],
-                backgroundColor: currentTheme === 'light' ? 'rgba(0, 122, 255, 0.15)' : 'rgba(10, 132, 255, 0.2)',
-                borderColor: currentTheme === 'light' ? '#007aff' : '#0a84ff',
+                backgroundColor: 'rgba(0, 92, 169, 0.15)',
+                borderColor: '#005CA9',
                 borderWidth: 3,
-                pointBackgroundColor: currentTheme === 'light' ? '#007aff' : '#0a84ff',
+                pointBackgroundColor: '#005CA9',
                 pointRadius: 4
             }];
 
             if (avaliadores && avaliadores.length > 1) {
                 const coresPerfis = {
-                    "Liderança Técnica": "#ff453a",
-                    "CX Pesquisa": "#bf5af2",
-                    "CX Writing": "#ff9f0a",
-                    "UX Pesquisa": "#30d158",
-                    "UX Writing": "#64d2ff"
+                    "Liderança Técnica": "#D93636",
+                    "CX Pesquisa": "#8B5CF6",
+                    "CX Writing": "#D67B00",
+                    "UX Pesquisa": "#179231",
+                    "UX Writing": "#005CA9"
                 };
 
                 const perfisPresentes = [...new Set(avaliadores.map(a => a.cargo))];
@@ -1321,10 +1272,10 @@ async function salvarAvaliacaoIndividual() {
                         label: perfil,
                         data: [somaGroup["Estratégia"] / grupo.length, somaGroup["Cultura"] / grupo.length, somaGroup["Processo"] / grupo.length, somaGroup["Resultados"] / grupo.length],
                         backgroundColor: 'transparent',
-                        borderColor: coresPerfis[perfil] || '#8e8e93',
+                        borderColor: coresPerfis[perfil] || '#64747A',
                         borderWidth: 2,
                         borderDash: [3, 3],
-                        pointBackgroundColor: coresPerfis[perfil] || '#8e8e93',
+                        pointBackgroundColor: coresPerfis[perfil] || '#64747A',
                         pointRadius: 3
                     });
                 });
@@ -1351,10 +1302,10 @@ async function salvarAvaliacaoIndividual() {
             const ctx = document.getElementById('radarChart').getContext('2d');
             if (radarChartInstance) radarChartInstance.destroy();
 
-            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-            const labelColor = currentTheme === 'light' ? '#1d1d1f' : '#f5f5f7';
-            const gridColor = currentTheme === 'light' ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.06)';
-            const tickColor = currentTheme === 'light' ? '#86868b' : '#8e8e93';
+            const isDark = document.documentElement.classList.contains('dark');
+            const labelColor = isDark ? '#F8FAFC' : '#22292E';
+            const gridColor = isDark ? '#2A4A75' : '#D0E0E3';
+            const tickColor = isDark ? '#94A3B8' : '#404852';
 
             radarChartInstance = new Chart(ctx, {
                 type: 'radar',
@@ -1371,7 +1322,7 @@ async function salvarAvaliacaoIndividual() {
                     scales: {
                         r: {
                             min: 1, max: 5,
-                            ticks: { stepSize: 1, color: tickColor, showLabelBackdrop: false },
+                            ticks: { stepSize: 1, color: tickColor, backdropColor: 'transparent' },
                             angleLines: { color: gridColor },
                             grid: { color: gridColor },
                             pointLabels: { color: labelColor, font: { size: 11, weight: 'bold' } }
@@ -1381,146 +1332,69 @@ async function salvarAvaliacaoIndividual() {
             });
         }
 
-        function alternarTemaApple() {
-            const html = document.documentElement;
-            const currentTheme = html.getAttribute('data-theme') || 'light';
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+   function toggleTheme() {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme') || (html.classList.contains('dark') ? 'dark' : 'light');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
 
-            html.setAttribute('data-theme', newTheme);
-            if (newTheme === 'dark') {
+    aplicarTema(newTheme);
+    localStorage.setItem('caixa_theme_pref', newTheme);
+
+    // Re-renderiza o gráfico de radar APENAS se um time estiver selecionado
+    if (typeof timeConsultaAtual !== 'undefined' && timeConsultaAtual && typeof calcularMediaGeralDoTime === 'function') {
+        calcularMediaGeralDoTime();
+    }
+}
+
+        function aplicarTema(theme) {
+            const html = document.documentElement;
+            const btn = document.getElementById('themeToggleBtn');
+
+            html.setAttribute('data-theme', theme);
+
+            if (theme === 'dark') {
                 html.classList.add('dark');
+                html.classList.remove('light');
             } else {
-                html.classList.remove('dark');
-            }
-
-            const themeIcon = document.getElementById('themeIcon');
-            const themeLabel = document.getElementById('themeLabel');
-            if (newTheme === 'light') {
-                themeIcon.className = 'fa-solid fa-moon text-indigo-500';
-                themeLabel.innerText = 'Modo Escuro';
-            } else {
-                themeIcon.className = 'fa-solid fa-sun text-amber-400';
-                themeLabel.innerText = 'Modo Claro';
-            }
-
-            localStorage.setItem('apple_theme_pref', newTheme);
-            if (radarChartInstance) calcularMediaGeralDoTime();
-        }
-
-        inicializarQuiz();
-
-         // --- ALTERNADOR DE TEMA DARK/LIGHT APPLE HIG (OUTLINE LARANJA) ---
-        function toggleTheme() {
-            const html = document.documentElement;
-            const icon = document.getElementById('themeIcon');
-            const isDark = html.classList.contains('dark');
-
-            if (isDark) {
-                // Alterna para Modo Claro (Light) -> Ícone de LUA (Outline Laranja)
                 html.classList.remove('dark');
                 html.classList.add('light');
-                html.setAttribute('data-theme', 'light');
-                if (icon) {
-                    icon.setAttribute('data-lucide', 'moon');
-                    icon.className = "w-4 h-4 text-apple-orange";
-                }
-                localStorage.setItem('apple_theme_pref', 'light');
-            } else {
-                // Alterna para Modo Escuro (Dark) -> Ícone de SOL (Outline Laranja)
-                html.classList.remove('light');
-                html.classList.add('dark');
-                html.setAttribute('data-theme', 'dark');
-                if (icon) {
-                    icon.setAttribute('data-lucide', 'sun');
-                    icon.className = "w-4 h-4 text-apple-darkOrange";
-                }
-                localStorage.setItem('apple_theme_pref', 'dark');
             }
 
-            // Renderiza o novo SVG em outline do Lucide
+            if (btn) {
+                const iconName = theme === 'dark' ? 'sun' : 'moon';
+                const iconColor = theme === 'dark' ? 'text-caixa-yellow' : 'text-caixa-orange90';
+                btn.innerHTML = `<i data-lucide="${iconName}" id="themeIcon" class="w-4 h-4 ${iconColor}"></i>`;
+            }
+
             if (window.lucide) {
                 lucide.createIcons();
             }
-
-            // Re-renderiza o gráfico de radar para adaptar cores dos eixos ao tema
-            if (typeof radarChartInstance !== 'undefined' && radarChartInstance && typeof calcularMediaGeralDoTime === 'function') {
-                calcularMediaGeralDoTime();
-            }
         }
 
-        // Carregar Preferência de Tema Salva no Carregamento
-        (function carregarTemaSalvo() {
-            const savedTheme = localStorage.getItem('apple_theme_pref') || 'light';
-            const html = document.documentElement;
-            html.setAttribute('data-theme', savedTheme);
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('caixa_theme_pref') || 'light';
+            aplicarTema(savedTheme);
+        });
 
-            if (savedTheme === 'dark') {
-                html.classList.add('dark');
-                html.classList.remove('light');
-            } else {
-                html.classList.remove('dark');
-                html.classList.add('light');
-            }
+        inicializarQuiz();
 
-            window.addEventListener('DOMContentLoaded', () => {
-                const icon = document.getElementById('themeIcon');
-                if (icon) {
-                    if (savedTheme === 'dark') {
-                        icon.setAttribute('data-lucide', 'sun');
-                        icon.className = "w-4 h-4 text-apple-darkOrange";
-                    } else {
-                        icon.setAttribute('data-lucide', 'moon');
-                        icon.className = "w-4 h-4 text-apple-orange";
+        window.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'CHANGE_THEME') {
+                const novoTema = event.data.theme;
+                
+                if (event.data.hideThemeBtn) {
+                    const btnLocal = document.getElementById('btnToggleTheme') || document.getElementById('themeToggleBtn');
+                    if (btnLocal) {
+                        btnLocal.style.display = 'none';
                     }
                 }
-                if (window.lucide) {
-                    lucide.createIcons();
+                
+                if (typeof aplicarTema === 'function') {
+                    aplicarTema(novoTema);
+                    if (typeof calcularMediaGeralDoTime === 'function') calcularMediaGeralDoTime();
                 }
-            });
-        })();
-// Ouve o comando enviado pela Central de Gestão pai para sincronizar o Dark Mode
-window.addEventListener('message', (event) => {
-    if (event.data && event.data.type === 'CHANGE_THEME') {
-        const novoTema = event.data.theme;
-        
-        // Se o sistema usa a função aplicarTema()
-        if (typeof aplicarTema === 'function') {
-            aplicarTema(novoTema);
-            if (typeof atualizarDashboard === 'function') {
-                atualizarDashboard();
             }
-        } 
-        // Se o sistema usa a função toggleTheme() simples
-        else if (typeof toggleTheme === 'function') {
-            const html = document.documentElement;
-            const temaAtual = html.classList.contains('dark') ? 'dark' : 'light';
-            if (temaAtual !== novoTema) {
-                toggleTheme();
-            }
-        }
-    }
-});
-
-window.addEventListener('message', (event) => {
-    if (event.data && event.data.type === 'CHANGE_THEME') {
-        const novoTema = event.data.theme;
-        
-        // Esconde o botão de tema local se a central pedir
-        if (event.data.hideThemeBtn) {
-            const btnLocal = document.getElementById('btnToggleTheme') || document.getElementById('themeToggleBtn');
-            if (btnLocal) {
-                btnLocal.style.display = 'none';
-            }
-        }
-        
-        if (typeof aplicarTema === 'function') {
-            aplicarTema(novoTema);
-            if (typeof renderAll === 'function') renderAll();
-            if (typeof atualizarDashboard === 'function') atualizarDashboard();
-        }
-    }
-});
-
+        });
     </script>
 </body>
 </html>
