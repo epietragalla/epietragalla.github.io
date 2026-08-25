@@ -5034,6 +5034,7 @@ function carregarTemaSalvo() {
       else if (currentTab === 'inv') renderInvestorsView();
       else renderDetailView(currentTab);
     };
+   
     function renderDashboard() {
       const selectedArea = document.getElementById('filterArea')?.value || 'ALL';
       let activeSheets = selectedArea === 'ALL' ? ['CX Pesquisa', 'UX Pesquisa', 'CX Escrita', 'UX Escrita'] : [selectedArea];
@@ -5045,13 +5046,32 @@ function carregarTemaSalvo() {
         }
       });
 
-      // Validação de segurança para aceitar apenas registros com nome de projeto válido
+      // Validação para aceitar apenas registros com nome de projeto válido
       allProjects = allProjects.filter(p => p && p.projeto && p.projeto !== 'nan' && p.projeto !== '-' && p.projeto !== '' && p.projeto.toLowerCase() !== 'projeto');
 
       const totalCount = allProjects.length;
-
-      // Normaliza textos de status para aceitar variações da planilha
       const normalizar = (txt) => String(txt || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+
+      // Funções auxiliares para cálculo real de datas caso prazo_dias venha zerado
+      const parseDateBR = (str) => {
+        if (!str || str === '-' || str === 'nan') return null;
+        const parts = String(str).split('/');
+        if (parts.length === 3) {
+          return new Date(parts[2], parts[1] - 1, parts[0]);
+        }
+        return null;
+      };
+
+      const calcularDiasDecorridos = (p) => {
+        if (p.prazo_dias && p.prazo_dias > 0) return p.prazo_dias;
+        const dtInicio = parseDateBR(p.inicio);
+        const dtFim = parseDateBR(p.entrega) || parseDateBR(p.prazo);
+        if (dtInicio && dtFim && dtFim >= dtInicio) {
+          const diffTime = Math.abs(dtFim - dtInicio);
+          return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
+        }
+        return 0;
+      };
 
       // Mapeamento flexível dos status
       const concluidosList = allProjects.filter(p => {
@@ -5085,11 +5105,11 @@ function carregarTemaSalvo() {
         return st.includes('canc') || st.includes('descont');
       }).length;
 
-      // Tempo Médio de Conclusão (Dias)
-      const concluidosItems = concluidosList.filter(p => p.prazo_dias > 0);
-      const avgDays = concluidosItems.length > 0
-        ? (concluidosItems.reduce((acc, curr) => acc + curr.prazo_dias, 0) / concluidosItems.length).toFixed(1)
-        : '0';
+      // CORREÇÃO 1: Tempo Médio Geral de Conclusão (Calcula por data se prazo_dias for 0)
+      const temposCalculados = concluidosList.map(p => calcularDiasDecorridos(p)).filter(d => d > 0);
+      const avgDays = temposCalculados.length > 0
+        ? (temposCalculados.reduce((acc, curr) => acc + curr, 0) / temposCalculados.length).toFixed(1)
+        : '0.0';
 
       const superAppCount = allProjects.filter(p => String(p.super_app || '').toLowerCase().includes('sim')).length;
       const superAppPct = totalCount > 0 ? ((superAppCount / totalCount) * 100).toFixed(1) : 0;
@@ -5122,24 +5142,37 @@ function carregarTemaSalvo() {
       const pausadosCanc = pausados + cancelados;
       const taxaPausa = totalCount > 0 ? ((pausadosCanc / totalCount) * 100).toFixed(1) : 0;
 
-      // Divisão de Porte/Tipo (Pontuais vs Estruturados)
-      const projetosPontuais = allProjects.filter(p => String(p.tipo_projeto || '').toUpperCase().includes('P'));
-      const projetosEstruturados = allProjects.filter(p => {
-        const tp = String(p.tipo_projeto || '').toUpperCase();
-        return tp.includes('E') || !tp.includes('P');
+      // CORREÇÃO 2: Divisão Precisa de Porte/Tipo (Pontuais vs Estruturados)
+      const projetosPontuais = allProjects.filter(p => {
+        const tp = normalizar(p.tipo_projeto);
+        const tam = normalizar(p.tamanho);
+        const numMetodos = String(p.pesquisa_metodo || '').split(/[,;]/).filter(m => m.trim()).length;
+        
+        return tp === 'p' || tp.includes('pontual') || tam === 'p' || tam === 'pp' || (numMetodos <= 1 && !tp.includes('e'));
       });
+
+      const projetosEstruturados = allProjects.filter(p => !projetosPontuais.includes(p));
 
       const pontualCount = projetosPontuais.length;
       const estruturadoCount = projetosEstruturados.length;
 
-      const pontualConc = projetosPontuais.filter(p => normalizar(p.status).includes('conclu') && p.prazo_dias > 0);
-      const pontualAvg = pontualConc.length > 0
-        ? (pontualConc.reduce((acc, p) => acc + p.prazo_dias, 0) / pontualConc.length).toFixed(1)
+      // Tempo Médio por Porte/Tipo
+      const pontualTempos = projetosPontuais
+        .filter(p => normalizar(p.status).includes('conclu'))
+        .map(p => calcularDiasDecorridos(p))
+        .filter(d => d > 0);
+        
+      const pontualAvg = pontualTempos.length > 0
+        ? (pontualTempos.reduce((acc, p) => acc + p, 0) / pontualTempos.length).toFixed(1)
         : '0.0';
 
-      const estruturadoConc = projetosEstruturados.filter(p => normalizar(p.status).includes('conclu') && p.prazo_dias > 0);
-      const estruturadoAvg = estruturadoConc.length > 0
-        ? (estruturadoConc.reduce((acc, p) => acc + p.prazo_dias, 0) / estruturadoConc.length).toFixed(1)
+      const estruturadoTempos = projetosEstruturados
+        .filter(p => normalizar(p.status).includes('conclu'))
+        .map(p => calcularDiasDecorridos(p))
+        .filter(d => d > 0);
+        
+      const estruturadoAvg = estruturadoTempos.length > 0
+        ? (estruturadoTempos.reduce((acc, p) => acc + p, 0) / estruturadoTempos.length).toFixed(1)
         : '0.0';
 
       // Cumprimento de Prazos (SLA)
@@ -5182,7 +5215,7 @@ function carregarTemaSalvo() {
       allProjects.forEach(p => {
         const ac = p.acionamentos || 1;
         const tf = p.tarefas_agies || 0;
-        const isP = String(p.tipo_projeto || '').toUpperCase().includes('P');
+        const isP = projetosPontuais.includes(p);
 
         totalAcionamentos += ac;
         totalTarefas += tf;
