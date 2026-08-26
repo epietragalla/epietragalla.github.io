@@ -1,0 +1,1596 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escudo do Mestre - Faz de Conta RPG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400;1,700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-page: #f2ebd9;
+            --bg-card: #fcf8f0;
+            --bg-card-header: #3a2212;
+            --text-main: #2b1d0c;
+            --text-light: #ffffff;
+            --accent-gold: #d4af37;
+            --accent-green: #2e5a27;
+            --accent-red: #8c231a;
+            --accent-blue: #1d4e89;
+            --accent-purple: #5c2c6d;
+            --border-color: #cbb892;
+            --border-dark: #5c3d22;
+            --shadow-soft: 0 4px 12px rgba(58, 34, 18, 0.15);
+            --shadow-card: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-page);
+            background-image: radial-gradient(#dfd3b6 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* HEADER & NAVBAR */
+        header {
+            background: linear-gradient(135deg, #2b180a 0%, #4a2d17 100%);
+            color: var(--text-light);
+            padding: 15px 20px 0 20px;
+            border-bottom: 4px solid var(--accent-gold);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-title-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1400px;
+            margin: 0 auto 12px auto;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--accent-gold);
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+        }
+
+        .logo-text h1 {
+            font-family: 'Fredoka One', cursive, sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            color: #f7e7c4;
+            text-shadow: 2px 2px 0 #120903;
+            line-height: 1.1;
+        }
+
+        .logo-text span {
+            font-size: 0.85rem;
+            color: var(--accent-gold);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .quick-stats {
+            display: flex;
+            gap: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            font-size: 0.85rem;
+            align-items: center;
+        }
+
+        .quick-stat-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .quick-stat-item strong {
+            color: var(--accent-gold);
+        }
+
+        /* NAVIGATION TABS */
+        nav.nav-tabs {
+            display: flex;
+            gap: 6px;
+            max-width: 1400px;
+            margin: 0 auto;
+            overflow-x: auto;
+            scrollbar-width: thin;
+            padding-bottom: 0;
+        }
+
+        nav.nav-tabs::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        nav.nav-tabs::-webkit-scrollbar-thumb {
+            background: var(--accent-gold);
+            border-radius: 2px;
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-bottom: none;
+            color: #e0d0b0;
+            padding: 10px 18px;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        .tab-btn.active {
+            background: var(--bg-page);
+            color: var(--border-dark);
+            border-color: var(--accent-gold);
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--bg-page);
+        }
+
+        /* MAIN CONTENT AREA */
+        main {
+            max-width: 1400px;
+            width: 100%;
+            margin: 20px auto;
+            padding: 0 15px 40px 15px;
+            flex: 1;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* SECTION HEADINGS */
+        .section-header {
+            background: linear-gradient(90deg, var(--bg-card-header) 0%, #5c3a21 100%);
+            color: var(--text-light);
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-left: 6px solid var(--accent-gold);
+            box-shadow: var(--shadow-card);
+        }
+
+        .section-header h2 {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.4rem;
+            letter-spacing: 0.5px;
+            color: #f7e7c4;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-header .tag {
+            background: var(--accent-gold);
+            color: var(--bg-card-header);
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        /* GRID LAYOUTS */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        @media (max-width: 480px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* CARDS & CONTAINERS */
+        .card {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 18px;
+            box-shadow: var(--shadow-card);
+            position: relative;
+        }
+
+        .card-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.15rem;
+            color: var(--bg-card-header);
+            margin-bottom: 12px;
+            padding-bottom: 6px;
+            border-bottom: 2px dashed var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title i {
+            color: var(--accent-red);
+        }
+
+        /* TABLES */
+        .shield-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 8px;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        .shield-table th {
+            background: var(--bg-card-header);
+            color: #f7e7c4;
+            padding: 8px 12px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .shield-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border-color);
+            background: #fff;
+        }
+
+        .shield-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .shield-table tr:nth-child(even) td {
+            background: #f7f2e6;
+        }
+
+        .badge-roll {
+            background: var(--accent-red);
+            color: white;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            min-width: 28px;
+            text-align: center;
+        }
+
+        /* INSECT BESTIARY CARDS */
+        .search-box {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 10px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 0.95rem;
+            background: white;
+            outline: none;
+        }
+
+        .search-box input:focus {
+            border-color: var(--accent-gold);
+        }
+
+        .enemy-card {
+            background: #ffffff;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .enemy-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .enemy-header {
+            background: linear-gradient(135deg, #4a2d17 0%, #2b180a 100%);
+            color: #f7e7c4;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .enemy-header h3 {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.2rem;
+            letter-spacing: 0.5px;
+        }
+
+        .enemy-header .icon-type {
+            font-size: 1.3rem;
+            color: var(--accent-gold);
+        }
+
+        .enemy-body {
+            padding: 15px;
+        }
+
+        /* VARIATIONS TABLE */
+        .enemy-variants {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .variant-box {
+            background: #f8f4ea;
+            border: 1px solid #e2d5b8;
+            border-radius: 6px;
+            padding: 8px 4px;
+        }
+
+        .variant-box.operario { border-top: 3px solid #6c757d; }
+        .variant-box.soldado { border-top: 3px solid #d9534f; }
+        .variant-box.chefao { border-top: 3px solid #f0ad4e; }
+
+        .variant-title {
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: var(--border-dark);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .attr-row {
+            display: flex;
+            justify-content: space-around;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        .attr-item {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .attr-item.hp {
+            color: var(--accent-red);
+            font-weight: 800;
+            font-size: 0.85rem;
+            margin-top: 4px;
+            justify-content: center;
+        }
+
+        .enemy-skill {
+            background: #f1ebd9;
+            border-left: 3px solid var(--accent-gold);
+            padding: 8px 10px;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.82rem;
+            line-height: 1.3;
+        }
+
+        .enemy-skill strong {
+            color: var(--accent-red);
+        }
+
+        /* DICE ROLLER UTILITY */
+        .dice-widget {
+            background: linear-gradient(135deg, #2e5a27 0%, #1e3d1a 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            box-shadow: var(--shadow-card);
+        }
+
+        .dice-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn-dice {
+            background: var(--accent-gold);
+            color: #2b180a;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 800;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: transform 0.1s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-dice:active {
+            transform: scale(0.95);
+        }
+
+        .dice-result {
+            background: rgba(0,0,0,0.3);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--accent-gold);
+            min-width: 100px;
+            text-align: center;
+            border: 1px dashed rgba(212, 175, 55, 0.5);
+        }
+
+        /* CARDS / TREASURE CARDS DISPLAY */
+        .treasure-card {
+            background: #fff;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            position: relative;
+            box-shadow: var(--shadow-card);
+        }
+
+        .treasure-card.madeira { border-color: #8d6e63; border-top: 5px solid #8d6e63; }
+        .treasure-card.ferro { border-color: #78909c; border-top: 5px solid #78909c; }
+        .treasure-card.ouro { border-color: #ffca28; border-top: 5px solid #ffca28; }
+
+        .treasure-type {
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .treasure-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1rem;
+            color: var(--border-dark);
+            margin-bottom: 6px;
+        }
+
+        .treasure-desc {
+            font-size: 0.82rem;
+            color: #444;
+            line-height: 1.3;
+        }
+
+        .treasure-tag {
+            display: inline-block;
+            font-size: 0.68rem;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-top: 8px;
+            background: #eee;
+        }
+
+        /* MAP/LOCATION CARDS */
+        .loc-card {
+            background: #fff;
+            border-left: 4px solid var(--accent-green);
+            padding: 10px 14px;
+            margin-bottom: 10px;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        }
+
+        .loc-card h4 {
+            font-family: 'Fredoka One', cursive;
+            color: var(--border-dark);
+            font-size: 0.95rem;
+        }
+
+        .loc-card p {
+            font-size: 0.82rem;
+            color: #555;
+            margin-top: 2px;
+        }
+
+        /* STATUS BADGES */
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+        }
+
+        .status-item {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            text-align: center;
+            font-weight: 700;
+            color: var(--border-dark);
+        }
+
+        /* FOOTER */
+        footer {
+            background: var(--bg-card-header);
+            color: #a8947d;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.8rem;
+            border-top: 3px solid var(--accent-gold);
+            margin-top: auto;
+        }
+
+        footer strong {
+            color: var(--accent-gold);
+        }
+
+        .rule-list {
+            padding-left: 18px;
+            font-size: 0.88rem;
+            line-height: 1.5;
+        }
+
+        .rule-list li {
+            margin-bottom: 6px;
+        }
+
+        .highlight-box {
+            background: #f4ebd0;
+            border: 1px solid var(--accent-gold);
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-top: 10px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER WITH LOGO & NAVIGATION -->
+    <header>
+        <div class="header-title-container">
+            <div class="logo-area">
+                <div class="logo-icon">🌳🗡️</div>
+                <div class="logo-text">
+                    <h1>FAZ DE CONTA RPG</h1>
+                    <span>Escudo do Mestre • Versão Digital</span>
+                </div>
+            </div>
+
+            <!-- DICE ROLLER QUICK WIDGET -->
+            <div class="quick-stats">
+                <div class="quick-stat-item">
+                    <span>Dado Rápido:</span>
+                    <button class="btn-dice" onclick="rollDice(1)">1d6</button>
+                    <button class="btn-dice" onclick="rollDice(2)">2d6</button>
+                </div>
+                <div id="quick-dice-result" class="dice-result">-</div>
+            </div>
+        </div>
+
+        <!-- MAIN TABS -->
+        <nav class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('tab-combate')">⚔️ Combate & Regras</button>
+            <button class="tab-btn" onclick="switchTab('tab-bestiario')">🐞 Bestiário de Insetos</button>
+            <button class="tab-btn" onclick="switchTab('tab-criticos')">💥 Críticos & Lesão</button>
+            <button class="tab-btn" onclick="switchTab('tab-xp')">⭐ XP & Progresso</button>
+            <button class="tab-btn" onclick="switchTab('tab-tesouros')">💎 Tesouros & Itens</button>
+            <button class="tab-btn" onclick="switchTab('tab-mundo')">🗺️ Mundo & Locais</button>
+            <button class="tab-btn" onclick="switchTab('tab-dicas')">📜 Dicas do Mestre</button>
+        </nav>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main>
+
+        <!-- TAB 1: COMBATE & REGRAS BÁSICAS (Shield Pg 4 & Fastplay Rules) -->
+        <div id="tab-combate" class="tab-content active">
+            <div class="section-header">
+                <h2>⚔️ Regras de Jogo & Combate</h2>
+                <span class="tag">Escudo pág. 4 & Fastplay</span>
+            </div>
+
+            <div class="grid-2">
+                <!-- ATRIBUTOS & TESTES -->
+                <div class="card">
+                    <div class="card-title">
+                        <span>📊 Atributos Principais</span>
+                        <i>💪</i>
+                    </div>
+                    <table class="shield-table">
+                        <tr>
+                            <th>Atributo</th>
+                            <th>Descrição & Uso em Testes</th>
+                        </tr>
+                        <tr>
+                            <td><strong>👊 Força</strong></td>
+                            <td>Testes de ataque físico, espadadas, arrombar portas trancadas, levantar ou carregar objetos pesados.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>🛡️ Defesa</strong></td>
+                            <td>Testes para se defender de ataques de insetos gigantes, esquivar e escapar de armadilhas.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>🧠 Inteligência</strong></td>
+                            <td>Encontrar passagens secretas, resolver enigmas e mistérios, localizar armadilhas e objetos ocultos.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>🏃 Movimentação</strong></td>
+                            <td>Quantidade de quadrados no grid para andar, correr, saltar, rastejar, rolar ou fazer acrobacias.</td>
+                        </tr>
+                    </table>
+
+                    <div class="highlight-box">
+                        <strong>🎲 Como Realizar Testes (d6):</strong><br>
+                        • <strong>Sucesso:</strong> Rolagem de d6 <u>menor ou igual</u> ao valor do Atributo.<br>
+                        • <strong>Fracasso:</strong> Rolagem <u>maior</u> que o valor do Atributo.<br>
+                        • <strong>Falha Automática:</strong> Tirar <strong>6</strong> no d6 é SEMPRE falha automática (exceto movimentação).
+                    </div>
+                </div>
+
+                <!-- AÇÕES E MOVIMENTAÇÃO -->
+                <div class="card">
+                    <div class="card-title">
+                        <span>🔄 Turno & Tipos de Ações</span>
+                        <i>👟</i>
+                    </div>
+                    <p style="font-size: 0.88rem; margin-bottom: 8px;">No seu turno, cada personagem pode fazer <strong>Movimentação</strong> e <strong>Ataque</strong> (em qualquer ordem).</p>
+                    
+                    <ul class="rule-list">
+                        <li><strong>Movimentação de Heróis:</strong> Rola <strong>2d6</strong> (+/- bônus) = total de quadrados no turno. Mínimo sempre de 1 quadrado. Não anda em diagonal.</li>
+                        <li><strong>Movimentação do Mestre:</strong> Inimigos possuem valor fixo de movimentação na ficha (não rolam 2d6).</li>
+                        <li><strong>Troca de Ação:</strong> Pode-se abrir mão do Ataque para mover 2 vezes. NUNCA se pode abrir mão do movimento para atacar 2 vezes.</li>
+                        <li><strong>Ações Simples (Grátis 1x/turno):</strong> Usar item de Tesouro, passar item para aliado vizinho, descartar item, falar, usar item-chave, abrir porta, procurar coisas/armadilhas (sem inimigos na área).</li>
+                    </ul>
+                </div>
+
+                <!-- PASSO A PASSO DO COMBATE -->
+                <div class="card">
+                    <div class="card-title">
+                        <span>⚔️ 4 Passos do Combate</span>
+                        <i>🛡️</i>
+                    </div>
+                    <ol class="rule-list" style="padding-left: 20px;">
+                        <li><strong>1º Ataque:</strong> Testa Força (1d6 ≤ Força). Checa Alcance e Linha de Visão. Ataque pelas costas concede +1 na Força temporário.</li>
+                        <li><strong>2º Defesa:</strong> Se o ataque acertou, o alvo testa Defesa (1d6 ≤ Defesa) para evitar o Dano.</li>
+                        <li><strong>3º Aplicação de Dano:</strong> Ataque básico causa 1 Dano.
+                            <br>- Se defendeu e Dano era 1: ignora o dano.
+                            <br>- Se defendeu e Dano era > 1: reduz 1 ponto do dano total.</li>
+                        <li><strong>4º Fim de Turno:</strong> Passa a vez para o próximo combatente (sentido horário).</li>
+                    </ol>
+                </div>
+
+                <!-- REGRAS DE VISÃO & RECURSOS -->
+                <div class="card">
+                    <div class="card-title">
+                        <span>👁️ Linha de Visão & Perícias</span>
+                        <i>🎯</i>
+                    </div>
+                    <ul class="rule-list">
+                        <li><strong>Linha de Visão:</strong> É necessária para atacar ou usar magia. Trace uma linha reta ou diagonal de 45° do centro do seu quadrado ao alvo.</li>
+                        <li><strong>Bloqueios:</strong> Parede, objeto grande (barril, pedra, árvore) ou outro herói na frente BLOQUEIAM a visão.</li>
+                        <li><strong>Status dos Insetos:</strong> Agarro, Cegueira, Confusão, Congelamento, Envenenamento, Lentidão, Paralisia, Queimadura, Sono.</li>
+                        <li><strong>Perícias dos Insetos:</strong> Antenas, Ataque com Asas, Cabeçada, Esmagada, Ferroada, Mordida, Odor, Patadas, Picada.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: BESTIÁRIO COMPLETO (Shield Pg 4, 5 & Fastplay) -->
+        <div id="tab-bestiario" class="tab-content">
+            <div class="section-header">
+                <h2>🐞 Bestiário de Insetos Gigantes</h2>
+                <span class="tag">Escudo pág. 4 e 5 • 16 Inimigos</span>
+            </div>
+
+            <!-- SEARCH BAR -->
+            <div class="search-box">
+                <input type="text" id="enemy-search" placeholder="🔍 Pesquisar inimigo por nome (ex: Abelha, Formiga, Vespa)..." onkeyup="filterEnemies()">
+            </div>
+
+            <div style="margin-bottom: 15px; font-size: 0.85rem; background: #e8e0cc; padding: 8px 14px; border-radius: 6px; display: flex; gap: 20px; flex-wrap: wrap;">
+                <span><strong>⚙️ Operário:</strong> Bau de Madeira</span>
+                <span><strong>⚔️ Soldado:</strong> Bau de Ferro</span>
+                <span><strong>👑 Chefão:</strong> Bau de Ouro</span>
+                <span><strong>Simbolos:</strong> 👊 Força | 🛡️ Defesa | 🏃 Movimento | ❤️ Pontos de Vida</span>
+            </div>
+
+            <div class="grid-3" id="enemy-grid">
+
+                <!-- 1. ABELHA -->
+                <div class="enemy-card" data-name="abelha">
+                    <div class="enemy-header">
+                        <h3>🐝 Abelha</h3>
+                        <span class="icon-type">⚙️⚔️👑</span>
+                    </div>
+                    <div class="enemy-body">
+                        <div class="enemy-variants">
+                            <div class="variant-box operario">
+                                <div class="variant-title">⚙️ Operário</div>
+                                <div class="attr-row"><span>👊3</span><span>🛡️2</span><span>🏃7</span></div>
+                                <div class="attr-item hp">❤️ = 1</div>
+                            </div>
+                            <div class="variant-box soldado">
+                                <div class="variant-title">⚔️ Soldado</div>
+                                <div class="attr-row"><span>👊3</span><span>🛡️3</span><span>🏃8</span></div>
+                                <div class="attr-item hp">❤️ = 2</div>
+                            </div>
+                            <div class="variant-box chefao">
+                                <div class="variant-title">👑 Chefão</div>
+                                <div class="attr-row"><span>👊4</span><span>🛡️4</span><span>🏃9</span></div>
+                                <div class="attr-item hp">❤️ = 3</div>
+                            </div>
+                        </div>
+                        <div class="enemy-skill">
+                            <strong>Poder Especial:</strong> Lança um projétil de ferrão que dá o status <strong>Paralisia</strong>. (Alcance = 4)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. BARATA -->
+                <div class="enemy-card" data-name="barata">
+                    <div class="enemy-header">
+                        <h3>🪳 Barata</h3>
+                        <span class="icon-type">⚙️⚔️👑</span>
+                    </div>
+                    <div class="enemy-body">
+                        <div class="enemy-variants">
+                            <div class="variant-box operario">
+                                <div class="variant-title">⚙️ Operário</div>
+                                <div class="attr-row"><span>👊2</span><span>🛡️1</span><span>🏃6</span></div>
+                                <div class="attr-item hp">❤️ = 1</div>
+                            </div>
+                            <div class="variant-box soldado">
+                                <div class="variant-title">⚔️ Soldado</div>
+                                <div class="attr-row"><span>👊3</span><span>🛡️2</span><span>🏃8</span></div>
+                                <div class="attr-item hp">❤️ = 2</div>
+                            </div>
+                            <div class="variant-box chefao">
+                                <div class="variant-title">👑 Chefão</div>
+                                <div class="attr-row"><span>👊4</span><span>🛡️3</span><span>🏃8</span></div>
+                                <div class="attr-item hp">❤️ = 3</div>
+                            </div>
+                        </div>
+                        <div class="enemy-skill">
+                            <strong>Poder Especial:</strong> Quando está com 1 PV, investe em um ataque Voador que causa <strong>2 pontos de Dano</strong>. (Alcance = 1)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. BESOURO TITÃ -->
+                <div class="enemy-card" data-name="besouro tita">
+                    <div class="enemy-header">
+                        <h3>🪲 Besouro Titã</h3>
+                        <span class="icon-type">⚙️⚔️👑</span>
+                    </div>
+                    <div class="enemy-body">
+                        <div class="enemy-variants">
+                            <div class="variant-box operario">
+                                <div class="variant-title">⚙️ Operário</div>
+                                <div class="attr-row"><span>👊4</span><span>🛡️3</span><span>🏃5</span></div>
+                                <div class="attr-item hp">❤️ = 1</div>
+                            </div>
+                            <div class="variant-box soldado">
+                                <div class="variant-title">⚔️ Soldado</div>
+                                <div class="attr-row"><span>👊4</span><span>🛡️3</span><span>🏃5</span></div>
+                                <div class="attr-item hp">❤️ = 2</div>
+                            </div>
+                            <div class="variant-box chefao">
+                                <div class="variant-title">👑 Chefão</div>
+                                <div class="attr-row"><span>👊5</span><span>🛡️4</span><span>🏃7</span></div>
+                                <div class="attr-item hp">❤️ = 3</div>
+                            </div>
+                        </div>
+                        <div class="enemy-skill">
+                            <strong>Poder Especial:</strong> Ao prender um alvo com as patas ou mandíbulas, ativa o status <strong>Agarro</strong>. (Alcance = 1)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. CUPIM -->
+                <div class="enemy-card" data-name="cupim">
+                    <div class="enemy-header">
+                        <h3>🐜 Cupim</h3>
+                        <span class="icon-type">⚙️⚔️👑</span>
+                    </div>
+                    <div class="enemy-body">
+                        <div class="enemy-variants">
+                            <div class="variant-box operario">
+                                <div class="variant-title">⚙️ Operário</div>
+                                <div class="attr-row"><span>👊3</span><span>🛡️2</span><span>🏃5</span></div>
+                                <div class="attr-item hp">❤️ = 1</div>
+                            </div>
+                            <div class="variant-box soldado">
+                                <div class="variant-title">⚔️ Soldado</div>
+                                <div class="attr-row"><span>👊3</span><span>🛡️3</span><span>🏃6</span></div>
+                                <div class="attr-item hp">❤️ = 2</div>
+                            </div>
+                            <div class="variant-box chefao">
+                                <div class="variant-title">👑 Chefão</div>
+                                <div class="attr-row"><span>👊4</span><span>🛡️3</span><span>🏃6</span></div>
+                                <div class="attr-item hp">❤️ = 3</div>
+                            </div>
+                        </div>
+                        <div class="enemy-skill">
+                            <strong>Poder Especial:</strong> Ao prender um alvo com as patas ou mandíbulas, ativa o status <strong>Agarro</strong>. (Alcance = 1)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. ESCORPIÃO -->
+                <div class="enemy-card" data-name="escorpiao">
+                    <div class="enemy-header">
+                        <h3>🦂 Escorpião</h3>
+                        <span class="icon-type">⚙️⚔️👑</span>
+                    </div>
+                    <div class="enemy-body">
+                        <div class="enemy-variants">
+                            <div class="variant-box operario">
+                                <div class="variant-title">⚙️ Operário</div>
+                                <div class="attr-row"><span>👊3</span><span>🛡️2</span><span>🏃5</span></div>
+                                <div class="attr-item hp">❤️ = 1</div>
+                            </div>
+                            <div class="variant-box soldado">
+                                <div class="variant-title">⚔️ Soldado</div>
+                                <div class="attr-row"><span>👊4</span><span>🛡️3</span><span>🏃6</span></div>
+                                <div class="attr-item hp">❤️ = 2</div>
+                            </div>
+                            <div class="variant-box chefao">
+                                <div class="variant-title">👑 Chefão</div>
+                                <div class="attr-row"><span>👊5</span><span>🛡️4</span><span>🏃7</span></div>
+                                <div class="attr-item hp">❤️ = 3</div>
+                            </div>
+                        </div>
+                        <div class="enemy-skill">
+                            <strong>Poder Especial:</strong> Usa seu ferrão para causar <strong>2 Dano</strong> e causa o status <strong>Envenenamento</strong>. (Alcance = 2)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. FORMIGA -->
+                <div class="enemy-card" data-name="formiga">
+                    <div class="enemy-header">
+                        <h3>🐜 Formiga</h3>
+                        <span class="icon-type">⚙️⚔️👑</span>
+                    </div>
+                    <div class="enemy-body">
+                        <div class="enemy-variants">
+                            <div class="variant-box operario">
+                                <div class="variant-title">⚙️ Operário</div>
+                                <div class="attr-row"><span>👊3</span><span>🛡️2</span><span>🏃6</span></div>
+                                <div class="attr-item hp">❤️ = 1</div>
+                            </div>
+                            <div class="variant-box soldado">
+                                <div class="variant-title">⚔️ Soldado</div>
+                                <div class="attr-row"><span>👊4</span><span>🛡️3</span><span>🏃6</span></div>
+                                <div class="attr-item hp">❤️ = 2</div>
+                            </div>
+                            <div class="variant-box chefao">
+                                <div class="variant-title">👑 Chefão</div>
+                                <div class="attr-row"><span>👊4</span><span>🛡️4</span><span>🏃8</span></div>
+                                <div class="attr-item hp">❤️ = 3</div>
+                            </div>
+                        </div>
+                        <div class="enemy-skill">
+                            <strong>Poder Especial:</strong> Agarra o alvo e o arremessa a 2 quadrados causando <strong>2 Dano</strong>. (Alcance = 1)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. GAFANHOTO -->
+                <div class="enemy-card" data-name="gafanhoto">
+                    <div class="enemy-header">
+                        <h3>🦗 Gafanhoto</h3>
+                        <span class="icon-type">⚙️⚔️👑</span>
+                    </div>
+                    <div class="enemy-body">
+                        <div class="enemy-variants">
+                            <div class="variant-box operario">
+                                <div class="variant-title">⚙️ Operário</div>
+                                <div class="attr-row"><span>👊3</span><span>🛡️3</span><span>🏃10</span></div>
+                                <div class="attr-item hp">❤️ = 1</div>
+                            </div>
+                            <div class="variant-box soldado">
+                                <div class="variant-title">⚔️ Soldado</div>
+                                <div class="attr-row"><span>👊3</span><span>🛡️3</span><span>🏃10</span></div>
+                                <div class="attr-item hp">❤️ = 2</div>
+                            </div>
+                            <div class="variant-box chefao">
+                                <div class="variant-title">👑 Chefão</div>
+                                <div class="attr-row"><span>👊4</span><span>🛡️4</span><span>🏃11</span></div>
+                                <div class="attr-item hp">❤️ = 3</div>
+                            </div>
+                        </div>
+                        <div class="enemy-skill">
+                            <strong>Poder Especial:</strong> Salta no alvo causando <strong>2 Dano</strong> e posiciona-se nas costas do alvo. (Alcance = 3)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 8. LAGARTA DE FOGO -->
+                <div class="enemy-card" data-name="lagarta de fogo">
+                    <div class="enemy-header">
+                        <h3>🐛 Lagarta de Fogo</h3>
+                        <span class="icon-type">⚙️⚔️👑</span>
+                    </div>
+                    <div class="enemy-body">
+                        <div class="enemy-variants">
+                            <div class="variant-box operario">
+                                <div class="variant-title">⚙️ Operário</div>
+                                <div class="attr-row"><span>👊4</span><span>🛡️2</span><span>🏃4</span></div>
+                                <div class="attr-item hp">❤️ = 1</div>
+                            </div>
+                            <div class="variant-box soldado">
+                                <div class="variant-title">⚔️ Soldado</div>
+                                <div class="attr-row"><span>👊4</span><span>🛡️3</span><span>🏃4</span></div>
+                                <div class="attr-item hp">❤️ = 2</div>
+                            </div>
+                            <div class="variant-box chefao">
+                                <div class="variant-title">👑 Chefão</div>
+                                <div class="attr-row"><span>👊5</span><span>🛡️4</span><span>🏃5</span></div>
+                                <div class="attr-item hp">❤️ = 3</div>
+                            </div>
+                        </div>
+                        <div class="enemy-skill">
+                            <strong>Poder Especial:</strong> Com 1 PV, queima com o toque causando <strong>2 Dano</strong> e status <strong>Queimadura</strong>. (Alcance = 1)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 9. MARIPOSA -->
+                <div class="enemy-card" data-name="mariposa">
+                    <div class="enemy-header">
+                        <h3>🦋 Mariposa</h3>
+                        <span class="icon-type">⚙️⚔️👑</span>
+                    </div>
+                    <div class="enemy-body">
+                        <div class="enemy-variants">
+                            <div class="variant-box operario">
+                                <div class="variant-title">⚙️ Operário</div>
+                                <div class="attr-row"><span>👊2</span><span>🛡️1</span><span>🏃10</span></div>
+                                <div class="attr-item hp">❤️ = 1</div>
+                            </div>
+                            <div class="variant-box soldado">
+                                <div class="variant-title">⚔️ Soldado</div>
+                                <div class="attr-row"><span>👊3</span><span>🛡️3</span><span>🏃10</span></div>
+                                <div class="attr-item hp">❤️ = 2</div>
+                            </div>
+                            <div class="variant-box chefao">
+                                <div class="variant-title">👑 Chefão</div>
+                                <div class="attr-row"><span>👊4</span><span>🛡️4</span><span>🏃10</span></div>
+                                <div class="attr-item hp">❤️ = 3</div>
+                            </div>
+                        </div>
+                        <div class="enemy-skill">
+                            <strong>Poder Especial:</strong> Lança um pó no ar que concede o status <strong>Cegueira</strong>. (Alcance = 5)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 10. MOSCA -->
+                <div class="enemy-card" data-name="mosca">
+                    <div class="enemy-header">
+                        <h3>🪰 Mosca</h3>
+                        <span class="icon-type">⚙️⚔️👑</span>
+                    </div>
+                    <div class="enemy-body">
+                        <div class="enemy-variants">
+                            <div class="variant-box operario">
+                                <div class="variant-title">⚙️ Operário</div>
+                                <div class="attr-row"><span>👊2</span><span>🛡️2</span><span>🏃7</span></div>
+                                <div class="attr-item hp">❤️ = 1</div>
+                            </div>
+                            <div class="variant-box soldado">
+                                <div class="variant-title">⚔️ Soldado</div>
+                                <div class="attr-row"><span>👊3</span><span>🛡️3</span><span>🏃8</span></div>
+                                <div class="attr-item hp">❤️ = 2</div>
+                            </div>
+                            <div class="variant-box chefao">
+                                <div class="variant-title">👑 Chefão</div>
+                                <div class="attr-row"><span>👊3</span><span>🛡️4</span><span>🏃8</span></div>
+                                <div class="attr-item hp">❤️ = 3</div>
+                            </div>
+                        </div>
+                        <div class="enemy-skill">
+                            <strong>Poder Especial:</strong> Quando está com 1 PV, investe em um ataque Voador que causa <strong>2 Dano</strong>. (Alcance = 3)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 11. MOSQUITO -->
+                <div class="enemy-card" data-name="mosquito">
+                    <div class="enemy-header">
+                        <h3>🦟 Mosquito</h3>
+                        <span class="icon-type">⚙️⚔️👑</span>
+                    </div>
+                    <div class="enemy-body">
+                        <div class="enemy-variants">
+                            <div class="variant-box operario">
+                                <div class="variant-title">⚙️ Operário</div>
+                                <div class="attr-row"><span>👊3</span><span>🛡️2</span><span>🏃10</span></div>
+                                <div class="attr-item hp">❤️ = 1</div>
+                            </div>
+                            <div class="variant-box soldado">
+                                <div class="variant-title">⚔️ Soldado</div>
+                                <div class="attr-row"><span>👊3</span><span>🛡️3</span><span>🏃10</span></div>
+                                <div class="attr-item hp">❤️ = 2</div>
+                            </div>
+                            <div class="variant-box chefao">
+                                <div class="variant-title">👑 Chefão</div>
+                                <div class="attr-row"><span>👊4</span><span>🛡️4</span><span>🏃10</span></div>
+                                <div class="attr-item hp">❤️ = 3</div>
+                            </div>
+                        </div>
+                        <div class="enemy-skill">
+                            <strong>Poder Especial:</strong> Pica seu alvo causando <strong>2 Dano</strong> e concede o status <strong>Lentidão</strong>. (Alcance = 1)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 12. PERCEVEJO -->
+                <div class="enemy-card" data-name="percevejo">
+                    <div class="enemy-header">
+                        <h3>🪲 Percevejo</h3>
+                        <span class="icon-type">⚙️⚔️👑</span>
+                    </div>
+                    <div class="enemy-body">
+                        <div class="enemy-variants">
+                            <div class="variant-box operario">
+                                <div class="variant-title">⚙️ Operário</div>
+                                <div class="attr-row"><span>👊2</span><span>🛡️2</span><span>🏃10</span></div>
+                                <div class="attr-item hp">❤️ = 1</div>
+                            </div>
+                            <div class="variant-box soldado">
+                                <div class="variant-title">⚔️ Soldado</div>
+                                <div class="attr-row"><span>👊3</span><span>🛡️2</span><span>🏃16</span></div>
+                                <div class="attr-item hp">❤️ = 2</div>
+                            </div>
+                            <div class="variant-box chefao">
+                                <div class="variant-title">👑 Chefão</div>
+                                <div class="attr-row"><span>👊4</span><span>🛡️3</span><span>🏃16</span></div>
+                                <div class="attr-item hp">❤️ = 3</div>
+                            </div>
+                        </div>
+                        <div class="enemy-skill">
+                            <strong>Poder Especial:</strong> Emite um odor desagradável que concede o status <strong>Confusão</strong>. (Alcance = 4)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 13. PULGA -->
+                <div class="enemy-card" data-name="pulga">
+                    <div class="enemy-header">
+                        <h3>🦟 Pulga</h3>
+                        <span class="icon-type">⚙️⚔️👑</span>
+                    </div>
+                    <div class="enemy-body">
+                        <div class="enemy-variants">
+                            <div class="variant-box operario">
+                                <div class="variant-title">⚙️ Operário</div>
+                                <div class="attr-row"><span>👊2</span><span>🛡️2</span><span>🏃8</span></div>
+                                <div class="attr-item hp">❤️ = 1</div>
+                            </div>
+                            <div class="variant-box soldado">
+                                <div class="variant-title">⚔️ Soldado</div>
+                                <div class="attr-row"><span>👊3</span><span>🛡️3</span><span>🏃9</span></div>
+                                <div class="attr-item hp">❤️ = 2</div>
+                            </div>
+                            <div class="variant-box chefao">
+                                <div class="variant-title">👑 Chefão</div>
+                                <div class="attr-row"><span>👊4</span><span>🛡️4</span><span>🏃10</span></div>
+                                <div class="attr-item hp">❤️ = 3</div>
+                            </div>
+                        </div>
+                        <div class="enemy-skill">
+                            <strong>Poder Especial:</strong> Suga o sangue do alvo causando <strong>2 Dano</strong> e concede o status <strong>Sono</strong>. (Alcance = 1)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 14. TRAÇA DOS LIVROS -->
+                <div class="enemy-card" data-name="traca dos livros">
+                    <div class="enemy-header">
+                        <h3>🐛 Traça dos Livros</h3>
+                        <span class="icon-type">⚙️⚔️👑</span>
+                    </div>
+                    <div class="enemy-body">
+                        <div class="enemy-variants">
+                            <div class="variant-box operario">
+                                <div class="variant-title">⚙️ Operário</div>
+                                <div class="attr-row"><span>👊2</span><span>🛡️3</span><span>🏃5</span></div>
+                                <div class="attr-item hp">❤️ = 1</div>
+                            </div>
+                            <div class="variant-box soldado">
+                                <div class="variant-title">⚔️ Soldado</div>
+                                <div class="attr-row"><span>👊3</span><span>🛡️3</span><span>🏃6</span></div>
+                                <div class="attr-item hp">❤️ = 2</div>
+                            </div>
+                            <div class="variant-box chefao">
+                                <div class="variant-title">👑 Chefão</div>
+                                <div class="attr-row"><span>👊4</span><span>🛡️3</span><span>🏃7</span></div>
+                                <div class="attr-item hp">❤️ = 3</div>
+                            </div>
+                        </div>
+                        <div class="enemy-skill">
+                            <strong>Poder Especial:</strong> Ataque giratório que atinge a todos vizinhos e causa <strong>2 Dano</strong>. (Alcance = 1)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 15. VESPA -->
+                <div class="enemy-card" data-name="vespa">
+                    <div class="enemy-header">
+                        <h3>🐝 Vespa</h3>
+                        <span class="icon-type">⚙️⚔️👑</span>
+                    </div>
+                    <div class="enemy-body">
+                        <div class="enemy-variants">
+                            <div class="variant-box operario">
+                                <div class="variant-title">⚙️ Operário</div>
+                                <div class="attr-row"><span>👊3</span><span>🛡️3</span><span>🏃8</span></div>
+                                <div class="attr-item hp">❤️ = 1</div>
+                            </div>
+                            <div class="variant-box soldado">
+                                <div class="variant-title">⚔️ Soldado</div>
+                                <div class="attr-row"><span>👊3</span><span>🛡️3</span><span>🏃9</span></div>
+                                <div class="attr-item hp">❤️ = 2</div>
+                            </div>
+                            <div class="variant-box chefao">
+                                <div class="variant-title">👑 Chefão</div>
+                                <div class="attr-row"><span>👊5</span><span>🛡️4</span><span>🏃9</span></div>
+                                <div class="attr-item hp">❤️ = 3</div>
+                            </div>
+                        </div>
+                        <div class="enemy-skill">
+                            <strong>Poder Especial:</strong> Lança projétil de ferrão causando <strong>1 Dano</strong> e status <strong>Congelamento</strong>. (Alcance = 3)
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- TAB 3: CRÍTICOS & TABELA DE LESÃO (Shield Pg 6) -->
+        <div id="tab-criticos" class="tab-content">
+            <div class="section-header">
+                <h2>💥 Acerto Crítico, Erro Crítico & Lesões</h2>
+                <span class="tag">Escudo pág. 6</span>
+            </div>
+
+            <div class="grid-3">
+                <!-- ACERTO CRÍTICO -->
+                <div class="card">
+                    <div class="card-title">
+                        <span>🎯 Acerto Crítico (d6)</span>
+                        <i style="color: var(--accent-green);">⚡</i>
+                    </div>
+                    <p style="font-size: 0.82rem; margin-bottom: 8px;">Quando o herói consegue um acerto excelente, rola 1d6 na tabela abaixo:</p>
+                    <table class="shield-table">
+                        <tr><th>d6</th><th>Benefício Concedido</th></tr>
+                        <tr><td><span class="badge-roll">1</span></td><td>O alvo não poderá se defender deste ataque.</td></tr>
+                        <tr><td><span class="badge-roll">2</span></td><td>+1 Ponto em Força para testes de ataque a este alvo até ele ser derrotado.</td></tr>
+                        <tr><td><span class="badge-roll">3</span></td><td>Deixa o alvo enfraquecido, reduzindo sua Movimentação pela metade por 3 turnos.</td></tr>
+                        <tr><td><span class="badge-roll">4</span></td><td>Paralisa o alvo, fazendo com que ele perca sua ação em seu próximo turno.</td></tr>
+                        <tr><td><span class="badge-roll">5</span></td><td>O alvo realiza o teste de defesa com penalidade de -1 ponto no atributo Defesa.</td></tr>
+                        <tr><td><span class="badge-roll">6</span></td><td>+1 Ponto extra de Dano.</td></tr>
+                    </table>
+                </div>
+
+                <!-- ERRO CRÍTICO -->
+                <div class="card">
+                    <div class="card-title">
+                        <span>❌ Erro Crítico (d6)</span>
+                        <i style="color: var(--accent-red);">💥</i>
+                    </div>
+                    <p style="font-size: 0.82rem; margin-bottom: 8px;">Ao falhar criticamente em um teste, rola 1d6 na tabela:</p>
+                    <table class="shield-table">
+                        <tr><th>d6</th><th>Consequência Sofrida</th></tr>
+                        <tr><td><span class="badge-roll">1</span></td><td>O alvo pode imediatamente fazer um contra-ataque antes de sua ação do turno.</td></tr>
+                        <tr><td><span class="badge-roll">2</span></td><td>-1 Ponto em Força para testes de atacar este alvo até ele ser derrotado.</td></tr>
+                        <tr><td><span class="badge-roll">3</span></td><td>Está com medo e não poderá se movimentar no próximo turno.</td></tr>
+                        <tr><td><span class="badge-roll">4</span></td><td>Fica apavorado, não podendo o atacar em seu próximo turno (outros alvos permitidos).</td></tr>
+                        <tr><td><span class="badge-roll">5</span></td><td>Não poderá receber qualquer tipo de cura ou ajuda de aliados por um turno.</td></tr>
+                        <tr><td><span class="badge-roll">6</span></td><td>Perde um item de Tesouro, um pouco de Chuvisco$ ou quebra pertence à escolha do Mestre. (Se for inseto, nada acontece).</td></tr>
+                    </table>
+                </div>
+
+                <!-- TABELA DE LESÃO -->
+                <div class="card">
+                    <div class="card-title">
+                        <span>🩸 Tabela de Lesão (Desmaio)</span>
+                        <i>🛌</i>
+                    </div>
+                    <p style="font-size: 0.82rem; margin-bottom: 8px;">Quando um herói perde TODOS os Pontos de Vida, ele desmaia. Rola 1d6:</p>
+                    <table class="shield-table">
+                        <tr><th>d6</th><th>Estado do Herói</th></tr>
+                        <tr><td><span class="badge-roll">1</span></td><td><strong>Desmaiado.</strong> Fica no local aguardando socorro/cura.</td></tr>
+                        <tr><td><span class="badge-roll">2-3</span></td><td><strong>Desmaiado e Sem Sorte.</strong> Perde 1 Carta de Tesouro à escolha do Mestre.</td></tr>
+                        <tr><td><span class="badge-roll">4-5</span></td><td><strong>Desmaiado e Roubado.</strong> Perde todas as Cartas de Tesouro que possuir.</td></tr>
+                        <tr><td><span class="badge-roll">6</span></td><td><strong>Desmaiado e Exausto.</strong> Perde todas as Cartas e não poderá retornar nesta missão (mesmo com ajuda).</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: XP & PROGRESSO (Shield Pg 6) -->
+        <div id="tab-xp" class="tab-content">
+            <div class="section-header">
+                <h2>⭐ Tabela de XP & Progressão do Herói</h2>
+                <span class="tag">Escudo pág. 6</span>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <span>🏆 Conquistas e Benefícios por Pontos de Experiência</span>
+                    <i>✨</i>
+                </div>
+                <p style="font-size: 0.88rem; margin-bottom: 12px;">Sempre que um inimigo é derrotado, <strong>TODOS os heróis que causaram pelo menos 1 de Dano nele ganham 1 ponto de XP</strong>.</p>
+                
+                <table class="shield-table">
+                    <thead>
+                        <tr>
+                            <th>XP Necessário</th>
+                            <th>Título de Conquista</th>
+                            <th>Benefícios Recebidos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>6 XP</strong></td><td>Guardião da Vila</td><td>Ganha +1 Ponto de Vida.</td></tr>
+                        <tr><td><strong>15 XP</strong></td><td>Defensor da Floresta</td><td>Ganha +1 Ponto em qualquer Atributo.</td></tr>
+                        <tr><td><strong>24 XP</strong></td><td>Desbravador de Cavernas</td><td>Ganha +1 Ponto de bolsa e +1 Talento do Herói.</td></tr>
+                        <tr><td><strong>43 XP</strong></td><td>Protetor dos Mais Fracos</td><td>Ganha +1 Ponto em qualquer Atributo. Se usa magia: +1 Poder Mágico.</td></tr>
+                        <tr><td><strong>62 XP</strong></td><td>Amigo dos Animais</td><td>Ganha +1 Ponto de Vida.</td></tr>
+                        <tr><td><strong>81 XP</strong></td><td>Companheiro de Jornada</td><td>Ganha +1 Ponto em qualquer Atributo.</td></tr>
+                        <tr><td><strong>100 XP</strong></td><td>Aventureiro Criativo</td><td>Causa naturalmente 2 Pontos de Dano e ganha +1 Talento do Herói.</td></tr>
+                        <tr><td><strong>139 XP</strong></td><td>Protetor da Paz</td><td>Ganha +1 Ponto de Vida. Se usa magia: +1 Poder Mágico.</td></tr>
+                        <tr><td><strong>168 XP</strong></td><td>Salvador Generoso</td><td>Ganha +1 Ponto em qualquer Atributo.</td></tr>
+                        <tr><td><strong>207 XP</strong></td><td>Voz da Esperança</td><td>Ganha +1 Ponto de bolsa e +1 Talento do Herói.</td></tr>
+                        <tr><td><strong>256 XP</strong></td><td>Destruidor de Insetos</td><td>Ganha +1 Ponto em qualquer Atributo. Se usa magia: +1 Poder Mágico.</td></tr>
+                        <tr><td><strong>300 XP</strong></td><td>Lenda de Faz de Conta</td><td>Causa naturalmente 3 Pontos de Dano.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 5: TESOUROS & ITENS (Fastplay Cards) -->
+        <div id="tab-tesouros" class="tab-content">
+            <div class="section-header">
+                <h2>💎 Cartas de Tesouro & Baús</h2>
+                <span class="tag">Fastplay Pág. 24, 33-35</span>
+            </div>
+
+            <div class="grid-3" style="margin-bottom: 20px;">
+                <div class="card">
+                    <div class="card-title">📦 Baú de Madeira</div>
+                    <p style="font-size: 0.85rem;">Dropado ao derrotar <strong>Operários (⚙️)</strong>. Contém <strong>Poções</strong> de uso único.</p>
+                </div>
+                <div class="card">
+                    <div class="card-title">⛓️ Baú de Ferro</div>
+                    <p style="font-size: 0.85rem;">Dropado ao derrotar <strong>Soldados (⚔️)</strong>. Contém <strong>Pergaminhos Mágicos</strong> de uso único.</p>
+                </div>
+                <div class="card">
+                    <div class="card-title">👑 Baú de Ouro</div>
+                    <p style="font-size: 0.85rem;">Dropado ao derrotar <strong>Chefões (👑)</strong>. Contém <strong>Anéis Mágicos</strong> permanentes.</p>
+                </div>
+            </div>
+
+            <div class="section-header" style="background: #4a3319; margin-top: 10px;">
+                <h3 style="font-size: 1.1rem; color: #f7e7c4;">🧪 Poções, Pergaminhos e Anéis do Fastplay</h3>
+            </div>
+
+            <div class="grid-3">
+                <div class="treasure-card madeira">
+                    <div class="treasure-type">Baú de Madeira • Poção</div>
+                    <div class="treasure-title">🧪 Poção de Cura</div>
+                    <div class="treasure-desc">Recupera 1 Ponto de Vida do herói.</div>
+                    <span class="treasure-tag">Descarte ao usar • (+1 PV)</span>
+                </div>
+
+                <div class="treasure-card madeira">
+                    <div class="treasure-type">Baú de Madeira • Poção</div>
+                    <div class="treasure-title">🧪 Poção de Cura Aprimorada</div>
+                    <div class="treasure-desc">Recupera 2 Pontos de Vida do herói.</div>
+                    <span class="treasure-tag">Descarte ao usar • (+2 PV)</span>
+                </div>
+
+                <div class="treasure-card madeira">
+                    <div class="treasure-type">Baú de Madeira • Poção</div>
+                    <div class="treasure-title">🧪 Poção Brilhosa</div>
+                    <div class="treasure-desc">Melhora a percepção. Concede +2 no atributo Inteligência em testes para procurar.</div>
+                    <span class="treasure-tag">Descarte ao usar • (+2 Inteligência)</span>
+                </div>
+
+                <div class="treasure-card madeira">
+                    <div class="treasure-type">Baú de Madeira • Poção</div>
+                    <div class="treasure-title">🧪 Poção Cola</div>
+                    <div class="treasure-desc">Poção arremessável que impede um Inseto Gigante de se movimentar por 1 turno.</div>
+                    <span class="treasure-tag">Descarte ao usar • (Imobiliza 1 turno)</span>
+                </div>
+
+                <div class="treasure-card ferro">
+                    <div class="treasure-type">Baú de Ferro • Pergaminho</div>
+                    <div class="treasure-title">📜 Pergaminho de Fogo</div>
+                    <div class="treasure-desc">Lança uma bola de fogo que causa 1 de Dano e alcança um alvo a até 6 quadrados.</div>
+                    <span class="treasure-tag">Descarte ao usar • (1 Dano / Alcance 6)</span>
+                </div>
+
+                <div class="treasure-card ferro">
+                    <div class="treasure-type">Baú de Ferro • Pergaminho</div>
+                    <div class="treasure-title">📜 Pergaminho da Destreza</div>
+                    <div class="treasure-desc">Ao ser lido, faz o herói desviar do próximo ataque que receber automaticamente.</div>
+                    <span class="treasure-tag">Descarte ao usar • (Esquiva Automática)</span>
+                </div>
+
+                <div class="treasure-card ferro">
+                    <div class="treasure-type">Baú de Ferro • Pergaminho</div>
+                    <div class="treasure-title">📜 Pergaminho da Invisibilidade</div>
+                    <div class="treasure-desc">Deixa o herói invisível por 1 turno completo.</div>
+                    <span class="treasure-tag">Descarte ao usar • (Invisível 1 turno)</span>
+                </div>
+
+                <div class="treasure-card ferro">
+                    <div class="treasure-type">Baú de Ferro • Pergaminho</div>
+                    <div class="treasure-title">📜 Pergaminho do Teletransporte</div>
+                    <div class="treasure-desc">Leva o herói imediatamente para qualquer sala já visitada dentro do grid.</div>
+                    <span class="treasure-tag">Descarte ao usar • (Teletransporte)</span>
+                </div>
+
+                <div class="treasure-card ouro">
+                    <div class="treasure-type">Baú de Ouro • Anel Mágico</div>
+                    <div class="treasure-title">💍 Anel da Força</div>
+                    <div class="treasure-desc">Anel mágico encantado que aumenta permanentemente o valor do atributo Força em +1.</div>
+                    <span class="treasure-tag" style="background: #fff3cd; color: #856404;">Item Permanente • (+1 Força)</span>
+                </div>
+
+                <div class="treasure-card ouro">
+                    <div class="treasure-type">Baú de Ouro • Anel Mágico</div>
+                    <div class="treasure-title">💍 Anel da Experiência</div>
+                    <div class="treasure-desc">Aumenta o valor da experiência recebida em +1 de XP ao derrotar qualquer inimigo.</div>
+                    <span class="treasure-tag" style="background: #fff3cd; color: #856404;">Item Permanente • (+1 XP Extra)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 6: MUNDO & LOCAIS (Fastplay Pg 8) -->
+        <div id="tab-mundo" class="tab-content">
+            <div class="section-header">
+                <h2>🗺️ O Continente: Terra da Chuva Miúda</h2>
+                <span class="tag">Fastplay Pág. 8</span>
+            </div>
+
+            <div class="grid-2">
+                <div>
+                    <div class="loc-card">
+                        <h4>🏡 Vila Velha</h4>
+                        <p>Pequeno vilarejo onde moram os pequenos heróis. Ponto de partida de todas as grandes aventuras.</p>
+                    </div>
+                    <div class="loc-card">
+                        <h4>🌲 Floresta Densa</h4>
+                        <p>A área mais verde de todas, repleta de árvores frutíferas com frutos gigantes e animais exóticos.</p>
+                    </div>
+                    <div class="loc-card">
+                        <h4>🌵 Bosque dos Espinhos</h4>
+                        <p>Uma área tóxica e perigosa onde as árvores não conseguem mais sobreviver.</p>
+                    </div>
+                    <div class="loc-card">
+                        <h4>🏔️ Montanha Congelante</h4>
+                        <p>A maior e mais fria montanha de toda a Terra da Chuva Miúda.</p>
+                    </div>
+                    <div class="loc-card">
+                        <h4>⛏️ Minas</h4>
+                        <p>Cavernas subterrâneas ricas onde se é possível coletar preciosos recursos minerais.</p>
+                    </div>
+                    <div class="loc-card">
+                        <h4>🌊 Cachoeira do Norte</h4>
+                        <p>O melhor lugar para tomar banho, se refrescar e se divertir em toda a região.</p>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="loc-card">
+                        <h4>🐟 Lago da Boa Pesca</h4>
+                        <p>Grande porção de água vinda da Cachoeira do Norte, repleta de peixes coloridos.</p>
+                    </div>
+                    <div class="loc-card">
+                        <h4>🌳 Floresta Secreta</h4>
+                        <p>Um localmístico ainda inexplorado que fica escondido dentro da Floresta Densa.</p>
+                    </div>
+                    <div class="loc-card">
+                        <h4>🏞️ Rio do Destino</h4>
+                        <p>Correnteza de água que atravessa o continente vinda da Cachoeira do Norte até o mar.</p>
+                    </div>
+                    <div class="loc-card">
+                        <h4>🦇 Cavernas sem Luz</h4>
+                        <p>Cavernas extremamente escuras e profundas que formam um verdadeiro labirinto.</p>
+                    </div>
+                    <div class="loc-card">
+                        <h4>🚨 Farol</h4>
+                        <p>Torre com luz muito forte que indica a localização da região para estrangeiros amigáveis.</p>
+                    </div>
+                    <div class="loc-card">
+                        <h4>🏚️ Escombros</h4>
+                        <p>Uma antiga e misteriosa cidade em ruínas destruída muito antes da chegada dos moradores da vila.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 7: DICAS DO MESTRE & CONDUÇÃO PARA CRIANÇAS -->
+        <div id="tab-dicas" class="tab-content">
+            <div class="section-header">
+                <h2>📜 Dicas Essenciais para o Mestre</h2>
+                <span class="tag">Pedagogia & Diversão</span>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title">
+                        <span>💡 O Papel do Mestre do Faz de Conta</span>
+                    </div>
+                    <ul class="rule-list">
+                        <li><strong>O Mestre NUNCA joga contra os heróis:</strong> Você é o narrador, o guia e o criador de mundo. Seu objetivo é fazer com que as crianças se sintam heroínas!</li>
+                        <li><strong>Inimigos Não Morrem:</strong> Quando os heróis vencem um Inseto Gigante, diga que o inseto fugiu ou que a mágica passou e ele voltou ao seu tamanho normal inofensivo!</li>
+                        <li><strong>Heróis Apenas Desmaiam:</strong> Se o herói perder todos os PVs, ele fica desmaiado/cansado. Use a Tabela de Lesão.</li>
+                        <li><strong>Apoio ao Aprendizado:</strong> Estimule o trabalho em equipe, a leitura da ficha, cálculos matemáticos simples e empatia.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span>🎒 Regras de Descanso & Recuperação</span>
+                    </div>
+                    <div class="highlight-box" style="margin-top: 0;">
+                        <strong>Ways to Recover Health (PV):</strong><br><br>
+                        • <strong>Cartas de Tesouro:</strong> Usando Poções de Cura.<br>
+                        • <strong>Habilidade Especial:</strong> Especiais de cura da Fada ou do Mago.<br>
+                        • <strong>Descanso (1x por Missão):</strong> O herói pode abrir mão de 2 turnos para recuperar 1 PV. Não pode se mover nem atacar. Se for atacado, o descanso é interrompido!<br>
+                        • <strong>Fim da Missão:</strong> Ao concluir a missão, todos recuperam TODOS os PVs.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <p><strong>Faz de Conta RPG</strong> • Criado por Neemias de Oliveira Guimarães • "Um Grande RPG para Pequeninos!"</p>
+        <p style="margin-top: 4px; font-size: 0.75rem;">Escudo do Mestre Interativo & Responsive UI • Desenvolvido para auxílio em mesa.</p>
+    </footer>
+
+    <!-- JAVASCRIPT FOR INTERACTIVITY & DICE ROLLING -->
+    <script>
+        // TAB SWITCHING
+        function switchTab(tabId) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Remove active class from buttons
+            const btns = document.querySelectorAll('.tab-btn');
+            btns.forEach(btn => btn.classList.remove('active'));
+
+            // Show current tab & activate button
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // QUICK DICE ROLLER
+        function rollDice(numDice) {
+            let total = 0;
+            let rolls = [];
+            for (let i = 0; i < numDice; i++) {
+                let roll = Math.floor(Math.random() * 6) + 1;
+                rolls.push(roll);
+                total += roll;
+            }
+
+            const resultDisplay = document.getElementById('quick-dice-result');
+            if (numDice === 1) {
+                resultDisplay.innerHTML = `🎲 <strong>${total}</strong>`;
+            } else {
+                resultDisplay.innerHTML = `🎲 <strong>${total}</strong> (${rolls.join(' + ')})`;
+            }
+
+            // Quick scale effect
+            resultDisplay.style.transform = 'scale(1.15)';
+            setTimeout(() => {
+                resultDisplay.style.transform = 'scale(1)';
+            }, 150);
+        }
+
+        // ENEMY SEARCH FILTER
+        function filterEnemies() {
+            const input = document.getElementById('enemy-search').value.toLowerCase();
+            const cards = document.querySelectorAll('.enemy-card');
+
+            cards.forEach(card => {
+                const name = card.getAttribute('data-name');
+                if (name.includes(input)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
