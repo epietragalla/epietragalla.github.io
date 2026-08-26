@@ -3,125 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Método PURE — Apresentação Interativa Completa</title>
+    <title>Método PURE — Apresentação Interativa Completa (DSC CAIXA)</title>
 
-    <!-- Tailwind CSS CDN com Extensão de Tokens do Apple Design System -->
+    <!-- GARANTIA DE MODO CLARO PADRÃO ANTES DA RENDERIZAÇÃO DA PÁGINA -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('caixa_theme_pref') || 'light';
+            const html = document.documentElement;
+            if (savedTheme === 'dark') {
+                html.classList.add('dark');
+                html.classList.remove('light');
+                html.setAttribute('data-theme', 'dark');
+            } else {
+                html.classList.remove('dark');
+                html.classList.add('light');
+                html.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
+
+    <!-- Lucide Icons & FontAwesome para Ícones Oficiais -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- MathJax para Fórmulas Matemáticas -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- CONFIGURAÇÃO DE TOKENS OFICIAIS DO TAILWIND CSS DO DSC -->
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        apple: {
-                            blue: '#007AFF',
-                            darkBlue: '#0A84FF',
-                            gray: '#8E8E93',
-                            gray2: '#AEAEB2',
-                            gray3: '#C7C7CC',
-                            gray4: '#D1D1D6',
-                            gray5: '#E5E5EA',
-                            gray6: '#F2F2F7',
-                            darkBg: '#000000',
-                            darkCard: '#1C1C1E',
-                            darkCard2: '#2C2C2E',
-                            darkCard3: '#3A3A3C',
-                            green: '#34C759',
-                            darkGreen: '#30D158',
-                            orange: '#FF9500',
-                            darkOrange: '#FF9F0A',
-                            red: '#FF3B30',
-                            darkRed: '#FF453A',
-                            purple: '#AF52DE',
-                            darkPurple: '#BF5AF2'
+                        caixa: {
+                            // Paleta Fixa
+                            blue130: '#002A4D',
+                            blue110: '#00437A',
+                            blue90:  '#005CA9',   /* Principal Interativo / Oceano CAIXA */
+                            blue70:  '#2D8A0B',
+                            blue50:  '#60B1FA',
+                            blue30:  '#AED2FC',
+                            blue10:  '#E5F1FC',   /* Superfície de Item Ativo */
+
+                            orange130: '#663A00',
+                            orange110: '#A65E00',
+                            orange90:  '#D67B00',  /* Homologada p/ Botões c/ Texto Branco */
+                            orange70:  '#F39200',  /* Laranja Original */
+                            orange50:  '#FD854B',
+                            orange30:  '#FFD092',
+                            orange10:  '#FFEFD6',
+
+                            tertiary70: '#54B8A8', /* Turquesa CAIXA */
+
+                            // Neutros (Grayscale)
+                            gray130: '#22292E',    /* Texto Primário */
+                            gray110: '#404852',    /* Texto Secundário */
+                            gray90:  '#64747A',    /* Bordas e Ícones */
+                            gray70:  '#9EB2B8',    /* Divisores */
+                            gray50:  '#D0E0E3',    /* Bordas Suaves */
+                            gray30:  '#EBF1F2',    /* Inset Light */
+                            gray10:  '#F7FAFA',    /* Canvas Light */
+
+                            // Feedback
+                            success110: '#0D5B1C',
+                            success70:  '#179231',
+                            success10:  '#E7F4EA',
+
+                            warning110: '#977203',
+                            warning70:  '#FCBE05',
+                            warning10:  '#FFF9E6',
+
+                            danger110:  '#8C2323',
+                            danger70:   '#D93636',
+                            danger10:   '#FBEBEB',
+
+                            info110:    '#026173',
+                            info70:     '#04A2BF',
+                            info10:     '#E5F6F8',
+
+                            // Dark Mode Tokens
+                            darkBg:     '#0B1E36',
+                            darkCard:   '#132A4A',
+                            darkInset:  '#1A365D',
+                            darkBorder: '#2A4A75'
                         }
                     },
                     fontFamily: {
-                        sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', '"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif']
+                        sans: ['Plus Jakarta Sans', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    },
+                    borderRadius: {
+                        'xs': '2px',
+                        'sm': '4px',
+                        'badge': '8px',
+                        'inset': '12px',
+                        'card': '16px',
+                        'pill': '9999px'
+                    },
+                    boxShadow: {
+                        'elevation1': '0px 1px 3px 1px rgba(0, 0, 0, 0.15)',
+                        'elevation2': '0px 2px 6px 2px rgba(0, 0, 0, 0.15)',
+                        'elevation3': '0px 4px 8px 3px rgba(0, 0, 0, 0.15)',
+                        'cta': '0 4px 12px rgba(214, 123, 0, 0.35)'
                     }
                 }
             }
         }
     </script>
 
-    <!-- FontAwesome para Ícones Estilo SF Symbols -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- MathJax para Fórmulas Matemáticas -->
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
-    <!-- Estilos CSS Centralizados (Apple HIG Pattern System) -->
+    <!-- VARIÁVEIS CSS ROOT E ESTILOS CUSTOMIZADOS DO DESIGN SYSTEM CAIXA -->
     <style>
-        /* ==========================================================================
-           APPLE HUMAN INTERFACE GUIDELINES (HIG) — SYSTEM TOKENS
-           ========================================================================== */
-        :root, html[data-theme="light"] {
-            --apple-bg: #F5F5F7;
-            --apple-card-bg: rgba(255, 255, 255, 0.88);
-            --apple-inset-bg: rgba(242, 242, 247, 0.8);
-            --apple-header-bg: rgba(255, 255, 255, 0.78);
-            --apple-border: rgba(0, 0, 0, 0.08);
-            --apple-border-light: rgba(0, 0, 0, 0.05);
-            --apple-blue: #007AFF;
-            --apple-blue-hover: #0062CC;
-            --apple-green: #34C759;
-            --apple-red: #FF3B30;
-            --apple-orange: #FF9500;
-            --apple-purple: #AF52DE;
-            --apple-text-main: #1D1D1F;
-            --apple-text-muted: #86868B;
-            --apple-card-shadow: 0 12px 40px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.03);
-            --accent-cyan: #007AFF;
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
+
+        :root {
+            --caixa-blue-90: #005CA9;
+            --caixa-blue-dark: #003366;
+            --caixa-orange-90: #D67B00;
+            --caixa-orange-70: #F39200;
+            --caixa-bg-canvas: #F7FAFA;
+            --caixa-bg-card: #FFFFFF;
+            --caixa-bg-inset: #EBF1F2;
+            --caixa-border: #CBD5E1;
+            --caixa-text-main: #22292E;
+            --caixa-text-muted: #404852;
+            --accent-cyan: #005CA9;
         }
 
-        html[data-theme="dark"], .dark {
-            --apple-bg: #000000;
-            --apple-card-bg: rgba(28, 28, 30, 0.85);
-            --apple-inset-bg: rgba(44, 44, 46, 0.7);
-            --apple-header-bg: rgba(22, 22, 24, 0.8);
-            --apple-border: rgba(255, 255, 255, 0.12);
-            --apple-border-light: rgba(255, 255, 255, 0.08);
-            --apple-blue: #0A84FF;
-            --apple-blue-hover: #409CFF;
-            --apple-green: #30D158;
-            --apple-red: #FF453A;
-            --apple-orange: #FF9F0A;
-            --apple-purple: #BF5AF2;
-            --apple-text-main: #F5F5F7;
-            --apple-text-muted: #8E8E93;
-            --apple-card-shadow: 0 16px 50px rgba(0, 0, 0, 0.5);
-            --accent-cyan: #0A84FF;
+        .dark {
+            --caixa-bg-canvas: #0B1E36;
+            --caixa-bg-card: #132A4A;
+            --caixa-bg-inset: #1A365D;
+            --caixa-border: #2A4A75;
+            --caixa-text-main: #F8FAFC;
+            --caixa-text-muted: #94A3B8;
+            --accent-cyan: #60B1FA;
         }
 
-        /* Transição Suave Apple HIG */
         *, *::before, *::after {
-            transition: background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
-                        border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
-                        color 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
-                        box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
-            background-color: var(--apple-bg);
-            color: var(--apple-text-main);
+            background-color: var(--caixa-bg-canvas);
+            color: var(--caixa-text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
             height: 100vh;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             user-select: none;
             -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+        }
+
+       .caixa-glass {
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .dark .caixa-glass {
+            background: rgba(11, 30, 54, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        header.sticky {
+            height: auto;
+            min-height: 65px;
         }
 
         /* Top Progress Bar */
         .progress-bar-container {
             width: 100%;
-            height: 3px;
-            background: var(--apple-border-light);
+            height: 4px;
+            background: rgba(0, 92, 169, 0.15);
             position: fixed;
             top: 0;
             left: 0;
@@ -130,52 +192,45 @@
 
         .progress-bar-fill {
             height: 100%;
-            background: var(--apple-blue);
+            background: linear-gradient(90deg, #005CA9, #54B8A8, #D67B00);
             width: 0%;
             transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 0 8px var(--apple-blue);
         }
 
-        /* Header Navigation (macOS Bar) */
-        .apple-glass {
-            background: var(--apple-header-bg);
-            backdrop-filter: blur(25px) saturate(180%);
-            -webkit-backdrop-filter: blur(25px) saturate(180%);
-            border-bottom: 1px solid var(--apple-border-light);
-        }
-
+        /* Header Bar */
         .top-bar {
             height: 65px;
+            border-bottom: 1px solid var(--caixa-border);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 24px;
-            z-index: 10;
+            padding: 0 28px;
+            z-index: 30;
         }
 
         .brand-title {
             font-size: 15px;
             font-weight: 700;
-            color: var(--apple-text-main);
+            color: var(--caixa-text-main);
             display: flex;
             align-items: center;
             gap: 12px;
         }
 
         .brand-badge {
-            background: rgba(0, 122, 255, 0.1);
-            border: 1px solid rgba(0, 122, 255, 0.2);
-            color: var(--apple-blue);
+            background: rgba(0, 92, 169, 0.1);
+            border: 1px solid rgba(0, 92, 169, 0.2);
+            color: var(--caixa-blue-90);
             padding: 4px 12px;
-            border-radius: 980px;
+            border-radius: 8px;
             font-size: 11px;
             font-weight: 700;
             letter-spacing: 0.5px;
         }
         .dark .brand-badge {
-            background: rgba(10, 132, 255, 0.2);
-            border-color: rgba(10, 132, 255, 0.3);
-            color: var(--apple-blue);
+            background: rgba(96, 177, 250, 0.15);
+            border-color: rgba(96, 177, 250, 0.3);
+            color: #60B1FA;
         }
 
         .controls {
@@ -185,87 +240,46 @@
         }
 
         .slide-counter {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", monospace;
+            font-family: 'JetBrains Mono', monospace;
             font-size: 12px;
-            font-weight: 600;
-            color: var(--apple-text-muted);
+            font-weight: 700;
+            color: var(--caixa-text-muted);
             min-width: 80px;
             text-align: center;
-            background: var(--apple-inset-bg);
+            background: var(--caixa-bg-inset);
             padding: 6px 12px;
-            border-radius: 980px;
-            border: 1px solid var(--apple-border-light);
+            border-radius: 8px;
+            border: 1px solid var(--caixa-border);
         }
 
-        /* Botões Estilo Push / Pill */
-        .apple-btn-primary {
-            background-color: var(--apple-blue);
-            color: #FFFFFF !important;
-            font-weight: 600;
-            border-radius: 980px;
-            padding: 8px 18px;
-            font-size: 13px;
-            box-shadow: 0 2px 8px rgba(0, 122, 255, 0.25);
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            border: none;
-            cursor: pointer;
-        }
-        .apple-btn-primary:hover:not(:disabled) {
-            background-color: var(--apple-blue-hover);
-            transform: scale(1.02);
-        }
-
-        .apple-btn-secondary {
-            background-color: var(--apple-inset-bg);
-            color: var(--apple-text-main);
-            font-weight: 600;
-            border-radius: 980px;
-            padding: 8px 16px;
-            font-size: 13px;
-            border: 1px solid var(--apple-border-light);
-            cursor: pointer;
-        }
-        .apple-btn-secondary:hover:not(:disabled) {
-            background-color: var(--apple-border-light);
-            transform: scale(1.02);
-        }
-
-        button:disabled {
-            opacity: 0.3 !important;
-            cursor: not-allowed !important;
-            transform: none !important;
-        }
-
-        /* Main Viewport Container */
+       /* Container de Apresentação */
         .presentation-container {
             flex: 1;
             width: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 24px 32px;
+            padding: 20px 24px;
             position: relative;
         }
 
-        /* Slide Shell Design (Apple Card Squircle) */
+        /* Card do Slide Padronizado */
         .slide {
             display: none;
             width: 100%;
-            max-width: 1180px;
+            max-width: 1100px;
             height: 100%;
-            max-height: 680px;
-            background-color: var(--apple-card-bg);
-            backdrop-filter: blur(25px) saturate(180%);
-            -webkit-backdrop-filter: blur(25px) saturate(180%);
-            border: 1px solid var(--apple-border);
-            border-radius: 24px;
-            padding: 40px 48px;
-            box-shadow: var(--apple-card-shadow);
+            max-height: 640px;
+            background-color: var(--caixa-bg-card);
+            border: 1px solid var(--caixa-border);
+            border-radius: 20px;
+            padding: 32px 40px;
+            box-shadow: 0px 4px 16px 2px rgba(0, 0, 0, 0.06);
             flex-direction: column;
             justify-content: space-between;
             position: relative;
             opacity: 0;
-            transform: scale(0.98) translateY(12px);
+            transform: scale(0.98) translateY(10px);
             transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
@@ -278,20 +292,22 @@
         /* Module Tags */
         .module-tag {
             font-size: 11px;
-            font-weight: 700;
+            font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             display: inline-block;
             padding: 4px 12px;
-            border-radius: 980px;
+            border-radius: 8px;
         }
 
-        .tag-m1 { background: rgba(52, 199, 89, 0.12); color: var(--apple-green); border: 1px solid rgba(52, 199, 89, 0.25); }
-        .tag-m2 { background: rgba(255, 149, 0, 0.12); color: var(--apple-orange); border: 1px solid rgba(255, 149, 0, 0.25); }
-        .tag-m3 { background: rgba(255, 59, 48, 0.12); color: var(--apple-red); border: 1px solid rgba(255, 59, 48, 0.25); }
-        .tag-m4 { background: rgba(0, 122, 255, 0.12); color: var(--apple-blue); border: 1px solid rgba(0, 122, 255, 0.25); }
-        .tag-m5 { background: rgba(175, 82, 222, 0.12); color: var(--apple-purple); border: 1px solid rgba(175, 82, 222, 0.25); }
+        .tag-m1 { background: rgba(23, 146, 49, 0.12); color: #179231; border: 1px solid rgba(23, 146, 49, 0.25); }
+        .tag-m2 { background: rgba(214, 123, 0, 0.12); color: #D67B00; border: 1px solid rgba(214, 123, 0, 0.25); }
+        .tag-m3 { background: rgba(217, 54, 54, 0.12); color: #D93636; border: 1px solid rgba(217, 54, 54, 0.25); }
+        .tag-m4 { background: rgba(0, 92, 169, 0.12); color: #005CA9; border: 1px solid rgba(0, 92, 169, 0.25); }
+        .tag-m5 { background: rgba(142, 68, 173, 0.12); color: #8E44AD; border: 1px solid rgba(142, 68, 173, 0.25); }
+
+        .dark .tag-m4 { color: #60B1FA; }
 
         /* Slide Typography */
         .slide-header {
@@ -301,7 +317,7 @@
         .slide-title {
             font-size: 28px;
             font-weight: 800;
-            color: var(--apple-text-main);
+            color: var(--caixa-text-main);
             letter-spacing: -0.5px;
             line-height: 1.25;
         }
@@ -315,16 +331,15 @@
             padding-right: 6px;
         }
 
-        /* Custom Scrollbar estilo macOS */
         .slide-content::-webkit-scrollbar {
-            width: 5px;
+            width: 6px;
         }
         .slide-content::-webkit-scrollbar-thumb {
-            background: var(--apple-text-muted);
-            border-radius: 980px;
+            background: var(--caixa-border);
+            border-radius: 4px;
         }
 
-        /* Interactive Grid & Cards (Inset Design) */
+        /* Interactive Grid & Cards */
         .grid-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -338,40 +353,40 @@
         }
 
         .card {
-            background-color: var(--apple-inset-bg);
-            border: 1px solid var(--apple-border-light);
-            border-radius: 18px;
+            background-color: var(--caixa-bg-inset);
+            border: 1px solid var(--caixa-border);
+            border-radius: 12px;
             padding: 20px;
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.25s ease;
             position: relative;
         }
 
         .card-interactive:hover {
             transform: translateY(-2px);
-            border-color: var(--apple-blue);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-        }
-        .dark .card-interactive:hover {
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            border-color: var(--caixa-blue-90);
+            box-shadow: 0px 4px 8px 3px rgba(0, 0, 0, 0.08);
         }
 
         .card-title {
             font-size: 15px;
             font-weight: 700;
-            color: var(--apple-blue);
+            color: var(--caixa-blue-90);
             margin-bottom: 10px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
+        .dark .card-title {
+            color: #60B1FA;
+        }
+
         .card p {
             font-size: 13.5px;
-            color: var(--apple-text-main);
+            color: var(--caixa-text-main);
             line-height: 1.55;
         }
 
-        /* Cleaned List Styles (Single Bullet Only) */
         ul {
             list-style: none !important;
             padding: 0;
@@ -383,7 +398,7 @@
             padding-left: 18px;
             margin-bottom: 8px;
             font-size: 13.5px;
-            color: var(--apple-text-main);
+            color: var(--caixa-text-main);
             line-height: 1.55;
             list-style: none !important;
         }
@@ -393,18 +408,21 @@
             position: absolute;
             left: 0;
             top: 0;
-            color: var(--apple-blue);
+            color: var(--caixa-blue-90);
             font-weight: bold;
             font-size: 15px;
         }
+        .dark ul li::before {
+            color: #60B1FA;
+        }
 
         .quote-box {
-            background-color: var(--apple-inset-bg);
-            border-left: 4px solid var(--apple-blue);
+            background-color: var(--caixa-bg-inset);
+            border-left: 4px solid var(--caixa-blue-90);
             padding: 14px 18px;
-            border-radius: 0 14px 14px 0;
+            border-radius: 0 12px 12px 0;
             font-style: italic;
-            color: var(--apple-text-main);
+            color: var(--caixa-text-main);
             font-size: 13px;
             line-height: 1.55;
             margin-top: 8px;
@@ -428,20 +446,20 @@
         }
 
         .pill-tag {
-            border: 1px solid var(--apple-green);
-            background-color: rgba(52, 199, 89, 0.1);
-            color: var(--apple-green);
+            border: 1px solid var(--caixa-orange-90);
+            background-color: var(--caixa-bg-inset);
+            color: var(--caixa-orange-90);
             font-size: 11px;
-            font-weight: 700;
+            font-weight: 800;
             padding: 6px 18px;
-            border-radius: 980px;
+            border-radius: 8px;
             letter-spacing: 0.8px;
             margin-bottom: 20px;
             display: inline-block;
         }
 
         .cover-title {
-            color: var(--apple-text-main);
+            color: var(--caixa-text-main);
             font-size: 48px;
             font-weight: 800;
             letter-spacing: -1px;
@@ -449,14 +467,17 @@
         }
 
         .cover-subtitle {
-            color: var(--apple-blue);
+            color: var(--caixa-blue-90);
             font-size: 20px;
-            font-weight: 600;
+            font-weight: 700;
             margin-bottom: 20px;
+        }
+        .dark .cover-subtitle {
+            color: #60B1FA;
         }
 
         .cover-description {
-            color: var(--apple-text-muted);
+            color: var(--caixa-text-muted);
             font-size: 15px;
             line-height: 1.5;
             margin-bottom: 32px;
@@ -464,9 +485,9 @@
 
         .cover-topics-card {
             width: 100%;
-            background-color: var(--apple-inset-bg);
-            border: 1px solid var(--apple-border-light);
-            border-radius: 18px;
+            background-color: var(--caixa-bg-inset);
+            border: 1px solid var(--caixa-border);
+            border-radius: 12px;
             padding: 18px 24px;
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -486,17 +507,19 @@
         }
 
         .topic-desc {
-            color: var(--apple-text-main);
+            color: var(--caixa-text-main);
             font-size: 11.5px;
             font-weight: 600;
             line-height: 1.3;
         }
 
-        .c-green  { color: var(--apple-green); }
-        .c-yellow { color: var(--apple-orange); }
-        .c-blue   { color: var(--apple-blue); }
-        .c-purple { color: var(--apple-purple); }
-        .c-pink   { color: #EC4899; }
+        .c-green  { color: #179231; }
+        .c-yellow { color: #D67B00; }
+        .c-blue   { color: #005CA9; }
+        .c-purple { color: #8E44AD; }
+        .c-pink   { color: #EF765E; }
+
+        .dark .c-blue { color: #60B1FA; }
 
         /* Tables Nativas */
         table {
@@ -509,24 +532,21 @@
         th, td {
             padding: 10px 12px;
             text-align: left;
-            border-bottom: 1px solid var(--apple-border-light);
+            border-bottom: 1px solid var(--caixa-border);
         }
 
         th {
-            background-color: var(--apple-inset-bg);
-            color: var(--apple-blue);
+            background-color: var(--caixa-bg-inset);
+            color: var(--caixa-blue-90);
             font-weight: 700;
             text-transform: uppercase;
             font-size: 10.5px;
             letter-spacing: 0.5px;
         }
-
-        tr {
-            transition: background 0.2s ease;
-        }
+        .dark th { color: #60B1FA; }
 
         tr:hover {
-            background-color: var(--apple-border-light);
+            background-color: var(--caixa-bg-inset);
         }
 
         .badge {
@@ -534,34 +554,31 @@
             border-radius: 6px;
             font-size: 11px;
             font-weight: 800;
-            font-family: -apple-system, BlinkMacSystemFont, monospace;
+            font-family: 'JetBrains Mono', monospace;
             display: inline-block;
         }
-        .bg-green { background: rgba(52, 199, 89, 0.15); color: var(--apple-green); border: 1px solid var(--apple-green); }
-        .bg-yellow { background: rgba(255, 149, 0, 0.15); color: var(--apple-orange); border: 1px solid var(--apple-orange); }
-        .bg-red { background: rgba(255, 59, 48, 0.15); color: var(--apple-red); border: 1px solid var(--apple-red); }
+        .bg-green { background: rgba(23, 146, 49, 0.15); color: #179231; border: 1px solid #179231; }
+        .bg-yellow { background: rgba(214, 123, 0, 0.15); color: #D67B00; border: 1px solid #D67B00; }
+        .bg-red { background: rgba(217, 54, 54, 0.15); color: #D93636; border: 1px solid #D93636; }
 
-        /* Ref Bibliography Styling */
         .ref-list li {
             margin-bottom: 10px;
             font-size: 12.5px;
             line-height: 1.45;
         }
 
-        /* Slide Footer */
         .slide-footer {
             margin-top: 16px;
             padding-top: 12px;
-            border-top: 1px solid var(--apple-border-light);
+            border-top: 1px solid var(--caixa-border);
             display: flex;
-            justify-content: space-between;
+            justify-between: space-between;
             align-items: center;
             font-size: 11px;
-            color: var(--apple-text-muted);
+            color: var(--caixa-text-muted);
             font-weight: 500;
         }
 
-        /* Printable PDF Styling */
         @media print {
             body {
                 overflow: visible;
@@ -592,35 +609,60 @@
         }
     </style>
 </head>
-<body>
+<body class="bg-caixa-gray10 dark:bg-caixa-darkBg text-caixa-gray130 dark:text-white antialiased">
 
     <!-- Barra de Progresso no Topo -->
     <div class="progress-bar-container">
         <div class="progress-bar-fill" id="progressBar"></div>
     </div>
 
-    <!-- Header / Navigation Bar estilo macOS -->
-    <header class="top-bar apple-glass">
-        <div class="brand-title">
-            <i class="fa-solid fa-cube text-apple-blue"></i>
-            <span class="brand-badge">Método PURE</span>
+   <!-- HEADER INSTITUCIONAL DO PORTAL DSC -->
+    <header class="top-bar caixa-glass border-b border-caixa-border dark:border-caixa-darkBorder px-6 py-2.5 flex items-center justify-between z-40">
+    <!-- Lado Esquerdo: Ícone + Títulos -->
+    <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-caixa-blue90 flex items-center justify-center text-white font-black text-xl shadow-sm shrink-0">
+            X
         </div>
-        
-        <div class="controls">
-            <button class="apple-btn-secondary" id="prevBtn" onclick="changeSlide(-1)">
-                <i class="fa-solid fa-chevron-left text-xs mr-1"></i> Anterior
-            </button>
-            <div class="slide-counter" id="slideCounter">01 / 27</div>
-            <button class="apple-btn-primary" id="nextBtn" onclick="changeSlide(1)">
-                Próximo <i class="fa-solid fa-chevron-right text-xs ml-1"></i>
-            </button>
+        <div>
+            <div class="flex items-center gap-2">
+                <h1 class="text-sm font-bold tracking-tight text-caixa-blue110 dark:text-white leading-tight">
+                    Método PURE
+                </h1>
+               
+            </div>
+            <p class="text-[11px] text-caixa-gray110 dark:text-gray-300 leading-tight mt-0.5">
+                Guia Completo de Aplicação
+            </p>
+        </div>
+    </div>
 
-            <!-- Toggle Dark / Light Mode Switcher -->
-            <button id="themeToggleBtn" onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-apple-inset-bg flex items-center justify-center text-apple-gray hover:text-black dark:hover:text-white transition-all ml-2 border border-apple-border-light">
-                <i id="themeIcon" class="fa-solid fa-moon text-sm text-indigo-500"></i>
-            </button>
+    <!-- Lado Direito: Alternador + Navegação de Slides -->
+    <div class="flex items-center gap-2.5">
+        <!-- Alternador Dark/Light Mode -->
+        <button type="button" id="themeToggleBtn" onclick="toggleTheme()" title="Alternar entre Modo Escuro e Modo Claro" 
+            class="w-9 h-9 rounded-full bg-caixa-gray30 dark:bg-caixa-darkInset flex items-center justify-center text-caixa-orange90 dark:text-caixa-yellow hover:scale-105 transition-transform border border-caixa-border dark:border-caixa-darkBorder cursor-pointer mr-1">
+            <i data-lucide="moon" id="themeIcon" class="w-4 h-4"></i>
+        </button>
+
+        <!-- Botão Anterior -->
+        <button onclick="changeSlide(-1)" id="prevBtn" 
+            class="px-4 py-1.5 rounded-pill border border-caixa-border dark:border-caixa-darkBorder bg-caixa-gray30 dark:bg-caixa-darkInset text-xs font-bold text-caixa-gray90 dark:text-gray-300 hover:bg-caixa-gray50 dark:hover:bg-caixa-darkBorder disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1 cursor-pointer">
+            <i class="fa-solid fa-chevron-left text-[10px]"></i> Anterior
+        </button>
+
+        <!-- Contador -->
+        <div id="slideCounter" 
+            class="font-mono text-xs font-bold px-3 py-1.5 rounded-inset bg-caixa-gray30 dark:bg-caixa-darkInset border border-caixa-border dark:border-caixa-darkBorder text-caixa-blue110 dark:text-caixa-blue30">
+            01 / 11
         </div>
-    </header>
+
+        <!-- Botão Próximo -->
+        <button onclick="changeSlide(1)" id="nextBtn" 
+            class="px-4 py-1.5 rounded-pill bg-caixa-orange90 hover:bg-caixa-orange110 text-white text-xs font-bold shadow-cta flex items-center gap-1 cursor-pointer">
+            Próximo <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        </button>
+    </div>
+</header>
 
     <main class="presentation-container">
 
@@ -708,7 +750,7 @@
                             <li><strong>Definição:</strong> É uma metodologia analítica (não empírica) que quantifica o nível de atrito e a facilidade de uso de um produto digital.</li>
                             <li>
                                 <strong>Natureza Híbrida:</strong> Integra princípios das Revisões por Especialistas (Heurísticas) com a decomposição do 
-                                <a href="https://www.homemmaquina.com.br/como-medir-interfaces-com-keystroke-level-model-klm/" target="_blank" rel="noopener noreferrer" class="text-apple-blue font-semibold underline">Keystroke Level Modeling (KLM)</a>.
+                                <a href="https://www.homemmaquina.com.br/como-medir-interfaces-com-keystroke-level-model-klm/" target="_blank" rel="noopener noreferrer" class="text-caixa-blue90 dark:text-caixa-blue30 font-semibold underline">Keystroke Level Modeling (KLM)</a>.
                             </li>
                             <li><strong>Sem Usuários Finais ao Vivo:</strong> Não há recrutamento de usuários reais realizando tarefas na sessão; quem julga a interface é um painel de especialistas sob a ótica de uma persona.</li>
                         </ul>
@@ -744,16 +786,16 @@
                         <ul>
                             <li>
                                 Desenvolvido no departamento de design da <strong>Intel Security</strong> em parceria com a consultoria de métricas estatísticas 
-                                <a href="https://measuringu.com/ux-metrics-pure/" target="_blank" rel="noopener noreferrer" class="text-apple-blue font-semibold underline">MeasuringU</a>.
+                                <a href="https://measuringu.com/ux-metrics-pure/" target="_blank" rel="noopener noreferrer" class="text-caixa-blue90 dark:text-caixa-blue30 font-semibold underline">MeasuringU</a>.
                             </li>
                             <li>
                                 <strong>Lançamento Oficial:</strong> Publicado em 2016 na 
-                                <a href="https://dl.acm.org/doi/10.1145/2851581.2851607" target="_blank" rel="noopener noreferrer" class="text-apple-blue font-semibold underline">CHI Conference on Human Factors in Computing Systems</a> 
+                                <a href="https://dl.acm.org/doi/10.1145/2851581.2851607" target="_blank" rel="noopener noreferrer" class="text-caixa-blue90 dark:text-caixa-blue30 font-semibold underline">CHI Conference on Human Factors in Computing Systems</a> 
                                 (San Jose, Califórnia).
                             </li>
                             <li>
                                 <strong>Estudo de Caso:</strong> Veja também o artigo de consolidação do método no 
-                                <a href="https://www.nngroup.com/articles/pure-method/" target="_blank" rel="noopener noreferrer" class="text-apple-blue font-semibold underline">Nielsen Norman Group (NN/g)</a>.
+                                <a href="https://www.nngroup.com/articles/pure-method/" target="_blank" rel="noopener noreferrer" class="text-caixa-blue90 dark:text-caixa-blue30 font-semibold underline">Nielsen Norman Group (NN/g)</a>.
                             </li>
                         </ul>
                     </div>
@@ -823,7 +865,7 @@
                         <p>Os autores rodaram o PURE e, simultaneamente, aplicaram testes empíricos reais de usabilidade (com 15 participantes moderados e 202 não moderados) nos mesmos sistemas para validar a precisão do método.</p>
                         <p class="mt-3">
                             <strong>Poder Preditivo (\(R^2\)):</strong> A pontuação do PURE consegue prever e explicar entre <strong>25% e 36%</strong> de toda a variação na percepção de facilidade dos usuários reais. 
-                            Saiba mais na <a href="https://measuringu.com/pure/" target="_blank" rel="noopener noreferrer" class="text-apple-blue font-semibold underline">análise de validação da MeasuringU</a>.
+                            Saiba mais na <a href="https://measuringu.com/pure/" target="_blank" rel="noopener noreferrer" class="text-caixa-blue90 dark:text-caixa-blue30 font-semibold underline">análise de validação da MeasuringU</a>.
                         </p>
                     </div>
                     
@@ -833,21 +875,21 @@
                             <li>
                                 <strong>SEQ (Facilidade Pós-Tarefa):</strong> 
                                 <span class="badge bg-green">Correlação Moderada</span><br>
-                                <small class="text-apple-gray">
+                                <small class="text-caixa-gray110 dark:text-caixa-textMuted">
                                     Mostra que a nota dada pelos especialistas no PURE acompanha de perto a facilidade real que o usuário sente ao concluir uma tarefa.
                                 </small>
                             </li>
                             <li class="mt-2">
                                 <strong>SUS (Usabilidade Geral do Sistema):</strong> 
                                 <span class="badge bg-green">Correlação Moderada</span><br>
-                                <small class="text-apple-gray">
+                                <small class="text-caixa-gray110 dark:text-caixa-textMuted">
                                     Valida que o acúmulo de atritos mapeados no PURE reflete fielmente a nota final de satisfação global do produto.
                                 </small>
                             </li>
                             <li class="mt-2">
                                 <strong>SUPR-Q (Qualidade e Lealdade de UX):</strong> 
                                 <span class="badge bg-green">Correlação Forte</span><br>
-                                <small class="text-apple-gray">
+                                <small class="text-caixa-gray110 dark:text-caixa-textMuted">
                                     Prova que um score ruim no PURE afeta diretamente a percepção de qualidade da marca e a disposição do cliente em recomendar o sistema.
                                 </small>
                             </li>
@@ -877,7 +919,7 @@
                         <ul>
                             <li>
                                 Apresentou o PURE no artigo do NN/g como o 
-                                <a href="https://www.nngroup.com/articles/pure-method/" target="_blank" rel="noopener noreferrer" class="text-apple-blue font-semibold underline">"Tomatometer da Usabilidade"</a> 
+                                <a href="https://www.nngroup.com/articles/pure-method/" target="_blank" rel="noopener noreferrer" class="text-caixa-blue90 dark:text-caixa-blue30 font-semibold underline">"Tomatometer da Usabilidade"</a> 
                                 (um índice pragmático de consenso para executivos).
                             </li>
                             <li>
@@ -891,7 +933,7 @@
                         <ul>
                             <li>
                                 Estudo de caso publicado no 
-                                <a href="https://arxiv.org/abs/2601.10232" target="_blank" rel="noopener noreferrer" class="text-apple-blue font-semibold underline">preprint arXiv (2026)</a> 
+                                <a href="https://arxiv.org/abs/2601.10232" target="_blank" rel="noopener noreferrer" class="text-caixa-blue90 dark:text-caixa-blue30 font-semibold underline">preprint arXiv (2026)</a> 
                                 aplicou o PURE com 3 especialistas para comparar planilhas tabulares tradicionais contra protótipos em Diagramas de Sankey em simulações da Siemens.
                             </li>
                             <li>
@@ -1103,16 +1145,16 @@
                     <h2 class="slide-title">A Rubrica de Pontuação de Fricção (Escala de 1 a 3)</h2>
                 </div>
                 <div class="slide-content grid-3">
-                    <div class="card card-interactive" style="border-top: 4px solid var(--apple-green);">
-                        <div class="card-title" style="color: var(--apple-green);">Nota 1 (Verde)</div>
+                    <div class="card card-interactive" style="border-top: 4px solid #179231;">
+                        <div class="card-title" style="color: #179231;">Nota 1 (Verde)</div>
                         <p><strong>Atrito Baixo / Fluido:</strong> Etapa realizada facilmente. Carga cognitiva baixa ou padrão de interface amplamente dominado pelo mercado (ex: aceitar termos de serviço).</p>
                     </div>
-                    <div class="card card-interactive" style="border-top: 4px solid var(--apple-orange);">
-                        <div class="card-title" style="color: var(--apple-orange);">Nota 2 (Amarelo)</div>
+                    <div class="card card-interactive" style="border-top: 4px solid #D67B00;">
+                        <div class="card-title" style="color: #D67B00;">Nota 2 (Amarelo)</div>
                         <p><strong>Atrito Notável / Esforço Moderado:</strong> Exige esforço mental ou físico. O usuário hesita, precisa ler com atenção, procurar elementos ou fazer cliques adicionais, mas conclui a etapa.</p>
                     </div>
-                    <div class="card card-interactive" style="border-top: 4px solid var(--apple-red);">
-                        <div class="card-title" style="color: var(--apple-red);">Nota 3 (Vermelho)</div>
+                    <div class="card card-interactive" style="border-top: 4px solid #D93636;">
+                        <div class="card-title" style="color: #D93636;">Nota 3 (Vermelho)</div>
                         <p><strong>Atrito Crítico / Ponto de Falha:</strong> Etapa difícil, confusa ou fora dos padrões esperados. Alta probabilidade de a persona errar, ficar bloqueada ou abandonar a tarefa.</p>
                     </div>
                 </div>
@@ -1137,12 +1179,12 @@
                     <div class="card card-interactive">
                         <div class="card-title">➕ Score da Tarefa (Soma Simples)</div>
                         <p>Soma-se as notas dos passos.</p>
-                        <p class="mt-2 font-mono font-bold text-apple-blue">Exemplo: Passos [1, 2, 1, 1] ➔ Score da Tarefa = 5</p>
+                        <p class="mt-2 font-mono font-bold text-caixa-blue90 dark:text-caixa-blue30">Exemplo: Passos [1, 2, 1, 1] ➔ Score da Tarefa = 5</p>
                     </div>
                     <div class="card card-interactive">
                         <div class="card-title">🚨 A Cor da Tarefa (Regra do Pior Caso)</div>
                         <p>A cor da tarefa é ditada pelo seu passo mais difícil (pior nota). <br> <strong>A Regra de Ouro:</strong> Se uma tarefa tiver 10 passos 'Verdes' (nota 1) e 1 único passo 'Vermelho' (nota 3), a cor final da tarefa é VERMELHA.</p>
-                        <p class="mt-2 text-xs text-apple-gray"><strong>Fundamentação:</strong> Um produto maduro não pode ter pontos cegos onde o usuário corra o risco de falhar em uma jornada essencial.</p>
+                        <p class="mt-2 text-xs text-caixa-gray110 dark:text-caixa-textMuted"><strong>Fundamentação:</strong> Um produto maduro não pode ter pontos cegos onde o usuário corra o risco de falhar em uma jornada essencial.</p>
                     </div>
                 </div>
                 <div class="quote-box">
@@ -1259,7 +1301,7 @@
                 <div class="slide-content grid-2">
                     <div class="card card-interactive">
                         <div class="card-title">🧮 A Fórmula Fundamental</div>
-                        <div class="text-xl font-bold text-apple-blue my-4 text-center">
+                        <div class="text-xl font-bold text-caixa-blue90 dark:text-caixa-blue30 my-4 text-center">
                             $$\alpha = 1 - \frac{D_o}{D_e}$$
                         </div>
                         <ul>
@@ -1305,22 +1347,22 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><strong class="text-apple-green dark:text-apple-darkGreen">α = 1,0</strong></td>
+                                    <td><strong class="text-caixa-success110 dark:text-emerald-400">α = 1,0</strong></td>
                                     <td>Concordância Perfeita</td>
                                     <td>Todos os avaliadores deram a mesma nota.</td>
                                 </tr>
                                 <tr>
-                                    <td><strong class="text-apple-blue dark:text-apple-darkBlue">α ≥ 0,800</strong></td>
+                                    <td><strong class="text-caixa-blue90 dark:text-caixa-blue30">α ≥ 0,800</strong></td>
                                     <td>Alta Confiabilidade</td>
                                     <td>Dados maduros, prontos para fundamentar decisões executivas.</td>
                                 </tr>
                                 <tr>
-                                    <td><strong class="text-apple-orange dark:text-apple-darkOrange">α = 0,667 a 0,799</strong></td>
+                                    <td><strong class="text-caixa-warning110 dark:text-caixa-warning70">α = 0,667 a 0,799</strong></td>
                                     <td>Confiabilidade Mínima Aceitável</td>
                                     <td>Limite padrão científico do PURE.</td>
                                 </tr>
                                 <tr>
-                                    <td><strong class="text-apple-red dark:text-apple-darkRed">α &lt; 0,667</strong></td>
+                                    <td><strong class="text-caixa-danger110 dark:text-caixa-danger70">α &lt; 0,667</strong></td>
                                     <td>Baixa Confiabilidade</td>
                                     <td>Alinhamento fraco; a rodada deve ser tratada como treinamento/calibração.</td>
                                 </tr>
@@ -1391,7 +1433,7 @@
                     </div>
                     <div class="card card-interactive">
                         <div class="card-title">🧮 A Fórmula da Min-Max Normalization</div>
-                        <div class="text-sm font-bold text-apple-purple my-3 text-center">
+                        <div class="text-sm font-bold text-caixa-orange90 my-3 text-center">
                             $$\text{Índice de Fricção (%)} = \frac{\text{Score Atual} - \text{Mínimo}}{\text{Máximo} - \text{Mínimo}} \times 100$$
                         </div>
                         <p><strong>Validade Estatística:</strong> Técnica padrão de ciência de dados utilizada para reescalar notas brutas em um intervalo percentual padronizado de 0% a 100%.</p>
@@ -1605,20 +1647,13 @@
 
     </main>
 
-    <!-- Footer Bibliográfico / Rodapé Estilo Apple -->
-    <footer class="bg-white dark:bg-[#1C1C1E] border-t border-black/5 dark:border-white/10 py-6 px-4 text-xs text-apple-gray">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
-            <div>
-                <strong class="text-black dark:text-white block">Método PURE — Framework de Avaliação Pragmática de Usabilidade</strong>
-                <span class="text-apple-gray text-[11px]">Desenvolvido com foco em paridade visual, acessibilidade e responsividade (Apple HIG).</span>
-            </div>
-            <div class="text-[11px] text-apple-gray font-mono">
-                Padrão macOS Sequoia &amp; iOS 18
-            </div>
-        </div>
+    <!-- FOOTER INSTITUCIONAL CAIXA -->
+    <footer class="bg-caixa-card dark:bg-[#132A4A] border-t border-caixa-border dark:border-caixa-darkBorder py-3 px-6 text-[11px] text-caixa-gray110 dark:text-gray-300 text-center flex flex-col sm:flex-row justify-between items-center gap-2 z-30">
+        <div class="font-bold text-caixa-blue110 dark:text-white">CAIXA Econômica Federal — Governo Federal</div>
+        <p class="text-[10px] text-caixa-gray90 dark:text-gray-400">Documentação desenvolvida em conformidade com o Manual da Marca CAIXA (2021) e especificações do Design System (2026).</p>
     </footer>
 
-    <!-- Lógica JavaScript do Slider & Alternador de Tema -->
+    <!-- LÓGICA JAVASCRIPT DA PÁGINA -->
     <script>
         let currentSlide = 0;
         const slides = document.querySelectorAll('.slide');
@@ -1627,42 +1662,6 @@
         const nextBtn = document.getElementById('nextBtn');
         const progressBar = document.getElementById('progressBar');
 
-        // Alternar Tema Dark / Light (Apple HIG)
-        function toggleTheme() {
-            const html = document.documentElement;
-            const icon = document.getElementById('themeIcon');
-            const isDark = html.classList.contains('dark');
-            
-            if (isDark) {
-                html.classList.remove('dark');
-                html.setAttribute('data-theme', 'light');
-                icon.className = 'fa-solid fa-moon text-sm text-indigo-500';
-                localStorage.setItem('apple_theme_pref', 'light');
-            } else {
-                html.classList.add('dark');
-                html.setAttribute('data-theme', 'dark');
-                icon.className = 'fa-solid fa-sun text-sm text-apple-orange';
-                localStorage.setItem('apple_theme_pref', 'dark');
-            }
-        }
-
-        // Carregar Preferência de Tema Salva
-        (function carregarTemaSalvo() {
-            const savedTheme = localStorage.getItem('apple_theme_pref') || 'light';
-            const html = document.documentElement;
-            const icon = document.getElementById('themeIcon');
-
-            html.setAttribute('data-theme', savedTheme);
-            if (savedTheme === 'dark') {
-                html.classList.add('dark');
-                if (icon) icon.className = 'fa-solid fa-sun text-sm text-apple-orange';
-            } else {
-                html.classList.remove('dark');
-                if (icon) icon.className = 'fa-solid fa-moon text-sm text-indigo-500';
-            }
-        })();
-
-        // Controle de Navegação de Slides
         function updateSlide() {
             slides.forEach((slide, index) => {
                 if (index === currentSlide) {
@@ -1685,7 +1684,7 @@
             prevBtn.disabled = currentSlide === 0;
             nextBtn.disabled = currentSlide === slides.length - 1;
 
-            // Dispara re-renderização segura do MathJax para fórmulas matemáticas
+            // Renderiza MathJax
             if (window.MathJax && MathJax.typesetPromise) {
                 MathJax.typesetPromise();
             }
@@ -1698,7 +1697,42 @@
             updateSlide();
         }
 
-        // Atalhos de Teclado (Seta Direita/Esquerda, Espaço e PageUp/PageDown)
+        // Alternador de Tema (Light / Dark Mode com persistência e suporte Lucide)
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme') || (html.classList.contains('dark') ? 'dark' : 'light');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            aplicarTema(newTheme);
+            localStorage.setItem('caixa_theme_pref', newTheme);
+        }
+
+        function aplicarTema(theme) {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+
+            html.setAttribute('data-theme', theme);
+
+            if (theme === 'dark') {
+                html.classList.add('dark');
+                html.classList.remove('light');
+                if (icon) {
+                    icon.setAttribute('data-lucide', 'sun');
+                    icon.className = "w-4 h-4 text-caixa-yellow";
+                }
+            } else {
+                html.classList.remove('dark');
+                html.classList.add('light');
+                if (icon) {
+                    icon.setAttribute('data-lucide', 'moon');
+                    icon.className = "w-4 h-4 text-caixa-orange90";
+                }
+            }
+
+            if (window.lucide) { lucide.createIcons(); }
+        }
+
+        // Navegação por Teclas
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowRight' || e.key === 'Space' || e.key === 'PageDown') {
                 if (currentSlide < slides.length - 1) changeSlide(1);
@@ -1707,8 +1741,13 @@
             }
         });
 
-        // Inicializar
-        updateSlide();
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('caixa_theme_pref') || 'light';
+            aplicarTema(savedTheme);
+            updateSlide();
+            if (window.lucide) { lucide.createIcons(); }
+        });
     </script>
 </body>
 </html>
