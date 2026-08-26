@@ -407,17 +407,28 @@
         .variant-box.soldado { border-top: 3px solid #d9534f; }
         .variant-box.chefao { border-top: 3px solid #f0ad4e; }
 
-        .variant-title {
-            font-size: 0.75rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            color: var(--border-dark);
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-        }
+/* FORÇA O ÍCONE A FICAR SEMPRE EM CIMA DO TEXTO */
+.variant-title {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--border-dark);
+    margin-bottom: 6px;
+    text-align: center;
+    line-height: 1.2;
+}
+
+/* Força o ícone a ocupar a linha inteira sozinho */
+.variant-title .icon {
+    display: block !important;
+    font-size: 1.1rem;
+    margin-bottom: 2px;
+}
+
+/* Força o texto do nome a ficar na linha de baixo */
+.variant-title .label {
+    display: block !important;
+}
 
         .attr-row {
             display: flex;
@@ -625,43 +636,154 @@
             margin-top: 10px;
             line-height: 1.4;
         }
+
+        .hamburger-btn {
+    display: none;
+    background: transparent;
+    border: none;
+    color: var(--accent-gold);
+    font-size: 1.8rem;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+}
+
+@media (max-width: 900px) {
+    /* Exibe o botão hambúrguer */
+    .hamburger-btn {
+        display: block;
+    }
+
+    /* Reduz o Título e Subtítulo para liberar espaço vertical */
+    .logo-text h1 {
+        font-size: 1.1rem;
+    }
+
+    .logo-text span {
+        font-size: 0.65rem;
+        letter-spacing: 0.8px;
+    }
+
+    .logo-icon {
+        font-size: 1.4rem;
+    }
+
+    /* Reduz o padding do topo do cabeçalho */
+    header {
+        padding: 8px 12px 6px 12px;
+    }
+
+    .header-title-container {
+        margin-bottom: 4px;
+        gap: 8px;
+    }
+
+    /* O widget do dado se mantém no tamanho original e visível */
+    .quick-stats {
+        padding: 6px 12px;
+    }
+
+    /* Transforma as abas em menu suspenso (dropdown hambúrguer) */
+    nav.nav-tabs {
+        display: none; /* Escondido até abrir o menu */
+        flex-direction: column;
+        width: 100%;
+        background: #2b180a;
+        padding: 8px 0;
+        border-top: 1px solid rgba(212, 175, 55, 0.3);
+        margin-top: 6px;
+    }
+
+    /* Classe ativada via JS para exibir o menu */
+    nav.nav-tabs.open {
+        display: flex;
+    }
+
+    .tab-btn {
+        border-radius: 4px;
+        border: none;
+        background: transparent;
+        justify-content: flex-start;
+        padding: 10px 14px;
+        width: 100%;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .tab-btn.active::after {
+        display: none;
+    }
+
+    .tab-btn.active {
+        background: var(--accent-gold);
+        color: #2b180a;
+    }
+}
+
+/* CONTAINER DE TABELA RESPONSIVA */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* AJUSTES PARA TELAS PEQUENAS (MOBILE) */
+@media (max-width: 600px) {
+    .shield-table {
+        font-size: 0.78rem; /* Reduz ligeiramente o texto para caber melhor */
+    }
+
+    .shield-table th, 
+    .shield-table td {
+        padding: 6px 6px; /* Reduz os espaçamentos internos das células */
+    }
+
+    /* Impede que a coluna de XP ocupe espaço desnecessário */
+    .shield-table td:first-child,
+    .shield-table th:first-child {
+        white-space: nowrap;
+        width: 1%;
+    }
+}
     </style>
 </head>
 <body>
 
     <!-- HEADER WITH LOGO & NAVIGATION -->
     <header>
-        <div class="header-title-container">
-            <div class="logo-area">
-                <div class="logo-icon">🌳🗡️</div>
-                <div class="logo-text">
-                    <h1>FAZ DE CONTA RPG</h1>
-                    <span>Escudo do Mestre • Versão Digital</span>
-                </div>
-            </div>
-
-            <!-- DICE ROLLER QUICK WIDGET -->
-            <div class="quick-stats">
-                <div class="quick-stat-item">
-                    <span>Dado Rápido:</span>
-                    <button class="btn-dice" onclick="rollDice(1)">1d6</button>
-                    <button class="btn-dice" onclick="rollDice(2)">2d6</button>
-                </div>
-                <div id="quick-dice-result" class="dice-result">-</div>
+    <div class="header-title-container">
+        <div class="logo-area">
+            <button id="hamburger-btn" class="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Abrir Menu">
+                ☰
+            </button>
+            <div class="logo-icon">🌳🗡️</div>
+            <div class="logo-text">
+                <h1>FAZ DE CONTA RPG</h1>
+                <span>Escudo do Mestre</span>
             </div>
         </div>
 
-        <!-- MAIN TABS -->
-        <nav class="nav-tabs">
-            <button class="tab-btn active" onclick="switchTab('tab-combate')">⚔️ Combate & Regras</button>
-            <button class="tab-btn" onclick="switchTab('tab-bestiario')">🐞 Bestiário de Insetos</button>
-            <button class="tab-btn" onclick="switchTab('tab-criticos')">💥 Críticos & Lesão</button>
-            <button class="tab-btn" onclick="switchTab('tab-xp')">⭐ XP & Progresso</button>
-            <button class="tab-btn" onclick="switchTab('tab-tesouros')">💎 Tesouros & Itens</button>
-            <button class="tab-btn" onclick="switchTab('tab-mundo')">🗺️ Mundo & Locais</button>
-            <button class="tab-btn" onclick="switchTab('tab-dicas')">📜 Dicas do Mestre</button>
-        </nav>
-    </header>
+        <!-- DICE ROLLER QUICK WIDGET (TAMANHO ORIGINAL) -->
+        <div class="quick-stats">
+            <div class="quick-stat-item">
+                <span>Dado Rápido:</span>
+                <button class="btn-dice" onclick="rollDice(1)">1d6</button>
+                <button class="btn-dice" onclick="rollDice(2)">2d6</button>
+            </div>
+            <div id="quick-dice-result" class="dice-result">-</div>
+        </div>
+    </div>
+
+    <!-- NAVIGATION TABS -->
+    <nav class="nav-tabs" id="nav-tabs-menu">
+        <button class="tab-btn active" onclick="switchTab('tab-combate')">⚔️ Combate & Regras</button>
+        <button class="tab-btn" onclick="switchTab('tab-bestiario')">🐞 Bestiário de Insetos</button>
+        <button class="tab-btn" onclick="switchTab('tab-criticos')">💥 Críticos & Lesão</button>
+        <button class="tab-btn" onclick="switchTab('tab-xp')">⭐ XP & Progresso</button>
+        <button class="tab-btn" onclick="switchTab('tab-tesouros')">💎 Tesouros & Itens</button>
+        <button class="tab-btn" onclick="switchTab('tab-mundo')">🗺️ Mundo & Locais</button>
+        <button class="tab-btn" onclick="switchTab('tab-dicas')">📜 Dicas do Mestre</button>
+    </nav>
+</header>
 
     <!-- MAIN CONTENT CONTAINER -->
     <main>
@@ -763,7 +885,6 @@
         <div id="tab-bestiario" class="tab-content">
             <div class="section-header">
                 <h2>🐞 Bestiário de Insetos Gigantes</h2>
-               
             </div>
 
             <!-- SEARCH BAR -->
@@ -789,17 +910,17 @@
                     <div class="enemy-body">
                         <div class="enemy-variants">
                             <div class="variant-box operario">
-                                <div class="variant-title">⚙️ Operário</div>
+                                <div class="variant-title"><span class="icon">⚙️</span><br><span class="label">Operário</span></div>
                                 <div class="attr-row"><span>👊3</span><span>🛡️2</span><span>🏃7</span></div>
                                 <div class="attr-item hp">❤️ = 1</div>
                             </div>
                             <div class="variant-box soldado">
-                                <div class="variant-title">⚔️ Soldado</div>
+                                <div class="variant-title"><span class="icon">⚔️</span><br><span class="label">Soldado</span></div>
                                 <div class="attr-row"><span>👊3</span><span>🛡️3</span><span>🏃8</span></div>
                                 <div class="attr-item hp">❤️ = 2</div>
                             </div>
                             <div class="variant-box chefao">
-                                <div class="variant-title">👑 Chefão</div>
+                                <div class="variant-title"><span class="icon">👑</span><br><span class="label">Chefão</span></div>
                                 <div class="attr-row"><span>👊4</span><span>🛡️4</span><span>🏃9</span></div>
                                 <div class="attr-item hp">❤️ = 3</div>
                             </div>
@@ -819,17 +940,17 @@
                     <div class="enemy-body">
                         <div class="enemy-variants">
                             <div class="variant-box operario">
-                                <div class="variant-title">⚙️ Operário</div>
+                                <div class="variant-title"><span class="icon">⚙️</span><br><span class="label">Operário</span></div>
                                 <div class="attr-row"><span>👊2</span><span>🛡️1</span><span>🏃6</span></div>
                                 <div class="attr-item hp">❤️ = 1</div>
                             </div>
                             <div class="variant-box soldado">
-                                <div class="variant-title">⚔️ Soldado</div>
+                                <div class="variant-title"><span class="icon">⚔️</span><br><span class="label">Soldado</span></div>
                                 <div class="attr-row"><span>👊3</span><span>🛡️2</span><span>🏃8</span></div>
                                 <div class="attr-item hp">❤️ = 2</div>
                             </div>
                             <div class="variant-box chefao">
-                                <div class="variant-title">👑 Chefão</div>
+                                <div class="variant-title"><span class="icon">👑</span><br><span class="label">Chefão</span></div>
                                 <div class="attr-row"><span>👊4</span><span>🛡️3</span><span>🏃8</span></div>
                                 <div class="attr-item hp">❤️ = 3</div>
                             </div>
@@ -849,17 +970,17 @@
                     <div class="enemy-body">
                         <div class="enemy-variants">
                             <div class="variant-box operario">
-                                <div class="variant-title">⚙️ Operário</div>
+                                <div class="variant-title"><span class="icon">⚙️</span><br><span class="label">Operário</span></div>
                                 <div class="attr-row"><span>👊4</span><span>🛡️3</span><span>🏃5</span></div>
                                 <div class="attr-item hp">❤️ = 1</div>
                             </div>
                             <div class="variant-box soldado">
-                                <div class="variant-title">⚔️ Soldado</div>
+                                <div class="variant-title"><span class="icon">⚔️</span><br><span class="label">Soldado</span></div>
                                 <div class="attr-row"><span>👊4</span><span>🛡️3</span><span>🏃5</span></div>
                                 <div class="attr-item hp">❤️ = 2</div>
                             </div>
                             <div class="variant-box chefao">
-                                <div class="variant-title">👑 Chefão</div>
+                                <div class="variant-title"><span class="icon">👑</span><br><span class="label">Chefão</span></div>
                                 <div class="attr-row"><span>👊5</span><span>🛡️4</span><span>🏃7</span></div>
                                 <div class="attr-item hp">❤️ = 3</div>
                             </div>
@@ -879,17 +1000,17 @@
                     <div class="enemy-body">
                         <div class="enemy-variants">
                             <div class="variant-box operario">
-                                <div class="variant-title">⚙️ Operário</div>
+                                <div class="variant-title"><span class="icon">⚙️</span><br><span class="label">Operário</span></div>
                                 <div class="attr-row"><span>👊3</span><span>🛡️2</span><span>🏃5</span></div>
                                 <div class="attr-item hp">❤️ = 1</div>
                             </div>
                             <div class="variant-box soldado">
-                                <div class="variant-title">⚔️ Soldado</div>
+                                <div class="variant-title"><span class="icon">⚔️</span><br><span class="label">Soldado</span></div>
                                 <div class="attr-row"><span>👊3</span><span>🛡️3</span><span>🏃6</span></div>
                                 <div class="attr-item hp">❤️ = 2</div>
                             </div>
                             <div class="variant-box chefao">
-                                <div class="variant-title">👑 Chefão</div>
+                                <div class="variant-title"><span class="icon">👑</span><br><span class="label">Chefão</span></div>
                                 <div class="attr-row"><span>👊4</span><span>🛡️3</span><span>🏃6</span></div>
                                 <div class="attr-item hp">❤️ = 3</div>
                             </div>
@@ -909,17 +1030,17 @@
                     <div class="enemy-body">
                         <div class="enemy-variants">
                             <div class="variant-box operario">
-                                <div class="variant-title">⚙️ Operário</div>
+                                <div class="variant-title"><span class="icon">⚙️</span><br><span class="label">Operário</span></div>
                                 <div class="attr-row"><span>👊3</span><span>🛡️2</span><span>🏃5</span></div>
                                 <div class="attr-item hp">❤️ = 1</div>
                             </div>
                             <div class="variant-box soldado">
-                                <div class="variant-title">⚔️ Soldado</div>
+                                <div class="variant-title"><span class="icon">⚔️</span><br><span class="label">Soldado</span></div>
                                 <div class="attr-row"><span>👊4</span><span>🛡️3</span><span>🏃6</span></div>
                                 <div class="attr-item hp">❤️ = 2</div>
                             </div>
                             <div class="variant-box chefao">
-                                <div class="variant-title">👑 Chefão</div>
+                                <div class="variant-title"><span class="icon">👑</span><br><span class="label">Chefão</span></div>
                                 <div class="attr-row"><span>👊5</span><span>🛡️4</span><span>🏃7</span></div>
                                 <div class="attr-item hp">❤️ = 3</div>
                             </div>
@@ -939,17 +1060,17 @@
                     <div class="enemy-body">
                         <div class="enemy-variants">
                             <div class="variant-box operario">
-                                <div class="variant-title">⚙️ Operário</div>
+                                <div class="variant-title"><span class="icon">⚙️</span><br><span class="label">Operário</span></div>
                                 <div class="attr-row"><span>👊3</span><span>🛡️2</span><span>🏃6</span></div>
                                 <div class="attr-item hp">❤️ = 1</div>
                             </div>
                             <div class="variant-box soldado">
-                                <div class="variant-title">⚔️ Soldado</div>
+                                <div class="variant-title"><span class="icon">⚔️</span><br><span class="label">Soldado</span></div>
                                 <div class="attr-row"><span>👊4</span><span>🛡️3</span><span>🏃6</span></div>
                                 <div class="attr-item hp">❤️ = 2</div>
                             </div>
                             <div class="variant-box chefao">
-                                <div class="variant-title">👑 Chefão</div>
+                                <div class="variant-title"><span class="icon">👑</span><br><span class="label">Chefão</span></div>
                                 <div class="attr-row"><span>👊4</span><span>🛡️4</span><span>🏃8</span></div>
                                 <div class="attr-item hp">❤️ = 3</div>
                             </div>
@@ -969,17 +1090,17 @@
                     <div class="enemy-body">
                         <div class="enemy-variants">
                             <div class="variant-box operario">
-                                <div class="variant-title">⚙️ Operário</div>
+                                <div class="variant-title"><span class="icon">⚙️</span><br><span class="label">Operário</span></div>
                                 <div class="attr-row"><span>👊3</span><span>🛡️3</span><span>🏃10</span></div>
                                 <div class="attr-item hp">❤️ = 1</div>
                             </div>
                             <div class="variant-box soldado">
-                                <div class="variant-title">⚔️ Soldado</div>
+                                <div class="variant-title"><span class="icon">⚔️</span><br><span class="label">Soldado</span></div>
                                 <div class="attr-row"><span>👊3</span><span>🛡️3</span><span>🏃10</span></div>
                                 <div class="attr-item hp">❤️ = 2</div>
                             </div>
                             <div class="variant-box chefao">
-                                <div class="variant-title">👑 Chefão</div>
+                                <div class="variant-title"><span class="icon">👑</span><br><span class="label">Chefão</span></div>
                                 <div class="attr-row"><span>👊4</span><span>🛡️4</span><span>🏃11</span></div>
                                 <div class="attr-item hp">❤️ = 3</div>
                             </div>
@@ -999,17 +1120,17 @@
                     <div class="enemy-body">
                         <div class="enemy-variants">
                             <div class="variant-box operario">
-                                <div class="variant-title">⚙️ Operário</div>
+                                <div class="variant-title"><span class="icon">⚙️</span><br><span class="label">Operário</span></div>
                                 <div class="attr-row"><span>👊4</span><span>🛡️2</span><span>🏃4</span></div>
                                 <div class="attr-item hp">❤️ = 1</div>
                             </div>
                             <div class="variant-box soldado">
-                                <div class="variant-title">⚔️ Soldado</div>
+                                <div class="variant-title"><span class="icon">⚔️</span><br><span class="label">Soldado</span></div>
                                 <div class="attr-row"><span>👊4</span><span>🛡️3</span><span>🏃4</span></div>
                                 <div class="attr-item hp">❤️ = 2</div>
                             </div>
                             <div class="variant-box chefao">
-                                <div class="variant-title">👑 Chefão</div>
+                                <div class="variant-title"><span class="icon">👑</span><br><span class="label">Chefão</span></div>
                                 <div class="attr-row"><span>👊5</span><span>🛡️4</span><span>🏃5</span></div>
                                 <div class="attr-item hp">❤️ = 3</div>
                             </div>
@@ -1029,17 +1150,17 @@
                     <div class="enemy-body">
                         <div class="enemy-variants">
                             <div class="variant-box operario">
-                                <div class="variant-title">⚙️ Operário</div>
+                                <div class="variant-title"><span class="icon">⚙️</span><br><span class="label">Operário</span></div>
                                 <div class="attr-row"><span>👊2</span><span>🛡️1</span><span>🏃10</span></div>
                                 <div class="attr-item hp">❤️ = 1</div>
                             </div>
                             <div class="variant-box soldado">
-                                <div class="variant-title">⚔️ Soldado</div>
+                                <div class="variant-title"><span class="icon">⚔️</span><br><span class="label">Soldado</span></div>
                                 <div class="attr-row"><span>👊3</span><span>🛡️3</span><span>🏃10</span></div>
                                 <div class="attr-item hp">❤️ = 2</div>
                             </div>
                             <div class="variant-box chefao">
-                                <div class="variant-title">👑 Chefão</div>
+                                <div class="variant-title"><span class="icon">👑</span><br><span class="label">Chefão</span></div>
                                 <div class="attr-row"><span>👊4</span><span>🛡️4</span><span>🏃10</span></div>
                                 <div class="attr-item hp">❤️ = 3</div>
                             </div>
@@ -1059,17 +1180,17 @@
                     <div class="enemy-body">
                         <div class="enemy-variants">
                             <div class="variant-box operario">
-                                <div class="variant-title">⚙️ Operário</div>
+                                <div class="variant-title"><span class="icon">⚙️</span><br><span class="label">Operário</span></div>
                                 <div class="attr-row"><span>👊2</span><span>🛡️2</span><span>🏃7</span></div>
                                 <div class="attr-item hp">❤️ = 1</div>
                             </div>
                             <div class="variant-box soldado">
-                                <div class="variant-title">⚔️ Soldado</div>
+                                <div class="variant-title"><span class="icon">⚔️</span><br><span class="label">Soldado</span></div>
                                 <div class="attr-row"><span>👊3</span><span>🛡️3</span><span>🏃8</span></div>
                                 <div class="attr-item hp">❤️ = 2</div>
                             </div>
                             <div class="variant-box chefao">
-                                <div class="variant-title">👑 Chefão</div>
+                                <div class="variant-title"><span class="icon">👑</span><br><span class="label">Chefão</span></div>
                                 <div class="attr-row"><span>👊3</span><span>🛡️4</span><span>🏃8</span></div>
                                 <div class="attr-item hp">❤️ = 3</div>
                             </div>
@@ -1089,17 +1210,17 @@
                     <div class="enemy-body">
                         <div class="enemy-variants">
                             <div class="variant-box operario">
-                                <div class="variant-title">⚙️ Operário</div>
+                                <div class="variant-title"><span class="icon">⚙️</span><br><span class="label">Operário</span></div>
                                 <div class="attr-row"><span>👊3</span><span>🛡️2</span><span>🏃10</span></div>
                                 <div class="attr-item hp">❤️ = 1</div>
                             </div>
                             <div class="variant-box soldado">
-                                <div class="variant-title">⚔️ Soldado</div>
+                                <div class="variant-title"><span class="icon">⚔️</span><br><span class="label">Soldado</span></div>
                                 <div class="attr-row"><span>👊3</span><span>🛡️3</span><span>🏃10</span></div>
                                 <div class="attr-item hp">❤️ = 2</div>
                             </div>
                             <div class="variant-box chefao">
-                                <div class="variant-title">👑 Chefão</div>
+                                <div class="variant-title"><span class="icon">👑</span><br><span class="label">Chefão</span></div>
                                 <div class="attr-row"><span>👊4</span><span>🛡️4</span><span>🏃10</span></div>
                                 <div class="attr-item hp">❤️ = 3</div>
                             </div>
@@ -1119,17 +1240,17 @@
                     <div class="enemy-body">
                         <div class="enemy-variants">
                             <div class="variant-box operario">
-                                <div class="variant-title">⚙️ Operário</div>
+                                <div class="variant-title"><span class="icon">⚙️</span><br><span class="label">Operário</span></div>
                                 <div class="attr-row"><span>👊2</span><span>🛡️2</span><span>🏃10</span></div>
                                 <div class="attr-item hp">❤️ = 1</div>
                             </div>
                             <div class="variant-box soldado">
-                                <div class="variant-title">⚔️ Soldado</div>
+                                <div class="variant-title"><span class="icon">⚔️</span><br><span class="label">Soldado</span></div>
                                 <div class="attr-row"><span>👊3</span><span>🛡️2</span><span>🏃16</span></div>
                                 <div class="attr-item hp">❤️ = 2</div>
                             </div>
                             <div class="variant-box chefao">
-                                <div class="variant-title">👑 Chefão</div>
+                                <div class="variant-title"><span class="icon">👑</span><br><span class="label">Chefão</span></div>
                                 <div class="attr-row"><span>👊4</span><span>🛡️3</span><span>🏃16</span></div>
                                 <div class="attr-item hp">❤️ = 3</div>
                             </div>
@@ -1149,17 +1270,17 @@
                     <div class="enemy-body">
                         <div class="enemy-variants">
                             <div class="variant-box operario">
-                                <div class="variant-title">⚙️ Operário</div>
+                                <div class="variant-title"><span class="icon">⚙️</span><br><span class="label">Operário</span></div>
                                 <div class="attr-row"><span>👊2</span><span>🛡️2</span><span>🏃8</span></div>
                                 <div class="attr-item hp">❤️ = 1</div>
                             </div>
                             <div class="variant-box soldado">
-                                <div class="variant-title">⚔️ Soldado</div>
+                                <div class="variant-title"><span class="icon">⚔️</span><br><span class="label">Soldado</span></div>
                                 <div class="attr-row"><span>👊3</span><span>🛡️3</span><span>🏃9</span></div>
                                 <div class="attr-item hp">❤️ = 2</div>
                             </div>
                             <div class="variant-box chefao">
-                                <div class="variant-title">👑 Chefão</div>
+                                <div class="variant-title"><span class="icon">👑</span><br><span class="label">Chefão</span></div>
                                 <div class="attr-row"><span>👊4</span><span>🛡️4</span><span>🏃10</span></div>
                                 <div class="attr-item hp">❤️ = 3</div>
                             </div>
@@ -1179,17 +1300,17 @@
                     <div class="enemy-body">
                         <div class="enemy-variants">
                             <div class="variant-box operario">
-                                <div class="variant-title">⚙️ Operário</div>
+                                <div class="variant-title"><span class="icon">⚙️</span><br><span class="label">Operário</span></div>
                                 <div class="attr-row"><span>👊2</span><span>🛡️3</span><span>🏃5</span></div>
                                 <div class="attr-item hp">❤️ = 1</div>
                             </div>
                             <div class="variant-box soldado">
-                                <div class="variant-title">⚔️ Soldado</div>
+                                <div class="variant-title"><span class="icon">⚔️</span><br><span class="label">Soldado</span></div>
                                 <div class="attr-row"><span>👊3</span><span>🛡️3</span><span>🏃6</span></div>
                                 <div class="attr-item hp">❤️ = 2</div>
                             </div>
                             <div class="variant-box chefao">
-                                <div class="variant-title">👑 Chefão</div>
+                                <div class="variant-title"><span class="icon">👑</span><br><span class="label">Chefão</span></div>
                                 <div class="attr-row"><span>👊4</span><span>🛡️3</span><span>🏃7</span></div>
                                 <div class="attr-item hp">❤️ = 3</div>
                             </div>
@@ -1209,17 +1330,17 @@
                     <div class="enemy-body">
                         <div class="enemy-variants">
                             <div class="variant-box operario">
-                                <div class="variant-title">⚙️ Operário</div>
+                                <div class="variant-title"><span class="icon">⚙️</span><br><span class="label">Operário</span></div>
                                 <div class="attr-row"><span>👊3</span><span>🛡️3</span><span>🏃8</span></div>
                                 <div class="attr-item hp">❤️ = 1</div>
                             </div>
                             <div class="variant-box soldado">
-                                <div class="variant-title">⚔️ Soldado</div>
+                                <div class="variant-title"><span class="icon">⚔️</span><br><span class="label">Soldado</span></div>
                                 <div class="attr-row"><span>👊3</span><span>🛡️3</span><span>🏃9</span></div>
                                 <div class="attr-item hp">❤️ = 2</div>
                             </div>
                             <div class="variant-box chefao">
-                                <div class="variant-title">👑 Chefão</div>
+                                <div class="variant-title"><span class="icon">👑</span><br><span class="label">Chefão</span></div>
                                 <div class="attr-row"><span>👊5</span><span>🛡️4</span><span>🏃9</span></div>
                                 <div class="attr-item hp">❤️ = 3</div>
                             </div>
@@ -1295,45 +1416,48 @@
             </div>
         </div>
 
-        <!-- TAB 4: XP & PROGRESSO (Shield Pg 6) -->
-        <div id="tab-xp" class="tab-content">
-            <div class="section-header">
-                <h2>⭐ Tabela de XP & Progressão do Herói</h2>
-          
-            </div>
+        <!-- TAB 4: XP & PROGRESSO -->
+<div id="tab-xp" class="tab-content">
+    <div class="section-header">
+        <h2>⭐ Tabela de XP & Progressão do Herói</h2>
+        <span class="tag">Escudo pág. 6</span>
+    </div>
 
-            <div class="card">
-                <div class="card-title">
-                    <span>🏆 Conquistas e Benefícios por Pontos de Experiência</span>
-                    <i>✨</i>
-                </div>
-                <p style="font-size: 0.88rem; margin-bottom: 12px;">Sempre que um inimigo é derrotado, <strong>TODOS os heróis que causaram pelo menos 1 de Dano nele ganham 1 ponto de XP</strong>.</p>
-                
-                <table class="shield-table">
-                    <thead>
-                        <tr>
-                            <th>XP Necessário</th>
-                            <th>Título de Conquista</th>
-                            <th>Benefícios Recebidos</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td><strong>6 XP</strong></td><td>Guardião da Vila</td><td>Ganha +1 Ponto de Vida.</td></tr>
-                        <tr><td><strong>15 XP</strong></td><td>Defensor da Floresta</td><td>Ganha +1 Ponto em qualquer Atributo.</td></tr>
-                        <tr><td><strong>24 XP</strong></td><td>Desbravador de Cavernas</td><td>Ganha +1 Ponto de bolsa e +1 Talento do Herói.</td></tr>
-                        <tr><td><strong>43 XP</strong></td><td>Protetor dos Mais Fracos</td><td>Ganha +1 Ponto em qualquer Atributo. Se usa magia: +1 Poder Mágico.</td></tr>
-                        <tr><td><strong>62 XP</strong></td><td>Amigo dos Animais</td><td>Ganha +1 Ponto de Vida.</td></tr>
-                        <tr><td><strong>81 XP</strong></td><td>Companheiro de Jornada</td><td>Ganha +1 Ponto em qualquer Atributo.</td></tr>
-                        <tr><td><strong>100 XP</strong></td><td>Aventureiro Criativo</td><td>Causa naturalmente 2 Pontos de Dano e ganha +1 Talento do Herói.</td></tr>
-                        <tr><td><strong>139 XP</strong></td><td>Protetor da Paz</td><td>Ganha +1 Ponto de Vida. Se usa magia: +1 Poder Mágico.</td></tr>
-                        <tr><td><strong>168 XP</strong></td><td>Salvador Generoso</td><td>Ganha +1 Ponto em qualquer Atributo.</td></tr>
-                        <tr><td><strong>207 XP</strong></td><td>Voz da Esperança</td><td>Ganha +1 Ponto de bolsa e +1 Talento do Herói.</td></tr>
-                        <tr><td><strong>256 XP</strong></td><td>Destruidor de Insetos</td><td>Ganha +1 Ponto em qualquer Atributo. Se usa magia: +1 Poder Mágico.</td></tr>
-                        <tr><td><strong>300 XP</strong></td><td>Lenda de Faz de Conta</td><td>Causa naturalmente 3 Pontos de Dano.</td></tr>
-                    </tbody>
-                </table>
-            </div>
+    <div class="card">
+        <div class="card-title">
+            <span>🏆 Conquistas e Benefícios por Pontos de Experiência</span>
+            <i>✨</i>
         </div>
+        <p style="font-size: 0.88rem; margin-bottom: 12px;">Sempre que um inimigo é derrotado, <strong>TODOS os heróis que causaram pelo menos 1 de Dano nele ganham 1 ponto de XP</strong>.</p>
+        
+        <!-- WRAPPER PARA GARANTIR A RESPONSIVIDADE -->
+        <div class="table-responsive">
+            <table class="shield-table">
+                <thead>
+                    <tr>
+                        <th>XP</th>
+                        <th>Título de Conquista</th>
+                        <th>Benefícios Recebidos</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>6 XP</strong></td><td>Guardião da Vila</td><td>Ganha +1 Ponto de Vida.</td></tr>
+                    <tr><td><strong>15 XP</strong></td><td>Defensor da Floresta</td><td>Ganha +1 Ponto em qualquer Atributo.</td></tr>
+                    <tr><td><strong>24 XP</strong></td><td>Desbravador de Cavernas</td><td>Ganha +1 Ponto de bolsa e +1 Talento do Herói.</td></tr>
+                    <tr><td><strong>43 XP</strong></td><td>Protetor dos Mais Fracos</td><td>Ganha +1 Ponto em qualquer Atributo. Se usa magia: +1 Poder Mágico.</td></tr>
+                    <tr><td><strong>62 XP</strong></td><td>Amigo dos Animais</td><td>Ganha +1 Ponto de Vida.</td></tr>
+                    <tr><td><strong>81 XP</strong></td><td>Companheiro de Jornada</td><td>Ganha +1 Ponto em qualquer Atributo.</td></tr>
+                    <tr><td><strong>100 XP</strong></td><td>Aventureiro Criativo</td><td>Causa naturalmente 2 Pontos de Dano e ganha +1 Talento do Herói.</td></tr>
+                    <tr><td><strong>139 XP</strong></td><td>Protetor da Paz</td><td>Ganha +1 Ponto de Vida. Se usa magia: +1 Poder Mágico.</td></tr>
+                    <tr><td><strong>168 XP</strong></td><td>Salvador Generoso</td><td>Ganha +1 Ponto em qualquer Atributo.</td></tr>
+                    <tr><td><strong>207 XP</strong></td><td>Voz da Esperança</td><td>Ganha +1 Ponto de bolsa e +1 Talento do Herói.</td></tr>
+                    <tr><td><strong>256 XP</strong></td><td>Destruidor de Insetos</td><td>Ganha +1 Ponto em qualquer Atributo. Se usa magia: +1 Poder Mágico.</td></tr>
+                    <tr><td><strong>300 XP</strong></td><td>Lenda de Faz de Conta</td><td>Causa naturally 3 Pontos de Dano.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
         <!-- TAB 5: TESOUROS & ITENS (Fastplay Cards) -->
         <div id="tab-tesouros" class="tab-content">
@@ -1544,20 +1668,29 @@
     <!-- JAVASCRIPT FOR INTERACTIVITY & DICE ROLLING -->
     <script>
         // TAB SWITCHING
-        function switchTab(tabId) {
-            // Hide all tabs
-            const tabs = document.querySelectorAll('.tab-content');
-            tabs.forEach(tab => tab.classList.remove('active'));
+        // ABRIR/FECHAR MENU HAMBÚRGUER EM TELA PEQUENA
+function toggleMobileMenu() {
+    const menu = document.getElementById('nav-tabs-menu');
+    menu.classList.toggle('open');
+}
 
-            // Remove active class from buttons
-            const btns = document.querySelectorAll('.tab-btn');
-            btns.forEach(btn => btn.classList.remove('active'));
+// TROCA DE ABAS E FECHAMENTO AUTOMÁTICO DO MENU NO MOBILE
+function switchTab(tabId) {
+    const tabs = document.querySelectorAll('.tab-content');
+    tabs.forEach(tab => tab.classList.remove('active'));
 
-            // Show current tab & activate button
-            document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
-        }
+    const btns = document.querySelectorAll('.tab-btn');
+    btns.forEach(btn => btn.classList.remove('active'));
 
+    document.getElementById(tabId).classList.add('active');
+    event.currentTarget.classList.add('active');
+
+    // Fecha o menu hambúrguer automaticamente ao clicar em uma aba
+    const menu = document.getElementById('nav-tabs-menu');
+    if (menu) {
+        menu.classList.remove('open');
+    }
+}
         // QUICK DICE ROLLER
         function rollDice(numDice) {
             let total = 0;
