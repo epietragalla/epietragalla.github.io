@@ -5034,7 +5034,6 @@ function carregarTemaSalvo() {
       else if (currentTab === 'inv') renderInvestorsView();
       else renderDetailView(currentTab);
     };
-   
     function renderDashboard() {
       const selectedArea = document.getElementById('filterArea')?.value || 'ALL';
       let activeSheets = selectedArea === 'ALL' ? ['CX Pesquisa', 'UX Pesquisa', 'CX Escrita', 'UX Escrita'] : [selectedArea];
@@ -6026,31 +6025,97 @@ function carregarTemaSalvo() {
     }
 
     function renderChartTempoPorTamanho(projects) {
-      const ctx = getCanvasCtx('chartTempoPorTamanho'); if (!ctx) return;
-      if (chartTempoPorTamanho) chartTempoPorTamanho.destroy();
+      const ctx = document.getElementById('chartTempoPorTamanho');
+      if (!ctx) return;
 
       const isDark = document.documentElement.classList.contains('dark');
       const textColor = isDark ? '#8E8E93' : '#86868B';
       const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
 
+      const normalizar = (txt) => String(txt || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+
+      const parseDateBR = (str) => {
+        if (!str || str === '-' || str === 'nan') return null;
+        const parts = String(str).split('/');
+        return parts.length === 3 ? new Date(parts[2], parts[1] - 1, parts[0]) : null;
+      };
+
+      const calcularDiasDecorridos = (p) => {
+        if (p.prazo_dias && p.prazo_dias > 0) return p.prazo_dias;
+        const dtInicio = parseDateBR(p.inicio);
+        const dtFim = parseDateBR(p.entrega) || parseDateBR(p.prazo);
+        if (dtInicio && dtFim && dtFim >= dtInicio) {
+          const diffTime = Math.abs(dtFim - dtInicio);
+          return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
+        }
+        return 0;
+      };
+
       const tamGroup = {};
-      projects.forEach(p => {
-        if (p.status.toLowerCase().includes('conclu') && p.prazo_dias > 0) {
-          let t = p.tamanho.toUpperCase().trim();
-          if (!t || t === '-' || t === 'NAN') return;
+
+      (projects || []).forEach(p => {
+        const st = normalizar(p.status);
+        const isConcluido = st.includes('conclu') || st.includes('finaliz') || st.includes('entreg');
+        if (!isConcluido) return;
+
+        let t = String(p.tamanho || '').toUpperCase().trim();
+        if (!t || t === '-' || t === 'NAN' || t === 'UNDEFINED') {
+          t = 'MÉDIA';
+        }
+
+        const dias = calcularDiasDecorridos(p);
+        if (dias > 0) {
           if (!tamGroup[t]) tamGroup[t] = [];
-          tamGroup[t].push(p.prazo_dias);
+          tamGroup[t].push(dias);
         }
       });
 
       const labels = Object.keys(tamGroup);
       const data = labels.map(t => (tamGroup[t].reduce((a, b) => a + b, 0) / tamGroup[t].length).toFixed(1));
 
-      chartTempoPorTamanho = new Chart(ctx, {
+      if (window.charts && window.charts.tempoPorTamanho) {
+        window.charts.tempoPorTamanho.destroy();
+      } else if (typeof chartTempoPorTamanho !== 'undefined' && chartTempoPorTamanho) {
+        chartTempoPorTamanho.destroy();
+      }
+
+      window.charts = window.charts || {};
+      window.charts.tempoPorTamanho = new Chart(ctx, {
         type: 'bar',
-        data: { labels: labels, datasets: [{ label: 'Dias', data: data, backgroundColor: isDark ? '#BF5AF2' : '#AF52DE', borderRadius: 6 }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: textColor } }, y: { grid: { color: gridColor }, ticks: { color: textColor } } } }
+        data: {
+          labels: labels.length ? labels : ['Sem Dados'],
+          datasets: [{
+            label: 'Dias Média',
+            data: data.length ? data : [0],
+            backgroundColor: isDark ? '#BF5AF2' : '#AF52DE',
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => `Média: ${ctx.raw} dias`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { color: textColor, font: { size: 10, weight: 'bold' } }
+            },
+            y: {
+              beginAtZero: true,
+              grid: { color: gridColor },
+              ticks: { color: textColor, precision: 0 }
+            }
+          }
+        }
       });
+      chartTempoPorTamanho = window.charts.tempoPorTamanho;
     }
 
     function renderChartSuperAppSplit(projects) {
@@ -6157,50 +6222,206 @@ function carregarTemaSalvo() {
     }
 
     function renderChartMetodosSuperApp(projects) {
-      const ctx = getCanvasCtx('chartMetodosSuperApp'); if (!ctx) return;
-      if (chartMetodosSuperApp) chartMetodosSuperApp.destroy();
+      const ctx = document.getElementById('chartMetodosSuperApp');
+      if (!ctx) return;
 
       const isDark = document.documentElement.classList.contains('dark');
       const textColor = isDark ? '#8E8E93' : '#86868B';
       const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
 
-      const superAppMet = {}, outrosMet = {};
-      projects.forEach(p => {
-        if (!p.pesquisa_metodo || p.pesquisa_metodo === '-') return;
-        const isSuper = p.super_app.toLowerCase() === 'sim';
-        p.pesquisa_metodo.split(',').forEach(m => {
-          let c = m.trim();
-          if (!c) return;
-          if (isSuper) superAppMet[c] = (superAppMet[c] || 0) + 1;
-          else outrosMet[c] = (outrosMet[c] || 0) + 1;
+      const superAppMet = {};
+      const outrosMet = {};
+      const totalMetMap = {};
+
+      (projects || []).forEach(p => {
+        const metodoStr = String(p.pesquisa_metodo || p.pesquisa || p.atividade || '').trim();
+        if (!metodoStr || metodoStr === '-' || metodoStr.toLowerCase() === 'nan' || metodoStr.toLowerCase() === 'null') return;
+
+        const isSuper = String(p.super_app || '').toLowerCase().includes('sim');
+
+        metodoStr.split(/[,;\n]/).forEach(m => {
+          let nome = m.trim().replace(/^["'“]+|["'”]+$/g, '').trim();
+          if (!nome || nome === '-' || nome.toLowerCase() === 'nan' || nome.toLowerCase() === 'null') return;
+
+          if (isSuper) {
+            superAppMet[nome] = (superAppMet[nome] || 0) + 1;
+          } else {
+            outrosMet[nome] = (outrosMet[nome] || 0) + 1;
+          }
+          totalMetMap[nome] = (totalMetMap[nome] || 0) + 1;
         });
       });
 
-      const topMetodos = Object.entries(superAppMet).sort((a, b) => b[1] - a[1]).slice(0, 5).map(s => s[0]);
+      // Mapeia os 5 métodos mais utilizados (priorizando o Super App)
+      let topMetodos = Object.entries(totalMetMap)
+        .sort((a, b) => {
+          const superAppDiff = (superAppMet[b[0]] || 0) - (superAppMet[a[0]] || 0);
+          if (superAppDiff !== 0) return superAppDiff;
+          return b[1] - a[1];
+        })
+        .slice(0, 5)
+        .map(s => s[0]);
 
-      chartMetodosSuperApp = new Chart(ctx, {
+      if (topMetodos.length === 0) {
+        topMetodos = ['Sem Métodos Mapeados'];
+      }
+
+      if (window.charts && window.charts.metodosSuperApp) {
+        window.charts.metodosSuperApp.destroy();
+      } else if (typeof chartMetodosSuperApp !== 'undefined' && chartMetodosSuperApp) {
+        chartMetodosSuperApp.destroy();
+      }
+
+      window.charts = window.charts || {};
+      window.charts.metodosSuperApp = new Chart(ctx, {
         type: 'bar',
-        data: { labels: topMetodos, datasets: [{ label: 'Super App', data: topMetodos.map(m => superAppMet[m] || 0), backgroundColor: isDark ? '#BF5AF2' : '#AF52DE', borderRadius: 4 }, { label: 'Outros Canais', data: topMetodos.map(m => outrosMet[m] || 0), backgroundColor: isDark ? '#0A84FF' : '#007AFF', borderRadius: 4 }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: textColor } } }, scales: { x: { grid: { display: false }, ticks: { color: textColor, font: { size: 9 } } }, y: { grid: { color: gridColor }, ticks: { color: textColor } } } }
+        data: {
+          labels: topMetodos,
+          datasets: [
+            {
+              label: 'Super App',
+              data: topMetodos.map(m => superAppMet[m] || 0),
+              backgroundColor: isDark ? '#BF5AF2' : '#AF52DE',
+              borderRadius: 4
+            },
+            {
+              label: 'Outros Canais',
+              data: topMetodos.map(m => outrosMet[m] || 0),
+              backgroundColor: isDark ? '#0A84FF' : '#007AFF',
+              borderRadius: 4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              position: 'bottom',
+              labels: { color: textColor, font: { size: 10, weight: '500' } }
+            },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => ` ${ctx.dataset.label}: ${ctx.raw} projetos`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: {
+                color: textColor,
+                font: { size: 9 },
+                callback: function(val) {
+                  const label = this.getLabelForValue(val);
+                  return label.length > 15 ? label.substring(0, 13) + '...' : label;
+                }
+              }
+            },
+            y: {
+              beginAtZero: true,
+              grid: { color: gridColor },
+              ticks: { color: textColor, precision: 0 }
+            }
+          }
+        }
       });
+
+      chartMetodosSuperApp = window.charts.metodosSuperApp;
     }
 
     function renderChartLeadTimeDispersao(projects) {
-      const ctx = getCanvasCtx('chartLeadTimeDispersao'); if (!ctx) return;
-      if (chartLeadTimeDispersao) chartLeadTimeDispersao.destroy();
+      const ctx = document.getElementById('chartLeadTimeDispersao');
+      if (!ctx) return;
 
       const isDark = document.documentElement.classList.contains('dark');
       const textColor = isDark ? '#8E8E93' : '#86868B';
       const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
 
-      const concluidos = projects.filter(p => p.status.toLowerCase().includes('conclu') && p.prazo_dias > 0);
-      const points = concluidos.map((p, idx) => ({ x: idx + 1, y: p.prazo_dias, title: p.projeto }));
+      const normalizar = (txt) => String(txt || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
 
-      chartLeadTimeDispersao = new Chart(ctx, {
-        type: 'scatter',
-        data: { datasets: [{ label: 'Dias de Execução', data: points, backgroundColor: isDark ? '#0A84FF' : '#007AFF' }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (ctx) { return `${ctx.raw.title}: ${ctx.raw.y} dias`; } } } }, scales: { x: { display: false }, y: { title: { display: true, text: 'Dias Decorridos', color: textColor }, grid: { color: gridColor }, ticks: { color: textColor } } } }
+      const parseDateBR = (str) => {
+        if (!str || str === '-' || str === 'nan') return null;
+        const parts = String(str).split('/');
+        return parts.length === 3 ? new Date(parts[2], parts[1] - 1, parts[0]) : null;
+      };
+
+      const calcularDiasDecorridos = (p) => {
+        if (p.prazo_dias && p.prazo_dias > 0) return p.prazo_dias;
+        const dtInicio = parseDateBR(p.inicio);
+        const dtFim = parseDateBR(p.entrega) || parseDateBR(p.prazo);
+        if (dtInicio && dtFim && dtFim >= dtInicio) {
+          const diffTime = Math.abs(dtFim - dtInicio);
+          return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
+        }
+        return 0;
+      };
+
+      const points = [];
+      let index = 1;
+
+      (projects || []).forEach(p => {
+        const st = normalizar(p.status);
+        const isConcluido = st.includes('conclu') || st.includes('finaliz') || st.includes('entreg');
+        if (!isConcluido) return;
+
+        const dias = calcularDiasDecorridos(p);
+        if (dias > 0) {
+          points.push({
+            x: index++,
+            y: dias,
+            title: p.projeto || 'Projeto Sem Nome'
+          });
+        }
       });
+
+      if (window.charts && window.charts.leadTimeDispersao) {
+        window.charts.leadTimeDispersao.destroy();
+      } else if (typeof chartLeadTimeDispersao !== 'undefined' && chartLeadTimeDispersao) {
+        chartLeadTimeDispersao.destroy();
+      }
+
+      window.charts = window.charts || {};
+      window.charts.leadTimeDispersao = new Chart(ctx, {
+        type: 'scatter',
+        data: {
+          datasets: [{
+            label: 'Dias de Execução',
+            data: points,
+            backgroundColor: isDark ? '#0A84FF' : '#007AFF',
+            pointRadius: 6,
+            pointHoverRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function (ctx) {
+                  return `${ctx.raw.title}: ${ctx.raw.y} dias`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              display: false
+            },
+            y: {
+              beginAtZero: true,
+              title: { display: true, text: 'Dias Decorridos', color: textColor, font: { size: 11, weight: 'bold' } },
+              grid: { color: gridColor },
+              ticks: { color: textColor, precision: 0 }
+            }
+          }
+        }
+      });
+
+      chartLeadTimeDispersao = window.charts.leadTimeDispersao;
     }
 
     function renderChartDemandantesSuperApp(projects) {
@@ -6308,23 +6529,32 @@ function carregarTemaSalvo() {
       const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
 
       const counts = {};
-      projects.forEach(p => {
-        let dem = p.demandante || 'Não Informado';
-        dem = dem.trim();
-        if (dem && dem !== '-' && dem !== 'nan') {
-          counts[dem] = (counts[dem] || 0) + 1;
+
+      (projects || []).forEach(p => {
+        // Sanitiza quebras de linha e espaços duplos vindos da planilha
+        let dem = String(p.demandante || '')
+          .replace(/[\r\n]+/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim();
+
+        if (!dem || dem === '-' || dem.toLowerCase() === 'nan' || dem.toLowerCase() === 'null' || dem.toLowerCase() === 'undefined') {
+          return;
         }
+
+        counts[dem] = (counts[dem] || 0) + 1;
       });
 
       const sorted = Object.entries(counts)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 20);
 
-      const labels = sorted.map(i => i[0]);
-      const data = sorted.map(i => i[1]);
+      const labels = sorted.length > 0 ? sorted.map(i => i[0]) : ['Nenhum Demandante Mapeado'];
+      const data = sorted.length > 0 ? sorted.map(i => i[1]) : [0];
 
-      if (window.charts && window.charts.demandantes) {
-        window.charts.demandantes.destroy();
+      // Destrói com segurança qualquer gráfico ativo anexado ao canvas
+      const existingChart = Chart.getChart(ctx);
+      if (existingChart) {
+        existingChart.destroy();
       }
 
       window.charts = window.charts || {};
@@ -6347,7 +6577,7 @@ function carregarTemaSalvo() {
             legend: { display: false },
             tooltip: {
               callbacks: {
-                label: (ctx) => `${ctx.raw} projetos solicitados`
+                label: (ctx) => ` ${ctx.raw} projetos solicitados`
               }
             }
           },
@@ -6359,11 +6589,20 @@ function carregarTemaSalvo() {
             },
             y: {
               grid: { display: false },
-              ticks: { color: textColor, font: { size: 10 } }
+              ticks: {
+                color: textColor,
+                font: { size: 10 },
+                callback: function (val) {
+                  const label = this.getLabelForValue(val);
+                  return label.length > 25 ? label.substring(0, 22) + '...' : label;
+                }
+              }
             }
           }
         }
       });
+
+      chartDemandantes = window.charts.demandantes;
     }
 
     function renderChartMetodologias(projects) {
@@ -6713,35 +6952,59 @@ function carregarTemaSalvo() {
     }
 
     function renderChartEvidencias(projects) {
-      const ctx = getCanvasCtx('chartEvidencias'); if (!ctx) return;
-      if (chartEvidencias) chartEvidencias.destroy();
+      const canvas = document.getElementById('chartEvidencias');
+      if (!canvas) return;
 
       const isDark = document.documentElement.classList.contains('dark');
       const textColor = isDark ? '#8E8E93' : '#86868B';
       const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
 
       const evidMap = {};
-      projects.forEach(p => {
-        let ev = p.evidencias ? p.evidencias.trim() : '';
-        if (!ev || ev === '-' || ev === 'nan' || ev === 'Outro') return;
 
-        if (ev.toLowerCase().includes('figma')) ev = 'Arquivo Figma / FigJam';
-        else if (ev.toLowerCase().includes('slide') || ev.toLowerCase().includes('apresenta')) ev = 'Apresentação / Relatório (Slides)';
-        else if (ev.toLowerCase().includes('sharepoint') || ev.toLowerCase().includes('link')) ev = 'Link SharePoint / Repositório';
-        else if (ev.toLowerCase().includes('entregá') || ev.toLowerCase().includes('entregave')) ev = 'Documento Entregável Padronizado';
+      (projects || []).forEach(p => {
+        if (!p) return;
+        // Tratamento flexível do campo de evidências/entregáveis
+        let evRaw = p.evidencias || p.evidencia || p.entregaveis || p.entregavel || '';
+        let ev = String(evRaw).trim();
+
+        if (!ev || ev === '-' || ev.toLowerCase() === 'nan' || ev.toLowerCase() === 'null' || ev.toLowerCase() === 'undefined') {
+          return;
+        }
+
+        const evLower = ev.toLowerCase();
+
+        if (evLower.includes('figma') || evLower.includes('figjam') || evLower.includes('prototipo') || evLower.includes('protótipo')) {
+          ev = 'Arquivo Figma / FigJam';
+        } else if (evLower.includes('slide') || evLower.includes('apresenta') || evLower.includes('relatori') || evLower.includes('relatório')) {
+          ev = 'Apresentação / Relatório (Slides)';
+        } else if (evLower.includes('sharepoint') || evLower.includes('link') || evLower.includes('dicionario') || evLower.includes('dicionário')) {
+          ev = 'Link SharePoint / Repositório';
+        } else {
+          ev = 'Documento Entregável Padronizado';
+        }
 
         evidMap[ev] = (evidMap[ev] || 0) + 1;
       });
 
       const sorted = Object.entries(evidMap).sort((a, b) => b[1] - a[1]).slice(0, 6);
 
-      chartEvidencias = new Chart(ctx, {
+      const labels = sorted.length > 0 ? sorted.map(s => s[0]) : ['Nenhum Artefato Mapeado'];
+      const data = sorted.length > 0 ? sorted.map(s => s[1]) : [0];
+
+      // Destrói com segurança a instância existente no canvas
+      const existingChart = Chart.getChart(canvas);
+      if (existingChart) {
+        existingChart.destroy();
+      }
+
+      window.charts = window.charts || {};
+      chartEvidencias = new Chart(canvas, {
         type: 'bar',
         data: {
-          labels: sorted.map(s => s[0]),
+          labels: labels,
           datasets: [{
             label: 'Quantidade de Entregas',
-            data: sorted.map(s => s[1]),
+            data: data,
             backgroundColor: isDark ? '#0A84FF' : '#007AFF',
             borderRadius: 6
           }]
@@ -6750,10 +7013,29 @@ function carregarTemaSalvo() {
           indexAxis: 'y',
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: { x: { grid: { color: gridColor }, ticks: { color: textColor } }, y: { grid: { display: false }, ticks: { color: textColor } } }
+          plugins: { 
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => ` ${ctx.raw} entregas geradas`
+              }
+            }
+          },
+          scales: { 
+            x: { 
+              beginAtZero: true,
+              grid: { color: gridColor }, 
+              ticks: { color: textColor, precision: 0 } 
+            }, 
+            y: { 
+              grid: { display: false }, 
+              ticks: { color: textColor, font: { size: 10 } } 
+            } 
+          }
         }
       });
+
+      window.charts.evidencias = chartEvidencias;
     }
 
     function renderChartMetodosPorProjeto(projects) {
@@ -6889,74 +7171,65 @@ function carregarTemaSalvo() {
       window.RAW_DATA = { 'CX Pesquisa': [], 'UX Pesquisa': [], 'CX Escrita': [], 'UX Escrita': [] };
       window.TEAM_DATA = [];
 
-      // 1. Carrega a aba "Time" no formato de matriz (A1:H50) para mapear o layout exato por colunas paralelas
-      const fetchUrlTeam = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&tq=${encodeURIComponent("SELECT A, B, C, D, E, F, G, H")}&headers=0&sheet=${encodeURIComponent('Time')}&_nocache=${new Date().getTime()}`;
+      // 1. Tenta carregar a aba "Time" de forma segura (sem travar o resto se falhar)
+      const fetchUrlTeam = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('Time')}&_nocache=${new Date().getTime()}`;
 
       try {
         const resTeam = await fetch(fetchUrlTeam);
         if (resTeam.ok) {
           const csvTeam = await resTeam.text();
-          Papa.parse(csvTeam, {
-            header: false, // Lê por matriz de células (linhas x colunas)
-            skipEmptyLines: true,
-            complete: function (results) {
-              if (results && results.data && results.data.length > 2) {
-                const matrix = results.data;
-                const parsedTeam = [];
+          if (!csvTeam.includes('<!DOCTYPE html>')) {
+            Papa.parse(csvTeam, {
+              header: false,
+              skipEmptyLines: true,
+              complete: function (results) {
+                if (results && results.data && results.data.length > 2) {
+                  const matrix = results.data;
+                  const parsedTeam = [];
+                  const frentesConfig = [
+                    { frente: 'CX Pesquisa', colNome: 0, colSenior: 1 },
+                    { frente: 'UX Pesquisa', colNome: 2, colSenior: 3 },
+                    { frente: 'CX Escrita',  colNome: 4, colSenior: 5 },
+                    { frente: 'UX Escrita',  colNome: 6, colSenior: 7 }
+                  ];
 
-                // Mapeamento dos blocos de colunas segundo o layout real da planilha:
-                // Colunas 0 e 1 (A e B) = CX Pesquisa
-                // Colunas 2 e 3 (C e D) = UX Pesquisa
-                // Colunas 4 e 5 (E e F) = CX Escrita
-                // Colunas 6 e 7 (G e H) = UX Escrita
-                const frentesConfig = [
-                  { frente: 'CX Pesquisa', colNome: 0, colSenior: 1 },
-                  { frente: 'UX Pesquisa', colNome: 2, colSenior: 3 },
-                  { frente: 'CX Escrita',  colNome: 4, colSenior: 5 },
-                  { frente: 'UX Escrita',  colNome: 6, colSenior: 7 }
-                ];
-
-                // Varre da linha 2 em diante (pula os títulos das abas e cabeçalhos da imagem)
-                for (let r = 2; r < matrix.length; r++) {
-                  const row = matrix[r];
-                  if (!row) continue;
-
-                  frentesConfig.forEach(cfg => {
-                    const nome = String(row[cfg.colNome] || '').trim();
-                    const senioridade = String(row[cfg.colSenior] || '').trim();
-
-                    if (nome && nome !== '-' && nome.toLowerCase() !== 'nome' && nome.toLowerCase() !== 'nan') {
-                      parsedTeam.push({
-                        frente: cfg.frente,
-                        nome: nome,
-                        senioridade: senioridade || 'Senior'
-                      });
-                    }
-                  });
+                  for (let r = 2; r < matrix.length; r++) {
+                    const row = matrix[r];
+                    if (!row) continue;
+                    frentesConfig.forEach(cfg => {
+                      const nome = String(row[cfg.colNome] || '').trim();
+                      const senioridade = String(row[cfg.colSenior] || '').trim();
+                      if (nome && nome !== '-' && nome.toLowerCase() !== 'nome' && nome.toLowerCase() !== 'nan') {
+                        parsedTeam.push({ frente: cfg.frente, nome: nome, senioridade: senioridade || 'Senior' });
+                      }
+                    });
+                  }
+                  window.TEAM_DATA = parsedTeam;
                 }
-
-                window.TEAM_DATA = parsedTeam;
-                console.log(`✅ Aba 'Time' lida com sucesso: ${window.TEAM_DATA.length} integrantes mapeados.`);
               }
-            }
-          });
+            });
+          }
         }
       } catch (err) {
         console.warn("Aviso ao buscar aba 'Time':", err);
       }
 
-      // 2. Carrega as 4 abas operacionais
+      // 2. Carrega as abas operacionais sem restrição rígida de SELECT
       let successCount = 0;
 
       for (let sheetName of sheets) {
-        const queryA_Q = encodeURIComponent("SELECT A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q");
-        const fetchUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&tq=${queryA_Q}&range=A1:Q1000&headers=1&sheet=${encodeURIComponent(sheetName)}&_nocache=${new Date().getTime()}`;
+        const fetchUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}&_nocache=${new Date().getTime()}`;
 
         try {
           const response = await fetch(fetchUrl);
           if (!response.ok) throw new Error(`Status HTTP: ${response.status}`);
 
           const csvText = await response.text();
+
+          // Se o Google retornar HTML, a planilha está privada
+          if (csvText.includes('<!DOCTYPE html>') || csvText.includes('google-site-verification')) {
+            throw new Error(`A planilha precisa ser privada para o público. Altere as permissões de compartilhamento.`);
+          }
 
           Papa.parse(csvText, {
             header: true,
@@ -6976,9 +7249,7 @@ function carregarTemaSalvo() {
 
                 if (successCount === sheets.length) {
                   const agora = new Date();
-                  const dataFormatada = agora.toLocaleDateString('pt-BR');
-                  const horaFormatada = agora.toLocaleTimeString('pt-BR');
-                  window.LAST_SYNC_TIME = `Sincronizado dia ${dataFormatada} às ${horaFormatada}`;
+                  window.LAST_SYNC_TIME = `Sincronizado dia ${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR')}`;
 
                   if (window.saveDataToFirebase) {
                     window.saveDataToFirebase(window.RAW_DATA);
@@ -6992,7 +7263,7 @@ function carregarTemaSalvo() {
           });
         } catch (error) {
           console.error(`Erro ao buscar aba ${sheetName}:`, error);
-          if (badge) badge.innerText = "Erro ao Sincronizar";
+          if (badge) badge.innerText = "Erro: Verifique o Compartilhamento no Google Sheets";
         }
       }
     };
