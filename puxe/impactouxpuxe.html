@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="light" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planilha de Impacto e Feedback PUXE</title>
+
+    <!-- GARANTIA DE MODO CLARO PADRÃO ANTES DA RENDERIZAÇÃO DA PÁGINA -->
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem('caixa_theme_pref') || 'light';
+            const html = document.documentElement;
+            if (savedTheme === 'dark') {
+                html.classList.add('dark');
+                html.classList.remove('light');
+                html.setAttribute('data-theme', 'dark');
+            } else {
+                html.classList.remove('dark');
+                html.classList.add('light');
+                html.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
+
+    <!-- Lucide Icons & FontAwesome para Ícones Oficiais -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- CONFIGURAÇÃO DE TOKENS OFICIAIS DO TAILWIND CSS DO DSC -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        caixa: {
+                            blue130: '#002A4D',
+                            blue110: '#00437A',
+                            blue90: '#005CA9',   /* Principal Interativo / Oceano CAIXA */
+                            blue70: '#2D8A0B',
+                            blue50: '#60B1FA',
+                            blue30: '#AED2FC',
+                            blue10: '#E5F1FC',   /* Superfície de Item Ativo */
+
+                            orange130: '#663A00',
+                            orange110: '#A65E00',
+                            orange90: '#D67B00',  /* Homologada p/ Botões c/ Texto Branco */
+                            orange70: '#F39200',  /* Laranja Original */
+                            orange50: '#FD854B',
+                            orange30: '#FFD092',
+                            orange10: '#FFEFD6',
+
+                            tertiary70: '#54B8A8', /* Turquesa CAIXA */
+
+                            gray130: '#22292E',    /* Texto Primário */
+                            gray110: '#404852',    /* Texto Secundário */
+                            gray90: '#64747A',    /* Bordas e Ícones */
+                            gray70: '#9EB2B8',    /* Divisores */
+                            gray50: '#D0E0E3',    /* Bordas Suaves */
+                            gray30: '#EBF1F2',    /* Inset Light */
+                            gray10: '#F7FAFA',    /* Canvas Light */
+
+                            success110: '#0D5B1C',
+                            success70: '#179231',
+                            success10: '#E7F4EA',
+
+                            warning110: '#977203',
+                            warning70: '#FCBE05',
+                            warning10: '#FFF9E6',
+
+                            danger110: '#8C2323',
+                            danger70: '#D93636',
+                            danger10: '#FBEBEB',
+
+                            info110: '#026173',
+                            info70: '#04A2BF',
+                            info10: '#E5F6F8',
+
+                            darkBg: '#0B1E36',
+                            darkCard: '#132A4A',
+                            darkInset: '#1A365D',
+                            darkBorder: '#2A4A75'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Arial', 'sans-serif']
+                    },
+                    borderRadius: {
+                        'xs': '2px',
+                        'sm': '4px',
+                        'badge': '8px',
+                        'inset': '12px',
+                        'card': '16px',
+                        'pill': '9999px'
+                    },
+                    boxShadow: {
+                        'elevation1': '0px 1px 3px 1px rgba(0, 0, 0, 0.15)',
+                        'elevation2': '0px 2px 6px 2px rgba(0, 0, 0, 0.15)',
+                        'elevation3': '0px 4px 8px 3px rgba(0, 0, 0, 0.15)',
+                        'cta': '0 4px 12px rgba(214, 123, 0, 0.35)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- ESTILOS ESPECÍFICOS DO DSC -->
+    <style>
+        :root {
+            --caixa-blue-90: #005CA9;
+            --caixa-blue-dark: #003366;
+            --caixa-orange-90: #D67B00;
+            --caixa-orange-70: #F39200;
+            --caixa-bg-canvas: #F7FAFA;
+            --caixa-bg-card: #FFFFFF;
+            --caixa-bg-inset: #F0F4F8;
+            --caixa-border: #CBD5E1;
+            --caixa-text-main: #22292E;
+            --caixa-text-muted: #404852;
+        }
+
+        .dark {
+            --caixa-bg-canvas: #0B1E36;
+            --caixa-bg-card: #132A4A;
+            --caixa-bg-inset: #1A365D;
+            --caixa-border: #2A4A75;
+            --caixa-text-main: #F8FAFC;
+            --caixa-text-muted: #94A3B8;
+        }
+
+        *,
+        *::before,
+        *::after {
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .caixa-glass {
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .dark .caixa-glass {
+            background: rgba(11, 30, 54, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .dsc-card {
+            background-color: var(--caixa-bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--caixa-border);
+            box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.05);
+        }
+
+        .dsc-card-inset {
+            background-color: var(--caixa-bg-inset);
+            border-radius: 12px;
+            border: 1px solid var(--caixa-border);
+        }
+
+        .grad-oceano {
+            background: linear-gradient(90deg, #005CA9 0%, #54B8A8 100%);
+        }
+
+        .btn-period-active {
+            background-color: var(--caixa-blue-90) !important;
+            color: #ffffff !important;
+            border-color: var(--caixa-blue-90) !important;
+            box-shadow: 0 2px 6px rgba(0, 92, 169, 0.3);
+        }
+    </style>
+</head>
+
+<body
+    class="bg-caixa-gray10 dark:bg-caixa-darkBg text-caixa-gray130 dark:text-white font-sans antialiased min-h-screen">
+
+    <!-- HEADER INSTITUCIONAL -->
+    <header class="sticky top-0 z-40 caixa-glass border-b border-caixa-border dark:border-caixa-darkBorder px-6 py-3.5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-10 h-10 rounded-xl bg-caixa-blue90 flex items-center justify-center text-white font-black text-xl shadow-md select-none">
+                    X
+                </div>
+                <div>
+                    <h1
+                        class="text-lg font-bold text-caixa-blue110 dark:text-white flex items-center gap-2 leading-tight">
+                        Impacto e Feedback PUXE <span
+                            class="text-[10px] uppercase tracking-wider font-extrabold bg-caixa-orange90 text-white px-2 py-0.5 rounded-badge">UX/CX</span>
+                    </h1>
+                    <p class="text-xs text-caixa-gray110 dark:text-gray-300">Gestão de Impacto e Adoção de Pesquisas</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button type="button" onclick="syncWithGoogleSheets()"
+                    class="bg-caixa-orange90 hover:bg-caixa-orange110 text-white font-bold text-xs py-2.5 px-5 rounded-pill shadow-cta transition-all active:scale-95 flex items-center gap-2">
+                    <i class="fa-solid fa-rotate text-xs"></i> Sincronizar com Planilha
+                </button>
+
+                <button type="button" id="themeToggleBtn" onclick="toggleTheme()"
+                    title="Alternar entre Modo Escuro e Modo Claro"
+                    class="w-9 h-9 rounded-full bg-caixa-cardInset dark:bg-caixa-darkCardInset flex items-center justify-center text-caixa-orange90 dark:text-caixa-orange30 hover:scale-105 transition-transform border border-caixa-border dark:border-caixa-darkBorder">
+                    <i data-lucide="moon" id="themeIcon" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+
+        <!-- BANNER DE STATUS -->
+        <section class="grad-oceano text-white rounded-card p-6 md:p-8 relative overflow-hidden shadow-elevation2">
+            <div class="relative z-10 space-y-2">
+                <!-- <div
+                    class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-3 py-1 rounded-badge text-xs font-bold uppercase tracking-wider">
+                    <i class="fa-solid fa-link"></i> Integração com Google Sheets Ao Vivo
+                </div> -->
+                <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">Rastreabilidade de Entregas & Impacto no
+                    Produto</h2>
+                <p class="text-xs md:text-sm text-gray-100 max-w-2xl">Acompanhe a maturidade das pesquisas e garanta a
+                    transição do insight acadêmico para tarefas prioritárias no backlog do cliente.</p>
+            </div>
+            <div
+                class="absolute -right-8 -bottom-16 text-[200px] font-black text-white/5 select-none pointer-events-none">
+                X
+            </div>
+        </section>
+
+        <!-- BARRA DE FILTROS AVANÇADOS -->
+        <section class="dsc-card p-4 space-y-3">
+            <!-- Linha Superior: Busca de Texto, Seletores de Status e Frente, e Botões Rápidos -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+
+                <!-- Busca por Texto -->
+                <div class="relative md:col-span-4">
+                    <i
+                        class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-caixa-gray90 text-xs"></i>
+                    <input type="text" id="search-text" oninput="applyFilters()"
+                        placeholder="Digite o nome do projeto ou ID..."
+                        class="w-full pl-9 pr-3 py-2 bg-caixa-cardInset dark:bg-caixa-darkCardInset border border-caixa-border dark:border-caixa-darkBorder rounded-pill text-xs font-medium text-caixa-gray130 dark:text-white focus:outline-none focus:border-caixa-blue90">
+                </div>
+
+                <!-- Filtro de Status (Baseado na Coluna C da Planilha) -->
+                <!-- Filtro de Status (Baseado na Coluna C da Planilha) -->
+                <div class="flex items-center gap-2 md:col-span-3">
+                    <label for="filter-status"
+                        class="text-xs font-semibold text-caixa-gray110 dark:text-gray-300">Status:</label>
+                    <select id="filter-status" onchange="applyFilters()"
+                        class="w-full p-2 bg-caixa-cardInset dark:bg-caixa-darkCardInset border border-caixa-border dark:border-caixa-darkBorder rounded-pill text-xs font-bold text-caixa-gray130 dark:text-white cursor-pointer">
+                        <option value="ALL">Todos os Status</option>
+                        <option value="CONCLUIDO">✅ Concluído</option>
+                        <option value="EM_ANDAMENTO">🔄 Em Andamento</option>
+                        <option value="PAUSADO">⏸️ Pausado</option>
+                        <option value="CANCELADO">🚫 Cancelado</option>
+                    </select>
+                </div>
+                <!-- Filtro de Frente / Disciplina -->
+                <div class="flex items-center gap-2 md:col-span-3">
+                    <label for="filter-discipline"
+                        class="text-xs font-semibold text-caixa-gray110 dark:text-gray-300">Frente:</label>
+                    <select id="filter-discipline" onchange="applyFilters()"
+                        class="w-full p-2 bg-caixa-cardInset dark:bg-caixa-darkCardInset border border-caixa-border dark:border-caixa-darkBorder rounded-pill text-xs font-bold text-caixa-gray130 dark:text-white cursor-pointer">
+                        <option value="ALL">Todas as Frentes</option>
+                        <option value="UX Pesquisa">UX Pesquisa</option>
+                        <option value="CX Pesquisa">CX Pesquisa</option>
+                        <option value="UX Escrita">UX Escrita</option>
+                        <option value="CX Escrita">CX Escrita</option>
+                    </select>
+                </div>
+
+                <!-- Botões Rápidos -->
+                <div class="flex items-center justify-end gap-2 md:col-span-2">
+                    <button type="button" id="btn-30-days" onclick="setLast30Days()"
+                        class="bg-caixa-blue10 text-caixa-blue110 dark:bg-caixa-darkCardInset dark:text-blue-300 border border-caixa-blue30 dark:border-caixa-darkBorder text-[11px] font-bold py-2 px-3 rounded-pill hover:bg-caixa-blue30 transition-all">
+                        📅 30 dias
+                    </button>
+                    <button type="button" onclick="resetFilters()" title="Limpar todos os filtros"
+                        class="text-xs text-caixa-blue90 dark:text-blue-300 hover:underline font-bold flex items-center gap-1">
+                        <i class="fa-solid fa-rotate-left"></i> Limpar
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- Linha Inferior: Intervalo de Datas (De / Até) -->
+            <div
+                class="flex flex-wrap items-center gap-3 pt-2 border-t border-caixa-border dark:border-caixa-darkBorder text-xs">
+                <span
+                    class="font-bold text-caixa-blue110 dark:text-white uppercase tracking-wider text-[11px] flex items-center gap-1">
+                    <i class="fa-solid fa-calendar-days text-caixa-orange90"></i> Período de Entrega:
+                </span>
+
+                <div class="flex items-center gap-2">
+                    <label for="date-start" class="text-caixa-gray110 dark:text-gray-300 text-[11px]">De:</label>
+                    <input type="date" id="date-start" onchange="applyFilters()"
+                        class="p-1.5 bg-caixa-cardInset dark:bg-caixa-darkCardInset border border-caixa-border dark:border-caixa-darkBorder rounded-sm text-xs font-bold text-caixa-gray130 dark:text-white">
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <label for="date-end" class="text-caixa-gray110 dark:text-gray-300 text-[11px]">Até:</label>
+                    <input type="date" id="date-end" onchange="applyFilters()"
+                        class="p-1.5 bg-caixa-cardInset dark:bg-caixa-darkCardInset border border-caixa-border dark:border-caixa-darkBorder rounded-sm text-xs font-bold text-caixa-gray130 dark:text-white">
+                </div>
+            </div>
+        </section>
+
+        <!-- CARDS DE MÉTRICAS CONSOLIDADAS -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="dsc-card p-5 space-y-2 border-l-4 border-l-caixa-blue90">
+                <span class="text-xs font-bold text-caixa-gray110 dark:text-gray-300 uppercase tracking-wider">Total de
+                    Entregas Mapeadas</span>
+                <div class="text-3xl font-extrabold text-caixa-blue110 dark:text-white" id="total-projects">0</div>
+                <p class="text-[11px] text-caixa-gray90 dark:text-gray-400" id="subtext-total">Projetos no período
+                    filtrado</p>
+            </div>
+
+            <div class="dsc-card p-5 space-y-2 border-l-4 border-l-caixa-orange90">
+                <span class="text-xs font-bold text-caixa-gray110 dark:text-gray-300 uppercase tracking-wider">Média
+                    CSAT (D+1)</span>
+                <div class="text-3xl font-extrabold text-caixa-orange90" id="avg-csat">0.0 / 5.0</div>
+                <p class="text-[11px] text-caixa-gray90 dark:text-gray-400">Clareza e utilidade percebida pelo cliente
+                </p>
+            </div>
+
+            <div class="dsc-card p-5 space-y-2 border-l-4 border-l-caixa-success70">
+                <span class="text-xs font-bold text-caixa-gray110 dark:text-gray-300 uppercase tracking-wider">Taxa de
+                    Adoção (D+30)</span>
+                <div class="text-3xl font-extrabold text-caixa-success110 dark:text-emerald-400" id="adoption-rate">0%
+                </div>
+                <p class="text-[11px] text-caixa-gray90 dark:text-gray-400">Insights aplicados, priorizados ou pivotados
+                </p>
+            </div>
+        </section>
+
+        <!-- BARRA DE STATUS DA SINCRONIZAÇÃO -->
+        <section class="dsc-card-inset p-4 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-circle-info text-caixa-blue90"></i>
+                <span id="sync-status" class="font-medium text-caixa-gray130 dark:text-gray-200">Aguardando
+                    sincronização com a planilha do Google...</span>
+            </div>
+            <!-- <button type="button" onclick="saveDataToStorage()"
+                class="border border-caixa-blue90 text-caixa-blue90 dark:text-blue-300 dark:border-blue-400 hover:bg-caixa-blue10 dark:hover:bg-caixa-darkCardInset font-bold text-xs py-2 px-4 rounded-pill transition-all">
+                <i class="fa-solid fa-floppy-disk"></i> Salvar Alterações Localmente
+            </button> -->
+        </section>
+
+        <!-- CONTAINER DOS CARDS DE PROJETO -->
+        <main id="projects-container" class="space-y-6">
+            <div class="dsc-card p-12 text-center space-y-3">
+                <i class="fa-solid fa-spinner fa-spin text-3xl text-caixa-blue90"></i>
+                <h3 class="text-base font-bold text-caixa-blue110 dark:text-white">Carregando dados da planilha...</h3>
+                <p class="text-xs text-caixa-gray110 dark:text-gray-300">Buscando informações em tempo real do Google
+                    Sheets.</p>
+            </div>
+        </main>
+
+        <!-- CONTROLES DE PAGINAÇÃO -->
+        <nav id="pagination-controls"
+            class="dsc-card p-4 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs font-bold text-caixa-gray110 dark:text-gray-300">
+            <div id="pagination-info">Mostrando 0 - 0 de 0 projetos</div>
+            <div class="flex items-center gap-2" id="pagination-buttons">
+                <!-- Botões gerados via JS -->
+            </div>
+        </nav>
+
+    </main>
+
+    <!-- FOOTER INSTITUCIONAL CAIXA -->
+    <footer
+        class="bg-caixa-card dark:bg-[#132A4A] border-t border-caixa-border dark:border-caixa-darkBorder mt-16 py-8 px-6 text-xs text-caixa-gray110 dark:text-gray-300 text-center space-y-2">
+        <div class="max-w-7xl mx-auto space-y-2">
+            <div class="font-bold text-caixa-blue110 dark:text-white text-sm">CAIXA Econômica Federal — Governo Federal
+            </div>
+            <p class="text-[10px] text-caixa-gray90 dark:text-gray-400">Sistema R-Impact Pipeline desenvolvido em
+                conformidade com o Design System CAIXA (DSC).</p>
+        </div>
+    </footer>
+
+    <script>
+        const SHEET_ID = '1VCNEIUWKhZy_6ftHWf08YvNbgjVWD9mfgHUOlNuglFg';
+        const SCRIPT_API_URL = 'https://script.google.com/macros/s/AKfycbwvDQ3jRlqLj5bHTs3wOoebh77Hcqxi2_Q167f-V2c6-iUpkmgQK9WNVEl-e1zctaceAQ/exec';
+
+        const SHEETS = [
+            { name: 'UX Pesquisa' },
+            { name: 'CX Pesquisa' },
+            { name: 'UX Escrita' },
+            { name: 'CX Escrita' }
+        ];
+
+        let projects = [];
+        let filteredProjects = [];
+
+        let currentPage = 1;
+        const PAGE_SIZE = 15;
+
+        // Converte com segurança datas em formato brasileiro DD/MM/YYYY para AAAA-MM-DD
+        function parseBRDateToISO(dateStr) {
+            try {
+                if (!dateStr) return '';
+                const str = String(dateStr).trim();
+                if (str.includes('/')) {
+                    const parts = str.split('/');
+                    if (parts.length === 3) {
+                        const day = parts[0].padStart(2, '0');
+                        const month = parts[1].padStart(2, '0');
+                        const year = parts[2].length === 2 ? '20' + parts[2] : parts[2];
+                        return `${year}-${month}-${day}`;
+                    }
+                }
+                if (str.includes('-')) {
+                    return str.substring(0, 10);
+                }
+            } catch (e) {
+                console.warn("Falha no parse da data:", dateStr);
+            }
+            return '';
+        }
+
+        async function syncWithGoogleSheets() {
+            const statusElem = document.getElementById('sync-status');
+            statusElem.innerText = '🔄 Sincronizando...';
+
+            try {
+                // Lê diretamente do endpoint do Apps Script (doGet)
+                const res = await fetch(SCRIPT_API_URL);
+                if (!res.ok) throw new Error(`Falha HTTP ${res.status}`);
+
+                const data = await res.json();
+
+                if (Array.isArray(data)) {
+                    projects = data;
+                    mergeWithLocalStorage(projects);
+                    statusElem.innerText = `✅ Sincronizado às ${new Date().toLocaleTimeString()}: ${projects.length} projetos mapeados`;
+                } else {
+                    throw new Error("Formato inválido retornado pela API");
+                }
+            } catch (error) {
+                console.error("Erro na sincronização:", error);
+                statusElem.innerText = '❌ Erro de conexão com o Google Sheets. Verifique a URL do Apps Script.';
+            }
+        }
+
+        function mergeWithLocalStorage(freshProjects) {
+            const saved = JSON.parse(localStorage.getItem('dsc_foton_projects') || '[]');
+            const savedMap = new Map(saved.map(p => [`${p.discipline}_${p.id}`, p]));
+
+            projects = freshProjects.map(p => {
+                const key = `${p.discipline}_${p.id}`;
+                const local = savedMap.get(key);
+
+                // Dá prioridade aos dados remotos salvos na aba R-Impact Dados da planilha
+                return {
+                    ...p,
+                    phase1: (p.phase1 && (p.phase1.matrizDecisao || p.phase1.pillEnviada || p.phase1.coSintese || p.phase1.tagsJira))
+                        ? p.phase1
+                        : (local ? local.phase1 : { matrizDecisao: false, pillEnviada: false, coSintese: false, tagsJira: false }),
+                    phase2: (p.phase2 && (p.phase2.csatScore || p.phase2.feedback))
+                        ? p.phase2
+                        : (local ? local.phase2 : { status: 'Pendente', csatScore: '', feedback: '' }),
+                    phase3: (p.phase3 && (p.phase3.adoptionStatus !== 'Pendente' || p.phase3.impactNotes))
+                        ? p.phase3
+                        : (local ? local.phase3 : { status: 'Pendente', adoptionStatus: 'Pendente', impactNotes: '' })
+                };
+            });
+
+            saveDataToStorage();
+
+            if (!document.getElementById('date-start').value && !document.getElementById('date-end').value) {
+                resetFilters();
+            } else {
+                applyFilters();
+            }
+        }
+
+        // Função responsável por gravar o projeto na aba "R-Impact Dados" via POST no Apps Script
+        async function saveProjectToGoogleSheets(project) {
+            const statusElem = document.getElementById('sync-status');
+            if (statusElem) statusElem.innerText = '💾 Salvando na aba R-Impact Dados...';
+
+            try {
+                await fetch(SCRIPT_API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(project)
+                });
+
+                if (statusElem) statusElem.innerText = `✅ Salvo na planilha às ${new Date().toLocaleTimeString()}!`;
+            } catch (error) {
+                console.error("Erro ao salvar no Apps Script:", error);
+                if (statusElem) statusElem.innerText = '⚠️ Salvo apenas localmente. Verifique a conexão.';
+            }
+        }
+
+        function updateCheck(projIndex, phase, key, isChecked) {
+            if (projects[projIndex]) {
+                projects[projIndex][phase][key] = isChecked;
+                calculateGlobalMetrics();
+                saveDataToStorage();
+                // Executa a gravação remota na planilha
+                saveProjectToGoogleSheets(projects[projIndex]);
+            }
+        }
+
+        function updateValue(projIndex, phase, key, value) {
+            if (projects[projIndex]) {
+                projects[projIndex][phase][key] = value;
+                calculateGlobalMetrics();
+                saveDataToStorage();
+                applyFilters();
+                // Executa a gravação remota na planilha
+                saveProjectToGoogleSheets(projects[projIndex]);
+            }
+        }
+
+        function setLast30Days() {
+            const btn = document.getElementById('btn-30-days');
+            const isAlreadyActive = btn ? btn.classList.contains('btn-period-active') : false;
+
+            if (isAlreadyActive) {
+                document.getElementById('date-start').value = '';
+                document.getElementById('date-end').value = '';
+                if (btn) btn.classList.remove('btn-period-active');
+            } else {
+                const today = new Date();
+                const past30 = new Date();
+                past30.setDate(today.getDate() - 30);
+
+                document.getElementById('date-end').value = today.toISOString().split('T')[0];
+                document.getElementById('date-start').value = past30.toISOString().split('T')[0];
+                if (btn) btn.classList.add('btn-period-active');
+            }
+
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const searchText = document.getElementById('search-text').value.toLowerCase().trim();
+            const statusVal = document.getElementById('filter-status').value;
+            const disciplineVal = document.getElementById('filter-discipline').value;
+            const dateStartVal = document.getElementById('date-start').value;
+            const dateEndVal = document.getElementById('date-end').value;
+
+            const todayStr = new Date().toISOString().split('T')[0];
+            const past30 = new Date();
+            past30.setDate(new Date().getDate() - 30);
+            const past30Str = past30.toISOString().split('T')[0];
+
+            const btn = document.getElementById('btn-30-days');
+            if (btn) {
+                if (dateStartVal === past30Str && dateEndVal === todayStr) {
+                    btn.classList.add('btn-period-active');
+                } else {
+                    btn.classList.remove('btn-period-active');
+                }
+            }
+
+            const startDate = dateStartVal ? new Date(dateStartVal + 'T00:00:00') : null;
+            const endDate = dateEndVal ? new Date(dateEndVal + 'T23:59:59') : null;
+
+            filteredProjects = projects.filter(p => {
+                const matchText = searchText === '' ||
+                    p.name.toLowerCase().includes(searchText) ||
+                    p.id.toLowerCase().includes(searchText);
+
+                const matchDiscipline = disciplineVal === 'ALL' || p.discipline === disciplineVal;
+
+                const statusLower = p.status ? p.status.toLowerCase() : '';
+                let matchStatus = true;
+
+                if (statusVal === 'CONCLUIDO') {
+                    matchStatus = statusLower.includes('conclu') || statusLower.includes('finaliz') || statusLower.includes('entreg');
+                } else if (statusVal === 'EM_ANDAMENTO') {
+                    matchStatus = statusLower.includes('andamento') || statusLower.includes('execução') || statusLower.includes('iniciado') || statusLower.includes('pendente');
+                } else if (statusVal === 'PAUSADO') {
+                    matchStatus = statusLower.includes('pausad') || statusLower.includes('standby') || statusLower.includes('sobrest');
+                } else if (statusVal === 'CANCELADO') {
+                    matchStatus = statusLower.includes('cancel') || statusLower.includes('arquiv') || statusLower.includes('descontinu');
+                }
+
+                let matchDate = true;
+                if (p.deliveryDate) {
+                    const projDate = new Date(p.deliveryDate + 'T12:00:00');
+                    if (startDate && !isNaN(startDate.getTime())) {
+                        matchDate = matchDate && (projDate >= startDate);
+                    }
+                    if (endDate && !isNaN(endDate.getTime())) {
+                        matchDate = matchDate && (projDate <= endDate);
+                    }
+                }
+
+                return matchText && matchDiscipline && matchStatus && matchDate;
+            });
+
+            currentPage = 1;
+            renderProjects();
+            calculateGlobalMetrics();
+        }
+
+        function resetFilters() {
+            document.getElementById('search-text').value = '';
+            document.getElementById('filter-status').value = 'ALL';
+            document.getElementById('filter-discipline').value = 'ALL';
+            document.getElementById('date-start').value = '';
+            document.getElementById('date-end').value = '';
+
+            const btn = document.getElementById('btn-30-days');
+            if (btn) btn.classList.remove('btn-period-active');
+
+            applyFilters();
+        }
+
+        function getDaysSinceDelivery(deliveryDateStr) {
+            if (!deliveryDateStr) return 0;
+            const delivery = new Date(deliveryDateStr + 'T12:00:00');
+            const today = new Date();
+            const diffTime = today - delivery;
+            const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            return isNaN(days) ? 0 : days;
+        }
+
+        function renderProjects() {
+            const container = document.getElementById('projects-container');
+            const total = filteredProjects.length;
+
+            if (total === 0) {
+                container.innerHTML = `
+                <div class="dsc-card p-12 text-center space-y-2">
+                    <i class="fa-solid fa-filter-circle-xmark text-3xl text-caixa-orange90"></i>
+                    <h3 class="text-base font-bold text-caixa-blue110 dark:text-white">Nenhum projeto encontrado para os filtros selecionados.</h3>
+                    <p class="text-xs text-caixa-gray110 dark:text-gray-300">Tente clicar em "Ver Todos" ou ajustar os campos de busca.</p>
+                </div>`;
+                renderPagination(0);
+                return;
+            }
+
+            const startIndex = (currentPage - 1) * PAGE_SIZE;
+            const endIndex = Math.min(startIndex + PAGE_SIZE, total);
+            const pageProjects = filteredProjects.slice(startIndex, endIndex);
+
+            container.innerHTML = '';
+
+            pageProjects.forEach((proj) => {
+                const realIndex = projects.findIndex(p => p.id === proj.id && p.discipline === proj.discipline);
+                const days = getDaysSinceDelivery(proj.deliveryDate);
+
+                let badgeD1 = days >= 1
+                    ? '<span class="bg-caixa-info10 text-caixa-info110 text-[10px] font-bold px-2.5 py-1 rounded-pill border border-cyan-300">D+1 Liberado</span>'
+                    : '<span class="bg-caixa-warning10 text-caixa-warning110 text-[10px] font-bold px-2.5 py-1 rounded-pill border border-amber-300">Aguardando D+1</span>';
+
+                let badgeD30 = days >= 30
+                    ? '<span class="bg-caixa-danger10 text-caixa-danger110 text-[10px] font-bold px-2.5 py-1 rounded-pill border border-red-300">D+30 Alerta Adoção</span>'
+                    : `<span class="bg-caixa-warning10 text-caixa-warning110 text-[10px] font-bold px-2.5 py-1 rounded-pill border border-amber-300">Faltam ${30 - days}d p/ D+30</span>`;
+
+                if (proj.phase2.csatScore) badgeD1 = '<span class="bg-caixa-success10 text-caixa-success110 text-[10px] font-bold px-2.5 py-1 rounded-pill border border-emerald-300">D+1 Concluído</span>';
+                if (proj.phase3.adoptionStatus !== 'Pendente') badgeD30 = '<span class="bg-caixa-success10 text-caixa-success110 text-[10px] font-bold px-2.5 py-1 rounded-pill border border-emerald-300">D+30 Concluído</span>';
+
+                const cardHTML = `
+                <article class="dsc-card overflow-hidden">
+                    <header class="bg-caixa-cardInset dark:bg-caixa-darkCardInset p-4 px-6 border-b border-caixa-border dark:border-caixa-darkBorder flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="bg-caixa-blue90 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-badge uppercase">${proj.discipline}</span>
+                                <span class="text-xs font-mono font-bold text-caixa-blue110 dark:text-blue-300">${proj.id}</span>
+                            </div>
+                            <h3 class="text-base font-bold text-caixa-gray130 dark:text-white">${proj.name}</h3>
+                            <div class="text-xs text-caixa-gray110 dark:text-gray-300 mt-0.5">
+                                Solicitante: <strong>${proj.po}</strong> | Entrega: <strong>${proj.deliveryDate}</strong> (${days} dias atrás)
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            ${badgeD1}
+                            ${badgeD30}
+                        </div>
+                    </header>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-6">
+                        
+                        <!-- ETAPA 1: UPSTREAM -->
+                        <div class="dsc-card-inset p-4 space-y-3">
+                            <h4 class="text-xs font-bold text-caixa-blue110 dark:text-blue-300 uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-list-check"></i> 1. Pré-Entrega (Upstream)
+                            </h4>
+                            <div class="space-y-2 text-xs">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" ${proj.phase1.matrizDecisao ? 'checked' : ''} onchange="updateCheck(${realIndex}, 'phase1', 'matrizDecisao', this.checked)" class="accent-caixa-blue90 w-4 h-4">
+                                    Matriz de Decisão no Intake
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" ${proj.phase1.pillEnviada ? 'checked' : ''} onchange="updateCheck(${realIndex}, 'phase1', 'pillEnviada', this.checked)" class="accent-caixa-blue90 w-4 h-4">
+                                    Pílula Assíncrona enviada (Spoiler)
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" ${proj.phase1.coSintese ? 'checked' : ''} onchange="updateCheck(${realIndex}, 'phase1', 'coSintese', this.checked)" class="accent-caixa-blue90 w-4 h-4">
+                                    Co-síntese com o PO (15 min)
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" ${proj.phase1.tagsJira ? 'checked' : ''} onchange="updateCheck(${realIndex}, 'phase1', 'tagsJira', this.checked)" class="accent-caixa-blue90 w-4 h-4">
+                                    Insights cadastrados no Backlog
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- ETAPA 2: CSAT (D+1) -->
+                        <div class="dsc-card-inset p-4 space-y-3">
+                            <h4 class="text-xs font-bold text-caixa-blue110 dark:text-blue-300 uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-star text-caixa-orange90"></i> 2. D+1: Qualidade (CSAT)
+                            </h4>
+                            <div class="space-y-2 text-xs">
+                                <div>
+                                    <label class="block text-[11px] font-bold text-caixa-gray110 dark:text-gray-300 mb-1">Nota CSAT (1 a 5):</label>
+                                    <select onchange="updateValue(${realIndex}, 'phase2', 'csatScore', this.value)" class="w-full p-2 bg-white dark:bg-caixa-darkCard border border-caixa-border dark:border-caixa-darkBorder rounded-sm text-xs font-bold text-caixa-gray130 dark:text-white">
+                                        <option value="" ${proj.phase2.csatScore === '' ? 'selected' : ''}>Selecione a nota...</option>
+                                        <option value="5" ${proj.phase2.csatScore === '5' ? 'selected' : ''}>5 - Excelente / Muito aplicável</option>
+                                        <option value="4" ${proj.phase2.csatScore === '4' ? 'selected' : ''}>4 - Boa / Aplicável</option>
+                                        <option value="3" ${proj.phase2.csatScore === '3' ? 'selected' : ''}>3 - Regular</option>
+                                        <option value="2" ${proj.phase2.csatScore === '2' ? 'selected' : ''}>2 - Pouco clara</option>
+                                        <option value="1" ${proj.phase2.csatScore === '1' ? 'selected' : ''}>1 - Não aplicável</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-caixa-gray110 dark:text-gray-300 mb-1">Feedback do Cliente:</label>
+                                    <textarea placeholder="Comentários sobre o formato..." onchange="updateValue(${realIndex}, 'phase2', 'feedback', this.value)" class="w-full p-2 bg-white dark:bg-caixa-darkCard border border-caixa-border dark:border-caixa-darkBorder rounded-sm text-xs h-14 text-caixa-gray130 dark:text-white">${proj.phase2.feedback}</textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ETAPA 3: ADOÇÃO (D+30) -->
+                        <div class="dsc-card-inset p-4 space-y-3">
+                            <h4 class="text-xs font-bold text-caixa-blue110 dark:text-blue-300 uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-chart-line text-caixa-success70"></i> 3. D+30: Adoção
+                            </h4>
+                            <div class="space-y-2 text-xs">
+                                <div>
+                                    <label class="block text-[11px] font-bold text-caixa-gray110 dark:text-gray-300 mb-1">Status de Destino:</label>
+                                    <select onchange="updateValue(${realIndex}, 'phase3', 'adoptionStatus', this.value)" class="w-full p-2 bg-white dark:bg-caixa-darkCard border border-caixa-border dark:border-caixa-darkBorder rounded-sm text-xs font-bold text-caixa-gray130 dark:text-white">
+                                        <option value="Pendente" ${proj.phase3.adoptionStatus === 'Pendente' ? 'selected' : ''}>Aguardando prazo</option>
+                                        <option value="Implementado" ${proj.phase3.adoptionStatus === 'Implementado' ? 'selected' : ''}>✅ Implementado em Produção</option>
+                                        <option value="Priorizado" ${proj.phase3.adoptionStatus === 'Priorizado' ? 'selected' : ''}>📅 Priorizado no Backlog</option>
+                                        <option value="Pivot" ${proj.phase3.adoptionStatus === 'Pivot' ? 'selected' : ''}>🔄 Pivotou / Cancelou Rota</option>
+                                        <option value="Arquivado" ${proj.phase3.adoptionStatus === 'Arquivado' ? 'selected' : ''}>❌ Arquivado</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-caixa-gray110 dark:text-gray-300 mb-1">Evidência / ID:</label>
+                                    <textarea placeholder="Evidências ou ID da Story..." onchange="updateValue(${realIndex}, 'phase3', 'impactNotes', this.value)" class="w-full p-2 bg-white dark:bg-caixa-darkCard border border-caixa-border dark:border-caixa-darkBorder rounded-sm text-xs h-14 text-caixa-gray130 dark:text-white">${proj.phase3.impactNotes}</textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </article>`;
+
+                container.innerHTML += cardHTML;
+            });
+
+            renderPagination(total);
+        }
+
+        function renderPagination(totalItems) {
+            const infoElem = document.getElementById('pagination-info');
+            const btnsElem = document.getElementById('pagination-buttons');
+
+            if (totalItems === 0) {
+                infoElem.innerText = 'Mostrando 0 de 0 projetos';
+                btnsElem.innerHTML = '';
+                return;
+            }
+
+            const totalPages = Math.ceil(totalItems / PAGE_SIZE);
+            const start = (currentPage - 1) * PAGE_SIZE + 1;
+            const end = Math.min(currentPage * PAGE_SIZE, totalItems);
+
+            infoElem.innerText = `Mostrando ${start} - ${end} de ${totalItems} projetos (Página ${currentPage} de ${totalPages})`;
+
+            let buttonsHTML = '';
+
+            buttonsHTML += `
+                <button type="button" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} class="px-3 py-1.5 rounded-pill border border-caixa-border dark:border-caixa-darkBorder bg-caixa-cardInset dark:bg-caixa-darkCardInset hover:bg-caixa-blue90 hover:text-white disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-inherit transition-all">
+                    <i class="fa-solid fa-chevron-left"></i> Anterior
+                </button>
+            `;
+
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    buttonsHTML += `
+                        <button type="button" onclick="goToPage(${i})" class="px-3 py-1.5 rounded-pill border ${i === currentPage ? 'bg-caixa-blue90 text-white border-caixa-blue90' : 'bg-caixa-cardInset dark:bg-caixa-darkCardInset border-caixa-border dark:border-caixa-darkBorder hover:bg-caixa-blue10 dark:hover:bg-caixa-darkCardInset'} transition-all">
+                            ${i}
+                        </button>
+                    `;
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    buttonsHTML += `<span class="px-1 text-caixa-gray90">...</span>`;
+                }
+            }
+
+            buttonsHTML += `
+                <button type="button" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} class="px-3 py-1.5 rounded-pill border border-caixa-border dark:border-caixa-darkBorder bg-caixa-cardInset dark:bg-caixa-darkCardInset hover:bg-caixa-blue90 hover:text-white disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-inherit transition-all">
+                    Próximo <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            `;
+
+            btnsElem.innerHTML = buttonsHTML;
+        }
+
+        function goToPage(page) {
+            const totalPages = Math.ceil(filteredProjects.length / PAGE_SIZE);
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            renderProjects();
+
+            document.getElementById('projects-container').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function calculateGlobalMetrics() {
+            document.getElementById('total-projects').innerText = filteredProjects.length;
+
+            const csatScores = filteredProjects.map(p => parseFloat(p.phase2.csatScore)).filter(score => !isNaN(score));
+            if (csatScores.length > 0) {
+                const avg = (csatScores.reduce((a, b) => a + b, 0) / csatScores.length).toFixed(1);
+                document.getElementById('avg-csat').innerText = `${avg} / 5.0`;
+            } else {
+                document.getElementById('avg-csat').innerText = '0.0 / 5.0';
+            }
+
+            const audited = filteredProjects.filter(p => p.phase3.adoptionStatus !== 'Pendente');
+            if (audited.length > 0) {
+                const adopted = audited.filter(p => ['Implementado', 'Priorizado', 'Pivot'].includes(p.phase3.adoptionStatus));
+                const rate = Math.round((adopted.length / audited.length) * 100);
+                document.getElementById('adoption-rate').innerText = `${rate}%`;
+            } else {
+                document.getElementById('adoption-rate').innerText = '0%';
+            }
+        }
+
+        function saveDataToStorage() {
+            localStorage.setItem('dsc_foton_projects', JSON.stringify(projects));
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme') || (html.classList.contains('dark') ? 'dark' : 'light');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            aplicarTema(newTheme);
+            localStorage.setItem('caixa_theme_pref', newTheme);
+        }
+
+        function aplicarTema(theme) {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+
+            html.setAttribute('data-theme', theme);
+
+            if (theme === 'dark') {
+                html.classList.add('dark');
+                html.classList.remove('light');
+                if (icon) {
+                    icon.setAttribute('data-lucide', 'sun');
+                    icon.className = "w-4 h-4 text-caixa-orange30";
+                }
+            } else {
+                html.classList.remove('dark');
+                html.classList.add('light');
+                if (icon) {
+                    icon.setAttribute('data-lucide', 'moon');
+                    icon.className = "w-4 h-4 text-caixa-orange90";
+                }
+            }
+
+            if (window.lucide) { lucide.createIcons(); }
+        }
+
+        window.onload = function () {
+            const savedTheme = localStorage.getItem('caixa_theme_pref') || 'light';
+            aplicarTema(savedTheme);
+
+            syncWithGoogleSheets();
+        };
+    </script>
+</body>
+
+</html>
