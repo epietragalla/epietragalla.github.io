@@ -2325,105 +2325,135 @@
             </div>
           </div>
 
-          <!-- MODAL DE EXPLICAÇÃO DA PONTUAÇÃO DE COMPLEXIDADE E CAPACIDADE -->
-          <div id="modalHintComplexidade"
-            class="fixed inset-0 z-[120] hidden flex items-center justify-center p-4 bg-black/50 backdrop-blur-md transition-all">
-            <div
-              class="apple-card max-w-2xl w-full p-6 space-y-5 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+         <!-- MODAL DE EXPLICAÇÃO DA PONTUAÇÃO DE COMPLEXIDADE, SENIORIDADE E VAGAS -->
+<div id="modalHintComplexidade"
+  class="fixed inset-0 z-[120] hidden flex items-center justify-center p-4 bg-black/50 backdrop-blur-md transition-all">
+  <div
+    class="apple-card max-w-2xl w-full p-6 space-y-5 shadow-2xl relative animate-in fade-in zoom-in duration-200">
 
-              <!-- HEADER -->
-              <div class="flex items-center justify-between border-b border-black/5 dark:border-white/10 pb-3">
-                <div class="flex items-center gap-2.5">
-                  <div class="p-2 bg-apple-purple/10 text-apple-purple dark:text-apple-darkPurple rounded-xl">
-                    <i data-lucide="calculator" class="w-5 h-5"></i>
-                  </div>
-                  <div>
-                    <h3 class="text-sm font-bold text-black dark:text-white uppercase tracking-wider">Como são
-                      calculadas a Complexidade e a Capacidade?</h3>
-                    <p class="text-[11px] text-apple-gray">Regra de negócio para dimensionamento de esteira e esforço
-                    </p>
-                  </div>
-                </div>
-                <button type="button" onclick="closeHintComplexidadeModal()"
-                  class="text-apple-gray hover:text-black dark:hover:text-white p-1 rounded-lg">
-                  <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-              </div>
+    <!-- HEADER -->
+    <div class="flex items-center justify-between border-b border-black/5 dark:border-white/10 pb-3">
+      <div class="flex items-center gap-2.5">
+        <div class="p-2 bg-apple-purple/10 text-apple-purple dark:text-apple-darkPurple rounded-xl">
+          <i data-lucide="calculator" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="text-sm font-bold text-black dark:text-white uppercase tracking-wider">Como são calculadas a Complexidade e a Senioridade?</h3>
+          <p class="text-[11px] text-apple-gray">Regra de negócio para dimensionamento de esteira, esforço e alocação</p>
+        </div>
+      </div>
+      <button type="button" onclick="closeHintComplexidadeModal()"
+        class="text-apple-gray hover:text-black dark:hover:text-white p-1 rounded-lg">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
 
-              <!-- BODY -->
-              <div class="space-y-4 text-xs text-black dark:text-slate-300 leading-relaxed font-sans">
+    <!-- BODY -->
+    <div class="space-y-4 text-xs text-black dark:text-slate-300 leading-relaxed font-sans max-h-[70vh] overflow-y-auto custom-scrollbar pr-1">
 
-                <!-- BLOCO 1: PONTUAÇÃO DAS DEMANDAS -->
-                <div class="apple-card-inset p-4 space-y-2">
-                  <h4
-                    class="font-bold text-apple-purple dark:text-apple-darkPurple uppercase text-[11px] flex items-center gap-1.5">
-                    <i data-lucide="layers" class="w-4 h-4"></i> 1. Pontuação de Complexidade do Projeto
-                  </h4>
-                  <p class="text-apple-gray">A carga de cada demanda ativa é calculada pelo cruzamento entre o **Tipo do
-                    Projeto** e a **Quantidade de Metodologias** combinadas:</p>
+      <!-- BLOCO 1: PONTUAÇÃO DAS DEMANDAS (FIBONACCI) -->
+      <div class="apple-card-inset p-4 space-y-2">
+        <h4 class="font-bold text-apple-purple dark:text-apple-darkPurple uppercase text-[11px] flex items-center gap-1.5">
+          <i data-lucide="layers" class="w-4 h-4"></i> 1. Régua de Story Points por Porte (Fibonacci)
+        </h4>
+        <p class="text-apple-gray text-[11px]">
+          Cada demanda ativa recebe uma pontuação baseada no seu tamanho de projeto. Se a demanda utilizar 3 ou mais metodologias combinadas, sua pontuação recebe um incremento de 25% de complexidade técnica:
+        </p>
 
-                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 font-mono text-[10.5px]">
-                    <div
-                      class="p-2 bg-black/5 dark:bg-black/30 rounded-xl border border-black/5 dark:border-white/10 text-center">
-                      <span class="text-apple-green font-bold block">1 Ponto (Baixa)</span>
-                      <span>Demanda Pontual (P) com 1 metodologia</span>
-                    </div>
-                    <div
-                      class="p-2 bg-black/5 dark:bg-black/30 rounded-xl border border-black/5 dark:border-white/10 text-center">
-                      <span class="text-apple-blue font-bold block">2 Pontos (Média)</span>
-                      <span>Demanda Estruturada (E) padrão</span>
-                    </div>
-                    <div
-                      class="p-2 bg-black/5 dark:bg-black/30 rounded-xl border border-black/5 dark:border-white/10 text-center">
-                      <span class="text-apple-purple font-bold block">4 Pontos (Alta)</span>
-                      <span>Demanda Estruturada (E) com 3+ metodologias</span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- BLOCO 2: CAPACIDADE E PESOS DA EQUIPE -->
-                <div class="apple-card-inset p-4 space-y-2">
-                  <h4
-                    class="font-bold text-apple-blue dark:text-apple-darkBlue uppercase text-[11px] flex items-center gap-1.5">
-                    <i data-lucide="users" class="w-4 h-4"></i> 2. Capacidade Padrão e Pesos de Atuação
-                  </h4>
-                  <ul class="space-y-1.5 list-disc list-inside text-apple-gray text-[11px]">
-                    <li><strong class="text-black dark:text-white">Capacidade Média Individual:</strong> Cada
-                      profissional cadastrado na aba <code class="text-apple-purple font-semibold">Time</code> gera uma
-                      capacidade teórica de **4 Pontos de Complexidade por ciclo**.</li>
-                    <li><strong class="text-black dark:text-white">Responsável Principal (<code
-                          class="text-apple-blue font-semibold">R</code>):</strong> Absorve <strong
-                        class="text-black dark:text-white">100% dos pontos</strong> do projeto em sua carga individual.
-                    </li>
-                    <li><strong class="text-black dark:text-white">Apoio (<code
-                          class="text-apple-green font-semibold">A</code>):</strong> Absorve <strong
-                        class="text-black dark:text-white">50% dos pontos</strong> do projeto em sua carga.</li>
-                  </ul>
-                </div>
-
-                <!-- BLOCO 3: PARECER E VAGAS -->
-                <div class="apple-card-inset p-4 space-y-1.5">
-                  <h4
-                    class="font-bold text-apple-orange dark:text-apple-darkOrange uppercase text-[11px] flex items-center gap-1.5">
-                    <i data-lucide="sparkles" class="w-4 h-4"></i> 3. Diagnóstico Prescritivo de Vagas
-                  </h4>
-                  <p class="text-apple-gray text-[11px]">O sistema subtrai a **Soma dos Pontos dos Projetos** da
-                    **Capacidade Total da Equipe**. Se houver déficit de pontos (saldo negativo), o algoritmo divide a
-                    diferença por 4 e calcula a necessidade exata de contratação/reforço de vagas para evitar estouros
-                    de SLA[cite: 3].</p>
-                </div>
-
-              </div>
-
-              <!-- FOOTER -->
-              <div class="pt-2 flex justify-end">
-                <button type="button" onclick="closeHintComplexidadeModal()" class="apple-btn-primary text-xs">
-                  Entendi
-                </button>
-              </div>
-
-            </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1 font-mono text-[10.5px]">
+          <div class="p-2 bg-black/5 dark:bg-black/30 rounded-xl border border-black/5 dark:border-white/10 text-center">
+            <strong class="text-black dark:text-white block">PP = 1 Ponto</strong>
+            <span class="text-apple-gray text-[10px]">Senioridade: Júnior</span>
           </div>
+          <div class="p-2 bg-black/5 dark:bg-black/30 rounded-xl border border-black/5 dark:border-white/10 text-center">
+            <strong class="text-black dark:text-white block">P = 2 Pontos</strong>
+            <span class="text-apple-gray text-[10px]">Senioridade: Júnior</span>
+          </div>
+          <div class="p-2 bg-black/5 dark:bg-black/30 rounded-xl border border-black/5 dark:border-white/10 text-center">
+            <strong class="text-apple-blue font-bold block">M = 5 Pontos</strong>
+            <span class="text-apple-gray text-[10px]">Senioridade: Pleno</span>
+          </div>
+          <div class="p-2 bg-black/5 dark:bg-black/30 rounded-xl border border-black/5 dark:border-white/10 text-center">
+            <strong class="text-apple-green font-bold block">G = 8 Pontos</strong>
+            <span class="text-apple-gray text-[10px]">Senioridade: Pleno</span>
+          </div>
+          <div class="p-2 bg-black/5 dark:bg-black/30 rounded-xl border border-black/5 dark:border-white/10 text-center">
+            <strong class="text-apple-orange font-bold block">GG = 13 Pontos</strong>
+            <span class="text-apple-gray text-[10px]">Senioridade: Sênior</span>
+          </div>
+          <div class="p-2 bg-black/5 dark:bg-black/30 rounded-xl border border-black/5 dark:border-white/10 text-center">
+            <strong class="text-apple-purple font-bold block">GGG = 21 Pontos</strong>
+            <span class="text-apple-gray text-[10px]">Senioridade: Sênior</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- BLOCO 2: INFERÊNCIA DE SENIORIDADE E RISCO DE ALOCAÇÃO -->
+      <div class="apple-card-inset p-4 space-y-2 border-l-2 border-l-apple-purple dark:border-l-apple-darkPurple">
+        <h4 class="font-bold text-apple-purple dark:text-apple-darkPurple uppercase text-[11px] flex items-center gap-1.5">
+          <i data-lucide="brain-circuit" class="w-4 h-4"></i> 2. Regra de Alocação por Senioridade &amp; Riscos
+        </h4>
+        <p class="text-apple-gray text-[11px]">
+          O sistema analisa se o responsável principal (`R`) cadastrado no projeto tem a experiência ideal para o tamanho da demanda:
+        </p>
+        
+        <div class="space-y-2 pt-1 text-[11px] text-apple-gray">
+          <div class="p-2.5 rounded-xl bg-black/5 dark:bg-black/30 border border-black/5 dark:border-white/10 space-y-1">
+            <strong class="text-apple-green dark:text-apple-darkGreen font-bold flex items-center gap-1">
+              <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> Alocação Adequada
+            </strong>
+            <p class="leading-relaxed">O nível do profissional é compatível com o peso do projeto:</p>
+            <ul class="list-disc list-inside space-y-0.5 text-[10.5px] pl-1">
+              <li><strong>Projetos Grandes (GG e GGG - 13 a 21 pts):</strong> Exigem perfil <strong>Sênior</strong></li>
+              <li><strong>Projetos Médios (M e G - 5 a 8 pts):</strong> Exigem perfil <strong>Pleno</strong></li>
+              <li><strong>Projetos Rápidos (PP e P - 1 a 2 pts):</strong> Exigem perfil <strong>Júnior</strong></li>
+            </ul>
+          </div>
+
+          <div class="p-2.5 rounded-xl bg-apple-red/10 border border-apple-red/20 space-y-1">
+            <strong class="text-apple-red font-bold flex items-center gap-1">
+              <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i> Risco: Sub-dimensionado
+            </strong>
+            <p class="text-black dark:text-slate-200 leading-relaxed">
+              Ocorre quando um estudo pesado e estratégico (<strong>GG</strong> ou <strong>GGG</strong>) está sob responsabilidade única de um profissional <strong>Júnior</strong> ou <strong>Pleno</strong>, sem o acompanhamento de um Sênior.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- BLOCO 3: CAPACIDADE E PESOS DA EQUIPE -->
+      <div class="apple-card-inset p-4 space-y-2">
+        <h4 class="font-bold text-apple-blue dark:text-apple-darkBlue uppercase text-[11px] flex items-center gap-1.5">
+          <i data-lucide="users" class="w-4 h-4"></i> 3. Capacidade Padrão e Pesos por Papel
+        </h4>
+        <ul class="space-y-1.5 list-disc list-inside text-apple-gray text-[11px]">
+          <li><strong class="text-black dark:text-white">Capacidade Média Individual:</strong> Cada profissional cadastrado na aba <code class="text-apple-purple font-semibold">Time</code> gera uma capacidade operacional confortável de **12 Pontos de Complexidade por ciclo**.</li>
+          <li><strong class="text-black dark:text-white">Responsável Principal (<code class="text-apple-blue font-semibold">R</code>):</strong> Absorve <strong class="text-black dark:text-white">100% dos pontos</strong> do projeto em sua carga individual.</li>
+          <li><strong class="text-black dark:text-white">Apoio / Colaborador (<code class="text-apple-green font-semibold">A</code>):</strong> Absorve <strong class="text-black dark:text-white">50% dos pontos</strong> do projeto em sua carga.</li>
+        </ul>
+      </div>
+
+      <!-- BLOCO 4: PARECER PRESCRITIVO DE VAGAS -->
+      <div class="apple-card-inset p-4 space-y-1.5">
+        <h4 class="font-bold text-apple-orange dark:text-apple-darkOrange uppercase text-[11px] flex items-center gap-1.5">
+          <i data-lucide="sparkles" class="w-4 h-4"></i> 4. Diagnóstico Prescritivo de Dimensionamento ($X$ Vagas)
+        </h4>
+        <p class="text-apple-gray text-[11px]">
+          O sistema calcula a <strong class="text-black dark:text-white">Capacidade Instalada</strong> ($\text{Qtd. Integrantes} \times 12\text{ Pts}$) e subtrai a <strong class="text-black dark:text-white">Soma dos Pontos dos Projetos Ativos</strong>. Se houver déficit de pontos (saldo negativo), o algoritmo divide o déficit por 12 e determina a quantidade exata de novas contratações/reforços de vagas necessárias para garantir as entregas no prazo.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="pt-2 flex justify-end border-t border-black/5 dark:border-white/10">
+      <button type="button" onclick="closeHintComplexidadeModal()" class="apple-btn-primary text-xs">
+        Entendi
+      </button>
+    </div>
+
+  </div>
+</div>
 
           <script>
             window.openHintComplexidadeModal = function () {
