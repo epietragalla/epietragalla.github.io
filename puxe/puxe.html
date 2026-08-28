@@ -8984,143 +8984,132 @@
     });
 
     function renderDiagnosticoSenioridade() {
-      // Captura o seletor do topo
-      const selectedArea = document.getElementById('filterArea')?.value || 'ALL';
-      const isGlobal = selectedArea === 'ALL';
+  const frenteAtiva = document.getElementById('filterArea')?.value || 'ALL';
+  const PONTOS_PORTE = { 'PP': 1, 'P': 2, 'M': 5, 'G': 8, 'GG': 13, 'GGG': 21 };
 
-      // Atualiza o rótulo da seção
-      const lblFrente = document.getElementById('lblFrenteSenioridade');
-      if (lblFrente) {
-        lblFrente.innerText = isGlobal ? 'Visão Consolidada (Todas as Frentes)' : selectedArea;
-      }
+  // 1. Filtra a equipe cadastrada na aba Time
+  const timeFrente = (window.TEAM_DATA || []).filter(t => frenteAtiva === 'ALL' || t.frente === frenteAtiva);
+  
+  let seniores = timeFrente.filter(t => t.senioridade.toLowerCase().includes('senior') || t.senioridade.toLowerCase().includes('sênior'));
+  let plenos = timeFrente.filter(t => t.senioridade.toLowerCase().includes('pleno'));
+  let juniores = timeFrente.filter(t => t.senioridade.toLowerCase().includes('junior') || t.senioridade.toLowerCase().includes('júnior'));
 
-      const teamData = window.TEAM_DATA || [];
-      const normalizar = (txt) => String(txt || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+  // Atualiza contadores e nomes nos cards de distribuição de senioridade
+  const elSenCount = document.getElementById('cntSeniorCount'); if (elSenCount) elSenCount.innerText = seniores.length;
+  const elPleCount = document.getElementById('cntPlenoCount'); if (elPleCount) elPleCount.innerText = plenos.length;
+  const elJunCount = document.getElementById('cntJuniorCount'); if (elJunCount) elJunCount.innerText = juniores.length;
 
-      // 1. Filtragem da equipe: Pega TODOS se for Global, ou filtra se for uma frente específica
-      const timeFrente = teamData.filter(t => {
-        if (isGlobal) return true;
-        return normalizar(t.frente) === normalizar(selectedArea);
+  const elSenNomes = document.getElementById('txtSeniorNomes'); if (elSenNomes) elSenNomes.innerText = seniores.map(s => s.nome).join(', ') || 'Nenhum cadastrado';
+  const elPleNomes = document.getElementById('txtPlenoNomes'); if (elPleNomes) elPleNomes.innerText = plenos.map(p => p.nome).join(', ') || 'Nenhum cadastrado';
+  const elJunNomes = document.getElementById('txtJuniorNomes'); if (elJunNomes) elJunNomes.innerText = juniores.map(j => j.nome).join(', ') || 'Nenhum cadastrado';
+
+  // 2. Filtra projetos ativos em andamento
+  let activeSheets = frenteAtiva === 'ALL' ? ['CX Pesquisa', 'UX Pesquisa', 'CX Escrita', 'UX Escrita'] : [frenteAtiva];
+  let projetosAtivos = [];
+  activeSheets.forEach(sh => {
+    if (window.RAW_DATA && window.RAW_DATA[sh]) {
+      const list = window.RAW_DATA[sh].filter(p => {
+        const st = String(p.status || '').toLowerCase();
+        return st.includes('andamento') || st.includes('execuc') || st.includes('iniciad');
       });
-
-      const seniores = [];
-      const plenos = [];
-      const juniores = [];
-
-      timeFrente.forEach(t => {
-        const sen = normalizar(t.senioridade);
-
-        if (sen.includes('senior') || sen.includes('sr') || sen.includes('lead') || sen.includes('lider')) {
-          seniores.push(t.nome);
-        } else if (sen.includes('junior') || sen.includes('jr') || sen.includes('estag')) {
-          juniores.push(t.nome);
-        } else if (sen.includes('pleno') || sen.includes('pl')) {
-          plenos.push(t.nome);
-        } else {
-          seniores.push(t.nome);
-        }
-      });
-
-      // Atualiza contadores e nomes dos cards
-      const elSrCnt = document.getElementById('cntSeniorCount'); if (elSrCnt) elSrCnt.innerText = seniores.length;
-      const elPlCnt = document.getElementById('cntPlenoCount'); if (elPlCnt) elPlCnt.innerText = plenos.length;
-      const elJrCnt = document.getElementById('cntJuniorCount'); if (elJrCnt) elJrCnt.innerText = juniores.length;
-
-      const elSrNomes = document.getElementById('txtSeniorNomes'); if (elSrNomes) elSrNomes.innerText = seniores.length > 0 ? seniores.join(', ') : 'Nenhum cadastrado';
-      const elPlNomes = document.getElementById('txtPlenoNomes'); if (elPlNomes) elPlNomes.innerText = plenos.length > 0 ? plenos.join(', ') : 'Nenhum cadastrado';
-      const elJrNomes = document.getElementById('txtJuniorNomes'); if (elJrNomes) elJrNomes.innerText = juniores.length > 0 ? juniores.join(', ') : 'Nenhum cadastrado';
-
-      // 2. Filtragem dos Projetos
-      let activeSheets = isGlobal ? ['CX Pesquisa', 'UX Pesquisa', 'CX Escrita', 'UX Escrita'] : [selectedArea];
-      let projects = [];
-      activeSheets.forEach(sh => {
-        if (window.RAW_DATA && window.RAW_DATA[sh]) projects = projects.concat(window.RAW_DATA[sh]);
-      });
-
-      const andamentoList = projects.filter(p => {
-        const st = normalizar(p.status);
-        return st.includes('andamento') || st.includes('execuc') || st.includes('iniciad') || st.includes('impedi');
-      });
-
-      const tbody = document.getElementById('tabelaComplexidadeBody');
-      let totalPts = 0;
-      let qtdAlta = 0, qtdMedia = 0, qtdBaixa = 0;
-
-      if (tbody) {
-        tbody.innerHTML = '';
-
-        andamentoList.forEach(p => {
-          const isE = String(p.tipo_projeto || '').toUpperCase().includes('E');
-          const numMetodos = String(p.pesquisa_metodo || '').split(/[,;]/).filter(m => m.trim()).length || 1;
-
-          let nivel = 'Média';
-          let senioridadeExigida = 'Pleno';
-          let pts = 2;
-
-          if (isE && numMetodos >= 3) {
-            nivel = 'Alta';
-            senioridadeExigida = 'Sênior';
-            pts = 4;
-            qtdAlta++;
-          } else if (!isE && numMetodos <= 1) {
-            nivel = 'Baixa';
-            senioridadeExigida = 'Júnior';
-            pts = 1;
-            qtdBaixa++;
-          } else {
-            qtdMedia++;
-          }
-
-          totalPts += pts;
-
-          const tr = document.createElement('tr');
-          tr.className = "hover:bg-black/5 dark:hover:bg-white/5 transition-colors";
-          tr.innerHTML = `
-            <td class="p-3 font-bold text-black dark:text-white max-w-xs truncate">${p.projeto}</td>
-            <td class="p-3 text-center font-mono">${isE ? 'E - Estruturado' : 'P - Pontual'}</td>
-            <td class="p-3 text-center font-mono font-bold">${numMetodos}</td>
-            <td class="p-3 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${nivel === 'Alta' ? 'bg-apple-purple/10 text-apple-purple' : nivel === 'Média' ? 'bg-apple-blue/10 text-apple-blue' : 'bg-apple-green/10 text-apple-green'}">${nivel}</span></td>
-            <td class="p-3 font-medium">${p.responsavel}</td>
-            <td class="p-3 text-center font-bold text-apple-purple dark:text-apple-darkPurple">${senioridadeExigida}</td>
-            <td class="p-3 text-center"><span class="px-2 py-0.5 rounded-full bg-apple-green/10 text-apple-green font-bold text-[10px]">Alocado</span></td>
-          `;
-          tbody.appendChild(tr);
-        });
-
-        const badgePts = document.getElementById('badgeTotalPontosComplexidade');
-        if (badgePts) badgePts.innerText = `${totalPts} Pts de Complexidade`;
-      }
-
-      // 3. Montagem do Parecer Diagnóstico (Global ou Específico)
-      const nomeFrenteExibicao = isGlobal ? 'todas as frentes unificadas' : selectedArea;
-      const totalPessoas = timeFrente.length || 1;
-      const capacidadeTotalTime = totalPessoas * 4;
-      const saldoCapacidade = capacidadeTotalTime - totalPts;
-
-      let vagasSugeridas = 0;
-      let perfilVaga = 'Sênior';
-      if (saldoCapacidade < 0) {
-        vagasSugeridas = Math.ceil(Math.abs(saldoCapacidade) / 4);
-        perfilVaga = qtdAlta > seniores.length * 2 ? 'Sênior' : 'Pleno';
-      }
-
-      const boxParecer = document.getElementById('boxParecerPrescritivoVagas');
-      if (boxParecer) {
-        if (vagasSugeridas > 0) {
-          boxParecer.innerHTML = `
-            <p><strong>Diagnóstico de Carga (${isGlobal ? 'Global' : 'Individual'}):</strong> Em <strong>${nomeFrenteExibicao}</strong>, existem <strong>${andamentoList.length} demanda(s) ativa(s)</strong> gerando <strong>${totalPts} Pontos de Complexidade</strong> (${qtdAlta} de Alta, ${qtdMedia} de Média e ${qtdBaixa} de Baixa Complexidade).</p>
-            <p><strong>Capacidade vs. Demanda:</strong> O time alocado de <strong>${totalPessoas} especialista(s)</strong> (${seniores.length} Sênior/Líder, ${plenos.length} Pleno e ${juniores.length} Júnior) possui capacidade operacional para até <strong>${capacidadeTotalTime} Pts</strong>. A demanda atual excede essa capacidade em <strong>${Math.abs(saldoCapacidade)} Pts</strong>.</p>
-            <p class="text-apple-orange dark:text-apple-darkOrange font-bold pt-1">⚠️ Recomendação de Reforço: Recomenda-se a contratação/alocação de +${vagasSugeridas} vaga(s) perfil ${perfilVaga} para equilibrar a esteira de entregas sem estouro de SLA.</p>
-          `;
-        } else {
-          boxParecer.innerHTML = `
-            <p><strong>Diagnóstico de Carga (${isGlobal ? 'Global' : 'Individual'}):</strong> Em <strong>${nomeFrenteExibicao}</strong>, existem <strong>${andamentoList.length} demanda(s) ativa(s)</strong> gerando <strong>${totalPts} Pontos de Complexidade</strong> (${qtdAlta} Alta, ${qtdMedia} Média e ${qtdBaixa} Baixa).</p>
-            <p><strong>Capacidade vs. Demanda:</strong> A força de trabalho de <strong>${totalPessoas} especialista(s)</strong> (${seniores.length} Sênior/Líder, ${plenos.length} Pleno e ${juniores.length} Júnior) suporta até <strong>${capacidadeTotalTime} Pts</strong> de carga.</p>
-            <p class="text-apple-green dark:text-apple-darkGreen font-bold pt-1">✅ Situação Equilibrada: Operação saudável com margem de ~${saldoCapacidade} Pts para absorção de novas demandas sem necessidade de novas contratações (+0 Vagas necessárias).</p>
-          `;
-        }
-      }
+      projetosAtivos = projetosAtivos.concat(list);
     }
+  });
+
+  // 3. Montagem da Tabela da Matriz de Complexidade x Integrantes
+  const tbody = document.getElementById('tabelaComplexidadeBody');
+  let totalPontosFrente = 0;
+
+  if (tbody) {
+    tbody.innerHTML = '';
+
+    projetosAtivos.forEach(p => {
+      const porte = String(p.tamanho || '').toUpperCase().trim();
+      const pontosBase = PONTOS_PORTE[porte] || (p.tipo_projeto === 'P' ? 2 : 5);
+      
+      const numMetodos = String(p.pesquisa_metodo || '').split(/[,;]/).filter(m => m.trim()).length || 1;
+      
+      // Pontuação ajustada se o projeto usar 3 ou mais metodologias complexas
+      const pontosFinais = numMetodos >= 3 ? Math.round(pontosBase * 1.25) : pontosBase;
+      totalPontosFrente += pontosFinais;
+
+      // Inferência do perfil necessário
+      let senioridadeExigida = 'Júnior';
+      let badgeClass = 'bg-apple-green/10 text-apple-green border-apple-green/20';
+
+      if (pontosFinais >= 13) {
+        senioridadeExigida = 'Sênior';
+        badgeClass = 'bg-apple-purple/10 text-apple-purple border-apple-purple/20';
+      } else if (pontosFinais >= 5) {
+        senioridadeExigida = 'Pleno';
+        badgeClass = 'bg-apple-blue/10 text-apple-blue border-apple-blue/20';
+      }
+
+      // Validação de alocação (se o responsável atual bate com a senioridade exigida)
+      const respNome = (p.responsavel || '').trim();
+      const cadastroResp = timeFrente.find(t => t.nome.toLowerCase() === respNome.toLowerCase());
+      let statusAlocacao = 'Adequada';
+      let statusBadgeClass = 'text-apple-green bg-apple-green/10 border-apple-green/20';
+
+      if (cadastroResp) {
+        const senResp = cadastroResp.senioridade.toLowerCase();
+        if (senioridadeExigida === 'Sênior' && !senResp.includes('senior') && !senResp.includes('sênior')) {
+          statusAlocacao = 'Risco: Sub-dimensionado';
+          statusBadgeClass = 'text-apple-red bg-apple-red/10 border-apple-red/20';
+        }
+      }
+
+      const tr = document.createElement('tr');
+      tr.className = "hover:bg-black/5 dark:hover:bg-white/5 transition-colors";
+      tr.innerHTML = `
+        <td class="p-3 font-bold text-black dark:text-white max-w-xs truncate">${p.projeto}</td>
+        <td class="p-3 text-center font-mono font-bold">${porte || 'M'} (${pontosFinais} pts)</td>
+        <td class="p-3 text-center">${numMetodos} método(s)</td>
+        <td class="p-3 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold border ${badgeClass}">${senioridadeExigida}</span></td>
+        <td class="p-3 font-medium">${respNome || 'Não atribuído'}</td>
+        <td class="p-3 text-center text-apple-gray text-[11px]">${cadastroResp ? cadastroResp.senioridade : 'Sem Cadastro'}</td>
+        <td class="p-3 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold border ${statusBadgeClass}">${statusAlocacao}</span></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // 4. Atualiza o badge global de pontos de complexidade do Quadro 2
+  const badgePts = document.getElementById('badgeTotalPontosComplexidade');
+  if (badgePts) badgePts.innerText = totalPontosFrente + ' Pts de Complexidade';
+
+  // 5. Algoritmo do Parecer Prescritivo e Dimensionamento de Vagas
+  const boxParecer = document.getElementById('boxParecerPrescritivoVagas');
+  const CAPACIDADE_IDEAL_PESSOA = 12.0; // 12 Story Points por especialista
+  const capacidadeTotalFrente = timeFrente.length * CAPACIDADE_IDEAL_PESSOA;
+  const saldoPontos = capacidadeTotalFrente - totalPontosFrente;
+
+  if (boxParecer) {
+    if (saldoPontos < 0) {
+      const pontosDeficit = Math.abs(saldoPontos);
+      const vagasNecessarias = Math.ceil(pontosDeficit / CAPACIDADE_IDEAL_PESSOA);
+
+      boxParecer.innerHTML = `
+        <p class="font-bold text-apple-red dark:text-apple-darkRed flex items-center gap-1.5">
+          <i data-lucide="alert-triangle" class="w-4 h-4"></i> Risco Elevado de Estouro de SLA na Esteira Ativa
+        </p>
+        <p>A demanda atual exige <strong>${totalPontosFrente} Pontos de Complexidade</strong>, superando a capacidade operacional instalada de <strong>${capacidadeTotalFrente} Pts</strong> (${timeFrente.length} profissionais × 12 Pts).</p>
+        <div class="p-2.5 bg-apple-red/10 rounded-xl border border-apple-red/20 font-semibold text-black dark:text-white">
+          👉 Recomenda-se a contratação ou reforço urgente de <strong>+${vagasNecessarias} Vaga(s) Especialista(s)</strong> para reequilibrar a esteira de projetos e evitar estouros de SLA nos estudos $G$, $GG$ e $GGG$.
+        </div>
+      `;
+    } else {
+      boxParecer.innerHTML = `
+        <p class="font-bold text-apple-green dark:text-apple-darkGreen flex items-center gap-1.5">
+          <i data-lucide="check-circle-2" class="w-4 h-4"></i> Capacidade Operacional Adequada
+        </p>
+        <p>A demanda ativa da frente consome <strong>${totalPontosFrente} Pts de Complexidade</strong> para uma capacidade instalada de <strong>${capacidadeTotalFrente} Pts</strong>. A equipe possui margem operacional para absorver novos estudos estruturados sem comprometer a qualidade ou prazos.</p>
+      `;
+    }
+  }
+
+  if (window.lucide) lucide.createIcons();
+}
 
     // 🔴 COLE AQUI A URL GERADA NA IMPLANTAÇÃO DO SEU GOOGLE APPS SCRIPT:
     const APPS_SCRIPT_AUTH_URL = "https://script.google.com/macros/s/AKfycbyxEZyzm2d-3uqNlOysNrUXbjS2MG9IB-5daZGAt1v2nlpYCvmk34v6vXykn7zxMeF7/exec";
