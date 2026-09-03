@@ -1,0 +1,349 @@
+<!-- TAB 8: GERADOR DE MISSÕES -->
+            <div class="section-header">
+                <h2>🎲 Gerador Automático de Missões & Aventuras</h2>
+                <span class="tag">Gerador de Missões</span>
+            </div>
+
+            <!-- CAIXA PRINCIPAL DO GERADOR AUTOMÁTICO -->
+            <div class="card" style="background: #fdfaf3; border: 2px solid var(--accent-gold); margin-bottom: 25px;">
+                <div class="card-title">
+                    <span>🎲 Gerador Automático de Missões</span>
+                    <button class="btn-dice" onclick="generateMission()" style="font-size: 1rem; padding: 8px 18px;">
+                        🎲 Gerar Nova Missão
+                    </button>
+                </div>
+
+                <!-- BOX 1: RESULTADO SINTETIZADO (MANTIDO) -->
+                <div id="mission-narrative"
+                    style="background: #f4ebd0; border-left: 4px solid var(--accent-gold); padding: 15px; border-radius: 6px; font-size: 1.02rem; line-height: 1.6; margin-bottom: 15px; font-weight: 600;">
+                    Clique no botão <strong>"Gerar Nova Missão"</strong> acima para criar uma aventura completa
+                    automaticamente!
+                </div>
+
+                <!-- BOX 2: ROTEIRO MESTRE NARRADOR - CONTEXTO FAZ DE CONTA (MANTIDO) -->
+                <div
+                    style="background: #fff; border: 1px solid var(--border-color); border-radius: 8px; padding: 18px; margin-bottom: 15px; box-shadow: inset 0 0 8px rgba(0,0,0,0.03);">
+                    <div
+                        style="font-family: 'Fredoka One', cursive; color: var(--bg-card-header); font-size: 1.1rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; border-bottom: 1px dashed var(--border-color); padding-bottom: 6px;">
+                        📖 Roteiro Mestre Narrador (Contexto Faz de Conta)
+                    </div>
+                    <div id="mission-elaborated" style="font-size: 0.95rem; line-height: 1.7; color: var(--text-main);">
+                        <em>O contexto detalhado do Mestre surgirá aqui ao gerar uma missão.</em>
+                    </div>
+                </div>
+
+                <!-- BOX 3: ROTEIRO EXPANDIDO COM INTELIGÊNCIA ARTIFICIAL (NOVO) -->
+                <div
+                    style="background: #f8fdf6; border: 2px solid var(--accent-green); border-radius: 8px; padding: 18px; margin-bottom: 20px; box-shadow: var(--shadow-card);">
+                    <div
+                        style="font-family: 'Fredoka One', cursive; color: var(--accent-green); font-size: 1.15rem; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px dashed var(--accent-green); padding-bottom: 6px;">
+                        <span>🤖 Roteiro Detalhado por IA Local</span>
+                        <span
+                            style="font-size: 0.75rem; background: var(--accent-green); color: white; padding: 2px 8px; border-radius: 10px; font-family: 'Nunito', sans-serif;">WebLLM
+                            Local</span>
+                    </div>
+                    <div id="mission-ai-narrative"
+                        style="font-size: 0.95rem; line-height: 1.7; color: var(--text-main);">
+                        <em>Ao clicar em "Gerar Nova Missão", a IA criará uma história profunda com cenas, diálogos de
+                            NPCs e desafios de testes!</em>
+                    </div>
+                    <div id="webllm-status" style="margin-top: 12px; font-size: 0.8rem; color: var(--accent-green);">
+                        Modelo local será carregado somente quando uma missão for gerada. Requer HTTPS, aceleração de hardware e WebGPU ativo.
+                    </div>
+                    <button id="btn-enhance-ai" class="btn-dice" type="button" onclick="enhanceCurrentMission()" disabled
+                        style="margin-top: 12px;">✨ Aprimorar esta missão com WebLLM</button>
+                </div>
+
+                <!-- DETALHAMENTO DOS RESULTADOS DOS DADOS (MANTIDO) -->
+                <div class="grid-3" id="mission-details">
+                    <div class="variant-box" style="text-align: left; padding: 12px; background: #fff;">
+                        <div class="variant-title" style="text-align: left;">1º Contato (2d6)</div>
+                        <div id="res-contato" style="font-size: 0.9rem; color: #444;">-</div>
+                    </div>
+                    <div class="variant-box" style="text-align: left; padding: 12px; background: #fff;">
+                        <div class="variant-title" style="text-align: left;">2º Objetivo Principal (2d6)</div>
+                        <div id="res-objetivo" style="font-size: 0.9rem; color: #444;">-</div>
+                    </div>
+                    <div class="variant-box" style="text-align: left; padding: 12px; background: #fff;">
+                        <div class="variant-title" style="text-align: left;">3º Local da Missão (2d6)</div>
+                        <div id="res-local" style="font-size: 0.9rem; color: #444;">-</div>
+                    </div>
+                    <div class="variant-box" style="text-align: left; padding: 12px; background: #fff;">
+                        <div class="variant-title" style="text-align: left;">4º Inimigo (2d6)</div>
+                        <div id="res-inimigo" style="font-size: 0.9rem; color: #444;">-</div>
+                    </div>
+                    <div class="variant-box" style="text-align: left; padding: 12px; background: #fff;">
+                        <div class="variant-title" style="text-align: left;">5º Recompensa (1d6)</div>
+                        <div id="res-recompensa" style="font-size: 0.9rem; color: #444;">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LINHA 1: 3 TABELAS (Contato, Objetivo, Local) -->
+            <div class="grid-3" style="margin-bottom: 20px;">
+                <!-- TABELA 1: CONTATO -->
+                <div class="card">
+                    <div class="card-title">1º Contato (2d6)</div>
+                    <table class="shield-table">
+                        <tr>
+                            <th>2d6</th>
+                            <th>Quem necessita de ajuda</th>
+                        </tr>
+                        <tr>
+                            <td><strong>2</strong></td>
+                            <td><strong>Mago Ancião:</strong> O Mago Zaimen precisa de ajuda para resolver um problema
+                                importante.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>3</strong></td>
+                            <td><strong>Empreendedor:</strong> Dono de uma fazenda, loja ou estabelecimento com
+                                problemas.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>4</strong></td>
+                            <td><strong>Celebridade:</strong> Famoso por seus talentos (músico, inventor, artista).</td>
+                        </tr>
+                        <tr>
+                            <td><strong>5</strong></td>
+                            <td><strong>Morador Vizinho:</strong> Morador de Terra da Chuva Miúda fora de Vila Velha.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>6</strong></td>
+                            <td><strong>Parente:</strong> Pai, mãe ou familiar de um dos heróis precisa de ajuda
+                                urgente.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>7</strong></td>
+                            <td><strong>Estrangeiro:</strong> Viajante recém-chegado que não conhece bem a região.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>8</strong></td>
+                            <td><strong>Mensageiro:</strong> Enviado por alguém importante para entregar um pedido
+                                urgente.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>9</strong></td>
+                            <td><strong>Aventureiro Ferido:</strong> Explorador que voltou de uma missão perigosa.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>10</strong></td>
+                            <td><strong>Guarda da Vila:</strong> Guarda ou protetor que não consegue resolver sozinho.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>11</strong></td>
+                            <td><strong>Morador da Vila:</strong> Uma criança ou idoso de Vila Velha precisa de ajuda.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>12</strong></td>
+                            <td><strong>Criatura Amigável:</strong> Animal falante ou criatura mágica pedindo ajuda.
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- TABELA 2: OBJETIVO PRINCIPAL -->
+                <div class="card">
+                    <div class="card-title">2º Objetivo Principal (2d6)</div>
+                    <table class="shield-table">
+                        <tr>
+                            <th>2d6</th>
+                            <th>O que os heróis devem realizar</th>
+                        </tr>
+                        <tr>
+                            <td><strong>2</strong></td>
+                            <td><strong>Derrotar:</strong> Inseto Gigante ou criatura causando problemas.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>3</strong></td>
+                            <td><strong>Escoltar:</strong> Levar uma pessoa com segurança até um local.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>4</strong></td>
+                            <td><strong>Transportar:</strong> Entregar uma carga importante em outro lugar.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>5</strong></td>
+                            <td><strong>Coletar:</strong> Encontrar um item raro.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>6</strong></td>
+                            <td><strong>Explorar:</strong> Investigar nova caverna, ruína ou local descoberto.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>7</strong></td>
+                            <td><strong>Resgatar:</strong> Alguém capturado ou perdido precisa ser encontrado.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>8</strong></td>
+                            <td><strong>Proteger:</strong> Defender um local importante de uma ameaça.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>9</strong></td>
+                            <td><strong>Recuperar:</strong> Localizar e recuperar uma arma lendária ou item roubado.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>10</strong></td>
+                            <td><strong>Comunicar:</strong> Mensagem urgente precisa chegar a alguém importante.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>11</strong></td>
+                            <td><strong>Construir:</strong> Encontrar materiais e resolver problemas de construção.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>12</strong></td>
+                            <td><strong>Descobrir:</strong> Um mistério escondido precisa ser revelado.</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- TABELA 3: LOCAL DA MISSÃO -->
+                <div class="card">
+                    <div class="card-title">3º Local da Missão (2d6)</div>
+                    <table class="shield-table">
+                        <tr>
+                            <th>2d6</th>
+                            <th>Aonde a missão se passará</th>
+                        </tr>
+                        <tr>
+                            <td><strong>2</strong></td>
+                            <td>Vila Velha</td>
+                        </tr>
+                        <tr>
+                            <td><strong>3</strong></td>
+                            <td>Bosque dos Espinhos</td>
+                        </tr>
+                        <tr>
+                            <td><strong>4</strong></td>
+                            <td>Montanha Congelante</td>
+                        </tr>
+                        <tr>
+                            <td><strong>5</strong></td>
+                            <td>Minas</td>
+                        </tr>
+                        <tr>
+                            <td><strong>6</strong></td>
+                            <td>Cachoeira do Norte</td>
+                        </tr>
+                        <tr>
+                            <td><strong>7</strong></td>
+                            <td>Lago da Boa Pesca</td>
+                        </tr>
+                        <tr>
+                            <td><strong>8</strong></td>
+                            <td>Floresta Secreta ou Floresta Densa</td>
+                        </tr>
+                        <tr>
+                            <td><strong>9</strong></td>
+                            <td>Rio do Destino</td>
+                        </tr>
+                        <tr>
+                            <td><strong>10</strong></td>
+                            <td>Cavernas sem Luz</td>
+                        </tr>
+                        <tr>
+                            <td><strong>11</strong></td>
+                            <td>Farol</td>
+                        </tr>
+                        <tr>
+                            <td><strong>12</strong></td>
+                            <td>Escombros</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- LINHA 2: 2 TABELAS DIVIDINDO A LINHA EM 50% / 50% -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px;">
+                <!-- TABELA 4: INIMIGO -->
+                <div class="card">
+                    <div class="card-title">4º Inimigo (2d6)</div>
+                    <table class="shield-table">
+                        <tr>
+                            <th>2d6</th>
+                            <th>Insetos Gigantes da missão</th>
+                        </tr>
+                        <tr>
+                            <td><strong>2</strong></td>
+                            <td>Abelha e/ou Vespa</td>
+                        </tr>
+                        <tr>
+                            <td><strong>3</strong></td>
+                            <td>Barata</td>
+                        </tr>
+                        <tr>
+                            <td><strong>4</strong></td>
+                            <td>Besouro Titã</td>
+                        </tr>
+                        <tr>
+                            <td><strong>5</strong></td>
+                            <td>Cupim e/ou Formiga</td>
+                        </tr>
+                        <tr>
+                            <td><strong>6</strong></td>
+                            <td>Escorpião</td>
+                        </tr>
+                        <tr>
+                            <td><strong>7</strong></td>
+                            <td>Gafanhoto</td>
+                        </tr>
+                        <tr>
+                            <td><strong>8</strong></td>
+                            <td>Lagarta de Fogo e/ou Mariposa</td>
+                        </tr>
+                        <tr>
+                            <td><strong>9</strong></td>
+                            <td>Mosca e/ou Mosquito</td>
+                        </tr>
+                        <tr>
+                            <td><strong>10</strong></td>
+                            <td>Percevejo</td>
+                        </tr>
+                        <tr>
+                            <td><strong>11</strong></td>
+                            <td>Pulga</td>
+                        </tr>
+                        <tr>
+                            <td><strong>12</strong></td>
+                            <td>Traça dos Livros</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- TABELA 5: RECOMPENSAS -->
+                <div class="card">
+                    <div class="card-title">5º Sugestão de Recompensas (1d6)</div>
+                    <table class="shield-table">
+                        <tr>
+                            <th>1d6</th>
+                            <th>Recompensa para o grupo</th>
+                        </tr>
+                        <tr>
+                            <td><strong>1</strong></td>
+                            <td>1d6 x 10 Chuvisco$</td>
+                        </tr>
+                        <tr>
+                            <td><strong>2</strong></td>
+                            <td>1d6 x 10 Chuvisco$ + Um Item de Aventura</td>
+                        </tr>
+                        <tr>
+                            <td><strong>3</strong></td>
+                            <td>2d6 x 10 Chuvisco$ + Uma Arma</td>
+                        </tr>
+                        <tr>
+                            <td><strong>4</strong></td>
+                            <td>2d6 x 10 Chuvisco$ + Uma Peça de Armadura ou Proteção</td>
+                        </tr>
+                        <tr>
+                            <td><strong>5</strong></td>
+                            <td>2d6 x 10 Chuvisco$ + Uma Carta de Baú de Madeira</td>
+                        </tr>
+                        <tr>
+                            <td><strong>6</strong></td>
+                            <td>3d6 x 10 Chuvisco$ + Uma Carta de Baú de Ferro</td>
+                        </tr>
+                    </table>
+                </div>
