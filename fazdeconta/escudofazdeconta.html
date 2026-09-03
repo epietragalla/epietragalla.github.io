@@ -817,10 +817,11 @@
             <button class="tab-btn active" onclick="switchTab('tab-combate')">⚔️ Regras</button>
             <button class="tab-btn" onclick="switchTab('tab-bestiario')">🐞 Bestiário</button>
             <button class="tab-btn" onclick="switchTab('tab-criticos')">💥 Críticos & Lesão</button>
-            <button class="tab-btn" onclick="switchTab('tab-xp')">⭐ XP & Progresso</button>
-            <button class="tab-btn" onclick="switchTab('tab-tesouros')">💎 Tesouros & Itens</button>
-            <button class="tab-btn" onclick="switchTab('tab-mundo')">🗺️ Mundo & Locais</button>
+            <button class="tab-btn" onclick="switchTab('tab-xp')">⭐ Progresso</button>
+            <button class="tab-btn" onclick="switchTab('tab-tesouros')">💎 Itens</button>
+            <button class="tab-btn" onclick="switchTab('tab-mundo')">🗺️ Locais</button>
             <button class="tab-btn" onclick="switchTab('tab-dicas')">📜 Dicas do Mestre</button>
+            <button class="tab-btn" onclick="switchTab('tab-gerador')">🎲 Missões</button>
             <button class="tab-btn" onclick="switchTab('tab-musicas')">🎵 Trilha Sonora</button>
         </nav>
     </header>
@@ -1916,6 +1917,354 @@
             </div>
         </div>
 
+        <!-- TAB 8: GERADOR DE MISSÕES -->
+        <div id="tab-gerador" class="tab-content">
+            <div class="section-header">
+                <h2>🎲 Gerador Automático de Missões & Aventuras</h2>
+                <span class="tag">Gerador de Missões</span>
+            </div>
+
+            <!-- CAIXA PRINCIPAL DO GERADOR AUTOMÁTICO -->
+            <div class="card" style="background: #fdfaf3; border: 2px solid var(--accent-gold); margin-bottom: 25px;">
+                <div class="card-title">
+                    <span>🎲 Gerador Automático de Missões</span>
+                    <button class="btn-dice" onclick="generateMission()" style="font-size: 1rem; padding: 8px 18px;">
+                        🎲 Gerar Nova Missão
+                    </button>
+                </div>
+
+                <!-- BOX 1: RESULTADO SINTETIZADO (MANTIDO) -->
+                <div id="mission-narrative"
+                    style="background: #f4ebd0; border-left: 4px solid var(--accent-gold); padding: 15px; border-radius: 6px; font-size: 1.02rem; line-height: 1.6; margin-bottom: 15px; font-weight: 600;">
+                    Clique no botão <strong>"Gerar Nova Missão"</strong> acima para criar uma aventura completa
+                    automaticamente!
+                </div>
+
+                <!-- BOX 2: ROTEIRO MESTRE NARRADOR - CONTEXTO FAZ DE CONTA (MANTIDO) -->
+                <div
+                    style="background: #fff; border: 1px solid var(--border-color); border-radius: 8px; padding: 18px; margin-bottom: 15px; box-shadow: inset 0 0 8px rgba(0,0,0,0.03);">
+                    <div
+                        style="font-family: 'Fredoka One', cursive; color: var(--bg-card-header); font-size: 1.1rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; border-bottom: 1px dashed var(--border-color); padding-bottom: 6px;">
+                        📖 Roteiro Mestre Narrador (Contexto Faz de Conta)
+                    </div>
+                    <div id="mission-elaborated" style="font-size: 0.95rem; line-height: 1.7; color: var(--text-main);">
+                        <em>O contexto detalhado do Mestre surgirá aqui ao gerar uma missão.</em>
+                    </div>
+                </div>
+
+                <!-- BOX 3: ROTEIRO EXPANDIDO COM INTELIGÊNCIA ARTIFICIAL (NOVO) -->
+                <div
+                    style="background: #f8fdf6; border: 2px solid var(--accent-green); border-radius: 8px; padding: 18px; margin-bottom: 20px; box-shadow: var(--shadow-card);">
+                    <div
+                        style="font-family: 'Fredoka One', cursive; color: var(--accent-green); font-size: 1.15rem; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px dashed var(--accent-green); padding-bottom: 6px;">
+                        <span>🤖 Roteiro Detalhado por IA (Módulo Completo)</span>
+                        <span
+                            style="font-size: 0.75rem; background: var(--accent-green); color: white; padding: 2px 8px; border-radius: 10px; font-family: 'Nunito', sans-serif;">Gemini
+                            AI</span>
+                    </div>
+                    <div id="mission-ai-narrative"
+                        style="font-size: 0.95rem; line-height: 1.7; color: var(--text-main);">
+                        <em>Ao clicar em "Gerar Nova Missão", a IA criará uma história profunda com cenas, diálogos de
+                            NPCs e desafios de testes!</em>
+                    </div>
+                </div>
+
+                <!-- DETALHAMENTO DOS RESULTADOS DOS DADOS (MANTIDO) -->
+                <div class="grid-3" id="mission-details">
+                    <div class="variant-box" style="text-align: left; padding: 12px; background: #fff;">
+                        <div class="variant-title" style="text-align: left;">1º Contato (2d6)</div>
+                        <div id="res-contato" style="font-size: 0.9rem; color: #444;">-</div>
+                    </div>
+                    <div class="variant-box" style="text-align: left; padding: 12px; background: #fff;">
+                        <div class="variant-title" style="text-align: left;">2º Objetivo Principal (2d6)</div>
+                        <div id="res-objetivo" style="font-size: 0.9rem; color: #444;">-</div>
+                    </div>
+                    <div class="variant-box" style="text-align: left; padding: 12px; background: #fff;">
+                        <div class="variant-title" style="text-align: left;">3º Local da Missão (2d6)</div>
+                        <div id="res-local" style="font-size: 0.9rem; color: #444;">-</div>
+                    </div>
+                    <div class="variant-box" style="text-align: left; padding: 12px; background: #fff;">
+                        <div class="variant-title" style="text-align: left;">4º Inimigo (2d6)</div>
+                        <div id="res-inimigo" style="font-size: 0.9rem; color: #444;">-</div>
+                    </div>
+                    <div class="variant-box" style="text-align: left; padding: 12px; background: #fff;">
+                        <div class="variant-title" style="text-align: left;">5º Recompensa (1d6)</div>
+                        <div id="res-recompensa" style="font-size: 0.9rem; color: #444;">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LINHA 1: 3 TABELAS (Contato, Objetivo, Local) -->
+            <div class="grid-3" style="margin-bottom: 20px;">
+                <!-- TABELA 1: CONTATO -->
+                <div class="card">
+                    <div class="card-title">1º Contato (2d6)</div>
+                    <table class="shield-table">
+                        <tr>
+                            <th>2d6</th>
+                            <th>Quem necessita de ajuda</th>
+                        </tr>
+                        <tr>
+                            <td><strong>2</strong></td>
+                            <td><strong>Mago Ancião:</strong> O Mago Zaimen precisa de ajuda para resolver um problema
+                                importante.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>3</strong></td>
+                            <td><strong>Empreendedor:</strong> Dono de uma fazenda, loja ou estabelecimento com
+                                problemas.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>4</strong></td>
+                            <td><strong>Celebridade:</strong> Famoso por seus talentos (músico, inventor, artista).</td>
+                        </tr>
+                        <tr>
+                            <td><strong>5</strong></td>
+                            <td><strong>Morador Vizinho:</strong> Morador de Terra da Chuva Miúda fora de Vila Velha.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>6</strong></td>
+                            <td><strong>Parente:</strong> Pai, mãe ou familiar de um dos heróis precisa de ajuda
+                                urgente.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>7</strong></td>
+                            <td><strong>Estrangeiro:</strong> Viajante recém-chegado que não conhece bem a região.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>8</strong></td>
+                            <td><strong>Mensageiro:</strong> Enviado por alguém importante para entregar um pedido
+                                urgente.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>9</strong></td>
+                            <td><strong>Aventureiro Ferido:</strong> Explorador que voltou de uma missão perigosa.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>10</strong></td>
+                            <td><strong>Guarda da Vila:</strong> Guarda ou protetor que não consegue resolver sozinho.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>11</strong></td>
+                            <td><strong>Morador da Vila:</strong> Uma criança ou idoso de Vila Velha precisa de ajuda.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>12</strong></td>
+                            <td><strong>Criatura Amigável:</strong> Animal falante ou criatura mágica pedindo ajuda.
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- TABELA 2: OBJETIVO PRINCIPAL -->
+                <div class="card">
+                    <div class="card-title">2º Objetivo Principal (2d6)</div>
+                    <table class="shield-table">
+                        <tr>
+                            <th>2d6</th>
+                            <th>O que os heróis devem realizar</th>
+                        </tr>
+                        <tr>
+                            <td><strong>2</strong></td>
+                            <td><strong>Derrotar:</strong> Inseto Gigante ou criatura causando problemas.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>3</strong></td>
+                            <td><strong>Escoltar:</strong> Levar uma pessoa com segurança até um local.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>4</strong></td>
+                            <td><strong>Transportar:</strong> Entregar uma carga importante em outro lugar.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>5</strong></td>
+                            <td><strong>Coletar:</strong> Encontrar um item raro.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>6</strong></td>
+                            <td><strong>Explorar:</strong> Investigar nova caverna, ruína ou local descoberto.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>7</strong></td>
+                            <td><strong>Resgatar:</strong> Alguém capturado ou perdido precisa ser encontrado.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>8</strong></td>
+                            <td><strong>Proteger:</strong> Defender um local importante de uma ameaça.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>9</strong></td>
+                            <td><strong>Recuperar:</strong> Localizar e recuperar uma arma lendária ou item roubado.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>10</strong></td>
+                            <td><strong>Comunicar:</strong> Mensagem urgente precisa chegar a alguém importante.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>11</strong></td>
+                            <td><strong>Construir:</strong> Encontrar materiais e resolver problemas de construção.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>12</strong></td>
+                            <td><strong>Descobrir:</strong> Um mistério escondido precisa ser revelado.</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- TABELA 3: LOCAL DA MISSÃO -->
+                <div class="card">
+                    <div class="card-title">3º Local da Missão (2d6)</div>
+                    <table class="shield-table">
+                        <tr>
+                            <th>2d6</th>
+                            <th>Aonde a missão se passará</th>
+                        </tr>
+                        <tr>
+                            <td><strong>2</strong></td>
+                            <td>Vila Velha</td>
+                        </tr>
+                        <tr>
+                            <td><strong>3</strong></td>
+                            <td>Bosque dos Espinhos</td>
+                        </tr>
+                        <tr>
+                            <td><strong>4</strong></td>
+                            <td>Montanha Congelante</td>
+                        </tr>
+                        <tr>
+                            <td><strong>5</strong></td>
+                            <td>Minas</td>
+                        </tr>
+                        <tr>
+                            <td><strong>6</strong></td>
+                            <td>Cachoeira do Norte</td>
+                        </tr>
+                        <tr>
+                            <td><strong>7</strong></td>
+                            <td>Lago da Boa Pesca</td>
+                        </tr>
+                        <tr>
+                            <td><strong>8</strong></td>
+                            <td>Floresta Secreta ou Floresta Densa</td>
+                        </tr>
+                        <tr>
+                            <td><strong>9</strong></td>
+                            <td>Rio do Destino</td>
+                        </tr>
+                        <tr>
+                            <td><strong>10</strong></td>
+                            <td>Cavernas sem Luz</td>
+                        </tr>
+                        <tr>
+                            <td><strong>11</strong></td>
+                            <td>Farol</td>
+                        </tr>
+                        <tr>
+                            <td><strong>12</strong></td>
+                            <td>Escombros</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- LINHA 2: 2 TABELAS DIVIDINDO A LINHA EM 50% / 50% -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px;">
+                <!-- TABELA 4: INIMIGO -->
+                <div class="card">
+                    <div class="card-title">4º Inimigo (2d6)</div>
+                    <table class="shield-table">
+                        <tr>
+                            <th>2d6</th>
+                            <th>Insetos Gigantes da missão</th>
+                        </tr>
+                        <tr>
+                            <td><strong>2</strong></td>
+                            <td>Abelha e/ou Vespa</td>
+                        </tr>
+                        <tr>
+                            <td><strong>3</strong></td>
+                            <td>Barata</td>
+                        </tr>
+                        <tr>
+                            <td><strong>4</strong></td>
+                            <td>Besouro Titã</td>
+                        </tr>
+                        <tr>
+                            <td><strong>5</strong></td>
+                            <td>Cupim e/ou Formiga</td>
+                        </tr>
+                        <tr>
+                            <td><strong>6</strong></td>
+                            <td>Escorpião</td>
+                        </tr>
+                        <tr>
+                            <td><strong>7</strong></td>
+                            <td>Gafanhoto</td>
+                        </tr>
+                        <tr>
+                            <td><strong>8</strong></td>
+                            <td>Lagarta de Fogo e/ou Mariposa</td>
+                        </tr>
+                        <tr>
+                            <td><strong>9</strong></td>
+                            <td>Mosca e/ou Mosquito</td>
+                        </tr>
+                        <tr>
+                            <td><strong>10</strong></td>
+                            <td>Percevejo</td>
+                        </tr>
+                        <tr>
+                            <td><strong>11</strong></td>
+                            <td>Pulga</td>
+                        </tr>
+                        <tr>
+                            <td><strong>12</strong></td>
+                            <td>Traça dos Livros</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- TABELA 5: RECOMPENSAS -->
+                <div class="card">
+                    <div class="card-title">5º Sugestão de Recompensas (1d6)</div>
+                    <table class="shield-table">
+                        <tr>
+                            <th>1d6</th>
+                            <th>Recompensa para o grupo</th>
+                        </tr>
+                        <tr>
+                            <td><strong>1</strong></td>
+                            <td>1d6 x 10 Chuvisco$</td>
+                        </tr>
+                        <tr>
+                            <td><strong>2</strong></td>
+                            <td>1d6 x 10 Chuvisco$ + Um Item de Aventura</td>
+                        </tr>
+                        <tr>
+                            <td><strong>3</strong></td>
+                            <td>2d6 x 10 Chuvisco$ + Uma Arma</td>
+                        </tr>
+                        <tr>
+                            <td><strong>4</strong></td>
+                            <td>2d6 x 10 Chuvisco$ + Uma Peça de Armadura ou Proteção</td>
+                        </tr>
+                        <tr>
+                            <td><strong>5</strong></td>
+                            <td>2d6 x 10 Chuvisco$ + Uma Carta de Baú de Madeira</td>
+                        </tr>
+                        <tr>
+                            <td><strong>6</strong></td>
+                            <td>3d6 x 10 Chuvisco$ + Uma Carta de Baú de Ferro</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
         <!-- ABA: TRILHA SONORA -->
         <div id="tab-musicas" class="tab-content">
             <div class="section-header">
@@ -1928,19 +2277,23 @@
                 </div>
 
                 <!-- PLAYER NATIVO HTML5 COM CONTROLES DO MESTRE -->
-<div style="margin-bottom: 20px; text-align: center; background: #f8f4ea; padding: 15px; border-radius: 8px; border: 2px solid var(--border-color); box-shadow: var(--shadow-card);">
-    <p id="music-title" style="font-weight: bold; margin-bottom: 10px; color: var(--border-dark);">Selecione uma faixa abaixo para tocar:</p>
-    
-    <audio id="main-audio-player" controls style="width: 100%; max-width: 500px; outline: none; margin-bottom: 10px;"></audio>
+                <div
+                    style="margin-bottom: 20px; text-align: center; background: #f8f4ea; padding: 15px; border-radius: 8px; border: 2px solid var(--border-color); box-shadow: var(--shadow-card);">
+                    <p id="music-title" style="font-weight: bold; margin-bottom: 10px; color: var(--border-dark);">
+                        Selecione uma faixa abaixo para tocar:</p>
 
-    <!-- PAINEL DE BOTÕES DE COMANDO -->
-    <div style="display: flex; gap: 8px; justify-content: center; align-items: center; flex-wrap: wrap;">
-        <button class="btn-dice" onclick="previousTrack()">⏮️ Anterior</button>
-        <button class="btn-dice" id="btn-play-pause" onclick="togglePlayPause()">⏸️ Pausar</button>
-        <button class="btn-dice" onclick="nextTrack()">⏭️ Próxima</button>
-        <button class="btn-dice" id="btn-loop" onclick="toggleLoop()">🔁 Repetir: OFF</button>
-    </div>
-</div>
+                    <audio id="main-audio-player" controls
+                        style="width: 100%; max-width: 500px; outline: none; margin-bottom: 10px;"></audio>
+
+                    <!-- PAINEL DE BOTÕES DE COMANDO -->
+                    <div
+                        style="display: flex; gap: 8px; justify-content: center; align-items: center; flex-wrap: wrap;">
+                        <button class="btn-dice" onclick="previousTrack()">⏮️ Anterior</button>
+                        <button class="btn-dice" id="btn-play-pause" onclick="togglePlayPause()">⏸️ Pausar</button>
+                        <button class="btn-dice" onclick="nextTrack()">⏭️ Próxima</button>
+                        <button class="btn-dice" id="btn-loop" onclick="toggleLoop()">🔁 Repetir: OFF</button>
+                    </div>
+                </div>
                 <div class="table-responsive">
                     <table class="shield-table">
                         <thead>
@@ -1951,621 +2304,698 @@
                         </thead>
                         <tbody>
                             <tr>
-    <td><strong>1_1 Início da Aventura (Take 1).mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('1_1 Início da Aventura (Take 1).mp3', '1_1 Início da Aventura (Take 1).mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>1_2 Início da Aventura (Take 2).mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('1_2 Início da Aventura (Take 2).mp3', '1_2 Início da Aventura (Take 2).mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>2_1 Tema dos Pequenos Heróis (Versão A).mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('2_1 Tema dos Pequenos Heróis (Versão A).mp3', '2_1 Tema dos Pequenos Heróis (Versão A).mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>2_2 Tema dos Pequenos Heróis (Versão B).mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('2_2 Tema dos Pequenos Heróis (Versão B).mp3', '2_2 Tema dos Pequenos Heróis (Versão B).mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>3_1 Dia de Feira na Vila.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('3_1 Dia de Feira na Vila.mp3', '3_1 Dia de Feira na Vila.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>3_2 Tarde na Cidade Pacata.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('3_2 Tarde na Cidade Pacata.mp3', '3_2 Tarde na Cidade Pacata.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>3_3 Dia de Feira na Vila (Vibe Viva).mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('3_3 Dia de Feira na Vila (Vibe Viva).mp3', '3_3 Dia de Feira na Vila (Vibe Viva).mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>4_1 Taverna Acolhedora.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('4_1 Taverna Acolhedora.mp3', '4_1 Taverna Acolhedora.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>4_1 Taverna Animada.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('4_1 Taverna Animada.mp3', '4_1 Taverna Animada.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>5_1 Floresta Encantada (Versão 1).mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('5_1 Floresta Encantada (Versão 1).mp3', '5_1 Floresta Encantada (Versão 1).mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>5_2 Floresta Encantada (Versão 2).mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('5_2 Floresta Encantada (Versão 2).mp3', '5_2 Floresta Encantada (Versão 2).mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>6_1 Trilha do Pântano Encantado.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('6_1 Trilha do Pântano Encantado.mp3', '6_1 Trilha do Pântano Encantado.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>6_2 Floresta Sombria.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('6_2 Floresta Sombria.mp3', '6_2 Floresta Sombria.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>6_3 Profundezas do Pântano Sombrio.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('6_3 Profundezas do Pântano Sombrio.mp3', '6_3 Profundezas do Pântano Sombrio.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>6_4 Pântano Tenso.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('6_4 Pântano Tenso.mp3', '6_4 Pântano Tenso.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>7_1 Campos Abertos Viagem.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('7_1 Campos Abertos Viagem.mp3', '7_1 Campos Abertos Viagem.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>7_2 Na Estrada.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('7_2 Na Estrada.mp3', '7_2 Na Estrada.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>8_1 Cumes Gelados_ O Desafio.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('8_1 Cumes Gelados_ O Desafio.mp3', '8_1 Cumes Gelados_ O Desafio.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>8_2 Horizonte de Gelo.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('8_2 Horizonte de Gelo.mp3', '8_2 Horizonte de Gelo.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>9_1 Ruínas de Areia (Místico e Seco) v1.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('9_1 Ruínas de Areia (Místico e Seco) v1.mp3', '9_1 Ruínas de Areia (Místico e Seco) v1.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>9_2 Ruínas de Areia (Tribal).mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('9_2 Ruínas de Areia (Tribal).mp3', '9_2 Ruínas de Areia (Tribal).mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>10_1 Corredores das Sombras.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('10_1 Corredores das Sombras.mp3', '10_1 Corredores das Sombras.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>10_2 Dungeon - Sombras Profundas.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('10_2 Dungeon - Sombras Profundas.mp3', '10_2 Dungeon - Sombras Profundas.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>10_3 Dungeon Tensa.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('10_3 Dungeon Tensa.mp3', '10_3 Dungeon Tensa.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>11_1 Templo Antigo_ Ruínas Místicas.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('11_1 Templo Antigo_ Ruínas Místicas.mp3', '11_1 Templo Antigo_ Ruínas Místicas.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>11_2 Conhecimento Esquecido.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('11_2 Conhecimento Esquecido.mp3', '11_2 Conhecimento Esquecido.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>11_3 Eco do Conhecimento Antigo.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('11_3 Eco do Conhecimento Antigo.mp3', '11_3 Eco do Conhecimento Antigo.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>12_1 Laboratório do Mago (Take 1).mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('12_1 Laboratório do Mago (Take 1).mp3', '12_1 Laboratório do Mago (Take 1).mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>12_2 Laboratório do Mago (Take 2).mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('12_2 Laboratório do Mago (Take 2).mp3', '12_2 Laboratório do Mago (Take 2).mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>13_1 A Corte de um Rei Bondoso.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('13_1 A Corte de um Rei Bondoso.mp3', '13_1 A Corte de um Rei Bondoso.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>13_2 Segredos do Castelo Encantado.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('13_2 Segredos do Castelo Encantado.mp3', '13_2 Segredos do Castelo Encantado.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>14_1 O Segredo do Castelo Antigo (Versão A).mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('14_1 O Segredo do Castelo Antigo (Versão A).mp3', '14_1 O Segredo do Castelo Antigo (Versão A).mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>14_2 Pistas na Floresta Encantada (Versão B).mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('14_2 Pistas na Floresta Encantada (Versão B).mp3', '14_2 Pistas na Floresta Encantada (Versão B).mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>15_1 Infiltração (Tiquetaque Mecânico).mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('15_1 Infiltração (Tiquetaque Mecânico).mp3', '15_1 Infiltração (Tiquetaque Mecânico).mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>15_2 Infiltração no Castelo.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('15_2 Infiltração no Castelo.mp3', '15_2 Infiltração no Castelo.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>16_1 Corrida no Castelo.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('16_1 Corrida no Castelo.mp3', '16_1 Corrida no Castelo.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>16_2 Fuga pela Floresta Mágica.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('16_2 Fuga pela Floresta Mágica.mp3', '16_2 Fuga pela Floresta Mágica.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>16_3 Fuga pela Floresta Mágica (Epic Drums Edit).mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('16_3 Fuga pela Floresta Mágica (Epic Drums Edit).mp3', '16_3 Fuga pela Floresta Mágica (Epic Drums Edit).mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>16_4 Fuga pela Floresta Mágica (Frenético Mix).mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('16_4 Fuga pela Floresta Mágica (Frenético Mix).mp3', '16_4 Fuga pela Floresta Mágica (Frenético Mix).mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>16_5 Corrida Épica.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('16_5 Corrida Épica.mp3', '16_5 Corrida Épica.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>16_6 Fuga Épica.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('16_6 Fuga Épica.mp3', '16_6 Fuga Épica.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>17_1 Batalha Leve.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('17_1 Batalha Leve.mp3', '17_1 Batalha Leve.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>17_2 Confusão no Campo de Batalha.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('17_2 Confusão no Campo de Batalha.mp3', '17_2 Confusão no Campo de Batalha.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>18_1 Coragem Contra o Perigo.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('18_1 Coragem Contra o Perigo.mp3', '18_1 Coragem Contra o Perigo.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>18_2 Batalha dos Heróis_ O Grande Desafio.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('18_2 Batalha dos Heróis_ O Grande Desafio.mp3', '18_2 Batalha dos Heróis_ O Grande Desafio.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>18_3 Coragem Contra o Perigo_ Power Edition.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('18_3 Coragem Contra o Perigo_ Power Edition.mp3', '18_3 Coragem Contra o Perigo_ Power Edition.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>18_4 Sinfonia do Combate Épico.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('18_4 Sinfonia do Combate Épico.mp3', '18_4 Sinfonia do Combate Épico.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>18_5 Lenda de Metal e Magia.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('18_5 Lenda de Metal e Magia.mp3', '18_5 Lenda de Metal e Magia.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>19_1 The Final Stand.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('19_1 The Final Stand.mp3', '19_1 The Final Stand.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>19_2 Steel and Sorcery_ Final Conflict.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('19_2 Steel and Sorcery_ Final Conflict.mp3', '19_2 Steel and Sorcery_ Final Conflict.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>19_3 Blades of Destiny.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('19_3 Blades of Destiny.mp3', '19_3 Blades of Destiny.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>20_1 O Despertar da Magia.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('20_1 O Despertar da Magia.mp3', '20_1 O Despertar da Magia.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>20_2 Além dos Reinos Ocultos.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('20_2 Além dos Reinos Ocultos.mp3', '20_2 Além dos Reinos Ocultos.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>20_3 Além dos Reinos Ocultos (Majestoso).mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('20_3 Além dos Reinos Ocultos (Majestoso).mp3', '20_3 Além dos Reinos Ocultos (Majestoso).mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>21_1 O Último Brinde (The Last Toast).mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('21_1 O Último Brinde (The Last Toast).mp3', '21_1 O Último Brinde (The Last Toast).mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>21_2 Promessa de Reencontro (Promise of Return).mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('21_2 Promessa de Reencontro (Promise of Return).mp3', '21_2 Promessa de Reencontro (Promise of Return).mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>22_1 O Limiar da Descoberta.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('22_1 O Limiar da Descoberta.mp3', '22_1 O Limiar da Descoberta.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>22_2 Revelando o Segredo.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('22_2 Revelando o Segredo.mp3', '22_2 Revelando o Segredo.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>22_3 Revelando o Segredo (Lighter Vibe).mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('22_3 Revelando o Segredo (Lighter Vibe).mp3', '22_3 Revelando o Segredo (Lighter Vibe).mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>23_1 Vitória na Vila - Celebração RPG.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('23_1 Vitória na Vila - Celebração RPG.mp3', '23_1 Vitória na Vila - Celebração RPG.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>23_2 Recompensa do Herói - Fanfarra Festiva.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('23_2 Recompensa do Herói - Fanfarra Festiva.mp3', '23_2 Recompensa do Herói - Fanfarra Festiva.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>23_3 Vitória na Vila - Edição Épica.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('23_3 Vitória na Vila - Edição Épica.mp3', '23_3 Vitória na Vila - Edição Épica.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>24_1 A Escola de Magia (Tema do Reino).mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('24_1 A Escola de Magia (Tema do Reino).mp3', '24_1 A Escola de Magia (Tema do Reino).mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>24_2 A Capital.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('24_2 A Capital.mp3', '24_2 A Capital.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>24_3 Salões de Cristal.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('24_3 Salões de Cristal.mp3', '24_3 Salões de Cristal.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>24_4 O Ritual das Sombras.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('24_4 O Ritual das Sombras.mp3', '24_4 O Ritual das Sombras.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>24_5 Sussurros do Abismo.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('24_5 Sussurros do Abismo.mp3', '24_5 Sussurros do Abismo.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>25_1 Trilha de Sonho.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('25_1 Trilha de Sonho.mp3', '25_1 Trilha de Sonho.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>25_2 Mundo Onírico (Alternativa).mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('25_2 Mundo Onírico (Alternativa).mp3', '25_2 Mundo Onírico (Alternativa).mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>26_1 Marcha do Tirano.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('26_1 Marcha do Tirano.mp3', '26_1 Marcha do Tirano.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>26_2 Vilão_ Drama e Coro Épico.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('26_2 Vilão_ Drama e Coro Épico.mp3', '26_2 Vilão_ Drama e Coro Épico.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>26_3 Vilão_ Instrumental Puro e Sombrio.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('26_3 Vilão_ Instrumental Puro e Sombrio.mp3', '26_3 Vilão_ Instrumental Puro e Sombrio.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>27_1 O Descanso dos Heróis (Versão A).mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('27_1 O Descanso dos Heróis (Versão A).mp3', '27_1 O Descanso dos Heróis (Versão A).mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>27_2 O Descanso dos Heróis (Versão B).mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('27_2 O Descanso dos Heróis (Versão B).mp3', '27_2 O Descanso dos Heróis (Versão B).mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>27_3 Dever Cumprido e Felicidade (Upbeat).mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('27_3 Dever Cumprido e Felicidade (Upbeat).mp3', '27_3 Dever Cumprido e Felicidade (Upbeat).mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>28_1 Tempestade Medieval.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('28_1 Tempestade Medieval.mp3', '28_1 Tempestade Medieval.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
-<tr>
-    <td><strong>28_2 Chuva no Reino.mp3</strong></td>
-    <td>
-        <button class="btn-dice" onclick="playDriveTrack('28_2 Chuva no Reino.mp3', '28_2 Chuva no Reino.mp3')">
-            ▶️ Tocar
-        </button>
-    </td>
-</tr>
+                                <td><strong>1_1 Início da Aventura (Take 1).mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('1_1 Início da Aventura (Take 1).mp3', '1_1 Início da Aventura (Take 1).mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>1_2 Início da Aventura (Take 2).mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('1_2 Início da Aventura (Take 2).mp3', '1_2 Início da Aventura (Take 2).mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>2_1 Tema dos Pequenos Heróis (Versão A).mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('2_1 Tema dos Pequenos Heróis (Versão A).mp3', '2_1 Tema dos Pequenos Heróis (Versão A).mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>2_2 Tema dos Pequenos Heróis (Versão B).mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('2_2 Tema dos Pequenos Heróis (Versão B).mp3', '2_2 Tema dos Pequenos Heróis (Versão B).mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>3_1 Dia de Feira na Vila.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('3_1 Dia de Feira na Vila.mp3', '3_1 Dia de Feira na Vila.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>3_2 Tarde na Cidade Pacata.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('3_2 Tarde na Cidade Pacata.mp3', '3_2 Tarde na Cidade Pacata.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>3_3 Dia de Feira na Vila (Vibe Viva).mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('3_3 Dia de Feira na Vila (Vibe Viva).mp3', '3_3 Dia de Feira na Vila (Vibe Viva).mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>4_1 Taverna Acolhedora.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('4_1 Taverna Acolhedora.mp3', '4_1 Taverna Acolhedora.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>4_1 Taverna Animada.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('4_1 Taverna Animada.mp3', '4_1 Taverna Animada.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>5_1 Floresta Encantada (Versão 1).mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('5_1 Floresta Encantada (Versão 1).mp3', '5_1 Floresta Encantada (Versão 1).mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>5_2 Floresta Encantada (Versão 2).mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('5_2 Floresta Encantada (Versão 2).mp3', '5_2 Floresta Encantada (Versão 2).mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>6_1 Trilha do Pântano Encantado.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('6_1 Trilha do Pântano Encantado.mp3', '6_1 Trilha do Pântano Encantado.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>6_2 Floresta Sombria.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('6_2 Floresta Sombria.mp3', '6_2 Floresta Sombria.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>6_3 Profundezas do Pântano Sombrio.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('6_3 Profundezas do Pântano Sombrio.mp3', '6_3 Profundezas do Pântano Sombrio.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>6_4 Pântano Tenso.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('6_4 Pântano Tenso.mp3', '6_4 Pântano Tenso.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>7_1 Campos Abertos Viagem.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('7_1 Campos Abertos Viagem.mp3', '7_1 Campos Abertos Viagem.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>7_2 Na Estrada.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('7_2 Na Estrada.mp3', '7_2 Na Estrada.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>8_1 Cumes Gelados_ O Desafio.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('8_1 Cumes Gelados_ O Desafio.mp3', '8_1 Cumes Gelados_ O Desafio.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>8_2 Horizonte de Gelo.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('8_2 Horizonte de Gelo.mp3', '8_2 Horizonte de Gelo.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>9_1 Ruínas de Areia (Místico e Seco) v1.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('9_1 Ruínas de Areia (Místico e Seco) v1.mp3', '9_1 Ruínas de Areia (Místico e Seco) v1.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>9_2 Ruínas de Areia (Tribal).mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('9_2 Ruínas de Areia (Tribal).mp3', '9_2 Ruínas de Areia (Tribal).mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>10_1 Corredores das Sombras.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('10_1 Corredores das Sombras.mp3', '10_1 Corredores das Sombras.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>10_2 Dungeon - Sombras Profundas.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('10_2 Dungeon - Sombras Profundas.mp3', '10_2 Dungeon - Sombras Profundas.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>10_3 Dungeon Tensa.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('10_3 Dungeon Tensa.mp3', '10_3 Dungeon Tensa.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>11_1 Templo Antigo_ Ruínas Místicas.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('11_1 Templo Antigo_ Ruínas Místicas.mp3', '11_1 Templo Antigo_ Ruínas Místicas.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>11_2 Conhecimento Esquecido.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('11_2 Conhecimento Esquecido.mp3', '11_2 Conhecimento Esquecido.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>11_3 Eco do Conhecimento Antigo.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('11_3 Eco do Conhecimento Antigo.mp3', '11_3 Eco do Conhecimento Antigo.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>12_1 Laboratório do Mago (Take 1).mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('12_1 Laboratório do Mago (Take 1).mp3', '12_1 Laboratório do Mago (Take 1).mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>12_2 Laboratório do Mago (Take 2).mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('12_2 Laboratório do Mago (Take 2).mp3', '12_2 Laboratório do Mago (Take 2).mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>13_1 A Corte de um Rei Bondoso.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('13_1 A Corte de um Rei Bondoso.mp3', '13_1 A Corte de um Rei Bondoso.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>13_2 Segredos do Castelo Encantado.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('13_2 Segredos do Castelo Encantado.mp3', '13_2 Segredos do Castelo Encantado.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>14_1 O Segredo do Castelo Antigo (Versão A).mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('14_1 O Segredo do Castelo Antigo (Versão A).mp3', '14_1 O Segredo do Castelo Antigo (Versão A).mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>14_2 Pistas na Floresta Encantada (Versão B).mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('14_2 Pistas na Floresta Encantada (Versão B).mp3', '14_2 Pistas na Floresta Encantada (Versão B).mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>15_1 Infiltração (Tiquetaque Mecânico).mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('15_1 Infiltração (Tiquetaque Mecânico).mp3', '15_1 Infiltração (Tiquetaque Mecânico).mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>15_2 Infiltração no Castelo.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('15_2 Infiltração no Castelo.mp3', '15_2 Infiltração no Castelo.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>16_1 Corrida no Castelo.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('16_1 Corrida no Castelo.mp3', '16_1 Corrida no Castelo.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>16_2 Fuga pela Floresta Mágica.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('16_2 Fuga pela Floresta Mágica.mp3', '16_2 Fuga pela Floresta Mágica.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>16_3 Fuga pela Floresta Mágica (Epic Drums Edit).mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('16_3 Fuga pela Floresta Mágica (Epic Drums Edit).mp3', '16_3 Fuga pela Floresta Mágica (Epic Drums Edit).mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>16_4 Fuga pela Floresta Mágica (Frenético Mix).mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('16_4 Fuga pela Floresta Mágica (Frenético Mix).mp3', '16_4 Fuga pela Floresta Mágica (Frenético Mix).mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>16_5 Corrida Épica.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('16_5 Corrida Épica.mp3', '16_5 Corrida Épica.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>16_6 Fuga Épica.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('16_6 Fuga Épica.mp3', '16_6 Fuga Épica.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>17_1 Batalha Leve.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('17_1 Batalha Leve.mp3', '17_1 Batalha Leve.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>17_2 Confusão no Campo de Batalha.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('17_2 Confusão no Campo de Batalha.mp3', '17_2 Confusão no Campo de Batalha.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>18_1 Coragem Contra o Perigo.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('18_1 Coragem Contra o Perigo.mp3', '18_1 Coragem Contra o Perigo.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>18_2 Batalha dos Heróis_ O Grande Desafio.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('18_2 Batalha dos Heróis_ O Grande Desafio.mp3', '18_2 Batalha dos Heróis_ O Grande Desafio.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>18_3 Coragem Contra o Perigo_ Power Edition.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('18_3 Coragem Contra o Perigo_ Power Edition.mp3', '18_3 Coragem Contra o Perigo_ Power Edition.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>18_4 Sinfonia do Combate Épico.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('18_4 Sinfonia do Combate Épico.mp3', '18_4 Sinfonia do Combate Épico.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>18_5 Lenda de Metal e Magia.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('18_5 Lenda de Metal e Magia.mp3', '18_5 Lenda de Metal e Magia.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>19_1 The Final Stand.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('19_1 The Final Stand.mp3', '19_1 The Final Stand.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>19_2 Steel and Sorcery_ Final Conflict.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('19_2 Steel and Sorcery_ Final Conflict.mp3', '19_2 Steel and Sorcery_ Final Conflict.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>19_3 Blades of Destiny.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('19_3 Blades of Destiny.mp3', '19_3 Blades of Destiny.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>20_1 O Despertar da Magia.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('20_1 O Despertar da Magia.mp3', '20_1 O Despertar da Magia.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>20_2 Além dos Reinos Ocultos.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('20_2 Além dos Reinos Ocultos.mp3', '20_2 Além dos Reinos Ocultos.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>20_3 Além dos Reinos Ocultos (Majestoso).mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('20_3 Além dos Reinos Ocultos (Majestoso).mp3', '20_3 Além dos Reinos Ocultos (Majestoso).mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>21_1 O Último Brinde (The Last Toast).mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('21_1 O Último Brinde (The Last Toast).mp3', '21_1 O Último Brinde (The Last Toast).mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>21_2 Promessa de Reencontro (Promise of Return).mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('21_2 Promessa de Reencontro (Promise of Return).mp3', '21_2 Promessa de Reencontro (Promise of Return).mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>22_1 O Limiar da Descoberta.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('22_1 O Limiar da Descoberta.mp3', '22_1 O Limiar da Descoberta.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>22_2 Revelando o Segredo.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('22_2 Revelando o Segredo.mp3', '22_2 Revelando o Segredo.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>22_3 Revelando o Segredo (Lighter Vibe).mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('22_3 Revelando o Segredo (Lighter Vibe).mp3', '22_3 Revelando o Segredo (Lighter Vibe).mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>23_1 Vitória na Vila - Celebração RPG.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('23_1 Vitória na Vila - Celebração RPG.mp3', '23_1 Vitória na Vila - Celebração RPG.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>23_2 Recompensa do Herói - Fanfarra Festiva.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('23_2 Recompensa do Herói - Fanfarra Festiva.mp3', '23_2 Recompensa do Herói - Fanfarra Festiva.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>23_3 Vitória na Vila - Edição Épica.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('23_3 Vitória na Vila - Edição Épica.mp3', '23_3 Vitória na Vila - Edição Épica.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>24_1 A Escola de Magia (Tema do Reino).mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('24_1 A Escola de Magia (Tema do Reino).mp3', '24_1 A Escola de Magia (Tema do Reino).mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>24_2 A Capital.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('24_2 A Capital.mp3', '24_2 A Capital.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>24_3 Salões de Cristal.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('24_3 Salões de Cristal.mp3', '24_3 Salões de Cristal.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>24_4 O Ritual das Sombras.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('24_4 O Ritual das Sombras.mp3', '24_4 O Ritual das Sombras.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>24_5 Sussurros do Abismo.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('24_5 Sussurros do Abismo.mp3', '24_5 Sussurros do Abismo.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>25_1 Trilha de Sonho.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('25_1 Trilha de Sonho.mp3', '25_1 Trilha de Sonho.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>25_2 Mundo Onírico (Alternativa).mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('25_2 Mundo Onírico (Alternativa).mp3', '25_2 Mundo Onírico (Alternativa).mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>26_1 Marcha do Tirano.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('26_1 Marcha do Tirano.mp3', '26_1 Marcha do Tirano.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>26_2 Vilão_ Drama e Coro Épico.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('26_2 Vilão_ Drama e Coro Épico.mp3', '26_2 Vilão_ Drama e Coro Épico.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>26_3 Vilão_ Instrumental Puro e Sombrio.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('26_3 Vilão_ Instrumental Puro e Sombrio.mp3', '26_3 Vilão_ Instrumental Puro e Sombrio.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>27_1 O Descanso dos Heróis (Versão A).mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('27_1 O Descanso dos Heróis (Versão A).mp3', '27_1 O Descanso dos Heróis (Versão A).mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>27_2 O Descanso dos Heróis (Versão B).mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('27_2 O Descanso dos Heróis (Versão B).mp3', '27_2 O Descanso dos Heróis (Versão B).mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>27_3 Dever Cumprido e Felicidade (Upbeat).mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('27_3 Dever Cumprido e Felicidade (Upbeat).mp3', '27_3 Dever Cumprido e Felicidade (Upbeat).mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>28_1 Tempestade Medieval.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('28_1 Tempestade Medieval.mp3', '28_1 Tempestade Medieval.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>28_2 Chuva no Reino.mp3</strong></td>
+                                <td>
+                                    <button class="btn-dice"
+                                        onclick="playDriveTrack('28_2 Chuva no Reino.mp3', '28_2 Chuva no Reino.mp3')">
+                                        ▶️ Tocar
+                                    </button>
+                                </td>
+                            </tr>
 
                         </tbody>
                     </table>
@@ -2585,188 +3015,414 @@
             auxílio em mesa.</p>
     </footer>
 
-    <!-- JAVASCRIPT FOR INTERACTIVITY & DICE ROLLING -->
     <script>
-        // TAB SWITCHING
-        // ABRIR/FECHAR MENU HAMBÚRGUER EM TELA PEQUENA
-        function toggleMobileMenu() {
-            const menu = document.getElementById('nav-tabs-menu');
-            menu.classList.toggle('open');
+    // TAB SWITCHING
+    // ABRIR/FECHAR MENU HAMBÚRGUER EM TELA PEQUENA
+    function toggleMobileMenu() {
+        const menu = document.getElementById('nav-tabs-menu');
+        if (menu) menu.classList.toggle('open');
+    }
+
+    // TROCA DE ABAS E FECHAMENTO AUTOMÁTICO DO MENU NO MOBILE
+    function switchTab(tabId) {
+        const tabs = document.querySelectorAll('.tab-content');
+        tabs.forEach(tab => tab.classList.remove('active'));
+
+        const btns = document.querySelectorAll('.tab-btn');
+        btns.forEach(btn => btn.classList.remove('active'));
+
+        const targetTab = document.getElementById(tabId);
+        if (targetTab) targetTab.classList.add('active');
+
+        if (window.event && window.event.currentTarget) {
+            window.event.currentTarget.classList.add('active');
         }
 
-        // TROCA DE ABAS E FECHAMENTO AUTOMÁTICO DO MENU NO MOBILE
-        function switchTab(tabId) {
-            const tabs = document.querySelectorAll('.tab-content');
-            tabs.forEach(tab => tab.classList.remove('active'));
-
-            const btns = document.querySelectorAll('.tab-btn');
-            btns.forEach(btn => btn.classList.remove('active'));
-
-            document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
-
-            // Fecha o menu hambúrguer automaticamente ao clicar em uma aba
-            const menu = document.getElementById('nav-tabs-menu');
-            if (menu) {
-                menu.classList.remove('open');
-            }
+        const menu = document.getElementById('nav-tabs-menu');
+        if (menu) {
+            menu.classList.remove('open');
         }
-        // QUICK DICE ROLLER
-        function rollDice(numDice) {
-            let total = 0;
-            let rolls = [];
-            for (let i = 0; i < numDice; i++) {
-                let roll = Math.floor(Math.random() * 6) + 1;
-                rolls.push(roll);
-                total += roll;
-            }
+    }
 
-            const resultDisplay = document.getElementById('quick-dice-result');
+    // QUICK DICE ROLLER
+    function rollDice(numDice) {
+        let total = 0;
+        let rolls = [];
+        for (let i = 0; i < numDice; i++) {
+            let roll = Math.floor(Math.random() * 6) + 1;
+            rolls.push(roll);
+            total += roll;
+        }
+
+        const resultDisplay = document.getElementById('quick-dice-result');
+        if (resultDisplay) {
             if (numDice === 1) {
                 resultDisplay.innerHTML = `🎲 <strong>${total}</strong>`;
             } else {
                 resultDisplay.innerHTML = `🎲 <strong>${total}</strong> (${rolls.join(' + ')})`;
             }
-
-            // Quick scale effect
             resultDisplay.style.transform = 'scale(1.15)';
             setTimeout(() => {
                 resultDisplay.style.transform = 'scale(1)';
             }, 150);
         }
-
-        // ENEMY SEARCH FILTER
-        function filterEnemies() {
-            const input = document.getElementById('enemy-search').value.toLowerCase();
-            const cards = document.querySelectorAll('.enemy-card');
-
-            cards.forEach(card => {
-                const name = card.getAttribute('data-name');
-                if (name.includes(input)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        }
-
-        // LISTA AUTOMÁTICA DE MÚSICAS (Lê os botões da própria tabela)
-let currentTrackIndex = 0;
-let isLooping = false;
-
-// Função para obter todas as faixas da tabela dinamicamente
-function getPlaylistTracks() {
-    const buttons = document.querySelectorAll('button[onclick*="playDriveTrack"]');
-    const tracks = [];
-    buttons.forEach(btn => {
-        // Extrai o nome do arquivo enviado na função onclick
-        const match = btn.getAttribute('onclick').match(/playDriveTrack\('([^']+)'/);
-        if (match && match[1]) {
-            tracks.push(match[1]);
-        }
-    });
-    return tracks;
-}
-
-// FUNÇÃO PRINCIPAL DE REPRODUÇÃO
-function playDriveTrack(fileName, trackName) {
-    const player = document.getElementById('main-audio-player');
-    const title = document.getElementById('music-title');
-    const playlist = getPlaylistTracks();
-
-    // Atualiza o índice da música atual na lista
-    const nameToFind = trackName || fileName;
-    const foundIndex = playlist.indexOf(nameToFind);
-    if (foundIndex !== -1) {
-        currentTrackIndex = foundIndex;
     }
 
-    if (title) {
-        title.innerText = "Tocando agora: " + nameToFind;
-    }
+    // ENEMY SEARCH FILTER
+    function filterEnemies() {
+        const input = document.getElementById('enemy-search').value.toLowerCase();
+        const cards = document.querySelectorAll('.enemy-card');
 
-    const audioUrl = "https://epietragalla.com/fazdeconta/trilhasonora/" + encodeURIComponent(nameToFind);
-
-    player.src = audioUrl;
-    player.load();
-    player.play().then(() => {
-        updatePlayPauseButton(true);
-    }).catch(error => {
-        console.log("Erro ao reproduzir o áudio:", error);
-    });
-}
-
-// TOCAR / PAUSAR
-function togglePlayPause() {
-    const player = document.getElementById('main-audio-player');
-    if (!player.src) return;
-
-    if (player.paused) {
-        player.play();
-        updatePlayPauseButton(true);
-    } else {
-        player.pause();
-        updatePlayPauseButton(false);
-    }
-}
-
-function updatePlayPauseButton(isPlaying) {
-    const btn = document.getElementById('btn-play-pause');
-    if (btn) {
-        btn.innerHTML = isPlaying ? "⏸️ Pausar" : "▶️ Continuar";
-    }
-}
-
-// PRÓXIMA MÚSICA
-function nextTrack() {
-    const playlist = getPlaylistTracks();
-    if (playlist.length === 0) return;
-
-    currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
-    const nextSong = playlist[currentTrackIndex];
-    playDriveTrack(nextSong, nextSong);
-}
-
-// MÚSICA ANTERIOR
-function previousTrack() {
-    const playlist = getPlaylistTracks();
-    if (playlist.length === 0) return;
-
-    currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
-    const prevSong = playlist[currentTrackIndex];
-    playDriveTrack(prevSong, prevSong);
-}
-
-// REPETIR MÚSICA (LOOP)
-function toggleLoop() {
-    const player = document.getElementById('main-audio-player');
-    const btn = document.getElementById('btn-loop');
-    
-    isLooping = !isLooping;
-    player.loop = isLooping;
-
-    if (btn) {
-        btn.innerText = isLooping ? "🔁 Repetir: ON" : "🔁 Repetir: OFF";
-    }
-}
-
-// AUTOMAÇÃO: QUANDO A MÚSICA TERMINAR
-document.addEventListener('DOMContentLoaded', () => {
-    const player = document.getElementById('main-audio-player');
-    if (player) {
-        player.addEventListener('ended', () => {
-            // Se o modo Repetir estiver desligado, passa para a próxima música da tabela automaticamente
-            if (!isLooping) {
-                nextTrack();
+        cards.forEach(card => {
+            const name = card.getAttribute('data-name') || '';
+            if (name.includes(input)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
             }
         });
-
-        // Mantém o botão de Pausa sincronizado se o usuário usar os controles nativos do player
-        player.addEventListener('play', () => updatePlayPauseButton(true));
-        player.addEventListener('pause', () => updatePlayPauseButton(false));
     }
-});
-    </script>
+
+    // LISTA AUTOMÁTICA DE MÚSICAS
+    let currentTrackIndex = 0;
+    let isLooping = false;
+
+    function getPlaylistTracks() {
+        const buttons = document.querySelectorAll('button[onclick*="playDriveTrack"]');
+        const tracks = [];
+        buttons.forEach(btn => {
+            const match = btn.getAttribute('onclick').match(/playDriveTrack\('([^']+)'/);
+            if (match && match[1]) {
+                tracks.push(match[1]);
+            }
+        });
+        return tracks;
+    }
+
+    function playDriveTrack(fileName, trackName) {
+        const player = document.getElementById('main-audio-player');
+        const title = document.getElementById('music-title');
+        const playlist = getPlaylistTracks();
+
+        const nameToFind = trackName || fileName;
+        const foundIndex = playlist.indexOf(nameToFind);
+        if (foundIndex !== -1) {
+            currentTrackIndex = foundIndex;
+        }
+
+        if (title) {
+            title.innerText = "Tocando agora: " + nameToFind;
+        }
+
+        const audioUrl = "https://epietragalla.com/fazdeconta/trilhasonora/" + encodeURIComponent(nameToFind);
+
+        if (player) {
+            player.src = audioUrl;
+            player.load();
+            player.play().then(() => {
+                updatePlayPauseButton(true);
+            }).catch(error => {
+                console.log("Erro ao reproduzir o áudio:", error);
+            });
+        }
+    }
+
+    function togglePlayPause() {
+        const player = document.getElementById('main-audio-player');
+        if (!player || !player.src) return;
+
+        if (player.paused) {
+            player.play();
+            updatePlayPauseButton(true);
+        } else {
+            player.pause();
+            updatePlayPauseButton(false);
+        }
+    }
+
+    function updatePlayPauseButton(isPlaying) {
+        const btn = document.getElementById('btn-play-pause');
+        if (btn) {
+            btn.innerHTML = isPlaying ? "⏸️ Pausar" : "▶️ Continuar";
+        }
+    }
+
+    function nextTrack() {
+        const playlist = getPlaylistTracks();
+        if (playlist.length === 0) return;
+
+        currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+        const nextSong = playlist[currentTrackIndex];
+        playDriveTrack(nextSong, nextSong);
+    }
+
+    function previousTrack() {
+        const playlist = getPlaylistTracks();
+        if (playlist.length === 0) return;
+
+        currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
+        const prevSong = playlist[currentTrackIndex];
+        playDriveTrack(prevSong, prevSong);
+    }
+
+    function toggleLoop() {
+        const player = document.getElementById('main-audio-player');
+        const btn = document.getElementById('btn-loop');
+
+        isLooping = !isLooping;
+        if (player) player.loop = isLooping;
+
+        if (btn) {
+            btn.innerText = isLooping ? "🔁 Repetir: ON" : "🔁 Repetir: OFF";
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const player = document.getElementById('main-audio-player');
+        if (player) {
+            player.addEventListener('ended', () => {
+                if (!isLooping) {
+                    nextTrack();
+                }
+            });
+
+            player.addEventListener('play', () => updatePlayPauseButton(true));
+            player.addEventListener('pause', () => updatePlayPauseButton(false));
+        }
+    });
+
+    // TABELAS DO GERADOR DE MISSÕES
+    const missionTables = {
+        contato: {
+            2: { nome: "Mago Ancião", desc: "O Mago Zaimen precisa da ajuda dos heróis para resolver um problema importante." },
+            3: { nome: "Empreendedor", desc: "Dono de uma fazenda, loja ou estabelecimento que está enfrentando um grande problema." },
+            4: { nome: "Celebridade", desc: "Uma pessoa muito famosa por seus talentos, como um músico, inventor ou artista da região." },
+            5: { nome: "Morador Vizinho", desc: "Um morador de Terra da Chuva Miúda, que não vive em Vila Velha." },
+            6: { nome: "Parente", desc: "Pai, mãe ou algum familiar de um dos heróis precisa de ajuda urgente." },
+            7: { nome: "Estrangeiro", desc: "Um viajante recém-chegado que ainda não conhece bem a região de Terra da Chuva Miúda." },
+            8: { nome: "Mensageiro", desc: "Um mensageiro enviado por alguém importante para entregar um pedido urgente." },
+            9: { nome: "Aventureiro Ferido", desc: "Um explorador que voltou de uma missão perigosa e precisa da ajuda dos heróis para terminar o que começou." },
+            10: { nome: "Guarda da Vila", desc: "Um guarda ou protetor de Vila Velha que não consegue resolver o problema sozinho." },
+            11: { nome: "Morador da Vila", desc: "Uma criança ou idoso de Vila Velha precisa de ajuda." },
+            12: { nome: "Criatura Amigável", desc: "Um animal falante ou criatura mágica que veio pedir ajuda aos heróis." }
+        },
+        objetivo: {
+            2: { nome: "Derrotar", desc: "Algum Inseto Gigante ou criatura está causando problemas na região e precisa ser enfrentado pelos heróis." },
+            3: { nome: "Escoltar", desc: "Levar uma pessoa específica com segurança até um determinado local." },
+            4: { nome: "Transportar", desc: "Entregar uma carga importante ou objeto valioso em outro lugar." },
+            5: { nome: "Coletar", desc: "Encontrar um item raro." },
+            6: { nome: "Explorar", desc: "Investigar uma nova caverna, ruína ou local recém-descoberto na região." },
+            7: { nome: "Resgatar", desc: "Alguém foi capturado ou se perdeu e precisa ser encontrado e trazido de volta em segurança." },
+            8: { nome: "Proteger", desc: "Defender um local importante de uma ameaça." },
+            9: { nome: "Recuperar", desc: "Localizar e recuperar uma arma lendária ou item roubado." },
+            10: { nome: "Comunicar", desc: "Uma mensagem urgente precisa chegar até alguém importante em outra região." },
+            11: { nome: "Construir", desc: "Ajudar a encontrar materiais e resolver problemas para construir algo importante." },
+            12: { nome: "Descobrir", desc: "Um mistério escondido precisa ser revelado pelos heróis." }
+        },
+        local: {
+            2: "Vila Velha", 3: "Bosque dos Espinhos", 4: "Montanha Congelante", 5: "Minas",
+            6: "Cachoeira do Norte", 7: "Lago da Boa Pesca", 8: "Floresta Secreta ou Floresta Densa",
+            9: "Rio do Destino", 10: "Cavernas sem Luz", 11: "Farol", 12: "Escombros"
+        },
+        inimigo: {
+            2: "Abelha e/ou Vespa", 3: "Barata", 4: "Besouro Titã", 5: "Cupim e/ou Formiga",
+            6: "Escorpião", 7: "Gafanhoto", 8: "Lagarta de Fogo e/ou Mariposa",
+            9: "Mosca e/ou Mosquito", 10: "Percevejo", 11: "Pulga", 12: "Traça dos Livros"
+        }
+    };
+
+    function roll2d6() {
+        return (Math.floor(Math.random() * 6) + 1) + (Math.floor(Math.random() * 6) + 1);
+    }
+
+    function roll1d6() {
+        return Math.floor(Math.random() * 6) + 1;
+    }
+
+    // CHAVE DA API COPIADA DO GOOGLE AI STUDIO
+    const GEMINI_API_KEY = "AQ.Ab8RN6Lp2hl1hfU2GfiCu2KKQth2PL2_-8xstbkR3o65QDBIEQ";
+
+    // LORE OFICIAL DO FAZ DE CONTA RPG
+    const loreLocais = {
+        "Vila Velha": "no aconchegante vilarejo de Vila Velha, onde os adultos estão ocupados na colheita e manutenção e o Mago Zaimen instrui os pequenos heróis",
+        "Bosque dos Espinhos": "na perigosa área tóxica do Bosque dos Espinhos, onde a vegetação definhou e as árvores Secas dão lugar a raízes venenosas",
+        "Montanha Congelante": "nas geladas e escarpadas encostas da Montanha Congelante, a região mais fria e íngreme de todo o continente",
+        "Minas": "nas profundas galerias das Minas subterrâneas, repletas de veios minerais e caminhos estreitos escavados no solo",
+        "Cachoeira do Norte": "perto da refrescante Cachoeira do Norte, o ponto mais belo e cristalino para águas da região",
+        "Lago da Boa Pesca": "às margens do sereno Lago da Boa Pesca, onde peixes coloridos nadam entre as águas acumuladas da cachoeira",
+        "Floresta Secreta ou Floresta Densa": "no coração da exuberante Floresta Densa, onde copas de árvores gigantescas abrigam frutos exóticos e clareiras mágicas",
+        "Rio do Destino": "nas margens agitadas do Rio do Destino, cujas águas atravessam o continente desde a cachoeira até o mar aberto",
+        "Cavernas sem Luz": "nos labirintos úmidos das Cavernas sem Luz, onde a escuridão é total e apenas fontes de luz mágicas ou tochas permitem enxergar",
+        "Farol": "ao redor da imponente torre do Farol, cuja luz forte orienta os navios de estrangeiros amigáveis pela costa",
+        "Escombros": "entre as misteriosas ruínas dos Escombros, os restos de uma antiga cidade destruída muito antes da chegada dos moradores da vila"
+    };
+
+    const loreInimigos = {
+        "Abelha e/ou Vespa": "O zumbido ensurdecedor anuncia a presença de Abelhas e Vespas Gigantes. Elas atacam à distância lançando ferrões que provocam o status de Paralisia!",
+        "Barata": "Cascas duras e passos rápidos revelam Baratas Gigantes. Quando ficam encurraladas e com pouca vida, investem em um perigoso ataque Voador!",
+        "Besouro Titã": "Besouros Titãs avançam com suas carapaças pesadas. Cuidado com suas mandíbulas, pois ao prender um herói ativam o status de Agarro!",
+        "Cupim e/ou Formiga": "Um bando organizado de Formigas ou Cupins Gigantes surge do solo! Elas usam a força de suas pinças para agarrar e arremessar os aventureiros a metros de distância.",
+        "Escorpião": "Caudas erguidas indicam Escorpiões Gigantes. Seus bicos e ferrões causam dano duplo e aplicam o terrível status de Envenenamento!",
+        "Gafanhoto": "Pernas traseiras poderosas impulsionam Gafanhotos Gigantes, que saltam por cima da linha de frente para golpear os heróis pelas costas!",
+        "Lagarta de Fogo e/ou Mariposa": "Grumos de queimadura ou nuvens de pó cobrem o ar. As Lagartas causam Queimadura ao toque e as Mariposas soltam pó que causa Cegueira!",
+        "Mosca e/ou Mosquito": "Zumbidos irritantes cortam o ar. Os Mosquitos sugam a energia causando o status de Lentidão, enquanto as Moscas investem em rasgos voadores!",
+        "Percevejo": "Um cheiro insuportável toma conta do ambiente! Os Percevejos Gigantes emitem um odor nauseante que deixa os alvos com o status de Confusão.",
+        "Pulga": "Salto velozes e picadas dolorosas! As Pulgas Gigantes sugam a vitalidade dos heróis e podem induzir os pequenos ao status de Sono.",
+        "Traça dos Livros": "Mandíbulas afiadas que roem tudo! As Traças dos Livros usam um ataque giratório que atinge todos os aventureiros ao seu redor de uma só vez."
+    };
+
+    // FUNÇÃO PRINCIPAL DE GERAÇÃO
+    async function generateMission() {
+        const rollC = roll2d6();
+        const rollO = roll2d6();
+        const rollL = roll2d6();
+        const rollI = roll2d6();
+        const rollR = roll1d6();
+
+        const contato = missionTables.contato[rollC];
+        const objetivo = missionTables.objetivo[rollO];
+        const local = missionTables.local[rollL];
+        const inimigo = missionTables.inimigo[rollI];
+
+        let recompensaTxt = "";
+        if (rollR === 1) {
+            const mult = roll1d6();
+            recompensaTxt = `${mult * 10} Chuvisco$ (${mult}d6x10)`;
+        } else if (rollR === 2) {
+            const mult = roll1d6();
+            recompensaTxt = `${mult * 10} Chuvisco$ + 1 Item de Aventura`;
+        } else if (rollR === 3) {
+            const mult = roll1d6() + roll1d6();
+            recompensaTxt = `${mult * 10} Chuvisco$ + 1 Arma`;
+        } else if (rollR === 4) {
+            const mult = roll1d6() + roll1d6();
+            recompensaTxt = `${mult * 10} Chuvisco$ + 1 Peça de Armadura/Proteção`;
+        } else if (rollR === 5) {
+            const mult = roll1d6() + roll1d6();
+            recompensaTxt = `${mult * 10} Chuvisco$ + 1 Carta de Baú de Madeira`;
+        } else if (rollR === 6) {
+            const mult = roll1d6() + roll1d6() + roll1d6();
+            recompensaTxt = `${mult * 10} Chuvisco$ + 1 Carta de Baú de Ferro`;
+        }
+
+        // 1. CARDS DETALHADOS
+        document.getElementById('res-contato').innerHTML = `<strong>[d6: ${rollC}] ${contato.nome}:</strong> ${contato.desc}`;
+        document.getElementById('res-objetivo').innerHTML = `<strong>[d6: ${rollO}] ${objetivo.nome}:</strong> ${objetivo.desc}`;
+        document.getElementById('res-local').innerHTML = `<strong>[d6: ${rollL}]:</strong> ${local}`;
+        document.getElementById('res-inimigo').innerHTML = `<strong>[d6: ${rollI}]:</strong> ${inimigo}`;
+        document.getElementById('res-recompensa').innerHTML = `<strong>[d6: ${rollR}]:</strong> ${recompensaTxt}`;
+
+        // 2. BOX 1: RESUMO SINTETIZADO
+        const narrative = `Os heróis são contatados por um(a) <strong>${contato.nome}</strong> para <strong>${objetivo.nome.toLowerCase()}</strong> a região de <strong>${local}</strong>, mas são surpreendidos por um bando de <strong>${inimigo}</strong>. Ao concluir a missão com sucesso, são recompensados com <strong>${recompensaTxt}</strong> para ser dividida entre o grupo de heróis!`;
+        document.getElementById('mission-narrative').innerHTML = narrative;
+
+        // 3. BOX 2: ROTEIRO MESTRE NARRADOR
+        const descLocalLore = loreLocais[local] || local;
+        const descInimigoLore = loreInimigos[inimigo] || "Inimigos perigosos rondam o local.";
+
+        const elaboratedHTML = `
+            <p style="margin-bottom: 10px;">
+                <strong>📍 O Chamado:</strong> A tranquilidade da Terra da Chuva Miúda foi interrompida! 
+                <strong>${contato.nome}</strong> procurou os heróis com urgência: <em>"${contato.desc}"</em>
+            </p>
+            <p style="margin-bottom: 10px;">
+                <strong>🌿 O Cenário da Missão:</strong> A jornada leva o grupo diretamente para <strong>${local}</strong> — 
+                ${descLocalLore}. A missão principal estabelecida é <strong>${objetivo.nome}</strong> (${objetivo.desc.toLowerCase()}).
+            </p>
+            <p style="margin-bottom: 10px;">
+                <strong>⚠️ A Ameaça dos Insetos Gigantes:</strong> Devido à nuvem vinda do Reino dos Gigantes, criaturas normais se tornaram ameaças enormes! 
+                No caminho, os heróis encontrarão <strong>${inimigo}</strong>. ${descInimigoLore}
+            </p>
+            <p style="margin-bottom: 0px; background: #fdf8f0; padding: 8px 12px; border-radius: 4px; border-left: 3px solid var(--accent-green);">
+                <strong>🎁 Desfecho & Recompensa:</strong> Lembrando que em Faz de Conta RPG os inimigos derrotados apenas fogem ou voltam ao tamanho normal inofensivo! Ao concluírem o objetivo em equipe, receberão <strong>${recompensaTxt}</strong> para dividir no vilarejo.
+            </p>
+        `;
+        document.getElementById('mission-elaborated').innerHTML = elaboratedHTML;
+
+        // 4. BOX 3: REQUISIÇÃO À IA GEMINI
+        generateAIAventure(contato, objetivo, local, inimigo, recompensaTxt);
+    }
+
+    // CHAMADA ASSÍNCRONA DA IA GEMINI COM FALLBACK DE MODELO E FORMATADOR
+    async function generateAIAventure(contato, objetivo, local, inimigo, recompensa) {
+        const aiBox = document.getElementById('mission-ai-narrative');
+        if (!aiBox) return;
+
+        aiBox.innerHTML = `
+            <div style="text-align: center; padding: 20px; color: var(--accent-green); font-weight: bold;">
+                ⚡ A IA do Faz de Conta RPG está escrevendo o roteiro completo da aventura... Aguarde alguns segundos!
+            </div>
+        `;
+
+        if (!GEMINI_API_KEY || GEMINI_API_KEY.trim() === "" || GEMINI_API_KEY === "SUA_CHAVE_API_AQUI") {
+            aiBox.innerHTML = `
+                <div style="background: #fff3cd; color: #856404; padding: 12px; border-radius: 6px; border: 1px solid #ffeeba;">
+                    ⚠️ <strong>Aviso de Configuração da IA:</strong> Por favor, insira sua chave da API Gemini na variável <code>GEMINI_API_KEY</code> no script.
+                </div>
+            `;
+            return;
+        }
+
+        const promptText = `Você é um Mestre de RPG especialista no sistema infantil 'Faz de Conta RPG' (Terra da Chuva Miúda).
+REGRAS OBRIGATÓRIAS:
+1. Tom: Lúdico, envolvente, amigável e seguro para crianças.
+2. Ninguém morre! Heróis apenas desmaiam de cansaço e Insetos Gigantes apenas fogem ou encolhem ao tamanho normal inofensivo.
+3. Formate a resposta usando tags HTML válidas (<p>, <strong>, <em>, <br>). NÃO use Markdown como **, ## ou \`\`\`html.
+
+Crie uma aventura completa dividida exatamente assim:
+<strong>🎯 Título da Missão</strong>
+<strong>📜 CENA 1 - O Chamado:</strong> Introdução com uma fala em aspas para o NPC ${contato.nome} dizer aos heróis sobre o problema: ${contato.desc}.
+<strong>🗺️ CENA 2 - A Exploração:</strong> A travessia até ${local}. Sugira 1 Teste de Inteligência ou Movimentação para superar um obstáculo do terreno.
+<strong>⚔️ CENA 3 - O Confronto:</strong> O encontro com ${inimigo}. Descreva o comportamento e o ataque do inimigo.
+<strong>🎁 CENA 4 - Conclusão:</strong> O objetivo ${objetivo.nome} cumprido, o agradecimento e a entrega da recompensa: ${recompensa}.`;
+
+        // LISTA DE MODELOS SUPORTADOS EM ORDEM DE TENTATIVA
+        const models = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
+        let success = false;
+
+        for (let model of models) {
+            try {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{ text: promptText }]
+                        }]
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
+                    let aiText = data.candidates[0].content.parts[0].text;
+
+                    // Limpa formatações Markdown
+                    aiText = aiText.replace(/```html/gi, '').replace(/```/g, '');
+                    aiText = aiText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                    aiText = aiText.replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+                    aiBox.innerHTML = aiText;
+                    success = true;
+                    break; // Sucesso, sai do loop de modelos
+                } else if (data.error && data.error.message) {
+                    console.warn(`Tentativa com ${model} retornou erro:`, data.error.message);
+                }
+            } catch (err) {
+                console.warn(`Erro de conexão com modelo ${model}:`, err);
+            }
+        }
+
+        if (!success) {
+            aiBox.innerHTML = `
+                <div style="background: #f8d7da; color: #721c24; padding: 12px; border-radius: 6px; border: 1px solid #f5c6cb;">
+                    ❌ <strong>Falha na Comunicação com a IA:</strong> Não foi possível gerar a história com a chave atual. Verifique se a sua Chave de API no Google AI Studio possui as permissões do modelo Gemini ativas.
+                </div>
+            `;
+        }
+    }
+</script>
 </body>
 
 </html>
