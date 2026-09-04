@@ -2257,7 +2257,7 @@
                     style="background: #fff; border: 1px solid var(--border-color); border-radius: 8px; padding: 18px; margin-bottom: 15px; box-shadow: inset 0 0 8px rgba(0,0,0,0.03);">
                     <div
                         style="font-family: 'Fredoka One', cursive; color: var(--bg-card-header); font-size: 1.1rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; border-bottom: 1px dashed var(--border-color); padding-bottom: 6px;">
-                        📖 Roteiro Mestre Narrador (Contexto Faz de Conta)
+                        📖 Roteiro Simplificado
                     </div>
                     <div id="mission-elaborated" style="font-size: 0.95rem; line-height: 1.7; color: var(--text-main);">
                         <em>O contexto detalhado do Mestre surgirá aqui ao gerar uma missão.</em>
@@ -3328,36 +3328,36 @@
             auxílio em mesa.</p>
     </footer>
 
-    <!-- CARREGAMENTO DO MÓDULO DE IA E LÓGICA PRINCIPAL -->
+    <!-- LÓGICA PRINCIPAL DO GERADOR COM LORE E BANCO DE DADOS TRIPLICADO -->
     <script type="module">
-        import * as webllm from "https://esm.run/@mlc-ai/web-llm";
 
+        // TABELAS PADRÃO DO GERADOR (2d6 / 1d6)
         const missionTables = {
             contato: {
-                2: { nome: "Mago Ancião", desc: "O Mago Zaimen precisa da ajuda dos heróis." },
-                3: { nome: "Empreendedor", desc: "Dono de uma fazenda enfrentando um grande problema." },
-                4: { nome: "Celebridade", desc: "Uma pessoa muito famosa por seus talentos na região." },
-                5: { nome: "Morador Vizinho", desc: "Um morador de Terra da Chuva Miúda, fora de Vila Velha." },
+                2: { nome: "Mago Ancião", desc: "O Mago Zaimen precisa da ajuda dos heróis para resolver um problema importante." },
+                3: { nome: "Empreendedor", desc: "Dono de uma fazenda, loja ou estabelecimento com problemas." },
+                4: { nome: "Celebridade", desc: "Famoso por seus talentos (músico, inventor, artista) que precisa de proteção." },
+                5: { nome: "Morador Vizinho", desc: "Morador de Terra da Chuva Miúda fora de Vila Velha precisando de socorro." },
                 6: { nome: "Parente", desc: "Pai, mãe ou familiar de um dos heróis precisa de ajuda urgente." },
-                7: { nome: "Estrangeiro", desc: "Viajante recém-chegado que não conhece a região." },
-                8: { nome: "Mensageiro", desc: "Mensageiro enviado para entregar um pedido urgente." },
-                9: { nome: "Aventureiro Ferido", desc: "Explorador que voltou de uma missão perigosa." },
-                10: { nome: "Guarda da Vila", desc: "Guarda ou protetor que não consegue resolver sozinho." },
+                7: { nome: "Estrangeiro", desc: "Viajante recém-chegado que não conhece bem a região." },
+                8: { nome: "Mensageiro", desc: "Enviado por alguém importante para entregar um pedido urgente." },
+                9: { nome: "Aventureiro Ferido", desc: "Explorador que voltou de uma missão perigosa e precisa que terminem seu trabalho." },
+                10: { nome: "Guarda da Vila", desc: "Guarda ou protetor que não consegue resolver a ameaça sozinho." },
                 11: { nome: "Morador da Vila", desc: "Uma criança ou idoso de Vila Velha precisa de ajuda." },
-                12: { nome: "Criatura Amigável", desc: "Animal falante ou criatura mágica pedindo ajuda." }
+                12: { nome: "Criatura Amigável", desc: "Animal falante ou criatura mágica pedindo ajuda aos heróis." }
             },
             objetivo: {
-                2: { nome: "Derrotar", desc: "Inseto Gigante causando problemas na região." },
-                3: { nome: "Escoltar", desc: "Levar uma pessoa específica com segurança." },
-                4: { nome: "Transportar", desc: "Entregar uma carga importante em outro lugar." },
-                5: { nome: "Coletar", desc: "Encontrar um item raro." },
-                6: { nome: "Explorar", desc: "Investigar uma nova caverna ou ruína recém-descoberta." },
-                7: { nome: "Resgatar", desc: "Alguém capturado ou perdido precisa ser encontrado." },
-                8: { nome: "Proteger", desc: "Defender um local importante de uma ameaça." },
-                9: { nome: "Recuperar", desc: "Localizar e recuperar um item roubado." },
-                10: { nome: "Comunicar", desc: "Mensagem urgente precisa chegar a alguém importante." },
-                11: { nome: "Construir", desc: "Ajudar a encontrar materiais para construir algo." },
-                12: { nome: "Descobrir", desc: "Um mistério escondido precisa ser revelado." }
+                2: { nome: "Derrotar", desc: "Inseto Gigante ou criatura causando problemas na região." },
+                3: { nome: "Escoltar", desc: "Levar uma pessoa específica com segurança até um determinado local." },
+                4: { nome: "Transportar", desc: "Entregar uma carga importante ou objeto valioso em outro lugar." },
+                5: { nome: "Coletar", desc: "Encontrar um item raro ou artefato oculto." },
+                6: { nome: "Explorar", desc: "Investigar uma nova caverna, ruína ou local descoberto na região." },
+                7: { nome: "Resgatar", desc: "Alguém capturado ou perdido precisa ser encontrado e trazido de volta." },
+                8: { nome: "Proteger", desc: "Defender um local importante ou trabalhadores de uma ameaça." },
+                9: { nome: "Recuperar", desc: "Localizar e recuperar uma arma lendária ou item roubado." },
+                10: { nome: "Comunicar", desc: "Uma mensagem urgente precisa chegar a alguém importante." },
+                11: { nome: "Construir", desc: "Encontrar materiais e proteger a construção de estruturas defensivas." },
+                12: { nome: "Descobrir", desc: "Um mistério escondido na região precisa ser revelado." }
             },
             local: {
                 2: "Vila Velha", 3: "Bosque dos Espinhos", 4: "Montanha Congelante", 5: "Minas",
@@ -3371,260 +3371,298 @@
             }
         };
 
-        const loreLocais = {
-            "Vila Velha": "no aconchegante vilarejo de Vila Velha",
-            "Bosque dos Espinhos": "na perigosa área tóxica do Bosque dos Espinhos",
-            "Montanha Congelante": "nas geladas encostas da Montanha Congelante",
-            "Minas": "nas profundas galerias das Minas subterrâneas",
-            "Cachoeira do Norte": "perto da refrescante Cachoeira do Norte",
-            "Lago da Boa Pesca": "às margens do sereno Lago da Boa Pesca",
-            "Floresta Secreta ou Floresta Densa": "no coração da exuberante Floresta Densa",
-            "Rio do Destino": "nas margens agitadas do Rio do Destino",
-            "Cavernas sem Luz": "nos labirintos úmidos das Cavernas sem Luz",
-            "Farol": "ao redor da imponente torre do Farol",
-            "Escombros": "entre as misteriosas ruínas dos Escombros"
+        // TRIPLICAÇÃO DE DIÁLOGOS DOS NPCS (VARIEDADE DE ENTRADA)
+        const geradorDialogosVariados = {
+            "Mago Ancião": [
+                "Pequenos heróis, consultei meus tomos antigos na biblioteca de Vila Velha e a magia da nuvem gigante se espalhou! Preciso da coragem de vocês para restaurar a paz na Terra da Chuva Miúda.",
+                "Meus jovens aprendizes, percebi uma alteração nas correntes mágicas do continente. Um novo perigo se aproxima e confio no coração puro de vocês para resolver esse mistério!",
+                "Que bom que os encontrei! Um mapa antigo que cataloguei na biblioteca revelou um segredo urgente que exige a astúcia e o trabalho em equipe do nosso grupo de protetores."
+            ],
+            "Empreendedor": [
+                "Nossos estoques e ferramentas de trabalho foram tomados! Se não resolvermos isso rapidamente, o comércio e as colheitas da nossa vila ficarão totalmente paralisados.",
+                "Socorro, pequenos guardiões! Minhas mercadorias que abastecem as famílias da vila estão presas no meio do caminho. Preciso da proteção de vocês para resgatá-las!",
+                "Minha oficina está em perigo! Materiais valiosos que uso para fabricar móveis e utensílios foram espalhados. Sem a ajuda de vocês, o prejuízo será enorme."
+            ],
+            "Celebridade": [
+                "Minha apresentação e minhas canções inspiradoras estão ameaçadas! Preciso que protetores destemidos garantam a segurança do local para que a música volte a tocar para nosso povo.",
+                "Ah, bravos heróis! Eu estava criando uma nova poesia para a celebração da vila quando criaturas assustadoras surgiram. Por favor, tragam a tranquilidade de volta ao local!",
+                "A arte da Terra da Chuva Miúda não pode parar! Preciso de guardiões corajosos que possam proteger meus instrumentos e garantir que o festival ocorra em paz."
+            ],
+            "Morador Vizinho": [
+                "Ouvi ruídos assustadores nos arredores da minha casa, fora dos limites da vila. Não tenho o treinamento de vocês, por isso vim pedir o auxílio dos nossos pequenos guardiões!",
+                "A vizinhança está muito apreensiva! Pequenos sinais de perigo surgiram no caminho e precisamos da agilidade de vocês para investigar antes que o problema aumente.",
+                "Olá, crianças bravas! Minha horta comunitária e os animais dos arredores estão sendo perturbados. Vocês podem checar o que está acontecendo por lá?"
+            ],
+            "Parente": [
+                "Que alívio encontrar vocês! Um imprevisto sério aconteceu com nossa família durante a jornada e só a bravura e a união do grupo podem nos salvar dessa situação.",
+                "Pequenos protetores, um pertence muito querido da nossa família acabou perdido no meio da expedição. Vocês poderiam nos ajudar a recuperar em segurança?",
+                "Preciso da ajuda e do carinho de vocês! Algo inesperado bloqueou a rota que usamos diariamente e precisamos da coragem dos heróis da casa para resolver isso."
+            ],
+            "Estrangeiro": [
+                "Cheguei há pouco pelo Farol da costa e não conheço os perigos desses caminhos. As criaturas daqui agem de forma estranha, e preciso de guias corajosos para me acompanhar!",
+                "Saudações, pequenos heróis! Vim de terras distantes trazendo recursos para troca, mas fui surpreendido por obstáculos pelo caminho. Podem me escoltar até a vila?",
+                "Nunca vi um lugar tão mágico e ao mesmo tempo tão desafiador! Preciso da sabedoria de vocês para navegar com segurança pelas trilhas da região."
+            ],
+            "Mensageiro": [
+                "Carrego um pergaminho selado com notícias urgentes! O caminho adiante está bloqueado e apenas heróis mirins com boas habilidades podem fazer essa mensagem chegar ao destino.",
+                "Notícias importantes precisam ser entregues sem demora! O terreno está hostil e preciso de guardiões valentes para garantir que a mensagem chegue intacta.",
+                "Atenção, pequenos protetores! Um pedido de ajuda urgente precisa ser transmitido. Acompanhem-me para que possamos cruzar a área em segurança!"
+            ],
+            "Aventureiro Ferido": [
+                "Tentei explorar a área sozinho, mas os desafios do terreno foram demais para mim. Aqui está o meu mapa; confio a vocês a missão de terminar o que comecei!",
+                "Uf... por pouco não fico preso lá! As criaturas estão protegendo aquele local com muita firmeza. Levem estes suprimentos e completem a jornada em meu lugar!",
+                "Minha perna está machucada, mas o dever não pode esperar. Sei que vocês têm a coragem e a inteligência necessárias para superar essa provação!"
+            ],
+            "Guarda da Vila": [
+                "Nosso dever é vigiar os portões de Vila Velha, mas a ameaça avançou para além do nosso alcance. Precisamos da agilidade do seu grupo na linha de frente!",
+                "Relatórios da patrulha indicam movimentações estranhas fora da vila. Como os guardas precisam manter o vilarejo protegido, convocamos os heróis mirins para essa missão!",
+                "Pequenos guardiões, a ordem e a segurança da nossa região dependem de vocês hoje! Sigam até a área indicada e garantam a proteção do nosso povo."
+            ],
+            "Morador da Vila": [
+                "Coisas muito misteriosas estão acontecendo perto de nós e todos estão apreensivos. Vocês já provaram que têm coragem e são a nossa única esperança!",
+                "Socorro, crianças corajosas! Um problema simples acabou se tornando um grande desafio e não sabemos a quem recorrer a não ser aos nossos pequenos heróis!",
+                "A alegria das crianças e idosos da vila precisa ser protegida! Contamos com a energia e o trabalho em equipe de vocês para trazer a paz de volta."
+            ],
+            "Criatura Amigável": [
+                "Por favor, amiguinhos! Um ruído forte assustou os animais da floresta e precisamos da ajuda de vocês para afastar o perigo e trazer a tranquilidade de volta!",
+                "Miau/Au au! (O animalzinho aponta aflito para a direção da trilha, mostrando que outros animais companheiros precisam de proteção urgente dos heróis).",
+                "Pequenos protetores da natureza, uma fonte de água importante foi bloqueada e os bichinhos da floresta precisam da inteligência de vocês para liberá-la!"
+            ]
         };
 
-        const loreInimigos = {
-            "Abelha e/ou Vespa": "Abelhas e Vespas Gigantes com ferrões de Paralisia!",
-            "Barata": "Baratas Gigantes com ataque Voador!",
-            "Besouro Titã": "Besouros Titãs com o status de Agarro!",
-            "Cupim e/ou Formiga": "Formigas ou Cupins que arremessam os aventureiros.",
-            "Escorpião": "Escorpiões Gigantes que aplicam Envenenamento!",
-            "Gafanhoto": "Gafanhotos Gigantes que saltam pelas costas!",
-            "Lagarta de Fogo e/ou Mariposa": "Lagartas que queimam e Mariposas que causam Cegueira!",
-            "Mosca e/ou Mosquito": "Mosquitos que aplicam Lentidão!",
-            "Percevejo": "Percevejos que emitem odor de Confusão.",
-            "Pulga": "Pulgas que provocam Sono.",
-            "Traça dos Livros": "Traças com ataque giratório."
+        // TRIPLICAÇÃO DE LORE E DESAFIOS AMBIENTAIS POR LOCAL (LIVRO BASE + GUIA TORÓ)
+        const geradorLocaisVariados = {
+            "Vila Velha": [
+                { desc: "no acolhedor vilarejo de casinhas de madeira e ruelas de terra, cercado por hortas e pela biblioteca onde o Mago Zaimen pesquisa", desafio: "Cruzar a praça central e as ruelas movimentadas sem esbarrar nas barracas dos feirantes. <strong>Teste de Movimentação (d6)</strong>." },
+                { desc: "nas proximidades das hortas comunitárias de Vila Velha, onde o movimento diário exige atenção dos pequenos", desafio: "Organizar a passagem entre cercas de madeira e ferramentas de cultivo. <strong>Teste de Inteligência (d6)</strong> para achar um atalho seguro." },
+                { desc: "nos arredores da grande fonte de pedra de Vila Velha, ponto de encontro tradicional dos moradores", desafio: "Desviar dos habitantes agitados e manter o grupo unido. <strong>Teste de Defesa ou Movimentação (d6)</strong>." }
+            ],
+            "Bosque dos Espinhos": [
+                { desc: "na paisagem sufocante de troncos retorcidos, raízes venenosas e névoa esverdeada tóxica que emana do solo", desafio: "Atravessar o solo coberto de névoa e poças tóxicas sem tocar nos espinhos. <strong>Teste de Defesa ou Movimentação (d6)</strong> para não se enfraquecer." },
+                { desc: "entre os arbustos secos e galhos cobertos de espinhos afiados onde o ar é pesado e inquietante", desafio: "Encontrar um caminho livre de raízes venenosas. <strong>Teste de Inteligência (d6)</strong> para identificar o solo firme." },
+                { desc: "na divisa tóxica onde as árvores mortas dão lugar a pequenos poços de fluido esverdeado", desafio: "Proteger os olhos e a respiração contra os vapores do local. <strong>Teste de Defesa (d6)</strong>." }
+            ],
+            "Montanha Congelante": [
+                { desc: "nas encostas íngremes e geladas do pico mais alto da região, cobertas por neve espessa, ventos uivantes e espelhos de gelo", desafio: "Escalar a rocha congelada e escorregadia sob ventos fortes. <strong>Teste de Força ou Movimentação (d6)</strong> para não perder o apoio." },
+                { desc: "nas galerias de cristal de gelo da montanha, onde os penhascos refletem a luz e o frio é intenso", desafio: "Caminhar sobre gelo fino sem provocar pequenas avalanches. <strong>Teste de Movimentação (d6)</strong>." },
+                { desc: "próximo ao topo coberto por neve eterna, onde as rajadas de vento sopram com força total", desafio: "Resistir ao frio rigoroso e manter o ritmo de subida. <strong>Teste de Defesa ou Força (d6)</strong>." }
+            ],
+            "Minas": [
+                { desc: "nas galerias e túneis subterrâneos escavados, iluminados pelo brilho suave de cristais mágicos que atraem criaturas", desafio: "Navegar pelo labirinto escuro desviando de trilhos velhos e poços profundos. <strong>Teste de Inteligência (d6)</strong> para achar a rota correta." },
+                { desc: "em uma caverna rica em minérios de ferro e cobre com paredes de pedra instáveis", desafio: "Identificar vigas de sustentação seguras e evitar desabamentos soltos. <strong>Teste de Inteligência ou Defesa (d6)</strong>." },
+                { desc: "nas passagens subterrâneas mais profundas onde os cristais brilham em tons coloridos nas paredes", desafio: "Mover-se em silêncio por caminhos estreitos de pedra. <strong>Teste de Movimentação (d6)</strong>." }
+            ],
+            "Cachoeira do Norte": [
+                { desc: "junto à queda d'água cristalina que despenca da colina verdejante, formando uma piscina natural de pedras lisas", desafio: "Atravessar as pedras molhadas e escorregadias perto da forte correnteza. <strong>Teste de Movimentação (d6)</strong> para manter o equilíbrio." },
+                { desc: "na trilha elevada que passa por trás da forte cortina d'água da cachoeira", desafio: "Resistir à força do spray de água e enxergar a passagem. <strong>Teste de Inteligência ou Defesa (d6)</strong>." },
+                { desc: "nas encostas da colina ao redor da piscina natural, onde a vegetação é muito úmida", desafio: "Subir os degraus de pedra cobertos de musgo com segurança. <strong>Teste de Movimentação (d6)</strong>." }
+            ],
+            "Lago da Boa Pesca": [
+                { desc: "às margens serenas do grande lago de águas puras, onde os moradores costumam pescar e cultivar vegetais", desafio: "Guiar um pequeno barco entre juncos e troncos flutuantes. <strong>Teste de Inteligência ou Força (d6)</strong> para manobrar na água." },
+                { desc: "nas pontes de madeira e ancoradouros de pesca cercados por vegetação aquática", desafio: "Caminhar pelas tábuas soltas do trapiche de pesca. <strong>Teste de Movimentação (d6)</strong>." },
+                { desc: "nas áreas de plantação de frutos e tubérculos que margeiam o sereno lago", desafio: "Superar o terreno enlameado perto da água. <strong>Teste de Força ou Movimentação (d6)</strong>." }
+            ],
+            "Floresta Secreta ou Floresta Densa": [
+                { desc: "no coração da exuberante mata de árvores gigantescas, onde a copa densa esconde clareiras mágicas e árvores cobertas de musgo", desafio: "Abrir caminho entre cipós e raízes gigantescas que bloqueiam a trilha. <strong>Teste de Força ou Inteligência (d6)</strong> para abrir passagem." },
+                { desc: "em uma clareira mística iluminada por flores raras que mudam de cor ao toque dos pequenos", desafio: "Decifrar o caminho correto entre trilhas naturais quase invisíveis. <strong>Teste de Inteligência (d6)</strong>." },
+                { desc: "sob as copas fechadas da floresta densa onde a luz do sol mal consegue atravessar as folhas", desafio: "Guiar o grupo mantendo a direção certa entre as árvores frondosas. <strong>Teste de Inteligência ou Movimentação (d6)</strong>." }
+            ],
+            "Rio do Destino": [
+                { desc: "nas margens agitadas do rio que serpenteia desde a cachoeira até o mar, repleto de corredeiras e rochas", desafio: "Saltar de pedra em pedra sobre as corredeiras do rio. <strong>Teste de Movimentação (d6)</strong> para não cair na água agitada." },
+                { desc: "em um trecho veloz do rio cercado por troncos caídos e margens íngremes", desafio: "Equilibrar-se sobre um tronco antigo usado como ponte improvisada. <strong>Teste de Movimentação ou Defesa (d6)</strong>." },
+                { desc: "nas curvas calmas do rio que cortam a borda de vales e cavernas", desafio: "Navegar ou caminhar pela margem arenosa sem escorregar na lama. <strong>Teste de Força (d6)</strong>." }
+            ],
+            "Cavernas sem Luz": [
+                { desc: "nos túneis profundos e completamente escuros esculpidos pela água em pedras negras, onde tochas são indispensáveis", desafio: "Avançar na escuridão total segurando fontes de luz e desviando de estalactites. <strong>Teste de Inteligência (d6)</strong> para notar armadilhas." },
+                { desc: "em um salão subterrâneo de pedras escuras onde o som dos passos ecoa fortemente", desafio: "Manter a orientação e evitar buracos ocultos no solo escuro. <strong>Teste de Inteligência ou Movimentação (d6)</strong>." },
+                { desc: "nas galerias mais estreitas das cavernas úmidas cercadas por rochas escuras", desafio: "Passar por fendas apertadas segurando as tochas da equipe. <strong>Teste de Defesa ou Força (d6)</strong>." }
+            ],
+            "Farol": [
+                { desc: "ao redor da imponente torre de pedra gravada com runas mágicas, cuja lanterna orienta os navegantes da costa", desafio: "Subir os longos degraus em espiral sob rajadas de vento marítimo. <strong>Teste de Defesa ou Movimentação (d6)</strong> para manter o ritmo." },
+                { desc: "na plataforma superior de observação da torre sob forte vento do litoral", desafio: "Mover-se na área elevada e segurar os equipamentos com firmeza. <strong>Teste de Força ou Defesa (d6)</strong>." },
+                { desc: "na base de pedra da torre do Farol cercada por rochas litorâneas", desafio: "Subir a trilha de pedra batida sob o spray do mar. <strong>Teste de Movimentação (d6)</strong>." }
+            ],
+            "Escombros": [
+                { desc: "entre os restos misteriosos de uma antiga cidade destruída há gerações, cheia de paredes de pedra gigante e casas em ruínas", desafio: "Caminhar com cuidado sobre muros de pedra antiga que ameaçam ruir. <strong>Teste de Movimentação ou Inteligência (d6)</strong>." },
+                { desc: "nas velhas praças abandonadas da cidade em ruínas cobertas por areia e pedregulhos soltos", desafio: "Rastrear passagens e entradas escondidas em prédios de pedra. <strong>Teste de Inteligência (d6)</strong>." },
+                { desc: "entre os corredores esquecidos das ruínas antigas cheios de escombros e entradas trancadas", desafio: "Mover blocos de pedra soltos para abrir caminho. <strong>Teste de Força ou Inteligência (d6)</strong>." }
+            ]
+        };
+
+        // TRIPLICAÇÃO DE LORE E TÁTICAS DE INIMIGOS (BESTIÁRIO BASE + EXPANSÃO 1)
+        const geradorInimigosVariados = {
+            "Abelha e/ou Vespa": [
+                "O zumbido forte indica a presença de Abelhas e Vespas Gigantes. Elas atacam à distância lançando ferrões que podem causar Paralisia! <em>Dica: O grupo pode usar objetos do cenário como cobertura para bloquear a linha de visão dos disparos.</em>",
+                "Enxames de Vespas e Abelhas surgem zumbindo alto no ar. Seus ferrões paralensantes são perigosos à distância! <em>Dica: Habilidades de longo alcance e magias ajudam a acertá-las antes que se aproximem.</em>",
+                "As asas rápidas das Vespas cortam o ar com velocidade. Elas tentam se manter no alto durante o confronto! <em>Dica: O uso de redes ou poções arremessáveis pode imobilizar o enxame.</em>"
+            ],
+            "Barata": [
+                "Passos rápidos e cascas duras revelam Baratas Gigantes que poluem o ambiente. Quando encurraladas, investem em ataques voadores! <em>Dica: Fiquem atentos ao terreno escorregadio e usem itens de desaceleração como a Poção Cola.</em>",
+                "Carapaças resistentes surgem rápido pelo chão! As Baratas Gigantes ficam mais perigosas quando perdem vida. <em>Dica: Mantenham a defesa erguida e usem o trabalho em equipe para contornar o ataque voador.</em>",
+                "Baratas de casca escura avançam em bando pela área. A sujeira no local dificulta o movimento dos heróis! <em>Dica: Limpar o caminho ou focar o ataque em uma criatura por vez garante a vitória.</em>"
+            ],
+            "Besouro Titã": [
+                "Carapaças pesadas avançam pelo caminho. Suas mandíbulas fortes ativam o status de Agarro se prenderem um herói! <em>Dica: Atacar pelas costas ou distrair o besouro garante bônus nos testes de ataque.</em>",
+                "Besouros Titãs pesados marcham com passos lentos, mas com muita força! Suas pinças presas imobilizam alvos. <em>Dica: A Ação de Ajuda de um companheiro é ideal para libertar um herói preso.</em>",
+                "A carapaça dura do Besouro Titã ignora parte dos golpes frontais. Ele protege a linha de frente do bando! <em>Dica: Flanquear a criatura em lados opostos reduz sua capacidade de defesa.</em>"
+            ],
+            "Cupim e/ou Formiga": [
+                "Um bando organizado surge do solo devorando estruturas! Elas usam suas pinças para agarrar e arremessar os heróis a distância. <em>Dica: Trabalhem em equipe mantendo distância e protegendo aliados com a Ação de Defesa.</em>",
+                "Formigas e Cupins Gigantes trabalham em sintonia perfeita, tentando cercar os aventureiros! <em>Dica: Evitem ficar no centro do bando para não sofrerem arremessos em sequência.</em>",
+                "A força física do exército de Formigas e Cupins impressiona. Suas mordidas são rápidas e firmes! <em>Dica: Usar armas com maior alcance ajuda a manter as criaturas sob controle.</em>"
+            ],
+            "Escorpião": [
+                "Caudas erguidas e carapaças reluzentes indicam Escorpiões Gigantes! Seus ferrões causam dano e o status de Envenenamento. <em>Dica: Iluminar a área ou usar habilidades de visão ajuda a detectar criaturas com carapaça reflexiva.</em>",
+                "Escorpiões de carapaça transparente se escondem na sombra! Seus bicos causam envenenamento doloroso. <em>Dica: Fazer testes de percepção e usar a luz de tochas evita surpresas nas costas.</em>",
+                "O movimento rápido das garras do Escorpião ameaça os heróis. Ele ataca com garras e ferrão! <em>Dica: O uso de poções de cura rápida e proteção reduz os efeitos do veneno.</em>"
+            ],
+            "Gafanhoto": [
+                "Pernas traseiras poderosas permitem que os Gafanhotos deem saltos gigantescos, posicionando-se nas costas dos heróis! <em>Dica: Protejam a retaguarda do grupo e evitem ficar isolados no mapa.</em>",
+                "Salto velozes cortam o ar! Os Gafanhotos Gigantes atacam por cima e tentam desorientar a equipe. <em>Dica: Manter a formação agrupada impede que o inimigo golpeie pelas costas sem reação.</em>",
+                "O enxame de Gafanhotos se move sem parar, destruindo a vegetação ao redor. <em>Dica: Usar poções que imobilizam pernas ou pés impede os saltos da criatura.</em>"
+            ],
+            "Lagarta de Fogo e/ou Mariposa": [
+                "Grumos de queimadura ou nuvens de pó cobrem o ar. As Lagartas causam Queimadura e as Mariposas soltam pó de Cegueira! <em>Dica: Usar pergaminhos de longa distância evita o contato direto com o calor da lagarta.</em>",
+                "Pó brilhante solto pelas asas das Mariposas afeta a visão do grupo, enquanto Lagartas de Fogo se aproximam! <em>Dica: Mantenham a calma e usem habilidades mágicas que não dependem totalmente da visão.</em>",
+                "O calor gerado pelas Lagartas de Fogo é intenso ao toque! <em>Dica: Atacar à distância com projéteis ou magias protege a vida dos pequenos heróis.</em>"
+            ],
+            "Mosca e/ou Mosquito": [
+                "Zumbidos irritantes cortam o ar. Os Mosquitos sugam energia aplicando Lentidão, e as Moscas fazem investidas rápidas! <em>Dica: Armas de alcance ou magia são ideais para acertar inimigos voadores.</em>",
+                "Mosquitos e Moscas Gigantes voam em círculos, tentando cansar os heróis com picadas e investidas. <em>Dica: Atrair as criaturas para espaços mais baixos facilita os golpes de combate.</em>",
+                "A agilidade voadora desses insetos torna os ataques diretos difíceis. <em>Dica: Esperar o momento da investida ou usar ações de distração ajuda a garantir o acerto.</em>"
+            ],
+            "Percevejo": [
+                "Um cheiro forte e desagradável toma conta do ar! Os Percevejos Gigantes emitem um odor nauseante que provoca Confusão. <em>Dica: Máscaras de pano ou poções de percepção ajudam o grupo a ignorar o mau cheiro.</em>",
+                "Odor insuportável e carapaça dura! O Percevejo Gigante confunde os aventureiros com seu cheiro tóxico. <em>Dica: Atacar rapidamente antes que o cheiro se espalhe pela sala reduz o status de Confusão.</em>",
+                "Carapaças resistentes que protegem Percevejos escondidos nos escombros. <em>Dica: Mantenham a comunicação entre o grupo para superarem os efeitos da confusão.</em>"
+            ],
+            "Pulga": [
+                "Saltos velozes e picadas dolorosas! As Pulgas Gigantes sugam a vitalidade dos heróis e podem induzir ao status de Sono. <em>Dica: Mantenham-se atentos para acordar aliados adormecidos antes que fiquem vulneráveis.</em>",
+                "A agilidade extraordinária da Pulga Gigante permite saltos surpreendentes! Ela suga a energia da equipe. <em>Dica: Usar a Ação de Ajuda para acordar companheiros garante que ninguém fique para trás.</em>",
+                "Pulgas em bando saltam rapidamente pelo chão e pelas paredes. <em>Dica: Golpes em área ou magia de fogo ajudam a controlar a movimentação rápida do inimigo.</em>"
+            ],
+            "Traça dos Livros": [
+                "Mandíbulas afiadas que roem tudo ao redor! As Traças dos Livros usam um ataque giratório que atinge todos os aventureiros vizinhos. <em>Dica: Espalhem-se pelo grid para que o ataque giratório atinja apenas um herói por vez.</em>",
+                "Traças Gigantes roem madeira e pergaminhos rapidamente! Seu ataque em giro atinge vários alvos no mesmo quadrado. <em>Dica: Mantenham distância de pelo menos 2 quadrados entre cada herói.</em>",
+                "O movimento giratório da Traça dos Livros pega muitos desavisados. <em>Dica: Usar ataques de longe impede que a criatura acerte todo o grupo de uma vez.</em>"
+            ]
         };
 
         function roll2d6() { return (Math.floor(Math.random() * 6) + 1) + (Math.floor(Math.random() * 6) + 1); }
         function roll1d6() { return Math.floor(Math.random() * 6) + 1; }
 
-        // MOTOR WEBLLM E MODELO NARRATIVO AVANÇADO
-        let webllmEngine = null;
-        const WEBLLM_MODEL = "Llama-3.2-1B-Instruct-q4f32_1-MLC";
-
-        async function initWebLLMEngine() {
-            const aiBox = document.getElementById('mission-ai-narrative');
-
-            if (!navigator.gpu) {
-                aiBox.innerHTML = `
-                    <div style="background: #f8d7da; color: #721c24; padding: 12px; border-radius: 6px;">
-                        ⚠️ <strong>WebGPU Não Encontrada:</strong> O seu navegador não possui aceleração WebGPU habilitada.
-                    </div>
-                `;
-                return false;
-            }
-
-            if (!webllmEngine) {
-                aiBox.innerHTML = `
-                    <div style="text-align: center; padding: 15px; color: var(--accent-green); font-weight: bold;">
-                        ⏳ Carregando o Motor da IA na GPU (~700MB na 1ª vez)...<br>
-                        <progress id="webllm-progress" value="0" max="100" style="width: 80%; height: 18px; margin-top: 10px; border-radius: 6px;"></progress>
-                        <div id="webllm-status-text" style="font-size: 0.85rem; margin-top: 5px; color: #555;">Iniciando motor de raciocínio...</div>
-                    </div>
-                `;
-
-                try {
-                    webllmEngine = await webllm.CreateMLCEngine(
-                        WEBLLM_MODEL,
-                        {
-                            initProgressCallback: (report) => {
-                                const progressBar = document.getElementById('webllm-progress');
-                                const statusText = document.getElementById('webllm-status-text');
-                                if (progressBar) progressBar.value = report.progress * 100;
-                                if (statusText) statusText.innerText = report.text;
-                            }
-                        }
-                    );
-                } catch (err) {
-                    console.error("Erro na inicialização do WebLLM:", err);
-                    aiBox.innerHTML = `
-                        <div style="background: #f8d7da; color: #721c24; padding: 12px; border-radius: 6px;">
-                            ❌ <strong>Falha ao carregar modelo:</strong> ${err.message || 'Erro de compilação WebGPU.'}
-                        </div>
-                    `;
-                    return false;
-                }
-            }
-            return true;
+        // HELPER PARA SELECIONAR ITEM ALEATÓRIO DA LISTA TRIPLICADA
+        function getRandomItem(array) {
+            return array[Math.floor(Math.random() * array.length)];
         }
-        async function generateAIAventureWebLLM(contato, objetivo, local, inimigo, recompensa) {
-            const aiBox = document.getElementById('mission-ai-narrative');
 
-            const isReady = await initWebLLMEngine();
-            if (!isReady) return;
+        // GERADOR DE ROTEIRO DETALHADO (PROCEDURAL AVANÇADO MULTICAMADAS)
+        function generateRichRoteiro(contato, objetivo, local, inimigo, recompensa) {
+            const listaDialogos = geradorDialogosVariados[contato.nome] || [`Pequenos heróis, precisamos de vocês para resolver a urgência de ${contato.desc.toLowerCase()}!`];
+            const dialogo = getRandomItem(listaDialogos);
 
-            aiBox.innerHTML = `
-                <div style="text-align: center; padding: 15px; color: var(--accent-green); font-weight: bold;">
-                    ⚡ A IA está elaborando uma aventura original com diálogos, segredos e desafios... Aguarde!
-                </div>
+            const listaLocais = geradorLocaisVariados[local] || [{ desc: `na região de ${local}`, desafio: `Superar o terreno acidentado de ${local}. <strong>Teste de Movimentação ou Inteligência (d6)</strong>.` }];
+            const infoLocal = getRandomItem(listaLocais);
+
+            const listaInimigos = geradorInimigosVariados[inimigo] || ["Criaturas gigantes ameaçam a tranquilidade da região."];
+            const infoInimigo = getRandomItem(listaInimigos);
+
+            return `
+                <p style="margin-bottom: 12px; font-size: 1.05rem; color: var(--accent-green);">
+                    🎯 <strong>A Jornada em ${local}: O Chamado de ${contato.nome}</strong>
+                </p>
+
+                <p style="margin-bottom: 12px;">
+                    📜 <strong>CENA 1 - O Pedido de Socorro (Vila Velha):</strong><br>
+                    A tranquilidade do vilarejo foi interrompida quando <strong>${contato.nome}</strong> encontrou os aventureiros perto da biblioteca. Com o olhar preocupado, explicou a situação:<br>
+                    <em style="background: #fdf8f0; padding: 6px 10px; border-left: 4px solid var(--accent-gold); display: block; margin: 8px 0; border-radius: 4px;">
+                        "${dialogo}"
+                    </em>
+                    Sem hesitar, os pequenos heróis ajustaram suas bolsas de tesouro e aceitaram o desafio!
+                </p>
+
+                <p style="margin-bottom: 12px;">
+                    🗺️ <strong>CENA 2 - A Travessia e os Obstáculos de ${local}:</strong><br>
+                    O grupo partiu imediatamente para <strong>${local}</strong> — ${infoLocal.desc}. O caminho é cheio de surpresas e exige estratégia.<br>
+                    <strong>⚡ Desafio do Mestre:</strong> ${infoLocal.desafio}
+                </p>
+
+                <p style="margin-bottom: 12px;">
+                    ⚔️ <strong>CENA 3 - O Confronto com ${inimigo}:</strong><br>
+                    Ao alcançarem o ponto exato da missão, a ameaça se revela! Um bando de <strong>${inimigo}</strong> surge bloqueando o objetivo principal.<br>
+                    <strong>💡 Condução Tática para o Mestre:</strong> ${infoInimigo} Lembre-se: em <em>Faz de Conta RPG</em> os heróis usam inteligência e união para vencer.
+                </p>
+
+                <p style="margin-bottom: 0px; background: #f4fbf0; padding: 12px 14px; border-radius: 6px; border-left: 4px solid var(--accent-green);">
+                    🎁 <strong>CENA 4 - Conclusão & Celebração:</strong><br>
+                    Com coragem e trabalho em equipe, o objetivo de <strong>${objetivo.nome.toLowerCase()}</strong> foi cumprido com sucesso! A energia da nuvem dos gigantes passa, fazendo com que as criaturas fujam para a mata ou encolham ao seu tamanho normal e inofensivo. Em agradecimento, <strong>${contato.nome}</strong> entrega a recompensa de <strong>${recompensa}</strong> para o grupo comemorar em Vila Velha!
+                </p>
             `;
-
-            const promptText = `Escreva um roteiro de aventura rico, detalhado e envolvente para o RPG infantil 'Faz de Conta RPG' (Terra da Chuva Miúda).
-
-CONTEXTO DA MISSÃO:
-- Solicitante (NPC): ${contato.nome} (${contato.desc})
-- Objetivo Principal: ${objetivo.nome}
-- Local da Aventura: ${local}
-- Inimigos Encontrados: ${inimigo}
-- Recompensa Prometida: ${recompensa}
-
-REGRAS NARRATIVAS OBRIGATÓRIAS:
-1. Ninguém morre! Os heróis usam inteligência e os inimigos apenas fogem ou voltam ao tamanho normal.
-2. Formate estritamente com tags HTML (<p>, <strong>, <em>, <br>). NUNCA use Markdown (evite **, ## ou \`\`\`html).
-
-CRIE O ROTEIRO SEGUINDO ESTAS CENAS:
-🎯 <strong>Título Criativo da Missão</strong>
-
-📜 <strong>CENA 1 - O Apelo no Vilarejo</strong>
-Narre a chegada do grupo na praça. Escreva uma fala em aspas completa e expressiva para o NPC ${contato.nome} explicando o problema com suas próprias palavras.
-
-🗺️ <strong>CENA 2 - A Travessia e o Segredo de ${local}</strong>
-Descreva a atmosfera de ${local} (sons, iluminação, perigos). Crie um obstáculo físico específico no terreno e sugira 2 testes de Atributos do sistema (ex: Teste de Inteligência d6 ou Movimentação d6).
-
-⚔️ <strong>CENA 3 - O Embate com ${inimigo}</strong>
-Descreva a aparição impressionante de ${inimigo}. Dê uma dica tática criativa para o Mestre orientar as crianças a vencerem sem violência.
-
-🎁 <strong>CENA 4 - O Desfecho Festivo</strong>
-Narre a conclusão bem-sucedida, o alívio do NPC e a entrega da recompensa de ${recompensa}.`;
-
-            try {
-                const messages = [
-                    { role: "system", content: "Você é um Mestre de RPG infantil especialista em escrever histórias detalhadas e envolventes em HTML." },
-                    { role: "user", content: promptText }
-                ];
-
-                const reply = await webllmEngine.chat.completions.create({
-                    messages,
-                    temperature: 0.85,
-                    max_tokens: 800,
-                });
-
-                let aiText = reply.choices[0].message.content;
-                aiText = aiText.replace(/```html/gi, '').replace(/```/g, '');
-
-                aiBox.innerHTML = aiText;
-
-            } catch (err) {
-                console.error("Erro ao gerar história:", err);
-                aiBox.innerHTML = `
-                    <div style="background: #f8d7da; color: #721c24; padding: 12px; border-radius: 6px;">
-                        ❌ <strong>Erro durante a geração:</strong> ${err.message}
-                    </div>
-                `;
-            }
         }
 
-        const geradorCenas = {
-    diALOGOS_NPC: {
-        "Mago Ancião": "Os tomos antigos do meu laboratório revelaram que a magia da nuvem gigante se espalhou! Preciso que bravos aventureiros investiguem antes que a vila perca o controle.",
-        "Empreendedor": "Minhas entregas e estoques estão em perigo! Se não resolvermos essa situação logo, a feira de Vila Velha vai ficar sem suprimentos.",
-        "Celebridade": "Minha próxima grande apresentação está ameaçada! Preciso de heróis destemidos que possam proteger a região para que a música volte a tocar.",
-        "Morador Vizinho": "Ouvi barulhos estranhos vindo dos arredores da minha casa. Não posso resolver isso sozinho e peço a ajuda dos protetores da vila!",
-        "Parente": "Vocês chegaram na hora certa! Algo incomum aconteceu na nossa família e só a coragem de vocês pode nos trazer tranquilidade.",
-        "Estrangeiro": "Cheguei há pouco tempo na Terra da Chuva Miúda e nunca vi criaturas agindo dessa forma. Por favor, ajudem-me a concluir minha travessia!",
-        "Mensageiro": "Trago uma carta urgente trancada com selo real! O conteúdo exige que heróis preparados sigam imediatamente até o local indicado.",
-        "Aventureiro Ferido": "Voltei da minha expedição, mas os obstáculos eram grandes demais para mim. Confio a vocês o mapa e a missão de terminar esse trabalho!",
-        "Guarda da Vila": "O dever do guarda é proteger Vila Velha, mas a ameaça se espalhou para fora dos portões. Precisamos do grupo de heróis na linha de frente!",
-        "Morador da Vila": "Coisas muito estranhas estão acontecendo e todos estão preocupados. Vocês são os únicos corajosos o bastante para nos ajudar!",
-        "Criatura Amigável": "Por favor, amiguinhos heróis! A magia gigante assustou meus companheiros e precisamos da ajuda de vocês para trazer a paz de volta."
-    },
-    TESTES_TERRENO: {
-        "Vila Velha": "Mover-se entre barracas e transeuntes agitados. <strong>Teste de Movimentação (d6)</strong> para não derrubar mercadorias.",
-        "Bosque dos Espinhos": "Atravessar o solo repleto de raízes venenosas. <strong>Teste de Defesa ou Movimentação (d6)</strong> para evitar arranhões.",
-        "Montanha Congelante": "Escalar a encosta de rocha coberta por gelo liso. <strong>Teste de Força ou Movimentação (d6)</strong> para garantir apoio.",
-        "Minas": "Navegar no escuro das galerias entre trilhos antigos. <strong>Teste de Inteligência (d6)</strong> para achar o caminho certo.",
-        "Cachoeira do Norte": "Atravessar pedras molhadas no meio da correnteza. <strong>Teste de Movimentação (d6)</strong> para manter o equilíbrio.",
-        "Lago da Boa Pesca": "Guiar um pequeno barco entre troncos flutuantes. <strong>Teste de Inteligência ou Força (d6)</strong> para manobrar.",
-        "Floresta Secreta ou Floresta Densa": "Abrir caminho entre cipós e galhos gigantescos. <strong>Teste de Força ou Inteligência (d6)</strong> para abrir passagem.",
-        "Rio do Destino": "Saltar por cima das rochas nas margens agitadas. <strong>Teste de Movimentação (d6)</strong> para não escorregar.",
-        "Cavernas sem Luz": "Avançar no escuro desviando de estalactites. <strong>Teste de Inteligência (d6)</strong> para identificar armadilhas naturais.",
-        "Farol": "Subir os longos degraus em espiral sob ventos fortes. <strong>Teste de Defesa (d6)</strong> para manter o ritmo sem cansar.",
-        "Escombros": "Caminhar sobre muros de pedra antiga que ameaçam ruir. <strong>Teste de Movimentação ou Inteligência (d6)</strong>."
-    }
-};
+        // FUNÇÃO PRINCIPAL DE GERAÇÃO
+        function generateMission() {
+            const rollC = roll2d6();
+            const rollO = roll2d6();
+            const rollL = roll2d6();
+            const rollI = roll2d6();
+            const rollR = roll1d6();
 
-// MOTOR DE GERAÇÃO NARRATIVA COMPLETA (SEM DEPENDÊNCIA DE IA EXTERNA / 100% OFFLINE / INSTANTÂNEO)
-function generateRichRoteiro(contato, objetivo, local, inimigo, recompensa) {
-    const dialogoNpc = geradorCenas.diALOGOS_NPC[contato.nome] || `Por favor, heróis, ajudem-nos com urgência no problema de ${contato.desc.toLowerCase()}!`;
-    const testeLocal = geradorCenas.TESTES_TERRENO[local] || `Avançar no terreno acidentado de ${local}. <strong>Teste de Movimentação ou Inteligência (d6)</strong>.`;
-    const loreInimigoTexto = loreInimigos[inimigo] || "Criaturas perigosas surgem no caminho dos heróis.";
+            const contato = missionTables.contato[rollC];
+            const objetivo = missionTables.objetivo[rollO];
+            const local = missionTables.local[rollL];
+            const inimigo = missionTables.inimigo[rollI];
 
-    return `
-        <p style="margin-bottom: 12px; font-size: 1.05rem; color: var(--accent-green);">
-            🎯 <strong>A Aventura em ${local}: O Desafio de ${contato.nome}</strong>
-        </p>
+            let recompensaTxt = "";
+            if (rollR === 1) {
+                const mult = roll1d6();
+                recompensaTxt = `${mult * 10} Chuvisco$ (${mult}d6x10)`;
+            } else if (rollR === 2) {
+                const mult = roll1d6();
+                recompensaTxt = `${mult * 10} Chuvisco$ + 1 Item de Aventura`;
+            } else if (rollR === 3) {
+                const mult = roll1d6() + roll1d6();
+                recompensaTxt = `${mult * 10} Chuvisco$ + 1 Arma`;
+            } else if (rollR === 4) {
+                const mult = roll1d6() + roll1d6();
+                recompensaTxt = `${mult * 10} Chuvisco$ + 1 Peça de Armadura/Proteção`;
+            } else if (rollR === 5) {
+                const mult = roll1d6() + roll1d6();
+                recompensaTxt = `${mult * 10} Chuvisco$ + 1 Carta de Baú de Madeira`;
+            } else if (rollR === 6) {
+                const mult = roll1d6() + roll1d6() + roll1d6();
+                recompensaTxt = `${mult * 10} Chuvisco$ + 1 Carta de Baú de Ferro`;
+            }
 
-        <p style="margin-bottom: 12px;">
-            📜 <strong>CENA 1 - O Pedido de Socorro:</strong><br>
-            A tranquilidade da Terra da Chuva Miúda foi interrompida quando <strong>${contato.nome}</strong> encontrou os aventureiros na praça. Com o olhar preocupado, desabafou:<br>
-            <em style="background: #fdf8f0; padding: 4px 8px; border-left: 3px solid var(--accent-gold); display: block; margin: 6px 0;">
-                "${dialogoNpc}"
-            </em>
-            Prontamente, os pequenos heróis ajustaram seus equipamentos e aceitaram o chamado!
-        </p>
+            // 1. DADOS DOS CARDS
+            document.getElementById('res-contato').innerHTML = `<strong>[d6: ${rollC}] ${contato.nome}:</strong> ${contato.desc}`;
+            document.getElementById('res-objetivo').innerHTML = `<strong>[d6: ${rollO}] ${objetivo.nome}:</strong> ${objetivo.desc}`;
+            document.getElementById('res-local').innerHTML = `<strong>[d6: ${rollL}]:</strong> ${local}`;
+            document.getElementById('res-inimigo').innerHTML = `<strong>[d6: ${rollI}]:</strong> ${inimigo}`;
+            document.getElementById('res-recompensa').innerHTML = `<strong>[d6: ${rollR}]:</strong> ${recompensaTxt}`;
 
-        <p style="margin-bottom: 12px;">
-            🗺️ <strong>CENA 2 - A Travessia de ${local}:</strong><br>
-            O grupo seguiu viagem rumo a <strong>${local}</strong>. O caminho é cheio de desafios e exige atenção da equipe! 
-            Para superar o obstáculo do cenário, o Mestre deve solicitar ao grupo: ${testeLocal}
-        </p>
+            // 2. BOX 1: RESUMO SINTETIZADO
+            const narrative = `Os heróis são contatados por um(a) <strong>${contato.nome}</strong> para <strong>${objetivo.nome.toLowerCase()}</strong> a região de <strong>${local}</strong>, mas são surpreendidos por um bando de <strong>${inimigo}</strong>. Recompensa: <strong>${recompensaTxt}</strong>!`;
+            document.getElementById('mission-narrative').innerHTML = narrative;
 
-        <p style="margin-bottom: 12px;">
-            ⚔️ <strong>CENA 3 - O Confronto com ${inimigo}:</strong><br>
-            Ao chegarem ao ponto principal da missão, o perigo se revela! Um bando de <strong>${inimigo}</strong> bloqueia a passagem. 
-            <br><em>💡 Dica Mestre: ${loreInimigoTexto} Lembre aos jogadores que em Faz de Conta RPG eles podem usar poções, habilidades especiais e o cenário a seu favor!</em>
-        </p>
+            // 3. BOX 2: ROTEIRO SIMPLIFICADO
+            const infoLocalObj = geradorLocaisVariados[local] ? geradorLocaisVariados[local][0] : { desc: local };
+            const infoInimigoObj = geradorInimigosVariados[inimigo] ? geradorInimigosVariados[inimigo][0] : "Inimigos perigosos rondam o local.";
 
-        <p style="margin-bottom: 0px; background: #f4fbf0; padding: 10px 12px; border-radius: 6px; border-left: 4px solid var(--accent-green);">
-            🎁 <strong>CENA 4 - Conclusão & Gratidão:</strong><br>
-            Com coragem e trabalho em equipe, o objetivo de <strong>${objetivo.nome.toLowerCase()}</strong> foi cumprido! A mágica gigante se dissipa, fazendo com que os inimigos fujam ou encolham ao seu tamanho normal e inofensivo. Em agradecimento, <strong>${contato.nome}</strong> entrega a recompensa de <strong>${recompensa}</strong> para o grupo!
-        </p>
-    `;
-}
+            const elaboratedHTML = `
+                <p><strong>📍 O Chamado:</strong> <strong>${contato.nome}</strong> procurou os heróis: <em>"${contato.desc}"</em></p>
+                <p><strong>🌿 O Cenário:</strong> A jornada leva o grupo para <strong>${local}</strong> — ${infoLocalObj.desc}.</p>
+                <p><strong>⚠️ A Ameaça:</strong> No caminho encontrarão <strong>${inimigo}</strong>. ${infoInimigoObj}</p>
+                <p><strong>🎁 Recompensa:</strong> Receberão <strong>${recompensaTxt}</strong> para dividir no vilarejo.</p>
+            `;
+            document.getElementById('mission-elaborated').innerHTML = elaboratedHTML;
 
-function generateMission() {
-    const rollC = roll2d6();
-    const rollO = roll2d6();
-    const rollL = roll2d6();
-    const rollI = roll2d6();
-    const rollR = roll1d6();
+            // 4. BOX 3: ROTEIRO DETALHADO (PROCEDURAL TRIPLICADO EM CAMADAS)
+            const richStory = generateRichRoteiro(contato, objetivo, local, inimigo, recompensaTxt);
+            document.getElementById('mission-ai-narrative').innerHTML = richStory;
+        }
 
-    const contato = missionTables.contato[rollC];
-    const objetivo = missionTables.objetivo[rollO];
-    const local = missionTables.local[rollL];
-    const inimigo = missionTables.inimigo[rollI];
-
-    let recompensaTxt = `${rollR * 10} Chuvisco$`;
-
-    document.getElementById('res-contato').innerHTML = `<strong>[d6: ${rollC}] ${contato.nome}:</strong> ${contato.desc}`;
-    document.getElementById('res-objetivo').innerHTML = `<strong>[d6: ${rollO}] ${objetivo.nome}:</strong> ${objetivo.desc}`;
-    document.getElementById('res-local').innerHTML = `<strong>[d6: ${rollL}]:</strong> ${local}`;
-    document.getElementById('res-inimigo').innerHTML = `<strong>[d6: ${rollI}]:</strong> ${inimigo}`;
-    document.getElementById('res-recompensa').innerHTML = `<strong>[d6: ${rollR}]:</strong> ${recompensaTxt}`;
-
-    const narrative = `Os heróis são contatados por um(a) <strong>${contato.nome}</strong> para <strong>${objetivo.nome.toLowerCase()}</strong> a região de <strong>${local}</strong>, mas são surpreendidos por um bando de <strong>${inimigo}</strong>. Recompensa: <strong>${recompensaTxt}</strong>!`;
-    document.getElementById('mission-narrative').innerHTML = narrative;
-
-    const descLocalLore = loreLocais[local] || local;
-    const descInimigoLore = loreInimigos[inimigo] || "Inimigos perigosos rondam o local.";
-
-    const elaboratedHTML = `
-        <p><strong>📍 O Chamado:</strong> <strong>${contato.nome}</strong> procurou os heróis: <em>"${contato.desc}"</em></p>
-        <p><strong>🌿 O Cenário:</strong> A jornada leva o grupo para <strong>${local}</strong> — ${descLocalLore}.</p>
-        <p><strong>⚠️ A Ameaça:</strong> No caminho encontrarão <strong>${inimigo}</strong>. ${descInimigoLore}</p>
-        <p><strong>🎁 Recompensa:</strong> Receberão <strong>${recompensaTxt}</strong> para dividir no vilarejo.</p>
-    `;
-    document.getElementById('mission-elaborated').innerHTML = elaboratedHTML;
-
-    // PREENCHE O ROTEIRO MÁGICO DE FORMA PERFEITA, FORMATADA E INSTANTÂNEA
-    const richStory = generateRichRoteiro(contato, objetivo, local, inimigo, recompensaTxt);
-    document.getElementById('mission-ai-narrative').innerHTML = richStory;
-}
-        // FUNÇÕES DE INTERFACE
+        // OUTRAS FUNÇÕES DA INTERFACE
         function switchTab(tabId) {
             const tabs = document.querySelectorAll('.tab-content');
             tabs.forEach(tab => tab.classList.remove('active'));
