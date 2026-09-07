@@ -2263,22 +2263,10 @@
                         <em>O contexto detalhado do Mestre surgirá aqui ao gerar uma missão.</em>
                     </div>
                 </div>
-                <!-- ✅ DEPOIS (ATUALIZADO PARA O MOTOR PROCEDURAL LOCAL) -->
-                <!-- ✅ COLOCAR ESTE NOVO BLOCO NO LUGAR -->
-                <div
-                    style="background: #f8fdf6; border: 2px solid var(--accent-green); border-radius: 8px; padding: 18px; margin-bottom: 20px; box-shadow: var(--shadow-card);">
-                    <div
-                        style="font-family: 'Fredoka One', cursive; color: var(--accent-green); font-size: 1.15rem; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px dashed var(--accent-green); padding-bottom: 6px;">
-                        <span>🤖 Roteiro Detalhado</span>
-                        <span
-                            style="font-size: 0.75rem; background: var(--accent-green); color: white; padding: 2px 8px; border-radius: 10px; font-family: 'Nunito', sans-serif;">Sem
-                            Servidor</span>
-                    </div>
-                    <div id="mission-ai-narrative"
-                        style="font-size: 0.95rem; line-height: 1.7; color: var(--text-main);">
-                        <em>Ao clicar em "Gerar Nova Missão", a IA local rodará diretamente na placa de vídeo do seu
-                            dispositivo para criar um roteiro único! (Na primeira vez haverá um download inicial do
-                            modelo).</em>
+           <!-- BLOCO ÚNICO: PADRÃO DE MISSÕES DE FAZ DE CONTA RPG -->
+                <div style="background: #f8fdf6; border: 2px solid var(--accent-green); border-radius: 8px; padding: 18px; margin-bottom: 20px; box-shadow: var(--shadow-card);">
+                    <div id="mission-ai-narrative" style="font-size: 0.95rem; line-height: 1.7; color: var(--text-main);">
+                        <em>Clique em "🎲 Gerar Nova Missão" para visualizar a ficha completa da aventura no Padrão de Missões de Faz de Conta RPG.</em>
                     </div>
                 </div>
 
@@ -3328,7 +3316,7 @@
             auxílio em mesa.</p>
     </footer>
 
-    <!-- LÓGICA PRINCIPAL DO GERADOR COM LORE E BANCO DE DADOS TRIPLICADO -->
+ <!-- LÓGICA PRINCIPAL DO GERADOR - APENAS O PADRÃO OFICIAL EXPANDIDO -->
     <script type="module">
 
         // TABELAS PADRÃO DO GERADOR (2d6 / 1d6)
@@ -3371,232 +3359,488 @@
             }
         };
 
-        // TRIPLICAÇÃO DE DIÁLOGOS DOS NPCS (VARIEDADE DE ENTRADA)
+        // ESTILOS DE MISSÃO E VALORES MORAIS
+        const estilosValores = [
+            { estilo: "Solidariedade e Ajuda ao Próximo", valor: "A verdadeira bravura está no cuidado e na proteção dos mais frágeis e necessitados." },
+            { estilo: "Amizade e Cooperação", valor: "A união do grupo e a valorização das diferenças superam qualquer desafio difícil." },
+            { estilo: "Natureza e Responsabilidade Ambiental", valor: "Respeitar e preservar o meio ambiente, garantindo o equilíbrio da floresta." },
+            { estilo: "Mistério e Resolução de Problemas", valor: "Investigar com paciência, usar a inteligência e não julgar os fatos antes de conhecê-los." },
+            { estilo: "Emoções e Valores do Coração", valor: "A compaixão, o perdão e o autocontrole são as armas mais poderosas de um herói." },
+            { estilo: "Estratégia Lúdica (Sem foco em combate)", valor: "Encontrar soluções criativas, distrair ou resgatar sem a necessidade de violência." }
+        ];
+
+        // VARIABILIDADE DE DIÁLOGOS DOS NPCS
         const geradorDialogosVariados = {
             "Mago Ancião": [
-                "Pequenos heróis, consultei meus tomos antigos na biblioteca de Vila Velha e a magia da nuvem gigante se espalhou! Preciso da coragem de vocês para restaurar a paz na Terra da Chuva Miúda.",
-                "Meus jovens aprendizes, percebi uma alteração nas correntes mágicas do continente. Um novo perigo se aproxima e confio no coração puro de vocês para resolver esse mistério!",
-                "Que bom que os encontrei! Um mapa antigo que cataloguei na biblioteca revelou um segredo urgente que exige a astúcia e o trabalho em equipe do nosso grupo de protetores."
+                "Crianças da Terra da Chuva Miúda, escutem atentamente! A chuva trazida pela nuvem do Reino dos Gigantes transformou os insetos da região. Os adultos da vila estão ocupados com os trabalhos pesados da colheita e manutenção, e muitos têm nojo de insetos. Mas vocês são corajosos e possuem o coração puro para resolver esta missão!",
+                "Meus jovens aprendizes, consultei meus tomos antigos na biblioteca de Vila Velha e notei uma grande agitação na região. Como Mago Ancião, conto com a união e as habilidades especiais de vocês para trazer a paz de volta ao nosso continente!",
+                "Bravos heróis, que bom que os encontrei! Um pedido urgente chegou até mim e precisa da astúcia de vocês. Lembrem-se de que a verdadeira magia do Faz de Conta está na amizade e na cooperação!"
             ],
             "Empreendedor": [
-                "Nossos estoques e ferramentas de trabalho foram tomados! Se não resolvermos isso rapidamente, o comércio e as colheitas da nossa vila ficarão totalmente paralisados.",
-                "Socorro, pequenos guardiões! Minhas mercadorias que abastecem as famílias da vila estão presas no meio do caminho. Preciso da proteção de vocês para resgatá-las!",
-                "Minha oficina está em perigo! Materiais valiosos que uso para fabricar móveis e utensílios foram espalhados. Sem a ajuda de vocês, o prejuízo será enorme."
+                "Socorro, pequenos guardiões! Os estoques e suprimentos que abastecem as famílias de Vila Velha estão bloqueados por criaturas gigantes. Se não agirmos rápido, nossa vila ficará sem alimentos!",
+                "Minha loja e minha oficina foram invadidas! Ferramentas importantes e materiais para construção estão espalhados. Preciso da proteção de vocês para recuperar meus pertences em segurança.",
+                "Pequenos protetores, a feira e os trabalhos do vilarejo estão paralisados. Se vocês nos ajudarem a liberar o caminho, todos os moradores ficarão extremamente gratos!"
             ],
             "Celebridade": [
-                "Minha apresentação e minhas canções inspiradoras estão ameaçadas! Preciso que protetores destemidos garantam a segurança do local para que a música volte a tocar para nosso povo.",
-                "Ah, bravos heróis! Eu estava criando uma nova poesia para a celebração da vila quando criaturas assustadoras surgiram. Por favor, tragam a tranquilidade de volta ao local!",
-                "A arte da Terra da Chuva Miúda não pode parar! Preciso de guardiões corajosos que possam proteger meus instrumentos e garantir que o festival ocorra em paz."
+                "Ah, valorosos heróis! Minhas canções e instrumentos que trazem alegria para a Terra da Chuva Miúda foram ameaçados por um bando de criaturas. Preciso da coragem de vocês na linha de frente!",
+                "A arte e a festa da nossa vila não podem parar! Eu estava criando uma nova poesia para a celebração quando um barulho estranho surgiu no caminho. Por favor, tragam a tranquilidade de volta!",
+                "Protetores destemidos, um espetáculo especial estava sendo preparado para as crianças, mas o local foi tomado por insetos. Conto com a união de vocês para libertar o palco!"
             ],
             "Morador Vizinho": [
-                "Ouvi ruídos assustadores nos arredores da minha casa, fora dos limites da vila. Não tenho o treinamento de vocês, por isso vim pedir o auxílio dos nossos pequenos guardiões!",
-                "A vizinhança está muito apreensiva! Pequenos sinais de perigo surgiram no caminho e precisamos da agilidade de vocês para investigar antes que o problema aumente.",
-                "Olá, crianças bravas! Minha horta comunitária e os animais dos arredores estão sendo perturbados. Vocês podem checar o que está acontecendo por lá?"
+                "Ouvi ruídos assustadores nos arredores da minha casa, fora dos portões da vila! Não tenho o treinamento e a coragem de vocês, por isso vim pedir o auxílio dos nossos pequenos guardiões.",
+                "A vizinhança fora de Vila Velha está apreensiva! Pequenos sinais de perigo surgiram na trilha e precisamos da agilidade de vocês para investigar antes que a situação piore.",
+                "Olá, crianças bravas! Minha horta e os animais dos arredores estão assustados com a presença de Insetos Gigantes. Vocês poderiam checar o que está acontecendo por lá?"
             ],
             "Parente": [
-                "Que alívio encontrar vocês! Um imprevisto sério aconteceu com nossa família durante a jornada e só a bravura e a união do grupo podem nos salvar dessa situação.",
-                "Pequenos protetores, um pertence muito querido da nossa família acabou perdido no meio da expedição. Vocês poderiam nos ajudar a recuperar em segurança?",
-                "Preciso da ajuda e do carinho de vocês! Algo inesperado bloqueou a rota que usamos diariamente e precisamos da coragem dos heróis da casa para resolver isso."
+                "Que alívio encontrar vocês! Um imprevisto sério aconteceu com nossa família durante a colheita e só a bravura e o trabalho em equipe do grupo podem nos salvar dessa situação.",
+                "Pequenos protetores, um pertence muito querido da nossa família ficou preso perto de uma área perigosa. Vocês poderiam nos ajudar a resgatá-lo em segurança?",
+                "Preciso do carinho e da coragem de vocês! Algo inesperado bloqueou a rota que usamos diariamente para buscar suprimentos. Ajude-nos a liberar a passagem!"
             ],
             "Estrangeiro": [
-                "Cheguei há pouco pelo Farol da costa e não conheço os perigos desses caminhos. As criaturas daqui agem de forma estranha, e preciso de guias corajosos para me acompanhar!",
-                "Saudações, pequenos heróis! Vim de terras distantes trazendo recursos para troca, mas fui surpreendido por obstáculos pelo caminho. Podem me escoltar até a vila?",
-                "Nunca vi um lugar tão mágico e ao mesmo tempo tão desafiador! Preciso da sabedoria de vocês para navegar com segurança pelas trilhas da região."
+                "Cheguei há pouco pelo Farol da costa, vindo de ilhas distantes no Mar das Possibilidades! Não conheço os caminhos da Terra da Chuva Miúda e preciso de guias valentes para me acompanhar.",
+                "Saudações, pequenos heróis! Trago recursos raros para negociar na vila, mas fui surpreendido por criaturas gigantes pelo caminho. Podem me escoltar até um lugar seguro?",
+                "Nunca vi um continente tão mágico e desafiador! Preciso da sabedoria de vocês para navegar pelas trilhas e desvendar os mistérios deste local."
             ],
             "Mensageiro": [
-                "Carrego um pergaminho selado com notícias urgentes! O caminho adiante está bloqueado e apenas heróis mirins com boas habilidades podem fazer essa mensagem chegar ao destino.",
-                "Notícias importantes precisam ser entregues sem demora! O terreno está hostil e preciso de guardiões valentes para garantir que a mensagem chegue intacta.",
-                "Atenção, pequenos protetores! Um pedido de ajuda urgente precisa ser transmitido. Acompanhem-me para que possamos cruzar a área em segurança!"
+                "Carrego um pergaminho selado com notícias urgentes sobre o continente! A trilha adiante está bloqueada por Insetos Gigantes e só heróis mirins ágeis podem entregar esta mensagem.",
+                "Notícias importantes precisam ser transmitidas sem demora! O terreno está hostil e preciso da companhia de guardiões corajosos para garantir que a mensagem chegue intacta.",
+                "Atenção, pequenos protetores! Um aviso urgente sobre as correntes de vento do Reino dos Gigantes precisa ser entregue. Acompanhem-me para cruzarmos a área em segurança!"
             ],
             "Aventureiro Ferido": [
-                "Tentei explorar a área sozinho, mas os desafios do terreno foram demais para mim. Aqui está o meu mapa; confio a vocês a missão de terminar o que comecei!",
-                "Uf... por pouco não fico preso lá! As criaturas estão protegendo aquele local com muita firmeza. Levem estes suprimentos e completem a jornada em meu lugar!",
-                "Minha perna está machucada, mas o dever não pode esperar. Sei que vocês têm a coragem e a inteligência necessárias para superar essa provação!"
+                "Tentei explorar a área sozinho, mas os desafios do terreno foram demais para mim. Aqui estão meus suprimentos e meu mapa; confio a vocês a missão de terminar o que comecei!",
+                "Uf... por pouco não fico preso nas cavernas! As criaturas estão cobrindo o caminho com muita firmeza. Levem estas ferramentas e completem a expedição em meu lugar!",
+                "Minha perna está machucada, mas o dever de proteger a natureza não pode esperar. Sei que vocês têm a compaixão e a inteligência necessárias para superar essa provação!"
             ],
             "Guarda da Vila": [
-                "Nosso dever é vigiar os portões de Vila Velha, mas a ameaça avançou para além do nosso alcance. Precisamos da agilidade do seu grupo na linha de frente!",
-                "Relatórios da patrulha indicam movimentações estranhas fora da vila. Como os guardas precisam manter o vilarejo protegido, convocamos os heróis mirins para essa missão!",
-                "Pequenos guardiões, a ordem e a segurança da nossa região dependem de vocês hoje! Sigam até a área indicada e garantam a proteção do nosso povo."
+                "Nosso dever é vigiar os portões centrais de Vila Velha, mas a ameaça das criaturas avançou para além do nosso alcance. Precisamos do seu grupo na linha de frente!",
+                "Relatórios da patrulha indicam movimentações de Insetos Gigantes fora dos muros. Como os adultos precisam manter a vila funcionando, convocamos nossos protetores mirins!",
+                "Pequenos guardiões, a ordem e a segurança da nossa comunidade dependem do empenho de vocês hoje! Sigam até a área indicada e protejam os moradores frágeis."
             ],
             "Morador da Vila": [
-                "Coisas muito misteriosas estão acontecendo perto de nós e todos estão apreensivos. Vocês já provaram que têm coragem e são a nossa única esperança!",
+                "Coisas muito misteriosas estão acontecendo perto da nossa comunidade e todos estão apreensivos. Vocês já provaram que têm coragem e são a nossa verdadeira esperança!",
                 "Socorro, crianças corajosas! Um problema simples acabou se tornando um grande desafio e não sabemos a quem recorrer a não ser aos nossos pequenos heróis!",
-                "A alegria das crianças e idosos da vila precisa ser protegida! Contamos com a energia e o trabalho em equipe de vocês para trazer a paz de volta."
+                "A alegria das crianças e idosos da vila precisa ser preservada! Contamos com a energia e a empatia de vocês para resolver a situação e trazer a paz de volta."
             ],
             "Criatura Amigável": [
-                "Por favor, amiguinhos! Um ruído forte assustou os animais da floresta e precisamos da ajuda de vocês para afastar o perigo e trazer a tranquilidade de volta!",
-                "Miau/Au au! (O animalzinho aponta aflito para a direção da trilha, mostrando que outros animais companheiros precisam de proteção urgente dos heróis).",
-                "Pequenos protetores da natureza, uma fonte de água importante foi bloqueada e os bichinhos da floresta precisam da inteligência de vocês para liberá-la!"
+                "Por favor, amiguinhos! A ventania da nuvem gigante assustou os animais da floresta e precisamos da ajuda de vocês para afastar o perigo e trazer a tranquilidade de volta!",
+                "Miau/Au au! (O animalzinho aponta aflito para a direção da trilha, mostrando que outros animais companheiros ficaram presos e precisam do resgate urgente dos heróis).",
+                "Pequenos protetores da natureza, uma nascente de água importante foi bloqueada e os bichinhos da mata precisam da inteligência de vocês para liberar o fluxo cristalino!"
             ]
         };
 
-        // TRIPLICAÇÃO DE LORE E DESAFIOS AMBIENTAIS POR LOCAL (LIVRO BASE + GUIA TORÓ)
+        // LORE E DIRETRIAZES DE GRID POR LOCAL
         const geradorLocaisVariados = {
             "Vila Velha": [
-                { desc: "no acolhedor vilarejo de casinhas de madeira e ruelas de terra, cercado por hortas e pela biblioteca onde o Mago Zaimen pesquisa", desafio: "Cruzar a praça central e as ruelas movimentadas sem esbarrar nas barracas dos feirantes. <strong>Teste de Movimentação (d6)</strong>." },
-                { desc: "nas proximidades das hortas comunitárias de Vila Velha, onde o movimento diário exige atenção dos pequenos", desafio: "Organizar a passagem entre cercas de madeira e ferramentas de cultivo. <strong>Teste de Inteligência (d6)</strong> para achar um atalho seguro." },
-                { desc: "nos arredores da grande fonte de pedra de Vila Velha, ponto de encontro tradicional dos moradores", desafio: "Desviar dos habitantes agitados e manter o grupo unido. <strong>Teste de Defesa ou Movimentação (d6)</strong>." }
+                {
+                    desc: "no acolhedor vilarejo de casinhas de madeira cobertas por palha, ruelas de terra e hortas comunitárias onde as crianças moram",
+                    grid: [
+                        "Não monte todo o mapa. Coloque apenas a parte de início do mapa e acrescente as outras partes do mapa aos poucos, à medida que os jogadores exploram o ambiente.",
+                        "Os inimigos só devem ser colocados no mapa quando as miniaturas dos heróis tiverem uma visão em linha reta dos inimigos ou chegarem na entrada das áreas onde eles se localizam.",
+                        "Instale barracas de feira e cercas no grid. Mover-se exige cuidado para não derrubar mercadorias dos moradores."
+                    ]
+                },
+                {
+                    desc: "nas proximidades da biblioteca e da praça central de Vila Velha, ponto de encontro tradicional dos moradores",
+                    grid: [
+                        "Não monte todo o mapa no início. Revele as áreas conforme o grupo investiga as ruelas do vilarejo.",
+                        "Os inimigos só entram no grid quando os heróis tiverem linha de visão direta.",
+                        "Se houver moradores ou animais assustados, os heróis precisam conduzi-los até a zona segura do mapa."
+                    ]
+                },
+                {
+                    desc: "nos arredores da grande fonte de pedra de Vila Velha, onde o Mago Zaimen costuma orientar os heróis",
+                    grid: [
+                        "Não monte todo o mapa no início. Revele as seções à medida que os jogadores exploram.",
+                        "A Fonte de Pedra no centro pode ser usada para coletar água. Baldes limpos estão disponíveis ao lado dela.",
+                        "Ao pisar em armadilhas de pedras soltas, o jogador deve fazer um teste de Defesa e, caso falhe, perderá 1 ponto de vida."
+                    ]
+                }
             ],
             "Bosque dos Espinhos": [
-                { desc: "na paisagem sufocante de troncos retorcidos, raízes venenosas e névoa esverdeada tóxica que emana do solo", desafio: "Atravessar o solo coberto de névoa e poças tóxicas sem tocar nos espinhos. <strong>Teste de Defesa ou Movimentação (d6)</strong> para não se enfraquecer." },
-                { desc: "entre os arbustos secos e galhos cobertos de espinhos afiados onde o ar é pesado e inquietante", desafio: "Encontrar um caminho livre de raízes venenosas. <strong>Teste de Inteligência (d6)</strong> para identificar o solo firme." },
-                { desc: "na divisa tóxica onde as árvores mortas dão lugar a pequenos poços de fluido esverdeado", desafio: "Proteger os olhos e a respiração contra os vapores do local. <strong>Teste de Defesa (d6)</strong>." }
+                {
+                    desc: "na paisagem sufocante de troncos retorcidos, raízes venenosas e névoa esverdeada tóxica que emana de poças no solo",
+                    grid: [
+                        "Não monte todo o mapa. Coloque apenas a parte de início do mapa e acrescente as outras partes aos poucos.",
+                        "Os inimigos só devem ser colocados no mapa quando as miniaturas dos heróis tiverem visão em linha reta.",
+                        "Ao pisar em poças de fluido tóxico (armadilha), o herói deve fazer um teste de Defesa e, caso falhe, perderá 1 ponto de vida."
+                    ]
+                },
+                {
+                    desc: "entre os galhos secos cobertos de espinhos venenosos onde a vegetação definhou e não há som de animais",
+                    grid: [
+                        "Não monte todo o mapa no início. Revele o ambiente à medida que os jogadores exploram o bosque.",
+                        "A passagem secreta só pode ser encontrada com um teste bem-sucedido do atributo Inteligência.",
+                        "O ar é pesado: os heróis sofrem redutor temporário de movimentação até encontrarem ar limpo."
+                    ]
+                },
+                {
+                    desc: "na divisa tóxica entre o Bosque e a Floresta Densa, onde adultos trabalhadores tentam erguer cercas de proteção",
+                    grid: [
+                        "Não monte todo o mapa no início. Adicione os compartimentos à medida que os heróis exploram.",
+                        "Posicione miniaturas de trabalhadores que devem ser protegidos pelos heróis durante os turnos de combate.",
+                        "Se houver Focos de Fogo tóxico, eles aparecem em dupla. Apague sempre os dois; caso contrário, a chama vizinha o reacende no fim do turno."
+                    ]
+                }
             ],
             "Montanha Congelante": [
-                { desc: "nas encostas íngremes e geladas do pico mais alto da região, cobertas por neve espessa, ventos uivantes e espelhos de gelo", desafio: "Escalar a rocha congelada e escorregadia sob ventos fortes. <strong>Teste de Força ou Movimentação (d6)</strong> para não perder o apoio." },
-                { desc: "nas galerias de cristal de gelo da montanha, onde os penhascos refletem a luz e o frio é intenso", desafio: "Caminhar sobre gelo fino sem provocar pequenas avalanches. <strong>Teste de Movimentação (d6)</strong>." },
-                { desc: "próximo ao topo coberto por neve eterna, onde as rajadas de vento sopram com força total", desafio: "Resistir ao frio rigoroso e manter o ritmo de subida. <strong>Teste de Defesa ou Força (d6)</strong>." }
+                {
+                    desc: "nas encostas íngremes e geladas do pico mais alto do continente, cobertas por neve espessa, ventos uivantes e espelhos de gelo",
+                    grid: [
+                        "Não monte todo o mapa de início. Acrescente as partes do mapa aos poucos conforme a exploração.",
+                        "Os inimigos só devem ser colocados no mapa quando as miniaturas dos heróis tiverem visão em linha reta na Sala dos Espelhos.",
+                        "O gelo liso causa redutor de -1 nas rolagens de Movimentação. Pisando em gelo fino, o herói testa Defesa ou perde 1 PV."
+                    ]
+                },
+                {
+                    desc: "nas cavernas esculpidas pelo gelo repletas de cristais reluzentes e pedestais com artefatos antigos",
+                    grid: [
+                        "Não monte todo o mapa no início. Revele os salões congelados conforme o grupo avança.",
+                        "O selo ou campo de força mágico no pedestal só pode ser quebrado ao recuperar itens-chave na caverna.",
+                        "A passagem secreta atrás da parede de gelo só pode ser encontrada com um teste bem-sucedido de Inteligência."
+                    ]
+                },
+                {
+                    desc: "próximo ao cume gelado dominado por ventanias fortes e penhascos cobertos por neve eterna",
+                    grid: [
+                        "Não monte todo o mapa no início. Coloque apenas o ponto de partida do cume.",
+                        "Ventos fortes afetam projéteis à distância. Pisando em armadilhas de neve solta, faça um teste de Defesa para não sofrer Dano.",
+                        "Existe uma Fonte Mágica que recupera todos os Pontos de Vida dos heróis que beberem da água."
+                    ]
+                }
             ],
             "Minas": [
-                { desc: "nas galerias e túneis subterrâneos escavados, iluminados pelo brilho suave de cristais mágicos que atraem criaturas", desafio: "Navegar pelo labirinto escuro desviando de trilhos velhos e poços profundos. <strong>Teste de Inteligência (d6)</strong> para achar a rota correta." },
-                { desc: "em uma caverna rica em minérios de ferro e cobre com paredes de pedra instáveis", desafio: "Identificar vigas de sustentação seguras e evitar desabamentos soltos. <strong>Teste de Inteligência ou Defesa (d6)</strong>." },
-                { desc: "nas passagens subterrâneas mais profundas onde os cristais brilham em tons coloridos nas paredes", desafio: "Mover-se em silêncio por caminhos estreitos de pedra. <strong>Teste de Movimentação (d6)</strong>." }
+                {
+                    desc: "nas galerias subterrâneas escavadas que formam um labirinto, iluminadas pelo brilho suave de cristais mágicos multicoloridos",
+                    grid: [
+                        "Não monte todo o mapa. Coloque apenas a parte de início e adicione os túneis conforme os heróis exploram.",
+                        "Os inimigos só aparecem quando as miniaturas tiverem linha de visão direta nos túneis das minas.",
+                        "A passagem secreta entre as pedras só pode ser encontrada com um teste bem-sucedido do atributo Inteligência."
+                    ]
+                },
+                {
+                    desc: "em uma caverna rica em minérios de ferro e cobre com velhos trilhos de vagonetes abandonados",
+                    grid: [
+                        "Não monte todo o mapa de início. Adicione os compartimentos conforme o avanço do grupo.",
+                        "Ao pisar em armadilhas de trilhos ou desabamentos soltos, o jogador testa Defesa e, se falhar, perde 1 PV.",
+                        "Trilhos velhos fornecem cobertura parcial para heróis e inimigos durante o combate."
+                    ]
+                },
+                {
+                    desc: "nas passagens profundas das minas onde ferramentas antigas e inscrições misteriosas estão gravadas na pedra",
+                    grid: [
+                        "Não monte todo o mapa no início. Revele o caminho aos poucos conforme a iluminação avança.",
+                        "Os Insetos Gigantes deste local começam ocultos nas sombras e exigem teste de Inteligência para serem revelados.",
+                        "Inscrições antigas podem ser decifradas com teste de Inteligência para indicar a localização de Baús de Tesouro."
+                    ]
+                }
             ],
             "Cachoeira do Norte": [
-                { desc: "junto à queda d'água cristalina que despenca da colina verdejante, formando uma piscina natural de pedras lisas", desafio: "Atravessar as pedras molhadas e escorregadias perto da forte correnteza. <strong>Teste de Movimentação (d6)</strong> para manter o equilíbrio." },
-                { desc: "na trilha elevada que passa por trás da forte cortina d'água da cachoeira", desafio: "Resistir à força do spray de água e enxergar a passagem. <strong>Teste de Inteligência ou Defesa (d6)</strong>." },
-                { desc: "nas encostas da colina ao redor da piscina natural, onde a vegetação é muito úmida", desafio: "Subir os degraus de pedra cobertos de musgo com segurança. <strong>Teste de Movimentação (d6)</strong>." }
+                {
+                    desc: "ao pé da colina verdejante, onde a água cristalina despenca em um espetáculo de luz e forma uma piscina natural pura",
+                    grid: [
+                        "Não monte todo o mapa. Coloque apenas a área inicial ao redor da cachoeira e expanda aos poucos.",
+                        "A sujeira e a lama espalhadas causam redutor de -1 nas rolagens de Movimentação dos heróis.",
+                        "A Fonte de Água limpa possui baldes ao lado dela e pode ser usada ilimitadamente para apagar focos ou limpar a sujeira."
+                    ]
+                },
+                {
+                    desc: "na trilha elevada de pedras molhadas que passa por trás da forte cortina d'água da cachoeira",
+                    grid: [
+                        "Não monte todo o mapa no início. Revele a trilha oculta conforme as miniaturas avançam.",
+                        "A cortina d'água bloqueia a linha de visão direta de disparos à distância.",
+                        "Ao pisar em pedras escorregadias (armadilhas), o jogador deve fazer um teste de Defesa para não perder 1 PV."
+                    ]
+                },
+                {
+                    desc: "nas encostas de pedra cercadas por árvores frutíferas e frutas frescas perto da queda d'água",
+                    grid: [
+                        "Não monte todo o mapa de início. Acrescente as seções à medida que o grupo explora a praia natural.",
+                        "Os inimigos só aparecem quando as miniaturas chegarem à entrada de cada nova área.",
+                        "Frutas frescas do local podem ser coletadas como Ação Simples para auxiliar no descanso da equipe."
+                    ]
+                }
             ],
             "Lago da Boa Pesca": [
-                { desc: "às margens serenas do grande lago de águas puras, onde os moradores costumam pescar e cultivar vegetais", desafio: "Guiar um pequeno barco entre juncos e troncos flutuantes. <strong>Teste de Inteligência ou Força (d6)</strong> para manobrar na água." },
-                { desc: "nas pontes de madeira e ancoradouros de pesca cercados por vegetação aquática", desafio: "Caminhar pelas tábuas soltas do trapiche de pesca. <strong>Teste de Movimentação (d6)</strong>." },
-                { desc: "nas áreas de plantação de frutos e tubérculos que margeiam o sereno lago", desafio: "Superar o terreno enlameado perto da água. <strong>Teste de Força ou Movimentação (d6)</strong>." }
+                {
+                    desc: "nas águas puras e tranquilas acumuladas da cachoeira, cercadas por ancoradouros de madeira e vegetação de pesca",
+                    grid: [
+                        "Não monte todo o mapa no início. Adicione as margens do lago conforme os heróis avançam.",
+                        "As portas das casas dos pescadores ao redor do lago estão trancadas, mas podem ser arrombadas com teste de Força.",
+                        "Os inimigos só devem ser colocados no mapa quando as miniaturas dos heróis tiverem visão em linha reta."
+                    ]
+                },
+                {
+                    desc: "nas pontes de madeira e trapiche de pesca que se estendem sobre a água repleta de peixes coloridos",
+                    grid: [
+                        "Não monte todo o mapa de início. Coloque a área de início na ponte e adicione o restante aos poucos.",
+                        "Ao pisar em tábuas soltas (armadilhas), o jogador deve fazer um teste de Defesa e, se falhar, perde 1 PV.",
+                        "A passagem secreta sob o ancoradouro só pode ser encontrada com um teste bem-sucedido de Inteligência."
+                    ]
+                },
+                {
+                    desc: "nas áreas de plantação de vegetais e tubérculos que margeiam o sereno lago da vila",
+                    grid: [
+                        "Não monte todo o mapa no início. Revele as plantações conforme a exploração.",
+                        "Cuidado com buracos ocultos no solo enlameado (armadilhas) feitos pelas criaturas no local.",
+                        "Inimigos destruindo plantações recuam se a Rainha/Rei do bando for derrotado primeiro."
+                    ]
+                }
             ],
             "Floresta Secreta ou Floresta Densa": [
-                { desc: "no coração da exuberante mata de árvores gigantescas, onde a copa densa esconde clareiras mágicas e árvores cobertas de musgo", desafio: "Abrir caminho entre cipós e raízes gigantescas que bloqueiam a trilha. <strong>Teste de Força ou Inteligência (d6)</strong> para abrir passagem." },
-                { desc: "em uma clareira mística iluminada por flores raras que mudam de cor ao toque dos pequenos", desafio: "Decifrar o caminho correto entre trilhas naturais quase invisíveis. <strong>Teste de Inteligência (d6)</strong>." },
-                { desc: "sob as copas fechadas da floresta densa onde a luz do sol mal consegue atravessar as folhas", desafio: "Guiar o grupo mantendo a direção certa entre as árvores frondosas. <strong>Teste de Inteligência ou Movimentação (d6)</strong>." }
+                {
+                    desc: "no coração da exuberante mata de árvores gigantescas, onde frutos exóticos e clareiras mágicas abrigam a vida selvagem",
+                    grid: [
+                        "Não monte todo o mapa. Coloque apenas a parte de início do mapa e acrescente as outras partes aos poucos.",
+                        "Os inimigos só devem ser colocados no mapa quando as miniaturas dos heróis tiverem visão em linha reta.",
+                        "Se houver Focos de Fogo no mapa, eles são colocados em dupla. Apague sempre os dois; caso contrário, a chama vizinha o reacende."
+                    ]
+                },
+                {
+                    desc: "em uma clareira mística iluminada por flores luminosas e árvores antigas cobertas de musgo",
+                    grid: [
+                        "Não monte todo o mapa no início. Revele o ambiente conforme as miniaturas exploram a mata.",
+                        "A passagem secreta no tronco de uma árvore antiga só pode ser encontrada com teste bem-sucedido de Inteligência.",
+                        "A Fonte de Água cristalina do local pode ser usada diversas vezes e possui baldes ao lado dela."
+                    ]
+                },
+                {
+                    desc: "sob as copas fechadas da floresta densa onde cipós e raízes trançadas formam um labirinto verde",
+                    grid: [
+                        "Não monte todo o mapa no início. Adicione as trilhas à medida que o grupo avança.",
+                        "Ao pisar em armadilhas de cipós venenosos, o jogador testa Defesa para não sofrer 1 ponto de Dano.",
+                        "Animais em perigo no incêndio/invasão podem ser resgatados e colocados em área segura no grid."
+                    ]
+                }
             ],
             "Rio do Destino": [
-                { desc: "nas margens agitadas do rio que serpenteia desde a cachoeira até o mar, repleto de corredeiras e rochas", desafio: "Saltar de pedra em pedra sobre as corredeiras do rio. <strong>Teste de Movimentação (d6)</strong> para não cair na água agitada." },
-                { desc: "em um trecho veloz do rio cercado por troncos caídos e margens íngremes", desafio: "Equilibrar-se sobre um tronco antigo usado como ponte improvisada. <strong>Teste de Movimentação ou Defesa (d6)</strong>." },
-                { desc: "nas curvas calmas do rio que cortam a borda de vales e cavernas", desafio: "Navegar ou caminhar pela margem arenosa sem escorregar na lama. <strong>Teste de Força (d6)</strong>." }
+                {
+                    desc: "nas margens agitadas do majestoso rio que serpenteia desde a cachoeira até o mar, cheio de corredeiras e rochas",
+                    grid: [
+                        "Não monte todo o mapa. Coloque a seção inicial e adicione o restante conforme as miniaturas viajam.",
+                        "Atravessar o rio sobre pedras molhadas exige teste de Movimentação. Se pisar em armadilha de correnteza, teste Defesa.",
+                        "Os inimigos só entram no grid quando o grupo tiver linha de visão direta das margens."
+                    ]
+                },
+                {
+                    desc: "em um trecho de corredeiras fortes cercado por troncos caídos usados como pontes improvisadas",
+                    grid: [
+                        "Não monte todo o mapa de início. Revele as margens do rio aos poucos.",
+                        "Troncos caídos sobre a água contam como passagem estreita (não permite andar em diagonal).",
+                        "Ao pisar em areia movediça (armadilha), o jogador deve testar Defesa para não ficar imobilizado."
+                    ]
+                },
+                {
+                    desc: "nas curvas calmas do rio que cortam a borda de vales e paredões de pedra",
+                    grid: [
+                        "Não monte todo o mapa no início. Acrescente as curvas do rio conforme a exploração.",
+                        "A passagem secreta em uma fenda da rocha à beira do rio exige teste bem-sucedido do atributo Inteligência.",
+                        "Pequenos barcos no rio podem dividir o quadrado com o herói para transporte de cargas."
+                    ]
+                }
             ],
             "Cavernas sem Luz": [
-                { desc: "nos túneis profundos e completamente escuros esculpidos pela água em pedras negras, onde tochas são indispensáveis", desafio: "Avançar na escuridão total segurando fontes de luz e desviando de estalactites. <strong>Teste de Inteligência (d6)</strong> para notar armadilhas." },
-                { desc: "em um salão subterrâneo de pedras escuras onde o som dos passos ecoa fortemente", desafio: "Manter a orientação e evitar buracos ocultos no solo escuro. <strong>Teste de Inteligência ou Movimentação (d6)</strong>." },
-                { desc: "nas galerias mais estreitas das cavernas úmidas cercadas por rochas escuras", desafio: "Passar por fendas apertadas segurando as tochas da equipe. <strong>Teste de Defesa ou Força (d6)</strong>." }
+                {
+                    desc: "no labirinto de túneis profundamente escuros esculpidos pela água em pedras negras, onde a escuridão é total",
+                    grid: [
+                        "É indispensável o uso de tochas. Sem fonte de luz ativa, todos os testes sofrem severas penalidades.",
+                        "Não monte todo o mapa no início. Adicione os túneis escuros conforme a iluminação avança.",
+                        "A passagem secreta na parede de pedra negra só pode ser encontrada com um teste bem-sucedido de Inteligência."
+                    ]
+                },
+                {
+                    desc: "em um grande salão subterrâneo onde estalactites pontiagudas pendem do teto escuro",
+                    grid: [
+                        "Não monte todo o mapa no início. Revele os salões aos poucos conforme o grupo explora.",
+                        "Estalactites soltas funcionam como armadilhas do teto: se ativadas, o jogador testa Defesa para não perder 1 PV.",
+                        "Os inimigos só aparecem no grid quando as miniaturas chegarem à entrada do salão."
+                    ]
+                },
+                {
+                    desc: "nas galerias mais profundas da caverna onde ruídos estranhos ecoam pelas paredes escuras",
+                    grid: [
+                        "Não monte todo o mapa no início. Revele as fendas escuras conforme a navegação.",
+                        "A escuridão total impede a visão em linha reta além de 3 quadrados sem uma tocha acesa.",
+                        "Baús de Tesouro ocultos no escuro exigem testes bem-sucedidos de Inteligência para serem achados."
+                    ]
+                }
             ],
             "Farol": [
-                { desc: "ao redor da imponente torre de pedra gravada com runas mágicas, cuja lanterna orienta os navegantes da costa", desafio: "Subir os longos degraus em espiral sob rajadas de vento marítimo. <strong>Teste de Defesa ou Movimentação (d6)</strong> para manter o ritmo." },
-                { desc: "na plataforma superior de observação da torre sob forte vento do litoral", desafio: "Mover-se na área elevada e segurar os equipamentos com firmeza. <strong>Teste de Força ou Defesa (d6)</strong>." },
-                { desc: "na base de pedra da torre do Farol cercada por rochas litorâneas", desafio: "Subir a trilha de pedra batida sob o spray do mar. <strong>Teste de Movimentação (d6)</strong>." }
+                {
+                    desc: "ao redor da imponente torre de pedra gravada com runas mágicas, cuja lanterna orienta navegantes amigáveis pelo litoral",
+                    grid: [
+                        "Não monte todo o mapa de início. Coloque a base do Farol e adicione os andares conforme o grupo sobe.",
+                        "Subir a escadaria em espiral sob rajadas de vento exige firmeza. Se pisar em degrau solto (armadilha), teste Defesa.",
+                        "Os inimigos só aparecem no grid quando as miniaturas tiverem linha de visão em cada patamar."
+                    ]
+                },
+                {
+                    desc: "na plataforma de observação no topo do Farol, onde a lanterna mágica reluz sob o vento forte da costa",
+                    grid: [
+                        "A lanterna do Farol ilumina todo o grid da plataforma elevada, eliminando penalidades de escuridão.",
+                        "Ventos fortes no topo afetam projéteis à distância sem o uso de cobertura firme.",
+                        "Limites do terraço funcionam como bordas do mapa (heróis e criaturas não podem andar além delas)."
+                    ]
+                },
+                {
+                    desc: "na base da torre construída sobre rochas marítimas batidas pelas ondas do oceano",
+                    grid: [
+                        "Não monte todo o mapa no início. Adicione a trilha de rochas marítimas aos poucos.",
+                        "O spray do mar deixa as rochas da base escorregadias (exige teste de Movimentação para correr).",
+                        "Ao pisar em fendas instáveis nas rochas (armadilha), faça um teste de Defesa para não perder 1 PV."
+                    ]
+                }
             ],
             "Escombros": [
-                { desc: "entre os restos misteriosos de uma antiga cidade destruída há gerações, cheia de paredes de pedra gigante e casas em ruínas", desafio: "Caminhar com cuidado sobre muros de pedra antiga que ameaçam ruir. <strong>Teste de Movimentação ou Inteligência (d6)</strong>." },
-                { desc: "nas velhas praças abandonadas da cidade em ruínas cobertas por areia e pedregulhos soltos", desafio: "Rastrear passagens e entradas escondidas em prédios de pedra. <strong>Teste de Inteligência (d6)</strong>." },
-                { desc: "entre os corredores esquecidos das ruínas antigas cheios de escombros e entradas trancadas", desafio: "Mover blocos de pedra soltos para abrir caminho. <strong>Teste de Força ou Inteligência (d6)</strong>." }
+                {
+                    desc: "nas ruínas enigmáticas da antiga cidade destruída há gerações, repletas de paredes de pedra gigante e casas abandonadas",
+                    grid: [
+                        "Não monte todo o mapa no início. Acrescente as casas destruídas conforme a exploração.",
+                        "Todas as portas das ruínas estão fechadas, mas não trancadas. Os inimigos começam ocultos sob os escombros.",
+                        "Os Insetos devem ser localizados pelos jogadores com um teste de Inteligência em cada nova área que entrarem."
+                    ]
+                },
+                {
+                    desc: "nas velhas praças e templos esquecidos da cidade em ruínas cobertos por areia e pedregulhos soltos",
+                    grid: [
+                        "Não monte todo o mapa de início. Revele as praças antigas à medida que os jogadores exploram.",
+                        "A passagem secreta sob um altar antigo só é descoberta com um teste bem-sucedido de Inteligência.",
+                        "Pisando em escombros soltos (armadilha), o herói deve testar Defesa para não sofrer 1 ponto de Dano."
+                    ]
+                },
+                {
+                    desc: "entre os corredores subterrâneos dos Escombros onde o mau cheiro de certas criaturas fica acumulado",
+                    grid: [
+                        "Não monte todo o mapa no início. Adicione os corredores à medida que a iluminação avança.",
+                        "O uso de Máscaras de Tecido (fornecidas pelo Mestre) permite andar pela área sem sofrer com o mau cheiro.",
+                        "Historiadores ou exploradores presos podem ser resgatados e conduzidos até a zona segura do grid."
+                    ]
+                }
             ]
         };
 
-        // TRIPLICAÇÃO DE LORE E TÁTICAS DE INIMIGOS (BESTIÁRIO BASE + EXPANSÃO 1)
+        // TRIPLICAÇÃO DE LORE E TÁTICAS DE INIMIGOS
         const geradorInimigosVariados = {
             "Abelha e/ou Vespa": [
-                "O zumbido forte indica a presença de Abelhas e Vespas Gigantes. Elas atacam à distância lançando ferrões que podem causar Paralisia! <em>Dica: O grupo pode usar objetos do cenário como cobertura para bloquear a linha de visão dos disparos.</em>",
-                "Enxames de Vespas e Abelhas surgem zumbindo alto no ar. Seus ferrões paralensantes são perigosos à distância! <em>Dica: Habilidades de longo alcance e magias ajudam a acertá-las antes que se aproximem.</em>",
-                "As asas rápidas das Vespas cortam o ar com velocidade. Elas tentam se manter no alto durante o confronto! <em>Dica: O uso de redes ou poções arremessáveis pode imobilizar o enxame.</em>"
+                "Abelhas e Vespas Gigantes surgem zumbindo no ar e lançam projéteis de ferrão que causam o status de Paralisia! <em>Estratégia Mestre: Atacar e derrotar a Vespa ou Abelha Rainha faz com que as operárias restantes fujam do mapa imediatamente. Usem objetos como cobertura!</em>",
+                "Enxames de Vespas e Abelhas cortam o ar com velocidade. Seus ferrões paralisantes atacam à distância de até 4 quadrados! <em>Estratégia Mestre: Habilidades de longo alcance, pergaminhos de fogo e magias ajudam a acertá-las no ar antes que se aproximem.</em>",
+                "Vespas de carapaça amarela e preta defendem seu ninho com firmeza. <em>Estratégia Mestre: O uso de Poção Cola ou redes pode imobilizar o enxame voador no grid por 1 turno completo.</em>"
             ],
             "Barata": [
-                "Passos rápidos e cascas duras revelam Baratas Gigantes que poluem o ambiente. Quando encurraladas, investem em ataques voadores! <em>Dica: Fiquem atentos ao terreno escorregadio e usem itens de desaceleração como a Poção Cola.</em>",
-                "Carapaças resistentes surgem rápido pelo chão! As Baratas Gigantes ficam mais perigosas quando perdem vida. <em>Dica: Mantenham a defesa erguida e usem o trabalho em equipe para contornar o ataque voador.</em>",
-                "Baratas de casca escura avançam em bando pela área. A sujeira no local dificulta o movimento dos heróis! <em>Dica: Limpar o caminho ou focar o ataque em uma criatura por vez garante a vitória.</em>"
+                "Baratas Gigantes espalham sujeira pelo ambiente. Quando ficam com pouca vida (1 PV), investem em um perigoso ataque Voador de 2 Dano! <em>Estratégia Mestre: Mantenham a defesa erguida e limpem a área para remover a penalidade de movimento de -1.</em>",
+                "Carapaças resistentes surgem velozmente pelo chão do local! As Baratas Gigantes ficam mais agressivas ao sofrerem dano. <em>Estratégia Mestre: Mantenham a formação do grupo e fiquem atentos para se defenderem da investida voadora.</em>",
+                "Baratas de casca escura avançam em bando pela área poluída. <em>Estratégia Mestre: Focar os ataques em uma criatura por vez garante vitórias mais rápidas antes que elas usem seus ataques especiais.</em>"
             ],
             "Besouro Titã": [
-                "Carapaças pesadas avançam pelo caminho. Suas mandíbulas fortes ativam o status de Agarro se prenderem um herói! <em>Dica: Atacar pelas costas ou distrair o besouro garante bônus nos testes de ataque.</em>",
-                "Besouros Titãs pesados marcham com passos lentos, mas com muita força! Suas pinças presas imobilizam alvos. <em>Dica: A Ação de Ajuda de um companheiro é ideal para libertar um herói preso.</em>",
-                "A carapaça dura do Besouro Titã ignora parte dos golpes frontais. Ele protege a linha de frente do bando! <em>Dica: Flanquear a criatura em lados opostos reduz sua capacidade de defesa.</em>"
+                "Besouros Titãs avançam com carapaças pesadas. Ao prenderem um herói com suas mandíbulas, ativam o status de Agarro! <em>Estratégia Mestre: Atacar pelas costas concede +1 no atributo Força temporário para o herói.</em>",
+                "Besouros Titãs marcham com passos firmes e carapaça dura que ignora parte dos ataques frontais! <em>Estratégia Mestre: A Ação de Ajuda de um companheiro vizinho é ideal para libertar um aliado preso no Agarro.</em>",
+                "A força física do Besouro Titã impressiona a todos na linha de frente. <em>Estratégia Mestre: Flanquear o inimigo em posições opostas no grid reduz a eficácia da defesa da criatura.</em>"
             ],
             "Cupim e/ou Formiga": [
-                "Um bando organizado surge do solo devorando estruturas! Elas usam suas pinças para agarrar e arremessar os heróis a distância. <em>Dica: Trabalhem em equipe mantendo distância e protegendo aliados com a Ação de Defesa.</em>",
-                "Formigas e Cupins Gigantes trabalham em sintonia perfeita, tentando cercar os aventureiros! <em>Dica: Evitem ficar no centro do bando para não sofrerem arremessos em sequência.</em>",
-                "A força física do exército de Formigas e Cupins impressiona. Suas mordidas são rápidas e firmes! <em>Dica: Usar armas com maior alcance ajuda a manter as criaturas sob controle.</em>"
+                "Um bando organizado de Formigas e Cupins surge do solo devorando estruturas e arremessando aventureiros a 2 quadrados de distância! <em>Estratégia Mestre: Trabalhem em equipe protegendo aliados frágeis com a Ação de Defesa.</em>",
+                "Formigas e Cupins Gigantes trabalham em sintonia perfeita tentando cercar a equipe! <em>Estratégia Mestre: Evitem ficar no centro do bando para não sofrerem arremessos em sequência contra as paredes.</em>",
+                "A força das mandíbulas de Cupins e Formigas ameaça as construções da vila. <em>Estratégia Mestre: Derrotar o Rei ou Rainha Cupim faz com que os operários percam a organização e se afastem.</em>"
             ],
             "Escorpião": [
-                "Caudas erguidas e carapaças reluzentes indicam Escorpiões Gigantes! Seus ferrões causam dano e o status de Envenenamento. <em>Dica: Iluminar a área ou usar habilidades de visão ajuda a detectar criaturas com carapaça reflexiva.</em>",
-                "Escorpiões de carapaça transparente se escondem na sombra! Seus bicos causam envenenamento doloroso. <em>Dica: Fazer testes de percepção e usar a luz de tochas evita surpresas nas costas.</em>",
-                "O movimento rápido das garras do Escorpião ameaça os heróis. Ele ataca com garras e ferrão! <em>Dica: O uso de poções de cura rápida e proteção reduz os efeitos do veneno.</em>"
+                "Escorpiões Gigantes atacam com garras e ferrões, causando 2 Dano e o status de Envenenamento! <em>Estratégia Mestre: Em áreas escuras ou na Sala dos Espelhos, faça testes de Inteligência para revelar criaturas transparentes.</em>",
+                "Escorpiões de cauda erguida se escondem nas sombras das cavernas congelantes! <em>Estratégia Mestre: Usem fontes de luz cristalinas ou tochas para evitar ataques surpresa nas costas dos heróis.</em>",
+                "O movimento rápido das garras do Escorpião exige cuidado no combate corpo a corpo. <em>Estratégia Mestre: O uso de Poção de Cura rápida e pergaminhos de proteção reduz os riscos do veneno.</em>"
             ],
             "Gafanhoto": [
-                "Pernas traseiras poderosas permitem que os Gafanhotos deem saltos gigantescos, posicionando-se nas costas dos heróis! <em>Dica: Protejam a retaguarda do grupo e evitem ficar isolados no mapa.</em>",
-                "Salto velozes cortam o ar! Os Gafanhotos Gigantes atacam por cima e tentam desorientar a equipe. <em>Dica: Manter a formação agrupada impede que o inimigo golpeie pelas costas sem reação.</em>",
-                "O enxame de Gafanhotos se move sem parar, destruindo a vegetação ao redor. <em>Dica: Usar poções que imobilizam pernas ou pés impede os saltos da criatura.</em>"
+                "Gafanhotos Gigantes dão saltos poderosos sobre a linha de frente para golpear os heróis pelas costas com 2 Dano! <em>Estratégia Mestre: Protejam a retaguarda e evitem ficar isolados no grid.</em>",
+                "Salto velozes cortam o ar! Os Gafanhotos Gigantes atacam por cima e tentam desorientar os aventureiros. <em>Estratégia Mestre: Manter a formação agrupada impede que o inimigo golpeie pelas costas sem sofrer reação.</em>",
+                "O enxame de Gafanhotos se move sem parar destruindo as plantações do local. <em>Estratégia Mestre: Usar itens de imobilização no solo impede que a criatura tome impulso para saltar.</em>"
             ],
             "Lagarta de Fogo e/ou Mariposa": [
-                "Grumos de queimadura ou nuvens de pó cobrem o ar. As Lagartas causam Queimadura e as Mariposas soltam pó de Cegueira! <em>Dica: Usar pergaminhos de longa distância evita o contato direto com o calor da lagarta.</em>",
-                "Pó brilhante solto pelas asas das Mariposas afeta a visão do grupo, enquanto Lagartas de Fogo se aproximam! <em>Dica: Mantenham a calma e usem habilidades mágicas que não dependem totalmente da visão.</em>",
-                "O calor gerado pelas Lagartas de Fogo é intenso ao toque! <em>Dica: Atacar à distância com projéteis ou magias protege a vida dos pequenos heróis.</em>"
+                "Lagartas de Fogo causam Queimadura ao toque e Mariposas soltam pó no ar que aplica o status de Cegueira! <em>Estratégia Mestre: Usem pergaminhos de longa distância para não sofrerem queimaduras diretas.</em>",
+                "Pó brilhante solto pelas asas das Mariposas afeta a visão do grupo enquanto Lagartas de Fogo avançam! <em>Estratégia Mestre: Mantenham a calma e usem habilidades mágicas ou ataques que não dependem apenas da visão.</em>",
+                "O calor gerado pelas Lagartas de Fogo é intenso ao contato. <em>Estratégia Mestre: Usar baldes de água da fonte ou pergaminhos de gelo ajuda a neutralizar o fogo das criaturas.</em>"
             ],
             "Mosca e/ou Mosquito": [
-                "Zumbidos irritantes cortam o ar. Os Mosquitos sugam energia aplicando Lentidão, e as Moscas fazem investidas rápidas! <em>Dica: Armas de alcance ou magia são ideais para acertar inimigos voadores.</em>",
-                "Mosquitos e Moscas Gigantes voam em círculos, tentando cansar os heróis com picadas e investidas. <em>Dica: Atrair as criaturas para espaços mais baixos facilita os golpes de combate.</em>",
-                "A agilidade voadora desses insetos torna os ataques diretos difíceis. <em>Dica: Esperar o momento da investida ou usar ações de distração ajuda a garantir o acerto.</em>"
+                "Mosquitos sugam a energia causando o status de Lentidão, enquanto Moscas realizam investidas voadoras! <em>Estratégia Mestre: Utilizem armas de alcance (arcos, lanças) ou magias para acertá-los no ar.</em>",
+                "Mosquitos e Moscas Gigantes voam em círculos tentando cansar os heróis com picadas rápidas. <em>Estratégia Mestre: Atrair as criaturas para teto baixo ou corredores facilita os golpes da equipe.</em>",
+                "A agilidade voadora desses insetos torna os ataques diretos difíceis. <em>Estratégia Mestre: Esperar o momento da investida ou usar ações de distração garante maior precisão no ataque.</em>"
             ],
             "Percevejo": [
-                "Um cheiro forte e desagradável toma conta do ar! Os Percevejos Gigantes emitem um odor nauseante que provoca Confusão. <em>Dica: Máscaras de pano ou poções de percepção ajudam o grupo a ignorar o mau cheiro.</em>",
-                "Odor insuportável e carapaça dura! O Percevejo Gigante confunde os aventureiros com seu cheiro tóxico. <em>Dica: Atacar rapidamente antes que o cheiro se espalhe pela sala reduz o status de Confusão.</em>",
-                "Carapaças resistentes que protegem Percevejos escondidos nos escombros. <em>Dica: Mantenham a comunicação entre o grupo para superarem os efeitos da confusão.</em>"
+                "Percevejos Gigantes emitem um odor nauseante que provoca o status de Confusão nos heróis! <em>Estratégia Mestre: Usem máscaras de tecido para navegar no local sem sofrer as penalidades do mau cheiro.</em>",
+                "Odor insuportável e carapaça dura! O Percevejo Gigante confunde os aventureiros com seu cheiro tóxico. <em>Dica: Atacar rapidamente antes que o cheiro se espalhe pela sala reduz o risco de Confusão.</em>",
+                "Carapaças resistentes que protegem Percevejos escondidos nos escombros. <em>Estratégia Mestre: Mantenham a comunicação entre o grupo para superarem os efeitos do mau cheiro.</em>"
             ],
             "Pulga": [
-                "Saltos velozes e picadas dolorosas! As Pulgas Gigantes sugam a vitalidade dos heróis e podem induzir ao status de Sono. <em>Dica: Mantenham-se atentos para acordar aliados adormecidos antes que fiquem vulneráveis.</em>",
-                "A agilidade extraordinária da Pulga Gigante permite saltos surpreendentes! Ela suga a energia da equipe. <em>Dica: Usar a Ação de Ajuda para acordar companheiros garante que ninguém fique para trás.</em>",
-                "Pulgas em bando saltam rapidamente pelo chão e pelas paredes. <em>Dica: Golpes em área ou magia de fogo ajudam a controlar a movimentação rápida do inimigo.</em>"
+                "Pulgas Gigantes saltam velozmente, sugam a vitalidade dos heróis e induzem os pequenos ao status de Sono! <em>Estratégia Mestre: Usem a Ação de Ajuda para acordar aliados adormecidos rapidamente.</em>",
+                "A agilidade extraordinária da Pulga Gigante permite saltos surpreendentes pelo mapa! <em>Estratégia Mestre: Ações de ajuda de companheiros são fundamentais para que ninguém fique sozinho adormecido.</em>",
+                "Pulgas em bando saltam rapidamente pelo chão e pelas paredes das cavernas. <em>Estratégia Mestre: Ataques em área ou magias de fogo ajudam a controlar a movimentação do bando.</em>"
             ],
             "Traça dos Livros": [
-                "Mandíbulas afiadas que roem tudo ao redor! As Traças dos Livros usam um ataque giratório que atinge todos os aventureiros vizinhos. <em>Dica: Espalhem-se pelo grid para que o ataque giratório atinja apenas um herói por vez.</em>",
-                "Traças Gigantes roem madeira e pergaminhos rapidamente! Seu ataque em giro atinge vários alvos no mesmo quadrado. <em>Dica: Mantenham distância de pelo menos 2 quadrados entre cada herói.</em>",
-                "O movimento giratório da Traça dos Livros pega muitos desavisados. <em>Dica: Usar ataques de longe impede que a criatura acerte todo o grupo de uma vez.</em>"
+                "Traças dos Livros usam um ataque giratório que atinge todos os aventureiros no mesmo quadrado adjacente! <em>Estratégia Mestre: Mantenham o grupo espalhado no grid com pelo menos 2 quadrados de distância.</em>",
+                "Traças Gigantes roem madeira e pergaminhos rapidamente! Seu ataque em giro atinge vários alvos de uma vez. <em>Estratégia Mestre: Mantenham distância de segurança e usem ataques de longo alcance.</em>",
+                "O movimento giratório da Traça dos Livros pega muitos desavisados no combate corpo a corpo. <em>Estratégia Mestre: Atacar à distância evita que o grupo inteiro tome dano simultâneo.</em>"
             ]
         };
 
         function roll2d6() { return (Math.floor(Math.random() * 6) + 1) + (Math.floor(Math.random() * 6) + 1); }
         function roll1d6() { return Math.floor(Math.random() * 6) + 1; }
 
-        // HELPER PARA SELECIONAR ITEM ALEATÓRIO DA LISTA TRIPLICADA
         function getRandomItem(array) {
             return array[Math.floor(Math.random() * array.length)];
         }
 
-        // GERADOR DE ROTEIRO DETALHADO (PROCEDURAL AVANÇADO MULTICAMADAS)
-        function generateRichRoteiro(contato, objetivo, local, inimigo, recompensa) {
+        // GERADOR DA FICHA UNIFICADA NO PADRÃO DE MISSÕES DE FAZ DE CONTA RPG
+        function generateOfficialRoteiro(contato, objetivo, local, inimigo, recompensa) {
             const listaDialogos = geradorDialogosVariados[contato.nome] || [`Pequenos heróis, precisamos de vocês para resolver a urgência de ${contato.desc.toLowerCase()}!`];
             const dialogo = getRandomItem(listaDialogos);
 
-            const listaLocais = geradorLocaisVariados[local] || [{ desc: `na região de ${local}`, desafio: `Superar o terreno acidentado de ${local}. <strong>Teste de Movimentação ou Inteligência (d6)</strong>.` }];
+            const listaLocais = geradorLocaisVariados[local] || [{
+                desc: `na região de ${local}`,
+                grid: [
+                    "Não monte todo o mapa. Coloque apenas a parte de início do mapa e acrescente as outras partes do mapa aos poucos, à medida que os jogadores exploram o ambiente.",
+                    "Os inimigos só devem ser colocados no mapa quando as miniaturas dos heróis tiverem uma visão em linha reta dos inimigos ou chegarem na entrada das áreas onde eles se localizam."
+                ]
+            }];
             const infoLocal = getRandomItem(listaLocais);
 
-            const listaInimigos = geradorInimigosVariados[inimigo] || ["Criaturas gigantes ameaçam a tranquilidade da região."];
+            const listaInimigos = geradorInimigosVariados[inimigo] || ["Criaturas gigantes ameaçam a tranquilidade do local."];
             const infoInimigo = getRandomItem(listaInimigos);
 
+            const estiloSorteado = getRandomItem(estilosValores);
+
             return `
-                <p style="margin-bottom: 12px; font-size: 1.05rem; color: var(--accent-green);">
-                    🎯 <strong>A Jornada em ${local}: O Chamado de ${contato.nome}</strong>
-                </p>
+                <div style="font-size: 0.96rem; line-height: 1.6; color: var(--text-main);">
+                    <!-- FICHA UNIFICADA NO PADRÃO EXATO DAS MISSÕES DE FAZ DE CONTA RPG -->
+                    <div style="background: #fff; border: 2px solid var(--border-dark); padding: 18px; border-radius: 8px; box-shadow: inset 0 0 6px rgba(0,0,0,0.05);">
+                        <div style="font-family: 'Fredoka One', cursive; color: var(--bg-card-header); font-size: 1.2rem; margin-bottom: 8px; border-bottom: 2px solid var(--accent-gold); padding-bottom: 4px;">
+                            MISSÃO FAZ DE CONTA RPG:
+                        </div>
 
-                <p style="margin-bottom: 12px;">
-                    📜 <strong>CENA 1 - O Pedido de Socorro (Vila Velha):</strong><br>
-                    A tranquilidade do vilarejo foi interrompida quando <strong>${contato.nome}</strong> encontrou os aventureiros perto da biblioteca. Com o olhar preocupado, explicou a situação:<br>
-                    <em style="background: #fdf8f0; padding: 6px 10px; border-left: 4px solid var(--accent-gold); display: block; margin: 8px 0; border-radius: 4px;">
-                        "${dialogo}"
-                    </em>
-                    Sem hesitar, os pequenos heróis ajustaram suas bolsas de tesouro e aceitaram o desafio!
-                </p>
+                        <p style="margin-bottom: 8px; font-size: 1rem;"><strong>Inimigo:</strong> ${inimigo}.</p>
 
-                <p style="margin-bottom: 12px;">
-                    🗺️ <strong>CENA 2 - A Travessia e os Obstáculos de ${local}:</strong><br>
-                    O grupo partiu imediatamente para <strong>${local}</strong> — ${infoLocal.desc}. O caminho é cheio de surpresas e exige estratégia.<br>
-                    <strong>⚡ Desafio do Mestre:</strong> ${infoLocal.desafio}
-                </p>
+                        <div style="margin-bottom: 12px; background: #fdf8f0; border-left: 4px solid var(--accent-gold); padding: 10px; border-radius: 4px;">
+                            <strong>Para o Mestre:</strong> Os heróis têm três objetivos para concluir a missão com sucesso:<br>
+                            • Resgatar os Animais ou Moradores em Perigo na área.<br>
+                            • Resolver o obstáculo ambiental do local (${infoLocal.desc}) usando a fonte de água ou improvisando soluções.<br>
+                            • Cumprir o objetivo de <strong>${objetivo.nome.toLowerCase()}</strong> (${objetivo.desc.toLowerCase()}) e afastar as criaturas de ${local}.<br>
+                            <br>
+                            <strong>Estilo da Missão & Valor Moral:</strong> ${estiloSorteado.estilo} (<em>${estiloSorteado.valor}</em>)<br>
+                            <br>
+                            <strong>Condução & Diretrizes de Grid (☼):</strong><br>
+                            ☼ ${infoLocal.grid[0]}<br>
+                            ☼ ${infoLocal.grid[1]}<br>
+                            ☼ Ao pisar em uma armadilha, o jogador deve fazer um teste de Defesa e, caso falhe, perderá um ponto de vida.<br>
+                            ☼ A passagem secreta só pode ser encontrada com um teste bem-sucedido do atributo Inteligência.<br>
+                            ☼ Se houver Fonte de Água no local, ela pode ser usada diversas vezes e possui baldes ao lado dela.<br>
+                            ☼ Se houver focos de perigo/fogo, eles são colocados em dupla. A estratégia é que se apaguem sempre os dois. Se o turno finaliza e apenas um foi apagado, o que está ao seu lado o reacende.<br>
+                            <br>
+                            <strong>Tática do Inimigo no Combate:</strong> ${infoInimigo}
+                        </div>
 
-                <p style="margin-bottom: 12px;">
-                    ⚔️ <strong>CENA 3 - O Confronto com ${inimigo}:</strong><br>
-                    Ao alcançarem o ponto exato da missão, a ameaça se revela! Um bando de <strong>${inimigo}</strong> surge bloqueando o objetivo principal.<br>
-                    <strong>💡 Condução Tática para o Mestre:</strong> ${infoInimigo} Lembre-se: em <em>Faz de Conta RPG</em> os heróis usam inteligência e união para vencer.
-                </p>
+                        <p style="margin-bottom: 12px;">
+                            <strong>Descrição da Missão:</strong> “Heróis, algo terrível está acontecendo em <strong>${local}</strong>! ${inimigo} surgiram e começaram a espalhar o caos por todo lado. ${dialogo} A região, que antes era cheia de vida e cores, agora clama por ajuda! Só vocês podem salvar os necessitados, resolver os problemas do caminho e enfrentar essas terríveis criaturas antes que seja tarde demais. Preparem-se, porque o perigo está por toda parte!”
+                        </p>
 
-                <p style="margin-bottom: 0px; background: #f4fbf0; padding: 12px 14px; border-radius: 6px; border-left: 4px solid var(--accent-green);">
-                    🎁 <strong>CENA 4 - Conclusão & Celebração:</strong><br>
-                    Com coragem e trabalho em equipe, o objetivo de <strong>${objetivo.nome.toLowerCase()}</strong> foi cumprido com sucesso! A energia da nuvem dos gigantes passa, fazendo com que as criaturas fujam para a mata ou encolham ao seu tamanho normal e inofensivo. Em agradecimento, <strong>${contato.nome}</strong> entrega a recompensa de <strong>${recompensa}</strong> para o grupo comemorar em Vila Velha!
-                </p>
+                        <p style="margin-bottom: 0px; background: #f4fbf0; padding: 12px; border-radius: 6px; border-left: 4px solid var(--accent-green);">
+                            <strong>Conclusão:</strong> “Mais uma vez vocês ouviram o clamor da região e responderam com coragem. Onde havia perigo e destruição, vocês levaram esperança e vida. Onde os necessitados corriam em pânico, vocês se tornaram abrigo. E onde o medo ardia, a coragem de vocês foi a chama que queimou mais forte. Lembrem-se disso: a bravura não está apenas nas batalhas contra Insetos Gigantes, mas também no cuidado com os mais frágeis. Vocês não apenas salvaram <strong>${local}</strong> hoje, vocês provaram que a verdadeira magia está no coração daqueles que protegem a vida e a natureza! Obrigado por tamanha coragem! Em agradecimento, <strong>${contato.nome}</strong> entrega a recompensa de <strong>${recompensa}</strong> para vocês dividirem em Vila Velha. Que suas jornadas sejam sempre guiadas pela luz da compaixão! A Terra da Chuva Miúda jamais esquecerá os nomes daqueles que a protegeram!”
+                        </p>
+                    </div>
+                </div>
             `;
         }
 
@@ -3634,7 +3878,7 @@
                 recompensaTxt = `${mult * 10} Chuvisco$ + 1 Carta de Baú de Ferro`;
             }
 
-            // 1. DADOS DOS CARDS
+            // 1. CARDS DETALHADOS
             document.getElementById('res-contato').innerHTML = `<strong>[d6: ${rollC}] ${contato.nome}:</strong> ${contato.desc}`;
             document.getElementById('res-objetivo').innerHTML = `<strong>[d6: ${rollO}] ${objetivo.nome}:</strong> ${objetivo.desc}`;
             document.getElementById('res-local').innerHTML = `<strong>[d6: ${rollL}]:</strong> ${local}`;
@@ -3657,9 +3901,9 @@
             `;
             document.getElementById('mission-elaborated').innerHTML = elaboratedHTML;
 
-            // 4. BOX 3: ROTEIRO DETALHADO (PROCEDURAL TRIPLICADO EM CAMADAS)
-            const richStory = generateRichRoteiro(contato, objetivo, local, inimigo, recompensaTxt);
-            document.getElementById('mission-ai-narrative').innerHTML = richStory;
+            // 4. BOX 3: PADRÃO EXATO DE FAZ DE CONTA RPG COM CONTEÚDO EXPANDIDO (ÚNICO)
+            const officialStory = generateOfficialRoteiro(contato, objetivo, local, inimigo, recompensaTxt);
+            document.getElementById('mission-ai-narrative').innerHTML = officialStory;
         }
 
         // OUTRAS FUNÇÕES DA INTERFACE
