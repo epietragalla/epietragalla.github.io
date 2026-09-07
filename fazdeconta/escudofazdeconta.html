@@ -3322,13 +3322,12 @@
 
    <!-- LÓGICA PRINCIPAL DO GERADOR E PLAYER DE TRILHA SONORA -->
     <script type="module">
-
-        /* ====================================================== */
+/* ====================================================== */
         /* GERENCIADOR DE TRILHA SONORA & PLAYER AUDIO NATIVO      */
         /* ====================================================== */
 
-        // PASTA ONDE AS MÚSICAS ESTÃO SALVAS NO SEU PROJETO/SERVIDOR
-        const MUSIC_FOLDER = "./musicas/"; 
+        // CAMINHO APONTANDO PARA A SUA PASTA "trilhasonora"
+        const MUSIC_FOLDER = "./trilhasonora/"; 
 
         // LISTA DE TODAS AS FAIXAS REGISTRADAS
         const playlist = [
@@ -3419,22 +3418,20 @@
             const titleElement = document.getElementById('music-title');
             const playPauseBtn = document.getElementById('btn-play-pause');
 
-            // ATUALIZA ÍNDICE DA PLAYLIST
             const foundIndex = playlist.indexOf(fileName);
             if (foundIndex !== -1) {
                 currentTrackIndex = foundIndex;
             }
 
-            // ATUALIZA FONTE E TÍTULO
-            const audioPath = MUSIC_FOLDER + encodeElementChild(fileName);
+            const audioPath = MUSIC_FOLDER + encodeURIComponent(fileName);
             player.src = audioPath;
             if (titleElement) titleElement.innerText = "Tocando agora: " + displayTitle;
 
             player.play().then(() => {
                 if (playPauseBtn) playPauseBtn.innerText = "⏸️ Pausar";
             }).catch(err => {
-                console.warn("Aguardando interação para reproduzir áudio:", err);
-                if (titleElement) titleElement.innerText = "Clique em Play no player para ouvir: " + displayTitle;
+                console.warn("Aguardando interação do usuário:", err);
+                if (titleElement) titleElement.innerText = "Clique no Play para ouvir: " + displayTitle;
             });
         }
 
