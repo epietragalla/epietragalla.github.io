@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UX Research Canvas — Material Design 3</title>
+  
+  <!-- Fonts & Material Symbols -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       MATERIAL DESIGN 3 DESIGN TOKENS (DARK THEME)
+       ========================================================================== */
+    :root {
+      /* Primary Tonal Palette */
+      --md-sys-color-primary: #a8c7fa;
+      --md-sys-color-on-primary: #063158;
+      --md-sys-color-primary-container: #214770;
+      --md-sys-color-on-primary-container: #d6e3ff;
+
+      /* Secondary Tonal Palette */
+      --md-sys-color-secondary-container: #3e4756;
+      --md-sys-color-on-secondary-container: #dbe2f6;
+
+      /* Surface Colors & Elevations (M3 Elevation Tones) */
+      --md-sys-color-surface: #10131a;
+      --md-sys-color-surface-container-lowest: #0b0e14;
+      --md-sys-color-surface-container-low: #191c22;
+      --md-sys-color-surface-container: #1d2026;
+      --md-sys-color-surface-container-high: #282a31;
+      --md-sys-color-surface-container-highest: #33353c;
+
+      /* Typography & Content Colors */
+      --md-sys-color-on-surface: #e2e2e9;
+      --md-sys-color-on-surface-variant: #c4c6d0;
+      --md-sys-color-outline: #8e9099;
+      --md-sys-color-outline-variant: #44474f;
+
+      /* Category Specific Accent Borders & Tones */
+      --md-custom-propósito-border: #facc15;
+      --md-custom-swot-fortes: #4ade80;
+      --md-custom-swot-fracos: #f87171;
+      --md-custom-swot-oportunidades: #38bdf8;
+      --md-custom-swot-ameacas: #fb923c;
+
+      /* M3 Shape Tokens */
+      --md-shape-corner-extra-small: 4px;
+      --md-shape-corner-small: 8px;
+      --md-shape-corner-medium: 12px;
+      --md-shape-corner-large: 16px;
+      --md-shape-corner-full: 9999px;
+
+      /* M3 Elevation Shadows */
+      --md-sys-elevation-1: 0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
+      --md-sys-elevation-2: 0px 2px 6px 2px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Roboto', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: var(--md-sys-color-surface);
+      color: var(--md-sys-color-on-surface);
+      padding: 24px;
+      min-height: 100vh;
+    }
+
+    /* ==========================================================================
+       M3 TOP APP BAR / HEADER
+       ========================================================================== */
+    .m3-top-app-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--md-sys-color-surface-container);
+      padding: 16px 24px;
+      border-radius: var(--md-shape-corner-large);
+      margin-bottom: 24px;
+      border: 1px solid var(--md-sys-color-outline-variant);
+      box-shadow: var(--md-sys-elevation-1);
+    }
+
+    .m3-brand-container {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .m3-brand-icon {
+      width: 48px;
+      height: 48px;
+      background-color: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-on-primary-container);
+      border-radius: var(--md-shape-corner-medium);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .m3-brand-icon .material-symbols-outlined {
+      font-size: 28px;
+    }
+
+    .m3-title-group h1 {
+      font-size: 22px;
+      font-weight: 500;
+      letter-spacing: 0;
+      color: var(--md-sys-color-on-surface);
+    }
+
+    .m3-title-group p {
+      font-size: 14px;
+      color: var(--md-sys-color-on-surface-variant);
+    }
+
+    .m3-actions-container {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    /* M3 Outlined Text Field */
+    .m3-text-field {
+      position: relative;
+    }
+
+    .m3-text-field input {
+      background-color: transparent;
+      border: 1px solid var(--md-sys-color-outline);
+      border-radius: var(--md-shape-corner-extra-small);
+      padding: 10px 14px;
+      color: var(--md-sys-color-on-surface);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .m3-text-field input:focus {
+      border-color: var(--md-sys-color-primary);
+      border-width: 2px;
+      padding: 9px 13px;
+    }
+
+    /* M3 Buttons */
+    .m3-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 40px;
+      padding: 0 24px;
+      border-radius: var(--md-shape-corner-full);
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.1px;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.2s, box-shadow 0.2s;
+    }
+
+    .m3-button-filled {
+      background-color: var(--md-sys-color-primary);
+      color: var(--md-sys-color-on-primary);
+    }
+
+    .m3-button-filled:hover {
+      box-shadow: var(--md-sys-elevation-1);
+      filter: brightness(1.05);
+    }
+
+    .m3-button-tonal {
+      background-color: var(--md-sys-color-secondary-container);
+      color: var(--md-sys-color-on-secondary-container);
+    }
+
+    .m3-button-tonal:hover {
+      filter: brightness(1.1);
+    }
+
+    /* ==========================================================================
+       CANVAS GRID SYSTEM
+       ========================================================================== */
+    .m3-canvas-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .m3-section-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--md-sys-color-primary);
+      margin-bottom: 12px;
+    }
+
+    .m3-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .m3-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .m3-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .m3-grid-1 { display: grid; grid-template-columns: 1fr; gap: 16px; }
+
+    /* ==========================================================================
+       M3 CARDS & QUADRANTS
+       ========================================================================== */
+    .m3-card {
+      background-color: var(--md-sys-color-surface-container-low);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: var(--md-shape-corner-large);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+
+    .m3-card:focus-within {
+      background-color: var(--md-sys-color-surface-container);
+      border-color: var(--md-sys-color-primary);
+    }
+
+    .m3-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .m3-card-title-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .m3-card-title-group .material-symbols-outlined {
+      color: var(--md-sys-color-primary);
+      font-size: 22px;
+    }
+
+    .m3-card-title-group h2 {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--md-sys-color-on-surface);
+    }
+
+    /* IconButton Explicativo */
+    .m3-icon-button {
+      background: transparent;
+      border: none;
+      color: var(--md-sys-color-on-surface-variant);
+      width: 32px;
+      height: 32px;
+      border-radius: var(--md-shape-corner-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .m3-icon-button:hover {
+      background-color: var(--md-sys-color-surface-container-highest);
+      color: var(--md-sys-color-on-surface);
+    }
+
+    /* M3 Accordion / Hint Panel */
+    .m3-hint-panel {
+      display: none;
+      background-color: var(--md-sys-color-surface-container-highest);
+      border-radius: var(--md-shape-corner-medium);
+      padding: 12px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: var(--md-sys-color-on-surface-variant);
+      line-height: 1.4;
+    }
+
+    .m3-hint-panel.open {
+      display: block;
+    }
+
+    .m3-hint-panel strong {
+      color: var(--md-sys-color-primary);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .m3-hint-panel ul {
+      padding-left: 16px;
+      margin-top: 4px;
+    }
+
+    /* M3 Input Chips */
+    .m3-chips-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      flex-grow: 1;
+      align-content: flex-start;
+      margin-bottom: 16px;
+      min-height: 48px;
+    }
+
+    .m3-input-chip {
+      background-color: var(--md-sys-color-surface-container-high);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: var(--md-shape-corner-small);
+      padding: 6px 8px 6px 12px;
+      font-size: 13px;
+      color: var(--md-sys-color-on-surface);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      max-width: 100%;
+      word-break: break-word;
+    }
+
+    .m3-input-chip button {
+      background: transparent;
+      border: none;
+      color: var(--md-sys-color-on-surface-variant);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: var(--md-shape-corner-full);
+      padding: 2px;
+    }
+
+    .m3-input-chip button:hover {
+      background-color: var(--md-sys-color-surface-container-highest);
+      color: #f87171;
+    }
+
+    .m3-input-chip button .material-symbols-outlined {
+      font-size: 16px;
+    }
+
+    /* Input Add Line */
+    .m3-card-input-group {
+      display: flex;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    .m3-card-input-group input {
+      flex-grow: 1;
+      background-color: var(--md-sys-color-surface-container-lowest);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: var(--md-shape-corner-small);
+      padding: 8px 12px;
+      color: var(--md-sys-color-on-surface);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .m3-card-input-group input:focus {
+      border-color: var(--md-sys-color-primary);
+    }
+
+    .m3-card-input-group button {
+      background-color: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-on-primary-container);
+      border: none;
+      border-radius: var(--md-shape-corner-small);
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .m3-card-input-group button:hover {
+      filter: brightness(1.2);
+    }
+
+    /* ==========================================================================
+       SPECIALIZED CARD STYLES
+       ========================================================================== */
+    .m3-card-purpose {
+      border-color: var(--md-custom-propósito-border);
+      background: linear-gradient(180deg, var(--md-sys-color-surface-container-low) 0%, #1e1b11 100%);
+    }
+
+    .m3-card-purpose .m3-card-title-group .material-symbols-outlined {
+      color: var(--md-custom-propósito-border);
+    }
+
+    .m3-swot-fortes .m3-card-title-group .material-symbols-outlined { color: var(--md-custom-swot-fortes); }
+    .m3-swot-fracos .m3-card-title-group .material-symbols-outlined { color: var(--md-custom-swot-fracos); }
+    .m3-swot-oportunidades .m3-card-title-group .material-symbols-outlined { color: var(--md-custom-swot-oportunidades); }
+    .m3-swot-ameacas .m3-card-title-group .material-symbols-outlined { color: var(--md-custom-swot-ameacas); }
+
+    /* ==========================================================================
+       MEDIA QUERIES & PRINT EXPORT
+       ========================================================================== */
+    @media print {
+      body { background-color: #ffffff; color: #000000; padding: 0; }
+      .m3-top-app-bar, .m3-card-input-group, .m3-icon-button, .m3-input-chip button { display: none !important; }
+      .m3-card { background-color: #ffffff !important; border: 1px solid #cccccc !important; page-break-inside: avoid; }
+      .m3-input-chip { background-color: #f1f5f9 !important; color: #000000 !important; border-color: #cbd5e1 !important; }
+      .m3-hint-panel { display: none !important; }
+    }
+
+    @media (max-width: 1024px) {
+      .m3-grid-3, .m3-grid-4, .m3-grid-2 { grid-template-columns: 1fr; }
+      .m3-top-app-bar { flex-direction: column; align-items: flex-start; gap: 16px; }
+      .m3-actions-container { width: 100%; flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP APP BAR -->
+  <header class="m3-top-app-bar">
+    <div class="m3-brand-container">
+      <div class="m3-brand-icon">
+        <span class="material-symbols-outlined">space_dashboard</span>
+      </div>
+      <div class="m3-title-group">
+        <h1>UX Research Canvas</h1>
+        <p>Alinhamento de maturidade, papéis, entregas e contexto da squad</p>
+      </div>
+    </div>
+    <div class="m3-actions-container">
+      <div class="m3-text-field">
+        <input type="text" id="squad-name" placeholder="Squad / Empresa">
+      </div>
+      <div class="m3-text-field">
+        <input type="text" id="squad-version" placeholder="Versão (ex: v1.0)">
+      </div>
+      <button class="m3-button m3-button-tonal" onclick="exportJSON()">
+        <span class="material-symbols-outlined">download</span> JSON
+      </button>
+      <button class="m3-button m3-button-filled" onclick="window.print()">
+        <span class="material-symbols-outlined">print</span> PDF
+      </button>
+    </div>
+  </header>
+
+  <!-- CANVAS MAIN CONTAINER -->
+  <main class="m3-canvas-layout">
+
+    <!-- SEÇÃO 1: ESTRATÉGIA E DIREÇÃO -->
+    <section>
+      <div class="m3-section-label">
+        <span class="material-symbols-outlined">compass_calibration</span> 1. Estratégia & Direção
+      </div>
+      <div class="m3-grid-3">
+        
+        <!-- Quadrante 1 -->
+        <div class="m3-card m3-card-purpose" id="card-propósito">
+          <div class="m3-card-header">
+            <div class="m3-card-title-group">
+              <span class="material-symbols-outlined">target</span>
+              <h2>1. Propósito</h2>
+            </div>
+            <button class="m3-icon-button" onclick="toggleHint(this)" title="Instruções de preenchimento">
+              <span class="material-symbols-outlined">help_outline</span>
+            </button>
+          </div>
+          <div class="m3-hint-panel">
+            <strong>O que colocar aqui?</strong>
+            Defina a razão real de existir da squad (a proposta de valor) e não a lista de tarefas operacionais.
+            <ul>
+              <li>• Trazer a visão do usuário para decisões estratégicas</li>
+              <li>• Embasa o roadmap do produto X com evidências</li>
+            </ul>
+          </div>
+          <div class="m3-chips-container"></div>
+          <div class="m3-card-input-group">
+            <input type="text" placeholder="Adicionar propósito..." onkeypress="handleEnterKey(event, this)">
+            <button onclick="addChip(this)"><span class="material-symbols-outlined">add</span></button>
+          </div>
+        </div>
+
+        <!-- Quadrante 2 -->
+        <div class="m3-card" id="card-princípios">
+          <div class="m3-card-header">
+            <div class="m3-card-title-group">
+              <span class="material-symbols-outlined">verified</span>
+              <h2>2. Princípios</h2>
+            </div>
+            <button class="m3-icon-button" onclick="toggleHint(this)" title="Instruções de preenchimento">
+              <span class="material-symbols-outlined">help_outline</span>
+            </button>
+          </div>
+          <div class="m3-hint-panel">
+            <strong>O que colocar aqui?</strong>
+            Acordos orientadores de decisões, ética e comportamentos do time no dia a dia.
+            <ul>
+              <li>• Pesquisa é responsabilidade compartilhada</li>
+              <li>• Compensação justa para participantes</li>
+            </ul>
+          </div>
+          <div class="m3-chips-container"></div>
+          <div class="m3-card-input-group">
+            <input type="text" placeholder="Adicionar princípio..." onkeypress="handleEnterKey(event, this)">
+            <button onclick="addChip(this)"><span class="material-symbols-outlined">add</span></button>
+          </div>
+        </div>
+
+        <!-- Quadrante 3 -->
+        <div class="m3-card" id="card-objetivos">
+          <div class="m3-card-header">
+            <div class="m3-card-title-group">
+              <span class="material-symbols-outlined">query_stats</span>
+              <h2>3. Objetivos & Métricas</h2>
+            </div>
+            <button class="m3-icon-button" onclick="toggleHint(this)" title="Instruções de preenchimento">
+              <span class="material-symbols-outlined">help_outline</span>
+            </button>
+          </div>
+          <div class="m3-hint-panel">
+            <strong>O que colocar aqui?</strong>
+            Metas do time e os indicadores (KPIs/OKRs) que medem se o objetivo foi atingido.
+            <ul>
+              <li>• Aumentar uso de pesquisas na priorização</li>
+              <li>• Métrica: % de features validadas antes do dev</li>
+            </ul>
+          </div>
+          <div class="m3-chips-container"></div>
+          <div class="m3-card-input-group">
+            <input type="text" placeholder="Adicionar objetivo/métrica..." onkeypress="handleEnterKey(event, this)">
+            <button onclick="addChip(this)"><span class="material-symbols-outlined">add</span></button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SEÇÃO 2: ESTRUTURA E OPERAÇÃO -->
+    <section>
+      <div class="m3-section-label">
+        <span class="material-symbols-outlined">settings_suggest</span> 2. Estrutura & Operação
+      </div>
+      <div class="m3-grid-4">
+
+        <!-- Quadrante 4 -->
+        <div class="m3-card" id="card-necessidades">
+          <div class="m3-card-header">
+            <div class="m3-card-title-group">
+              <span class="material-symbols-outlined">inventory</span>
+              <h2>4. Necessidades</h2>
+            </div>
+            <button class="m3-icon-button" onclick="toggleHint(this)" title="Instruções de preenchimento">
+              <span class="material-symbols-outlined">help_outline</span>
+            </button>
+          </div>
+          <div class="m3-hint-panel">
+            <strong>O que colocar aqui?</strong>
+            Recursos essenciais indispensáveis para o time executar seu trabalho.
+            <ul>
+              <li>• Ferramenta de assinatura de termos digitais</li>
+              <li>• Verba para contratação de recrutamento externo</li>
+            </ul>
+          </div>
+          <div class="m3-chips-container"></div>
+          <div class="m3-card-input-group">
+            <input type="text" placeholder="Adicionar necessidade..." onkeypress="handleEnterKey(event, this)">
+            <button onclick="addChip(this)"><span class="material-symbols-outlined">add</span></button>
+          </div>
+        </div>
+
+        <!-- Quadrante 5 -->
+        <div class="m3-card" id="card-pessoas">
+          <div class="m3-card-header">
+            <div class="m3-card-title-group">
+              <span class="material-symbols-outlined">groups</span>
+              <h2>5. Pessoas & Papéis</h2>
+            </div>
+            <button class="m3-icon-button" onclick="toggleHint(this)" title="Instruções de preenchimento">
+              <span class="material-symbols-outlined">help_outline</span>
+            </button>
+          </div>
+          <div class="m3-hint-panel">
+            <strong>O que colocar aqui?</strong>
+            Membros da squad e suas atribuições principais de forma clara.
+            <ul>
+              <li>• Fulano: Mantém o repositório de pesquisas</li>
+              <li>• Ciclano: Gestão de painel de usuários</li>
+            </ul>
+          </div>
+          <div class="m3-chips-container"></div>
+          <div class="m3-card-input-group">
+            <input type="text" placeholder="Ex: Nome: Papel..." onkeypress="handleEnterKey(event, this)">
+            <button onclick="addChip(this)"><span class="material-symbols-outlined">add</span></button>
+          </div>
+        </div>
+
+        <!-- Quadrante 6 -->
+        <div class="m3-card" id="card-skills">
+          <div class="m3-card-header">
+            <div class="m3-card-title-group">
+              <span class="material-symbols-outlined">psychology</span>
+              <h2>6. Soft & Hard Skills</h2>
+            </div>
+            <button class="m3-icon-button" onclick="toggleHint(this)" title="Instruções de preenchimento">
+              <span class="material-symbols-outlined">help_outline</span>
+            </button>
+          </div>
+          <div class="m3-hint-panel">
+            <strong>O que colocar aqui?</strong>
+            Competências técnicas (metodologias) e comportamentais necessárias.
+            <ul>
+              <li>• Hard: Teste de Usabilidade, Funil de Dados</li>
+              <li>• Soft: Escuta ativa, Capacidade de síntese</li>
+            </ul>
+          </div>
+          <div class="m3-chips-container"></div>
+          <div class="m3-card-input-group">
+            <input type="text" placeholder="Adicionar skill..." onkeypress="handleEnterKey(event, this)">
+            <button onclick="addChip(this)"><span class="material-symbols-outlined">add</span></button>
+          </div>
+        </div>
+
+        <!-- Quadrante 7 -->
+        <div class="m3-card" id="card-ferramentas">
+          <div class="m3-card-header">
+            <div class="m3-card-title-group">
+              <span class="material-symbols-outlined">construction</span>
+              <h2>7. Ferramental</h2>
+            </div>
+            <button class="m3-icon-button" onclick="toggleHint(this)" title="Instruções de preenchimento">
+              <span class="material-symbols-outlined">help_outline</span>
+            </button>
+          </div>
+          <div class="m3-hint-panel">
+            <strong>O que colocar aqui?</strong>
+            Softwares e plataformas que suportam as atividades de pesquisa.
+            <ul>
+              <li>• Miro, Typeform, Maze, PowerBI, Dovetail</li>
+            </ul>
+          </div>
+          <div class="m3-chips-container"></div>
+          <div class="m3-card-input-group">
+            <input type="text" placeholder="Adicionar ferramenta..." onkeypress="handleEnterKey(event, this)">
+            <button onclick="addChip(this)"><span class="material-symbols-outlined">add</span></button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SEÇÃO 3: ENTREGAS -->
+    <section class="m3-grid-1">
+      <!-- Quadrante 8 -->
+      <div class="m3-card" id="card-atividades">
+        <div class="m3-card-header">
+          <div class="m3-card-title-group">
+            <span class="material-symbols-outlined">assignment</span>
+            <h2>8. Atividades & Entregas</h2>
+          </div>
+          <button class="m3-icon-button" onclick="toggleHint(this)" title="Instruções de preenchimento">
+            <span class="material-symbols-outlined">help_outline</span>
+          </button>
+        </div>
+        <div class="m3-hint-panel">
+          <strong>O que colocar aqui?</strong>
+          Formatos e rituais práticos produzidos pelo time para gerar valor.
+          <ul>
+            <li>• Desk Research, Relatório Qualitativo, Service Blueprint, Workshops de Cocriação</li>
+          </ul>
+        </div>
+        <div class="m3-chips-container"></div>
+        <div class="m3-card-input-group">
+          <input type="text" placeholder="Adicionar atividade ou entrega..." onkeypress="handleEnterKey(event, this)">
+          <button onclick="addChip(this)"><span class="material-symbols-outlined">add</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 4: DIAGNÓSTICO (SWOT) -->
+    <section>
+      <div class="m3-section-label">
+        <span class="material-symbols-outlined">grid_view</span> 3. Diagnóstico de Ambiente (SWOT)
+      </div>
+      <div class="m3-grid-2">
+
+        <!-- Quadrante 9 -->
+        <div class="m3-card m3-swot-fortes" id="card-fortes">
+          <div class="m3-card-header">
+            <div class="m3-card-title-group">
+              <span class="material-symbols-outlined">thumb_up</span>
+              <h2>9. Pontos Fortes (Interno)</h2>
+            </div>
+            <button class="m3-icon-button" onclick="toggleHint(this)" title="Instruções de preenchimento">
+              <span class="material-symbols-outlined">help_outline</span>
+            </button>
+          </div>
+          <div class="m3-hint-panel">
+            <strong>O que colocar aqui?</strong>
+            Vantagens e diferenciais internos que o time já domina.
+            <ul>
+              <li>• Excelente relacionamento com Analytics</li>
+              <li>• Autonomia na escolha de métodos</li>
+            </ul>
+          </div>
+          <div class="m3-chips-container"></div>
+          <div class="m3-card-input-group">
+            <input type="text" placeholder="Adicionar ponto forte..." onkeypress="handleEnterKey(event, this)">
+            <button onclick="addChip(this)"><span class="material-symbols-outlined">add</span></button>
+          </div>
+        </div>
+
+        <!-- Quadrante 10 -->
+        <div class="m3-card m3-swot-fracos" id="card-fracos">
+          <div class="m3-card-header">
+            <div class="m3-card-title-group">
+              <span class="material-symbols-outlined">thumb_down</span>
+              <h2>10. Pontos Fracos (Interno)</h2>
+            </div>
+            <button class="m3-icon-button" onclick="toggleHint(this)" title="Instruções de preenchimento">
+              <span class="material-symbols-outlined">help_outline</span>
+            </button>
+          </div>
+          <div class="m3-hint-panel">
+            <strong>O que colocar aqui?</strong>
+            Gargalos internos e limitações que precisam ser aprimorados.
+            <ul>
+              <li>• Dificuldade em medir o impacto pós-pesquisa</li>
+              <li>• Falta de repositório centralizado</li>
+            </ul>
+          </div>
+          <div class="m3-chips-container"></div>
+          <div class="m3-card-input-group">
+            <input type="text" placeholder="Adicionar ponto fraco..." onkeypress="handleEnterKey(event, this)">
+            <button onclick="addChip(this)"><span class="material-symbols-outlined">add</span></button>
+          </div>
+        </div>
+
+        <!-- Quadrante 11 -->
+        <div class="m3-card m3-swot-oportunidades" id="card-oportunidades">
+          <div class="m3-card-header">
+            <div class="m3-card-title-group">
+              <span class="material-symbols-outlined">rocket_launch</span>
+              <h2>11. Oportunidades (Externo)</h2>
+            </div>
+            <button class="m3-icon-button" onclick="toggleHint(this)" title="Instruções de preenchimento">
+              <span class="material-symbols-outlined">help_outline</span>
+            </button>
+          </div>
+          <div class="m3-hint-panel">
+            <strong>O que colocar aqui?</strong>
+            Oportunidades do contexto da empresa ou mercado para alavancar a área.
+            <ul>
+              <li>• Uso de Inteligência Artificial para análise primária</li>
+              <li>• Aumento do interesse executivo por métricas de UX</li>
+            </ul>
+          </div>
+          <div class="m3-chips-container"></div>
+          <div class="m3-card-input-group">
+            <input type="text" placeholder="Adicionar oportunidade..." onkeypress="handleEnterKey(event, this)">
+            <button onclick="addChip(this)"><span class="material-symbols-outlined">add</span></button>
+          </div>
+        </div>
+
+        <!-- Quadrante 12 -->
+        <div class="m3-card m3-swot-ameacas" id="card-ameacas">
+          <div class="m3-card-header">
+            <div class="m3-card-title-group">
+              <span class="material-symbols-outlined">warning</span>
+              <h2>12. Ameaças (Externo)</h2>
+            </div>
+            <button class="m3-icon-button" onclick="toggleHint(this)" title="Instruções de preenchimento">
+              <span class="material-symbols-outlined">help_outline</span>
+            </button>
+          </div>
+          <div class="m3-hint-panel">
+            <strong>O que colocar aqui?</strong>
+            Riscos e fatores externos fora do controle direto da squad.
+            <ul>
+              <li>• Mudança constante de prioridades da gestão</li>
+              <li>• Baixo engajamento de usuários nas entrevistas</li>
+            </ul>
+          </div>
+          <div class="m3-chips-container"></div>
+          <div class="m3-card-input-group">
+            <input type="text" placeholder="Adicionar ameaça..." onkeypress="handleEnterKey(event, this)">
+            <button onclick="addChip(this)"><span class="material-symbols-outlined">add</span></button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Gerenciamento de dados e interatividade
+    document.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      
+      document.getElementById('squad-name').addEventListener('input', saveState);
+      document.getElementById('squad-version').addEventListener('input', saveState);
+    });
+
+    function toggleHint(btn) {
+      const panel = btn.closest('.m3-card').querySelector('.m3-hint-panel');
+      panel.classList.toggle('open');
+    }
+
+    function handleEnterKey(event, input) {
+      if (event.key === 'Enter') {
+        addChip(input.nextElementSibling);
+      }
+    }
+
+    function addChip(button) {
+      const input = button.previousElementSibling;
+      const text = input.value.trim();
+
+      if (text !== '') {
+        const container = button.closest('.m3-card').querySelector('.m3-chips-container');
+        const chip = document.createElement('div');
+        chip.className = 'm3-input-chip';
+        
+        chip.innerHTML = `
+          <span>${escapeHtml(text)}</span>
+          <button onclick="removeChip(this)" title="Remover">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        `;
+
+        container.appendChild(chip);
+        input.value = '';
+        saveState();
+      }
+    }
+
+    function removeChip(button) {
+      button.closest('.m3-input-chip').remove();
+      saveState();
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function saveState() {
+      const state = {
+        meta: {
+          squad: document.getElementById('squad-name').value,
+          version: document.getElementById('squad-version').value
+        },
+        quadrants: {}
+      };
+
+      document.querySelectorAll('.m3-card').forEach(card => {
+        const id = card.id;
+        const items = [];
+        card.querySelectorAll('.m3-input-chip span').forEach(span => {
+          items.push(span.innerText);
+        });
+        state.quadrants[id] = items;
+      });
+
+      localStorage.setItem('m3_ux_canvas_state', JSON.stringify(state));
+    }
+
+    function loadState() {
+      const saved = localStorage.getItem('m3_ux_canvas_state');
+      if (!saved) return;
+
+      const state = JSON.parse(saved);
+
+      if (state.meta) {
+        document.getElementById('squad-name').value = state.meta.squad || '';
+        document.getElementById('squad-version').value = state.meta.version || '';
+      }
+
+      if (state.quadrants) {
+        Object.keys(state.quadrants).forEach(id => {
+          const card = document.getElementById(id);
+          if (card) {
+            const container = card.querySelector('.m3-chips-container');
+            container.innerHTML = '';
+            state.quadrants[id].forEach(text => {
+              const chip = document.createElement('div');
+              chip.className = 'm3-input-chip';
+              chip.innerHTML = `
+                <span>${escapeHtml(text)}</span>
+                <button onclick="removeChip(this)" title="Remover">
+                  <span class="material-symbols-outlined">close</span>
+                </button>
+              `;
+              container.appendChild(chip);
+            });
+          }
+        });
+      }
+    }
+
+    function exportJSON() {
+      const saved = localStorage.getItem('m3_ux_canvas_state');
+      if (!saved) return alert("Preencha alguns campos antes de exportar.");
+
+      const blob = new Blob([saved], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ux-canvas-${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
