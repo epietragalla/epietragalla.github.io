@@ -403,6 +403,199 @@
                 grid-template-columns: 1fr !important;
             }
         }
+        /* --- ESTILOS DA ABA REFERÊNCIA RÁPIDA (5E) --- */
+.quickref-container {
+    grid-column: span 3;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+}
+
+.quickref-section {
+    background-color: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.quickref-section h3 {
+    margin-top: 0;
+    color: var(--border-color);
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 5px;
+    font-size: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.quickref-section h3 span.badge {
+    font-size: 12px;
+    background: #1f1f1a;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+
+.quickref-subcat {
+    font-size: 12px;
+    color: #aaa;
+    margin: 10px 0 6px 0;
+    font-style: italic;
+}
+
+.quickref-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+}
+
+.quickref-card {
+    background-color: #1c1c17;
+    border: 1px solid #3d3d33;
+    border-radius: 4px;
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s ease-in-out;
+}
+
+.quickref-card:hover {
+    border-color: var(--border-color);
+    background-color: #2b2b22;
+    transform: translateY(-2px);
+}
+
+.quickref-icon {
+    font-size: 22px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+}
+
+.quickref-text-title {
+    font-size: 13px;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.quickref-text-sub {
+    font-size: 11px;
+    color: #8c7355;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 130px;
+}
+
+/* MODAL DE REFERÊNCIA RÁPIDA */
+.qr-modal {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(3px);
+    align-items: center;
+    justify-content: center;
+}
+
+.qr-modal.active {
+    display: flex;
+}
+
+.qr-modal-content {
+    background-color: var(--panel-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 85vh;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.8);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: qrModalAnim 0.2s ease-out;
+}
+
+@keyframes qrModalAnim {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.qr-modal-header {
+    background-color: #1a1a15;
+    border-bottom: 1px solid var(--border-color);
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.qr-modal-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.qr-modal-close {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.qr-modal-close:hover {
+    color: var(--accent-color);
+}
+
+.qr-modal-body {
+    padding: 16px;
+    overflow-y: auto;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text-color);
+}
+
+.qr-modal-subtitle {
+    font-size: 13px;
+    font-style: italic;
+    color: #d4af37;
+    margin-bottom: 12px;
+}
+
+.qr-modal-bullets p {
+    margin: 6px 0;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #3d3d33;
+}
+
+.qr-modal-bullets p:last-child {
+    border-bottom: none;
+}
+
+.qr-modal-ref {
+    margin-top: 15px;
+    font-size: 11px;
+    color: #8c7355;
+    text-align: right;
+    font-weight: bold;
+}
     </style>
 </head>
 
@@ -427,14 +620,16 @@
         <button class="tab-btn" onclick="openTab('orig-pag2')">📋 Mestre 2</button>
         <button class="tab-btn" onclick="openTab('orig-pag3')">📋 Mestre 3</button>
         <button class="tab-btn" onclick="openTab('orig-pag4')">📋 Mestre 4</button>
-        <button class="tab-btn" onclick="openTab('encontros')">⚔️ Nível da Fortaleza</button>
-        <button class="tab-btn" onclick="openTab('jogadores')">📝 Jogadores & Improvisos</button>
-        <button class="tab-btn" onclick="openTab('monstros-campanha')">🎯 Monstros</button>
-        <button class="tab-btn" onclick="openTab('cards-herois')">🛡️ Cards dos Heróis</button>
-        <button class="tab-btn" onclick="openTab('dicas')">🧠 Dicas</button>
-        <button class="tab-btn" onclick="openTab('cronograma')">⏳ Cronograma & Tempo</button>
-        <button class="tab-btn" onclick="openTab('texto-aventura')">📜 Aventura</button>
+       <button class="tab-btn" onclick="openTab('quickref')">📖 Referências</button>
 
+        <button class="tab-btn" onclick="openTab('encontros')">⚔️ Fortaleza</button>
+        <button class="tab-btn" onclick="openTab('jogadores')">📝 Jogadores</button>
+        <button class="tab-btn" onclick="openTab('monstros-campanha')">🎯 Monstros</button>
+        <button class="tab-btn" onclick="openTab('cards-herois')">🛡️ Heróis</button>
+        <button class="tab-btn" onclick="openTab('dicas')">🧠 Dicas</button>
+        <button class="tab-btn" onclick="openTab('cronograma')">⏳ Tempo</button>
+        <button class="tab-btn" onclick="openTab('texto-aventura')">📜 Aventura</button>
+ 
     </nav>
 
     <main>
@@ -1134,6 +1329,81 @@
                     Companheiros o compatriotas, 4: Benfeitor, patrono, ou empregador, 5: Interesse romantico, 6: Lugar
                     especial, 7: Lembrança, 8: Posse de algo valioso, 9: Vingança, 10: Role duas vezes, ignorando mais
                     rolos de 10.</p>
+            </div>
+        </div>
+
+        <!-- ABA: REFERÊNCIA RÁPIDA D&D 5E -->
+        <div id="quickref" class="panel">
+            <div class="quickref-container">
+
+                <!-- 1. HABILIDADES E PERÍCIAS -->
+                <div class="quickref-section">
+                    <h3>🏋️ Habilidades & Perícias <span class="badge">Testes</span></h3>
+                    <div class="quickref-subcat">Atributos Principais:</div>
+                    <div class="quickref-grid" id="qr-ability-types"></div>
+                    <div class="quickref-subcat">Perícias Especializadas:</div>
+                    <div class="quickref-grid" id="qr-ability-sub-types"></div>
+                </div>
+
+                <!-- 2. JOGADAS E MODIFICADORES -->
+                <div class="quickref-section">
+                    <h3>🎲 Jogadas & Modificadores <span class="badge">Regras de Dados</span></h3>
+                    <div class="quickref-subcat">Tipos de Jogadas:</div>
+                    <div class="quickref-grid" id="qr-roll-types"></div>
+                    <div class="quickref-subcat">Modificadores de Jogada:</div>
+                    <div class="quickref-grid" id="qr-roll-mods"></div>
+                </div>
+
+                <!-- 3. MOVIMENTO -->
+                <div class="quickref-section">
+                    <h3>🏃 Movimento <span class="badge">Limitado pelo Deslocamento</span></h3>
+                    <div class="quickref-subcat">Ações e Custo de Movimentação no Turno:</div>
+                    <div class="quickref-grid" id="qr-basic-movement"></div>
+                </div>
+
+                <!-- 4. AÇÃO -->
+                <div class="quickref-section">
+                    <h3>⚔️ Ação <span class="badge">1 por Turno</span></h3>
+                    <div class="quickref-subcat">Ações Principais de Combate:</div>
+                    <div class="quickref-grid" id="qr-basic-actions"></div>
+                </div>
+
+                <!-- 5. AÇÃO BÔNUS -->
+                <div class="quickref-section">
+                    <h3>⚡ Ação Bônus <span class="badge">Máx. 1 por Turno</span></h3>
+                    <div class="quickref-subcat">Ativada apenas quando um feitiço ou habilidade declarar:</div>
+                    <div class="quickref-grid" id="qr-basic-bonus-actions"></div>
+                </div>
+
+                <!-- 6. REAÇÃO -->
+                <div class="quickref-section">
+                    <h3>🛡️ Reação <span class="badge">Máx. 1 por Rodada</span></h3>
+                    <div class="quickref-subcat">Resposta instantânea desencadeada por um gatilho:</div>
+                    <div class="quickref-grid" id="qr-basic-reactions"></div>
+                </div>
+
+                <!-- 7. CONDIÇÃO -->
+                <div class="quickref-section">
+                    <h3>⚠️ Condições <span class="badge">Efeitos de Estado</span></h3>
+                    <div class="quickref-subcat">Efeitos que alteram as capacidades da criatura:</div>
+                    <div class="quickref-grid" id="qr-basic-conditions"></div>
+                </div>
+
+                <!-- 8. EFEITOS DO AMBIENTE -->
+                <div class="quickref-section">
+                    <h3>🌲 Efeitos do Ambiente <span class="badge">Terreno & Luz</span></h3>
+                    <div class="quickref-subcat">Ofuscamento e Escuridão:</div>
+                    <div class="quickref-grid" id="qr-environment-obscurance"></div>
+                    <div class="quickref-subcat">Categorias de Iluminação:</div>
+                    <div class="quickref-grid" id="qr-environment-light"></div>
+                    <div class="quickref-subcat">Sentidos Especiais:</div>
+                    <div class="quickref-grid" id="qr-environment-vision"></div>
+                    <div class="quickref-subcat">Tipos de Cobertura:</div>
+                    <div class="quickref-grid" id="qr-environment-cover"></div>
+                    <div class="quickref-subcat">Outros Perigos do Ambiente:</div>
+                    <div class="quickref-grid" id="qr-environment-other"></div>
+                </div>
+
             </div>
         </div>
 
@@ -3938,6 +4208,25 @@
         </div>
     </main>
 
+    <!-- ESTRUTURA DO MODAL DE REFERÊNCIA RÁPIDA -->
+    <div class="qr-modal" id="qr-modal" onclick="closeQrModal(event)">
+        <div class="qr-modal-content" onclick="event.stopPropagation()">
+            <div class="qr-modal-header">
+                <div class="qr-modal-title" id="qr-modal-title">
+                    <span id="qr-modal-icon">📜</span>
+                    <span id="qr-modal-head-text">Título</span>
+                </div>
+                <button class="qr-modal-close" onclick="closeQrModal()">&times;</button>
+            </div>
+            <div class="qr-modal-body">
+                <div class="qr-modal-subtitle" id="qr-modal-subtitle">Subtítulo</div>
+                <div id="qr-modal-desc" style="margin-bottom: 10px;"></div>
+                <div class="qr-modal-bullets" id="qr-modal-bullets"></div>
+                <div class="qr-modal-ref" id="qr-modal-ref"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- Inclui a biblioteca do Firebase via CDN (Link direto do GitHub Pages) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -4077,25 +4366,40 @@
         }
 
         // Controle de Tempo sincronizado na Nuvem
+        // Controle de Tempo sincronizado na Nuvem (Com trava contra valores nulos)
         function addTime() {
-            let novoTempo = hours + 1;
-            db.ref('campanha/status/tempo').set(novoTempo);
+            // Garante que 'hours' seja um número válido antes de somar
+            let tempoAtual = (typeof hours === 'number' && !isNaN(hours)) ? hours : 0;
+            let novoTempo = tempoAtual + 1;
+            
+            // Grava no Firebase
+            db.ref('campanha/status/tempo').set(novoTempo)
+                .then(() => {
+                    console.log("Tempo atualizado com sucesso no Firebase:", novoTempo);
+                })
+                .catch((error) => {
+                    console.error("Erro ao gravar tempo no Firebase:", error);
+                    alert("Erro de conexão ao salvar tempo na nuvem: " + error.message);
+                });
 
-            if (novoTempo % 12 === 0) {
+            // Regra de Encontro Aleatório a cada 12 horas de exploração
+            if (novoTempo % 12 === 0 && novoTempo > 0) {
                 let check = Math.floor(Math.random() * 20) + 1;
                 const log = document.getElementById('dice-log');
                 if (check <= 6) {
-                    log.innerHTML = `<span style='color: #ff4d4d;'>⚠️ [FALHA 12H] Rolo: ${check} - UM ENCONTRO ALEATÓRIO OCORREU!</span><br>` + log.innerHTML;
-                    alert("⚠️ Teste de Encontro Aleatório disparou um monstro patrulheiro na masmorra!");
+                    if (log) log.innerHTML = `<span style='color: #ff4d4d;'>⚠️ [FALHA 12H] Rolo: ${check} - UM ENCONTRO ALEATÓRIO OCORREU!</span><br>` + log.innerHTML;
+                    alert("⚠️ Teste de Encontro Aleatório de 12 horas disparou um monstro patrulheiro na masmorra!");
                 } else {
-                    log.innerHTML = `<span style='color: #4aff4a;'>⏳ [SUCESSO 12H] Rolo: ${check} - Corredores permanecem quietos.</span><br>` + log.innerHTML;
+                    if (log) log.innerHTML = `<span style='color: #4aff4a;'>⏳ [SUCESSO 12H] Rolo: ${check} - Corredores permanecem quietos.</span><br>` + log.innerHTML;
                 }
             }
         }
 
         function removeTime() {
-            if (hours > 0) {
-                db.ref('campanha/status/tempo').set(hours - 1);
+            let tempoAtual = (typeof hours === 'number' && !isNaN(hours)) ? hours : 0;
+            if (tempoAtual > 0) {
+                let novoTempo = tempoAtual - 1;
+                db.ref('campanha/status/tempo').set(novoTempo);
             }
         }
 
@@ -4108,6 +4412,220 @@
         function clearLog() {
             document.getElementById('dice-log').innerHTML = "Logs limpos...";
         }
+        // MAPA DE ÍCONES TEMÁTICOS PARA SUBSTITUIR OS SPRITES
+        const qrIconMap = {
+            "weight-lifting-up": "🏋️", "high-five": "🤸", "health-normal": "❤️", "idea": "💡",
+            "wisdom": "👁️", "charm": "✨", "discobolus": "🏃", "acrobatic": "🎪",
+            "ninja-mask": "🥷", "magic-swirl": "🌀", "gargoyle": "📜", "book-pile": "📚",
+            "sherlock-holmes": "🔍", "fruiting": "🌿", "church": "⛪", "paw": "🐾",
+            "smart": "🧠", "medical-pack": "🩹", "aerial-signal": "👀", "uncertainty": "🗺️",
+            "duality": "🎭", "robber": "🎭", "vile-fluid": "🗣️", "arrest": "🤝",
+            "telepathy": "🤝", "crossed-swords": "⚔️", "grab": "🤼", "journey": "🏃",
+            "sprint": "⚡", "hand": "✋", "manacles": "⛓️", "hood": "🥷",
+            "aura": "🛡️", "embrassed-energy": "🔮", "round-shield": "🛡️", "snatch": "🎒",
+            "stopwatch": "⏱️", "magnifying-glass": "🔍", "juggler": "🎲", "sharp-smile": "😱",
+            "internal-injury": "💫", "crawl": "🧗", "one-eyed": "🙈", "smitten": "💖",
+            "deathcab": "☠️", "imprisoned": "🕸️", "coma": "💤", "invisible": "👻",
+            "stone-pile": "🪨", "elf-ear": "👂", "bleeding-eye": "👁️‍🗨️", "lightning-tear": "🌑",
+            "star-pupil": "☀️", "semi-closed-eye": "⛅", "worried-eyes": "🌌", "eye-shield": "🔮",
+            "broken-shield": "🛡️", "cracked-shield": "🛡️", "shield": "🛡️", "falling": "🕳️",
+            "drowning": "🫁", "run": "🏃", "crags": "🧗", "at-sea": "🏊",
+            "strong": "🏋️", "wingfoot": "🦶", "stairs-goal": "📈", "shield-reflect": "🛡️",
+            "sword-brandish": "⚔️", "sword-tie": "🎲", "master-of-arms": "🎓", "achilles-heel": "💥"
+        };
+
+        // DADOS INTEGRADOS DA REFERÊNCIA RÁPIDA (D&D 5E)
+        const qrData = {
+            ability_types: [
+                { title: "Força", icon: "weight-lifting-up", subtitle: "A Força mede a potência física.", description: "A Força mede a potência física, treinamento atlético e extensão da força bruta.", reference: "LDJ, pg. 175, 176.", bullets: ["Forçar para abrir uma porta emperrada.", "Libertar-se de amarras.", "Forçar-se através de um túnel pequeno.", "Tombar uma estátua ou segurar uma pedra."] },
+                { title: "Destreza", icon: "high-five", subtitle: "A Destreza mede a agilidade.", description: "A Destreza mede a agilidade, os reflexos e o equilíbrio.", reference: "LDJ, pg. 176, 177.", bullets: ["Controlar uma carruagem na ladeira.", "Abrir uma fechadura ou desarmar armadilha.", "Amarrar ou escapar de amarras.", "Tocar instrumento de cordas."] },
+                { title: "Constituição", icon: "health-normal", subtitle: "A Constituição mede a saúde.", description: "A Constituição mede a saúde, a resistência e a força vital.", reference: "LDJ, pg. 177.", bullets: ["Segurar a respiração.", "Marchar por horas sem descanso.", "Ficar sem dormir ou sem comida/água.", "Beber uma caneca de cerveja de uma só vez."] },
+                { title: "Inteligência", icon: "idea", subtitle: "A Inteligência mede a acuidade mental.", description: "Mede acuidade mental, precisão da memória e raciocínio.", reference: "LDJ, pg. 177.", bullets: ["Comunicar-se sem usar palavras.", "Estimar o valor de um item precioso.", "Forjar um documento.", "Vencer um jogo de habilidade."] },
+                { title: "Sabedoria", icon: "wisdom", subtitle: "Reflete sua sintonia com mundo.", description: "Reflete como você está em sintonia com o mundo ao seu redor, percepção e intuição.", reference: "LDJ, pg. 178.", bullets: ["Obter um pressentimento sobre o que fazer.", "Discernir se uma criatura é um morto-vivo."] },
+                { title: "Carisma", icon: "charm", subtitle: "Reflete sua capacidade de interação.", description: "Mede a capacidade de interagir eficazmente com os outros.", reference: "LDJ, pg. 178.", bullets: ["Achar a melhor pessoa para obter notícias.", "Misturar-se na multidão para ouvir conversas."] }
+            ],
+            ability_sub_types: [
+                { title: "Atletismo", icon: "discobolus", subtitle: "Um teste de Força", description: "Abrange situações difíceis ao escalar, saltar ou nadar.", reference: "LDJ, pg. 175.", bullets: ["Escalar penhascos ou evitar quedas.", "Saltar distâncias excepcionais.", "Nadar em corredeiras e águas agitadas."] },
+                { title: "Acrobacia", icon: "acrobatic", subtitle: "Um teste de Destreza", description: "Tentativa de permanecer de pé em situações complicadas ou fazer saltos mortais.", reference: "LDJ, pg. 176.", bullets: ["Correr sobre piso de gelo.", "Equilibrar-se numa corda bamba.", "Ficar de pé em convés balançando."] },
+                { title: "Furtividade", icon: "ninja-mask", subtitle: "Um teste de Destreza", description: "Mover-se em silêncio ou esconder-se de inimigos.", reference: "LDJ, pg. 176.", bullets: ["Esgueirar-se por guardas.", "Escapar de um local sem ser visto."] },
+                { title: "Prestidigitação", icon: "magic-swirl", subtitle: "Um teste de Destreza", description: "Atos de trapaça manual ou furtos leves.", reference: "LDJ, pg. 176.", bullets: ["Roubar uma bolsa de moedas.", "Esconder objeto em sua roupa.", "Plantar algo em outra pessoa."] },
+                { title: "Arcanismo", icon: "gargoyle", subtitle: "Um teste de Inteligência", description: "Conhecimento sobre magias, itens mágicos, símbolos e planos.", reference: "PHB, pg. 177.", bullets: ["Reconhecer rituais arcanos.", "Identificar tradições e itens mágicos."] },
+                { title: "História", icon: "book-pile", subtitle: "Um teste de Inteligência", description: "Conhecimento sobre eventos históricos, reinos antigos e guerras.", reference: "PHB, pg. 177.", bullets: ["Recordar lendas de heróis antigos.", "Lembrar detalhes de guerras passadas."] },
+                { title: "Investigação", icon: "sherlock-holmes", subtitle: "Um teste de Inteligência", description: "Procurar pistas e fazer deduções com base em indícios.", reference: "PHB, pg. 178.", bullets: ["Deduzir localização de objeto escondido.", "Determinar tipo de arma por um ferimento."] },
+                { title: "Natureza", icon: "fruiting", subtitle: "Um teste de Inteligência", description: "Conhecimento sobre terrenos, plantas, animais e clima.", reference: "PHB, pg. 178.", bullets: ["Identificar fauna e flora locais.", "Prever alterações no clima."] },
+                { title: "Religião", icon: "church", subtitle: "Um teste de Inteligência", description: "Conhecimento de divindades, rituais, orações e cultos.", reference: "PHB, pg. 178.", bullets: ["Reconhecer símbolos sagrados.", "Lembrar rituais religiosos."] },
+                { title: "Adestrar Animais", icon: "paw", subtitle: "Um teste de Sabedoria", description: "Acalmar animais, conter montarias e intuir intenções de feras.", reference: "PHB, pg. 178.", bullets: ["Acalmar animal assustado.", "Manobras arriscadas com montaria."] },
+                { title: "Intuição", icon: "smart", subtitle: "Um teste de Sabedoria", description: "Determinar intenções reais, perceber mentiras ou prever movimentos.", reference: "PHB, pg. 178.", bullets: ["Ler linguagem corporal e maneirismos.", "Detectar falsidade em discursos."] },
+                { title: "Medicina", icon: "medical-pack", subtitle: "Um teste de Sabedoria", description: "Estabilizar feridos ou diagnosticar doenças e venenos.", reference: "PHB, pg. 178.", bullets: ["Estabilizar companheiro à beira da morte.", "Diagnosticar infecções e toxinas."] },
+                { title: "Percepção", icon: "aerial-signal", subtitle: "Um teste de Sabedoria", description: "Observar, ouvir ou detectar a presença de algo nos arredores.", reference: "PHB, pg. 178.", bullets: ["Ouvir através de portas.", "Notar inimigos escondidos em emboscadas."] },
+                { title: "Sobrevivência", icon: "uncertainty", subtitle: "Um teste de Sabedoria", description: "Rastrear, caçar, guiar em terrenos ermos e evitar perigos.", reference: "PHB, pg. 178.", bullets: ["Seguir pegadas de criaturas.", "Prever o tempo e achar fontes de água."] },
+                { title: "Atuação", icon: "duality", subtitle: "Um teste de Carisma", description: "Entreter uma plateia com música, dança, atuações ou histórias.", reference: "PHB, pg. 178.", bullets: ["Apresentação artística impressionante.", "Tocar instrumentos ou recitar poesias."] },
+                { title: "Enganação", icon: "robber", subtitle: "Um teste de Carisma", description: "Ocultar a verdade de forma convincente.", reference: "PHB, pg. 178.", bullets: ["Ludibriar guardas e comerciantes.", "Manter cara séria ao mentir."] },
+                { title: "Intimidação", icon: "vile-fluid", subtitle: "Um teste de Carisma", description: "Influenciar pessoas através de ameaças e ações hostis.", reference: "PHB, pg. 179.", bullets: ["Arrancar informações de prisioneiros.", "Fazer bandidos recuarem no grito."] },
+                { title: "Persuasão", icon: "arrest", subtitle: "Um teste de Carisma", description: "Influenciar grupos com tacto, etiqueta e boa índole.", reference: "PHB, pg. 179.", bullets: ["Convencer nobres e autoridades.", "Negociar paz entre tribos rivais."] }
+            ],
+            roll_types: [
+                { title: "Teste de habilidade", icon: "stairs-goal", subtitle: "Superar algum desafio", description: "Testa um talento inato e treinamento contra uma Classe de Dificuldade (CD).", reference: "PHB, pg. 176.", bullets: ["Jogue d20 + modificador da habilidade.", "Se igualar ou superar a CD, o teste é um sucesso."] },
+                { title: "Teste de resistência", icon: "shield-reflect", subtitle: "Resistir a alguma ameaça", description: "Tentativa forçada de resistir a magias, armadilhas, venenos ou doenças.", reference: "PHB, pg. 181.", bullets: ["Jogue d20 + modificador apropriado.", "Adicione bônus de proficiência se for proficiente na salvaguarda."] },
+                { title: "Jogada de ataque", icon: "sword-brandish", subtitle: "Tentar atacar um inimigo", description: "Determina se o ataque acerta ou erra comparando ao valor de Classe de Armadura (CA).", reference: "PHB, pg. 196.", bullets: ["Atacante joga d20 + modificador + proficiência.", "Se o dado for 20 nativo, é um Acerto Crítico automático.", "Se for 1 nativo, é uma Falha Crítica automática."] }
+            ],
+            roll_mods: [
+                { title: "Vantagem e desvantagem", icon: "sword-tie", subtitle: "Deve-se jogar um dado adicional", description: "Adquirido através de habilidades, posições táticas ou magias.", reference: "PHB, pg. 175.", bullets: ["Jogue dois d20.", "Vantagem: use o resultado mais alto.", "Desvantagem: use o resultado mais baixo.", "Vantagem e desvantagem juntas anulam-se mutuamente."] },
+                { title: "Bônus de proficiência", icon: "master-of-arms", subtitle: "Modifica o teste de habilidade", description: "Reflete treinamento avançado baseado no nível do personagem.", reference: "PHB, pg. 175.", bullets: ["Aplicado em ataques, salvaguardas e perícias proficientes.", "Nunca é somado mais de uma vez na mesma jogada."] },
+                { title: "Resistência e vulnerabilidade", icon: "achilles-heel", subtitle: "Modifica a quantidade de dano", description: "Modificadores que alteram o dano recebido.", reference: "PHB, pg. 199.", bullets: ["Resistência: reduz o dano daquele tipo pela metade.", "Vulnerabilidade: dobra o dano sofrido daquele tipo."] }
+            ],
+            basic_movement: [
+                { title: "Mover-se", icon: "run", subtitle: "Custo: 1m por 1m", description: "Custo padrão de movimentação no seu turno.", reference: "PHB, pg. 192.", bullets: ["Alternar entre caminhada e vôo subtrai o percurso já realizado.", "Mover por aliados é permitido, mas conta como Terreno Difícil."] },
+                { title: "Escalar", icon: "crags", subtitle: "Custo: 3m por 1,5m", description: "Deslocar-se em superfícies verticais.", reference: "PHB, pg. 184.", bullets: ["Gasta o dobro de deslocamento por metro.", "Pode exigir teste de Atletismo em superfícies difíceis."] },
+                { title: "Nadar", icon: "at-sea", subtitle: "Custo: 3m por 1,5m", description: "Deslocar-se na água.", reference: "PHB, pg. 184.", bullets: ["Gasta o dobro do deslocamento.", "Pode exigir Atletismo em corredeiras."] },
+                { title: "Estar caído", icon: "falling", subtitle: "Custo: 0m", description: "Jogar-se no chão voluntariamente.", reference: "PHB, pg. 192.", bullets: ["Jogar-se no chão não gasta movimento.", "Gera vantagem para ataques corpo a corpo sofridos a até 1,5m."] },
+                { title: "Rastejar", icon: "crawl", subtitle: "Custo: 3m por 1,5m", description: "Mover-se enquanto estiver deitado.", reference: "PHB, pg. 184.", bullets: ["Custa o dobro de movimento por metro."] },
+                { title: "Levantar-se", icon: "strong", subtitle: "Custo: metade da velocidade", description: "Sair da condição caído.", reference: "PHB, pg. 192.", bullets: ["Consome metade do seu deslocamento total do turno."] },
+                { title: "Salto em altura", icon: "wingfoot", subtitle: "Custo: 1m por 1m", description: "Saltar verticalmente.", reference: "PHB, pg. 184.", bullets: ["Com corrida de 3m: salta 0,3 x (3 + Mod. Força) metros.", "Sem corrida: salta apenas metade desse valor."] },
+                { title: "Salto em distância", icon: "wingfoot", subtitle: "Custo: 1m por 1m", description: "Saltar horizontalmente.", reference: "PHB, pg. 184.", bullets: ["Com corrida de 3m: cobre distância em metros igual a (Valor de Força x 0,3).", "Sem corrida: cobre apenas metade da distância."] },
+                { title: "Terreno difícil", icon: "stone-pile", subtitle: "Modificador: +1,5m por 1,5m", description: "Mover-se em pisos acidentados.", reference: "PHB, pg. 192.", bullets: ["Neve, escombros, pântano ou vegetação custam o dobro de movimento."] },
+                { title: "Mover criatura agarrada", icon: "grab", subtitle: "Modificador: metade da velocidade", description: "Arrastar inimigos agarrados.", reference: "PHB, pg. 197.", bullets: ["Seu deslocamento cai pela metade ao arrastar alvos."] }
+            ],
+            basic_actions: [
+                { title: "Ajudar", icon: "telepathy", subtitle: "Conceder vantagem", description: "Dar suporte a um aliado em teste ou ataque.", reference: "PHB, pg. 194.", bullets: ["Concede vantagem no próximo teste do aliado.", "Ou concede vantagem no próximo ataque contra inimigo adjacente a você."] },
+                { title: "Ataque", icon: "crossed-swords", subtitle: "Ataque corpo-a-corpo ou à distância", description: "Realizar um ataque com arma ou desarmado.", reference: "PHB, pg. 192.", bullets: ["Pode substituir um ataque por Agarrão ou Encontrão.", "Pode usar ação bônus para atacar com a mão hábil oposta se for arma leve."] },
+                { title: "Agarrão", icon: "grab", subtitle: "Ataque especial", description: "Tentar segurar um inimigo.", reference: "PHB, pg. 197.", bullets: ["Teste de Força (Atletismo) contra Atletismo ou Acrobacia do alvo.", "Sucesso deixa o alvo sob a condição Agarrado (Deslocamento 0)."] },
+                { title: "Conjurar uma magia", icon: "magic-swirl", subtitle: "Tempo: 1 Ação", description: "Lançar feitiço que exige uma ação.", reference: "PHB, pg. 192.", bullets: ["Não pode lançar outra magia no turno exceto truques de 1 ação bônus."] },
+                { title: "Desengajar", icon: "journey", subtitle: "Evitar oportunidade", description: "Seu movimento não provoca ataques de oportunidade neste turno.", reference: "PHB, pg. 192.", bullets: ["Permite recuar com segurança de inimigos."] },
+                { title: "Disparada", icon: "sprint", subtitle: "Dobra velocidade", description: "Ganha deslocamento extra no turno atual.", reference: "PHB, pg. 192.", bullets: ["Adiciona seu deslocamento base ao movimento do turno."] },
+                { title: "Encontrão", icon: "hand", subtitle: "Ataque especial", description: "Empurrar criatura para longe ou derrubá-la.", reference: "PHB, pg. 197.", bullets: ["Teste de Atletismo contra Atletismo/Acrobacia do alvo.", "Se vencer, derruba a vítima ou empurra-a 1,5m."] },
+                { title: "Escapar", icon: "manacles", subtitle: "Sair do agarrão", description: "Livrar-se de um agarrão.", reference: "PHB, pg. 197.", bullets: ["Exige teste de Atletismo ou Acrobacia bem-sucedido contra Atletismo do agarrador."] },
+                { title: "Esconder", icon: "hood", subtitle: "Furtividade", description: "Tentar passar despercebido.", reference: "PHB, pg. 194.", bullets: ["Exige cobertura total ou obscuridade densa.", "Teste de Destreza (Furtividade) contra Percepção do inimigo."] },
+                { title: "Esquivar", icon: "aura", subtitle: "Modo defensivo", description: "Focar inteiramente em esquivar-se de golpes.", reference: "PHB, pg. 192.", bullets: ["Ataques sofridos têm desvantagem.", "Ganha vantagem em salvaguardas de Destreza."] },
+                { title: "Usar objeto", icon: "snatch", subtitle: "Interação avançada", description: "Usar mecanismo de item ou interagir com segundo objeto no turno.", reference: "PHB, pg. 195.", bullets: ["Interagir com poções, alavancas complexas ou mecanismos."] },
+                { title: "Preparar", icon: "stopwatch", subtitle: "Ação de reação", description: "Escolher um gatilho e preparar uma ação em resposta.", reference: "PHB, pg. 195.", bullets: ["Gasta sua reação quando o gatilho especificado ocorrer."] },
+                { title: "Procurar", icon: "magnifying-glass", subtitle: "Buscar ativamente", description: "Dedicar atenção para encontrar algo escondido.", reference: "PHB, pg. 195.", bullets: ["Teste de Sabedoria (Percepção) ou Inteligência (Investigação)."] }
+            ],
+            basic_bonus_actions: [
+                { title: "Ataque com duas armas", icon: "crossed-swords", subtitle: "Com a ação Ataque", description: "Ataque com a segunda arma leve mantida na outra mão.", reference: "PHB, pg. 195.", bullets: ["Não adiciona o modificador de habilidade ao dano (a menos que seja negativo)."] },
+                { title: "Conjurar magia bônus", icon: "magic-swirl", subtitle: "Tempo: 1 Ação Bônus", description: "Conjurar feitiço de ação bônus.", reference: "PHB, pg. 192.", bullets: ["Se usar esta ação, a ação normal do turno só pode ser usada para truques."] }
+            ],
+            basic_reactions: [
+                { title: "Ataque de oportunidade", icon: "crossed-swords", subtitle: "Inimigo sai do alcance", description: "Ataque corpo-a-corpo reativo ao inimigo recuar.", reference: "PHB, pg. 197.", bullets: ["Gatilho: criatura hostil sai do seu alcance sem Desengajar."] },
+                { title: "Ação preparada", icon: "stopwatch", subtitle: "Ação em espera", description: "Executa a ação preparada no seu turno.", reference: "PHB, pg. 195.", bullets: ["Ativada assim que o gatilho pré-determinado ocorrer."] }
+            ],
+            basic_conditions: [
+                { title: "Agarrado", icon: "grab", subtitle: "Deslocamento zerado", description: "Segurado por outra criatura.", reference: "PHB, pg. 291.", bullets: ["Deslocamento vira 0.", "Encerra se o agarrador for incapacitado ou encurralado."] },
+                { title: "Amedrontado", icon: "sharp-smile", subtitle: "Com medo", description: "Sob pavor de uma fonte visível.", reference: "PHB, pg. 291.", bullets: ["Desvantagem em testes e ataques enquanto ver a fonte.", "Não pode se aproximar voluntariamente da fonte do medo."] },
+                { title: "Atordoado", icon: "internal-injury", subtitle: "Desnorteado", description: "Incapaz de agir com clareza.", reference: "PHB, pg. 291.", bullets: ["Incapacitado, não se move e fala hesitantemente.", "Ataques sofridos têm vantagem; falha automática em salvaguardas de FOR/DES."] },
+                { title: "Caído", icon: "crawl", subtitle: "No chão", description: "Caído na superfície.", reference: "PHB, pg. 291.", bullets: ["Só pode rastejar.", "Desvantagem nos próprios ataques.", "Ataques sofridos a 1,5m têm vantagem (além disso têm desvantagem)."] },
+                { title: "Cego", icon: "one-eyed", subtitle: "Sem visão", description: "Incapaz de enxergar.", reference: "PHB, pg. 291.", bullets: ["Falha em testes que exigem visão.", "Seus ataques têm desvantagem; ataques sofridos têm vantagem."] },
+                { title: "Enfeitiçado", icon: "smitten", subtitle: "Encantado", description: "Sob encanto de outrem.", reference: "PHB, pg. 292.", bullets: ["Não pode atacar quem o enfeitiçou.", "O encantador tem vantagem em testes sociais contra você."] },
+                { title: "Envenenado", icon: "deathcab", subtitle: "Toxina no corpo", description: "Afetado por veneno.", reference: "PHB, pg. 292.", bullets: ["Desvantagem em jogadas de ataque e testes de habilidade."] },
+                { title: "Exaustão", icon: "crawl", subtitle: "Níveis 1 a 6", description: "Debilitação progressiva.", reference: "PHB, pg. 292.", bullets: ["Nível 1: Desvantagem em testes de habilidade.", "Nível 2: Metade do deslocamento.", "Nível 3: Desvantagem em ataques e salvaguardas.", "Nível 4: Metade do PV máximo.", "Nível 5: Deslocamento 0.", "Nível 6: Morte."] },
+                { title: "Impedido", icon: "imprisoned", subtitle: "Contido", description: "Preso ou amarrado.", reference: "PHB, pg. 292.", bullets: ["Deslocamento vira 0.", "Seus ataques têm desvantagem; ataques sofridos têm vantagem.", "Desvantagem em salvaguardas de Destreza."] },
+                { title: "Incapacitado", icon: "internal-injury", subtitle: "Sem ações", description: "Incapaz de agir.", reference: "PHB, pg. 292.", bullets: ["Não pode realizar nenhuma ação nem reação."] },
+                { title: "Inconsciente", icon: "coma", subtitle: "Desacordado", description: "Desmaiado ou dormindo.", reference: "PHB, pg. 292.", bullets: ["Incapacitado, cai de bruços e solta itens.", "Ataques sofridos a 1,5m são Acertos Críticos automáticos."] },
+                { title: "Invisível", icon: "invisible", subtitle: "Invisível", description: "Impossível de ser visto normalmente.", reference: "PHB, pg. 293.", bullets: ["Ganha vantagem nos ataques realizados.", "Ataques sofridos têm desvantagem."] },
+                { title: "Paralisado", icon: "internal-injury", subtitle: "Paralisado", description: "Corpo travado totalmente.", reference: "PHB, pg. 293.", bullets: ["Incapacitado e imóvel.", "Falha em salvaguardas de FOR e DES.", "Ataques a 1,5m são Críticos automáticos."] },
+                { title: "Petrificado", icon: "stone-pile", subtitle: "Virado pedra", description: "Transformado em substância sólida.", reference: "PHB, pg. 293.", bullets: ["Peso multiplicado por 10.", "Imune a venenos e doenças.", "Resistência a todos os tipos de dano."] },
+                { title: "Surdo", icon: "elf-ear", subtitle: "Sem audição", description: "Incapaz de ouvir.", reference: "PHB, pg. 293.", bullets: ["Falha automática em testes que exigem audição."] }
+            ],
+            environment_obscurance: [
+                { title: "Escuridão leve", icon: "bleeding-eye", subtitle: "Ofuscamento leve", description: "Penumbra, névoa leve ou folhagem moderada.", reference: "PHB, pg. 185.", bullets: ["Desvantagem em testes de Sabedoria (Percepção) que dependem da visão."] },
+                { title: "Escuridão densa", icon: "lightning-tear", subtitle: "Ofuscamento total", description: "Escuridão total ou névoa densa.", reference: "PHB, pg. 185.", bullets: ["Criaturas sofrem efetivamente da condição Cego ao olhar para a área."] }
+            ],
+            environment_light: [
+                { title: "Luz plena", icon: "star-pupil", subtitle: "Luz normal", description: "Iluminação ideal para enxergar.", reference: "PHB, pg. 185.", bullets: ["Permite visão perfeita para a maioria das criaturas."] },
+                { title: "Penumbra", icon: "semi-closed-eye", subtitle: "Luz fraca", description: "Sombra ou crepúsculo.", reference: "PHB, pg. 185.", bullets: ["Cria uma área de escuridão leve."] },
+                { title: "Escuridão total", icon: "worried-eyes", subtitle: "Sem luz", description: "Ausência completa de luz.", reference: "PHB, pg. 185.", bullets: ["Cria uma área de escuridão densa."] }
+            ],
+            environment_vision: [
+                { title: "Percepção às cegas", icon: "one-eyed", subtitle: "Perceber sem ver", description: "Ecolocalização ou sentidos apurados.", reference: "PHB, pg. 185.", bullets: ["Percebe o entorno sem depender da luz dentro do raio."] },
+                { title: "Visão no escuro", icon: "semi-closed-eye", subtitle: "Ver na penumbra", description: "Visão adaptada ao subterrâneo.", reference: "PHB, pg. 187.", bullets: ["Trata escuridão total como penumbra e penumbra como luz plena (em preto e branco)."] },
+                { title: "Visão verdadeira", icon: "eye-shield", subtitle: "Visão mística", description: "Ver a realidade sem ilusões.", reference: "PHB, pg. 187.", bullets: ["Enxerga no escuro mágico, vê alvos invisíveis e detecta ilusões."] }
+            ],
+            environment_cover: [
+                { title: "Meia cobertura", icon: "broken-shield", subtitle: "+2 na CA e DES", description: "Metade do corpo coberto.", reference: "PHB, pg. 198.", bullets: ["Ganha +2 de bônus na CA e salvaguardas de Destreza."] },
+                { title: "Três-quartos de cobertura", icon: "cracked-shield", subtitle: "+5 na CA e DES", description: "Três quartos do corpo coberto.", reference: "PHB, pg. 198.", bullets: ["Ganha +5 de bônus na CA e salvaguardas de Destreza."] },
+                { title: "Cobertura total", icon: "shield", subtitle: "Proteção completa", description: "Corpo 100% oculto.", reference: "PHB, pg. 198.", bullets: ["Não pode ser alvo direto de ataques ou magias."] }
+            ],
+            environment_other: [
+                { title: "Queda", icon: "falling", subtitle: "Quedas de altura", description: "Dano sofrido ao cair.", reference: "PHB, pg. 185.", bullets: ["Sofre 1d6 de dano de concussão para cada 3m de queda (máx 20d6).", "Cai sob a condição Caído após o impacto."] },
+                { title: "Asfixia", icon: "drowning", subtitle: "Sem ar", description: "Sufocamento e afogamento.", reference: "PHB, pg. 185.", bullets: ["Pode segurar a respiração por (1 + Mod. CON) minutos (mín. 30s).", "Após isso, sobrevive por rodadas iguais ao Mod. CON antes de cair a 0 PV."] }
+            ]
+        };
+
+        // RENDERIZA A REFERÊNCIA RÁPIDA D&D 5E
+        function initQuickRef() {
+            renderQrCategory(qrData.ability_types, "qr-ability-types", "Habilidade");
+            renderQrCategory(qrData.ability_sub_types, "qr-ability-sub-types", "Perícia");
+            renderQrCategory(qrData.roll_types, "qr-roll-types", "Jogada");
+            renderQrCategory(qrData.roll_mods, "qr-roll-mods", "Modificador");
+            renderQrCategory(qrData.basic_movement, "qr-basic-movement", "Movimento");
+            renderQrCategory(qrData.basic_actions, "qr-basic-actions", "Ação");
+            renderQrCategory(qrData.basic_bonus_actions, "qr-basic-bonus-actions", "Ação Bônus");
+            renderQrCategory(qrData.basic_reactions, "qr-basic-reactions", "Reação");
+            renderQrCategory(qrData.basic_conditions, "qr-basic-conditions", "Condição");
+            renderQrCategory(qrData.environment_obscurance, "qr-environment-obscurance", "Ofuscamento");
+            renderQrCategory(qrData.environment_light, "qr-environment-light", "Iluminação");
+            renderQrCategory(qrData.environment_vision, "qr-environment-vision", "Visão");
+            renderQrCategory(qrData.environment_cover, "qr-environment-cover", "Cobertura");
+            renderQrCategory(qrData.environment_other, "qr-environment-other", "Ambiente");
+        }
+
+        function renderQrCategory(dataList, containerId, categoryType) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = "";
+
+            dataList.forEach(item => {
+                const iconEmoji = qrIconMap[item.icon] || "📜";
+                const card = document.createElement("div");
+                card.className = "quickref-card";
+                card.onclick = () => openQrModal(item, categoryType, iconEmoji);
+
+                card.innerHTML = `
+                    <div class="quickref-icon">${iconEmoji}</div>
+                    <div style="overflow: hidden;">
+                        <div class="quickref-text-title">${item.title}</div>
+                        <div class="quickref-text-sub">${item.subtitle}</div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // CONTROLE DO MODAL DE REFERÊNCIA RÁPIDA
+        function openQrModal(item, type, icon) {
+            document.getElementById("qr-modal-icon").innerText = icon;
+            document.getElementById("qr-modal-head-text").innerText = item.title + (type ? ` (${type})` : "");
+            document.getElementById("qr-modal-subtitle").innerText = item.subtitle || "";
+            document.getElementById("qr-modal-desc").innerText = item.description || "";
+            document.getElementById("qr-modal-ref").innerText = item.reference || "";
+
+            const bulletsContainer = document.getElementById("qr-modal-bullets");
+            bulletsContainer.innerHTML = "";
+
+            if (item.bullets && item.bullets.length > 0) {
+                item.bullets.forEach(bullet => {
+                    if (bullet.trim() !== "") {
+                        const p = document.createElement("p");
+                        p.innerHTML = bullet;
+                        bulletsContainer.appendChild(p);
+                    }
+                });
+            }
+
+            document.getElementById("qr-modal").classList.add("active");
+        }
+
+        function closeQrModal(event) {
+            if (event && event.target !== document.getElementById("qr-modal") && !event.target.classList.contains("qr-modal-close")) {
+                return;
+            }
+            document.getElementById("qr-modal").classList.remove("active");
+        }
+
+        // Inicializa os cards da Referência Rápida assim que a página carregar
+        window.addEventListener('DOMContentLoaded', () => {
+            initQuickRef();
+        });
     </script>
 </body>
 
