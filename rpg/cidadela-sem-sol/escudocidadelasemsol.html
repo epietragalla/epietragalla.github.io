@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🛡️ Escudo do Mestre Supremo - D&D 5e Fiel</title>
+    <title>🛡️ Escudo do Mestre</title>
     <style>
         :root {
             --bg-color: #1a1a15;
@@ -17,6 +17,12 @@
             --claimed-hover: #5c7361;
         }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
@@ -25,7 +31,7 @@
             padding: 0;
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            min-height: 100vh;
         }
 
         header {
@@ -35,12 +41,16 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         .hud-info {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             font-weight: bold;
+            flex-wrap: wrap;
+            align-items: center;
         }
 
         .hud-item {
@@ -48,6 +58,7 @@
             padding: 5px 15px;
             border-radius: 4px;
             border: 1px solid var(--border-color);
+            font-size: 13px;
         }
 
         nav {
@@ -80,23 +91,29 @@
             border-bottom: 3px solid var(--border-color);
         }
 
+        /* --- LAYOUT PRINCIPAL E NAVEGAÇÃO POR ABAS --- */
         main {
             flex: 1;
             padding: 20px;
             overflow-y: auto;
-            display: flex;
-            gap: 20px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .panel {
             display: none;
             width: 100%;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
         }
 
+        /* Grid Responsivo Universal para TODAS as Abas */
         .panel.active {
-            display: grid;
+            display: grid !important;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;
+            gap: 20px;
+            width: 100%;
+            box-sizing: border-box;
+            align-items: stretch;
+            padding-bottom: 24px;
         }
 
         .card {
@@ -105,7 +122,11 @@
             border-radius: 6px;
             padding: 15px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-            height: fit-content;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            width: 100%;
+            height: 100%; /* Estica verticalmente para preencher a linha */
         }
 
         .card h3 {
@@ -123,8 +144,7 @@
             font-size: 13px;
         }
 
-        th,
-        td {
+        th, td {
             padding: 6px 8px;
             text-align: left;
             border-bottom: 1px solid #3d3d33;
@@ -182,71 +202,76 @@
             background-color: var(--claimed-hover);
         }
 
-        .sidebar {
-            width: 250px;
-            background-color: #11110e;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            height: fit-content;
+        /* --- CORREÇÃO DA ABA FORTALEZA (#encontros) --- */
+        .panel.active#encontros {
+            display: block !important; /* Desativa a força do grid esticado nesta aba */
+            width: 100%;
         }
 
-        .dice-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
+        .panel#encontros .card {
+            width: 100% !important;
+            height: auto !important; /* Deixa o card expandir naturalmente com o conteúdo */
+            box-sizing: border-box;
         }
 
-        .dice-btn {
-            background-color: #2b2b22;
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            padding: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-
-        .dice-btn:hover {
-            background-color: var(--accent-color);
-        }
-
-        #dice-log {
-            background-color: #0d0d0a;
+        .encounter-box {
+            margin-bottom: 8px;
             border: 1px solid #3d3d33;
-            padding: 8px;
             border-radius: 4px;
-            height: 120px;
-            overflow-y: auto;
-            font-family: monospace;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .encounter-header {
+            background-color: #1f1f1a;
+            padding: 12px 15px;
+            min-height: 48px; /* Garante altura suficiente para exibir todo o texto */
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap; /* Caso a tela seja menor, ajusta o botão sem achatar o texto */
+            box-sizing: border-box;
+        }
+
+        .encounter-header span {
+            font-size: 14px;
+            color: var(--text-color);
+            line-height: 1.3;
+        }
+
+        .encounter-content {
+            padding: 12px 15px;
+            background-color: #1c1c17;
             font-size: 13px;
+            line-height: 1.5;
+            border-top: 1px solid #2a2a22;
         }
 
         /* --- ESTILOS EXCLUSIVOS PARA OS CARDS DE MONSTROS --- */
         .monsters-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 0px;
+            gap: 15px;
             justify-content: center;
             width: 100%;
-            grid-column: span 3;
         }
 
         .monster-card {
-            width: 30rem;
-            height: 30rem;
+            width: 100%;
+            max-width: 480px;
+            min-height: 460px;
             background-color: #fdfaf4;
             color: #1a1105;
             border: 4px solid #5c3a21;
             border-radius: 8px;
-            padding: 8px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-            page-break-inside: avoid;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            box-sizing: border-box;
         }
 
         .monster-card .header {
@@ -281,7 +306,7 @@
         }
 
         .monster-card .meta {
-            font-size: 9px;
+            font-size: 10px;
             color: #403a35;
             margin-top: 1px;
             line-height: 1.2;
@@ -295,8 +320,8 @@
             text-align: center;
             background: #f2ebd9;
             border-radius: 4px;
-            padding: 2px 0;
-            margin: 3px 0;
+            padding: 3px 0;
+            margin: 4px 0;
             border: 1px solid #dcd1b4;
         }
 
@@ -306,14 +331,14 @@
         }
 
         .monster-card .stat-label {
-            font-size: 8px;
+            font-size: 9px;
             font-weight: bold;
             color: #5c3a21;
             text-transform: uppercase;
         }
 
         .monster-card .stat-val {
-            font-size: 9px;
+            font-size: 10px;
             font-weight: bold;
             color: #1a1105;
         }
@@ -328,7 +353,7 @@
         }
 
         .monster-card .content::-webkit-scrollbar {
-            width: 3px;
+            width: 4px;
         }
 
         .monster-card .content::-webkit-scrollbar-thumb {
@@ -341,261 +366,325 @@
             padding-left: 10px;
         }
 
-        .monster-card .bullet-item {
-            display: list-item;
-            list-style-type: disc;
-            margin-bottom: 2px;
-        }
-
         .monster-card .section-title {
             font-weight: bold;
             color: #a04000;
             text-transform: uppercase;
-            font-size: 7.5px;
-            margin-top: 3px;
+            font-size: 8px;
+            margin-top: 4px;
             border-bottom: 1px solid #dcd1b4;
             padding-bottom: 1px;
         }
 
         .monster-card .footer {
-            font-size: 5px;
+            font-size: 8px;
             text-align: right;
             color: #5c3a21;
             font-weight: bold;
             border-top: 1px dashed #5c3a21;
             padding-top: 2px;
-            margin-top: 2px;
+            margin-top: 4px;
             text-transform: uppercase;
         }
 
-        /* --- ESTILO PARA AS ABAS DE 2 COLUNAS (TEXTO DA AVENTURA E DICAS) --- */
-        .panel.active#texto-aventura,
-        .panel.active#dicas,
-        .panel.active#jogadores,
-        .panel.active#cronograma {
-            display: grid !important;
-            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-            gap: 16px;
+        /* --- ESTILOS DA ABA REFERÊNCIA RÁPIDA (5E) --- */
+        .quickref-container {
             width: 100%;
-            box-sizing: border-box;
-            grid-column: span 3;
-            align-items: stretch;
-            padding-bottom: 24px;
-        }
-
-        .panel#texto-aventura .card,
-        .panel#dicas .card,
-        .panel#jogadores .card,
-        .panel#cronograma .card {
-            box-sizing: border-box;
-            width: 100%;
-            padding: 16px;
-            margin: 0;
             display: flex;
             flex-direction: column;
+            gap: 20px;
         }
 
-        @media (max-width: 950px) {
-            .panel.active#texto-aventura,
-            .panel.active#dicas,
-            .panel.active#jogadores,
-            .panel.active#cronograma {
+        .quickref-section {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .quickref-section h3 {
+            margin-top: 0;
+            color: var(--border-color);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 5px;
+            font-size: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quickref-section h3 span.badge {
+            font-size: 12px;
+            background: #1f1f1a;
+            padding: 3px 8px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+
+        .quickref-subcat {
+            font-size: 12px;
+            color: #aaa;
+            margin: 10px 0 6px 0;
+            font-style: italic;
+        }
+
+        .quickref-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 10px;
+        }
+
+        .quickref-card {
+            background-color: #1c1c17;
+            border: 1px solid #3d3d33;
+            border-radius: 4px;
+            padding: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .quickref-card:hover {
+            border-color: var(--border-color);
+            background-color: #2b2b22;
+            transform: translateY(-2px);
+        }
+
+        .quickref-icon {
+            font-size: 22px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 30px;
+        }
+
+        .quickref-text-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .quickref-text-sub {
+            font-size: 11px;
+            color: #8c7355;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 130px;
+        }
+
+        /* MODAL DE REFERÊNCIA RÁPIDA */
+        .qr-modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(3px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qr-modal.active {
+            display: flex;
+        }
+
+        .qr-modal-content {
+            background-color: var(--panel-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 85vh;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: qrModalAnim 0.2s ease-out;
+        }
+
+        @keyframes qrModalAnim {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .qr-modal-header {
+            background-color: #1a1a15;
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .qr-modal-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .qr-modal-close {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .qr-modal-close:hover {
+            color: var(--accent-color);
+        }
+
+        .qr-modal-body {
+            padding: 16px;
+            overflow-y: auto;
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--text-color);
+        }
+
+        .qr-modal-subtitle {
+            font-size: 13px;
+            font-style: italic;
+            color: #d4af37;
+            margin-bottom: 12px;
+        }
+
+        .qr-modal-bullets p {
+            margin: 6px 0;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #3d3d33;
+        }
+
+        .qr-modal-bullets p:last-child {
+            border-bottom: none;
+        }
+
+        .qr-modal-ref {
+            margin-top: 15px;
+            font-size: 11px;
+            color: #8c7355;
+            text-align: right;
+            font-weight: bold;
+        }
+
+        /* --- REGRAS DE MEDIA QUERIES (RESPONSIVIDADE TOTAL) --- */
+        @media (max-width: 1024px) {
+            .panel.active {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+                gap: 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+
+            .hud-info {
+                justify-content: center;
+            }
+
+            nav {
+                justify-content: flex-start;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            .tab-btn {
+                padding: 10px 14px;
+                font-size: 13px;
+            }
+
+            main {
+                padding: 10px;
+            }
+
+            .panel.active {
+                grid-template-columns: 1fr !important; /* Força 1 coluna única em telas de celular */
+                gap: 15px;
+            }
+
+            .monster-card {
+                max-width: 100%;
+                height: auto;
+            }
+        }
+
+        /* --- AJUSTE DA ABA CARDS DOS HERÓIS (#cards-herois) --- */
+        .panel.active#cards-herois {
+            display: grid !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important; /* Força exatamente 2 cards por linha */
+            gap: 20px !important; /* Espaçamento idêntico ao padrão da aba de monstros */
+            width: 100% !important;
+            box-sizing: border-box;
+            align-items: stretch;
+        }
+
+        /* Ajuste do Card do Herói para ocupar 100% da sua coluna */
+        #cards-herois .card {
+            width: 100% !important;
+            margin: 0 !important;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* --- AUMENTO DAS FONTES DENTRO DO CARD DO HERÓI --- */
+        #cards-herois .card div[style*="font-size: 16px"] {
+            font-size: 18px !important; /* Nome do Personagem */
+        }
+
+        #cards-herois .card div[style*="font-size: 11px"] {
+            font-size: 13px !important; /* Subtítulo (Classe/Nível/Jogador) */
+        }
+
+        #cards-herois .card div[style*="font-size: 10px"] {
+            font-size: 12px !important; /* Status de CA, PV, Iniciativa e Deslocamento */
+        }
+
+        /* Grid dos 6 Atributos (FOR, DES, CON, INT, SAB, CAR) */
+        #cards-herois .card .stats-grid,
+        #cards-herois .card div[style*="grid-template-columns: repeat(6, 1fr)"] {
+            font-size: 13px !important;
+            padding: 6px 0 !important;
+        }
+
+        #cards-herois .card span[style*="font-size: 8px"] {
+            font-size: 10px !important; /* Siglas dos Atributos */
+        }
+
+        /* Texto descritivo do Corpo da Ficha (Salvaguardas, Perícias, Ataques, etc.) */
+        #cards-herois .card div[style*="font-size: 10.5px"] {
+            font-size: 12.5px !important;
+            line-height: 1.5 !important;
+        }
+
+        #cards-herois .card div[style*="font-size: 10px"] {
+            font-size: 11.5px !important; /* Cabeçalhos das Seções Internas */
+        }
+
+        /* Responsividade: Em celulares (telas menores de 768px), ajusta para 1 por linha */
+        @media (max-width: 768px) {
+            .panel.active#cards-herois {
                 grid-template-columns: 1fr !important;
             }
         }
-        /* --- ESTILOS DA ABA REFERÊNCIA RÁPIDA (5E) --- */
-.quickref-container {
-    grid-column: span 3;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    width: 100%;
-}
-
-.quickref-section {
-    background-color: var(--panel-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    padding: 15px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-}
-
-.quickref-section h3 {
-    margin-top: 0;
-    color: var(--border-color);
-    border-bottom: 2px solid var(--border-color);
-    padding-bottom: 5px;
-    font-size: 18px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.quickref-section h3 span.badge {
-    font-size: 12px;
-    background: #1f1f1a;
-    padding: 3px 8px;
-    border-radius: 4px;
-    border: 1px solid var(--border-color);
-    color: var(--text-color);
-}
-
-.quickref-subcat {
-    font-size: 12px;
-    color: #aaa;
-    margin: 10px 0 6px 0;
-    font-style: italic;
-}
-
-.quickref-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 10px;
-}
-
-.quickref-card {
-    background-color: #1c1c17;
-    border: 1px solid #3d3d33;
-    border-radius: 4px;
-    padding: 10px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transition: all 0.2s ease-in-out;
-}
-
-.quickref-card:hover {
-    border-color: var(--border-color);
-    background-color: #2b2b22;
-    transform: translateY(-2px);
-}
-
-.quickref-icon {
-    font-size: 22px;
-    line-height: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 30px;
-}
-
-.quickref-text-title {
-    font-size: 13px;
-    font-weight: bold;
-    color: var(--text-color);
-}
-
-.quickref-text-sub {
-    font-size: 11px;
-    color: #8c7355;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 130px;
-}
-
-/* MODAL DE REFERÊNCIA RÁPIDA */
-.qr-modal {
-    display: none;
-    position: fixed;
-    z-index: 10000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(3px);
-    align-items: center;
-    justify-content: center;
-}
-
-.qr-modal.active {
-    display: flex;
-}
-
-.qr-modal-content {
-    background-color: var(--panel-bg);
-    border: 2px solid var(--border-color);
-    border-radius: 8px;
-    width: 90%;
-    max-width: 600px;
-    max-height: 85vh;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.8);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    animation: qrModalAnim 0.2s ease-out;
-}
-
-@keyframes qrModalAnim {
-    from { transform: scale(0.95); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-}
-
-.qr-modal-header {
-    background-color: #1a1a15;
-    border-bottom: 1px solid var(--border-color);
-    padding: 12px 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.qr-modal-title {
-    font-size: 18px;
-    font-weight: bold;
-    color: var(--border-color);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.qr-modal-close {
-    background: none;
-    border: none;
-    color: var(--text-color);
-    font-size: 24px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.qr-modal-close:hover {
-    color: var(--accent-color);
-}
-
-.qr-modal-body {
-    padding: 16px;
-    overflow-y: auto;
-    font-size: 13px;
-    line-height: 1.5;
-    color: var(--text-color);
-}
-
-.qr-modal-subtitle {
-    font-size: 13px;
-    font-style: italic;
-    color: #d4af37;
-    margin-bottom: 12px;
-}
-
-.qr-modal-bullets p {
-    margin: 6px 0;
-    padding-bottom: 6px;
-    border-bottom: 1px solid #3d3d33;
-}
-
-.qr-modal-bullets p:last-child {
-    border-bottom: none;
-}
-
-.qr-modal-ref {
-    margin-top: 15px;
-    font-size: 11px;
-    color: #8c7355;
-    text-align: right;
-    font-weight: bold;
-}
     </style>
 </head>
 
@@ -616,720 +705,731 @@
     </header>
 
     <nav>
-        <button class="tab-btn active" onclick="openTab('orig-pag1')">📋Mestre 1</button>
-        <button class="tab-btn" onclick="openTab('orig-pag2')">📋 Mestre 2</button>
-        <button class="tab-btn" onclick="openTab('orig-pag3')">📋 Mestre 3</button>
-        <button class="tab-btn" onclick="openTab('orig-pag4')">📋 Mestre 4</button>
-       <button class="tab-btn" onclick="openTab('quickref')">📖 Referências</button>
-
+        <button class="tab-btn active" onclick="openTab('mestre-unificado')">📋 Mestre</button>
+        <button class="tab-btn" onclick="openTab('quickref')">📖 Referências</button>
         <button class="tab-btn" onclick="openTab('encontros')">⚔️ Fortaleza</button>
-        <button class="tab-btn" onclick="openTab('jogadores')">📝 Jogadores</button>
+        <button class="tab-btn" onclick="openTab('jogadores')">📝 Contexto</button>
         <button class="tab-btn" onclick="openTab('monstros-campanha')">🎯 Monstros</button>
         <button class="tab-btn" onclick="openTab('cards-herois')">🛡️ Heróis</button>
         <button class="tab-btn" onclick="openTab('dicas')">🧠 Dicas</button>
         <button class="tab-btn" onclick="openTab('cronograma')">⏳ Tempo</button>
         <button class="tab-btn" onclick="openTab('texto-aventura')">📜 Aventura</button>
- 
+        <button class="tab-btn" onclick="openTab('resumo-aventura')">📜 Resumo</button>
+
     </nav>
 
     <main>
 
-        <!-- PÁGINA 1 ORIGINAL -->
-        <div id="orig-pag1" class="panel active">
-            <div class="card">
-                <h3>CONDITIONS (A - I)</h3>
-                <p><strong>Cego</strong><br>• Uma criatura cega não pode ver e falha automaticamente qualquer teste de
-                    habilidade que requer visão.<br>Jogadas de ataque contra a criatura ganham vantagem, jogadas de
-                    ataque da criatura ganham desvantagem.</p>
-                <p><strong>Enfeitiçado</strong><br>• Uma criatura encantada não pode atacar ou lançar magia em quem o
-                    enfeitiçou.<br>• O encantador tem a vantagem em um teste de habilidade de interagir socialmente com
-                    a criatura.</p>
-                <p><strong>Surdo</strong><br>• Uma criatura ensurdecida não pode ouvir e falha automaticamente qualquer
-                    teste de habilidade que requer audição.</p>
-                <p><strong>Amedrontado</strong><br>• Uma criatura amedrontada tem desvantagem em teste de habilidade e
-                    jogadas de ataque, enquanto a fonte do seu medo esta na sua linha de visão.<br>• A criatura não pode
-                    se aproximar da fonte do seu medo.</p>
-                <p><strong>Agarrado</strong><br>• Uma criatura agarrada tem deslocamento caído a zero e não se beneficia
-                    com bônus de movimento.<br>• A condição acaba se o predador estiver incapacitado<br>• A condição
-                    também termina se um efeito remove a criatura agarrada do alcance do agarrador, como quando uma
-                    criatura é arremessada para longe com magia.</p>
-                <p><strong>Incapacitado</strong><br>• Uma criatura incapacitada não pode realizar uma ação ou reação.
-                </p>
-            </div>
-            <div class="card">
-                <h3>CONDITIONS (I - Z)</h3>
-                <p><strong>Invisível</strong><br>• Uma criatura invisível é impossível de ser vista sem ajuda de magia
-                    ou sentido especial. A localização da criatura pode be detectada pelo seu barulho ou pelas pegadas
-                    deixadas.<br>Jogadas de ataque contra a criatura ganham desvantagem e jogadas de ataque da criatura
-                    ganham vantagem.</p>
-                <p><strong>Paralisado</strong><br>• Uma criatura paralisada está incapacitada (veja a condição) e não
-                    pode se mover ou falar.<br>• A criatura falha automaticamente nos testes de Força e Destreza.<br>•
-                    Ataque contra a criatura ganham vantagem.<br>• Qualquer ataque que atinja a criatura é um acerto
-                    crítico se o atacante estiver dentro de 1,5 mestros da criatura.</p>
-                <p><strong>Petrificado</strong><br>• Uma criatura petrificada é transformada, juntamente com qualquer
-                    objeto não mágico que está vestindo ou carregando, em uma substância inanimada sólida (normalmente
-                    pedra). Seu peso aumenta por um fator de dez, e ela deixa de envelhecer.<br>• A criatura está
-                    incapacitada (veja a condição), não pode se mover ou falar, e não tem conhecimento de seus
-                    arredores. Jogadas de ataque contra a criatura ganham vantagem.<br>• A criatura falha
-                    automaticamente nos testes de Força e Destreza.<br>• A criatura tem resistência a todos os
-                    danos.<br>• A criatura é imune ao veneno e doença.</p>
-                <p><strong>Envenenado</strong><br>• Uma criatura envenenada tem desvantagem nas jogadas de ataque e
-                    testes de habilidade.</p>
-                <p><strong>Caído</strong><br>• A única opção de movimento de uma criatura caída é engatinhar, a menos
-                    que se levanta e, assim, termina a condição.<br>• A criatura ganha desvantagem nas jogadas de
-                    ataque.<br>• Uma jogada de ataque contra a criatura ganha vantagem se o invasor estiver dentro de 1
-                    metro e meio da criatura. Caso contrário, a jogada de ataque ganha desvantagem.</p>
-                <p><strong>Impedido</strong><br>• Velocidade de uma criatura presa torna-se zero, e não pode se
-                    beneficiar de qualquer bônus de movimento.<br>Jogadas de ataque contra a criatura ganham vantagem, e
-                    jogadas de ataque da criatura ganham desvantagem.<br>• A criatura ganha desvantagem em testes de
-                    resistência de Destreza.</p>
-                <p><strong>Atordoado</strong><br>• Uma criatura atordoada está incapacitada (Veja a condição), não pode
-                    se mover, e pode falar hesitantemente.<br>• A criatura falha automaticamente em testes de
-                    resistência de força e destreza.<br>Jogadas de ataque contra a criatura ganham vantagem.</p>
-                <p><strong>Inconsciente</strong><br>Uma criatura inconsciente está incapacitada (veja a condição), não
-                    pode mover ou falar, e não tem conhecimento de seus arredores.<br>• A criatura derruba tudo o que
-                    está segurando e cai de bruços.<br>• A criatura falha automaticamente testes de resistência de Força
-                    e Destreza.<br>Jogadas de ataque contra a criatura ganham vantagem.<br>Any ataque que atinja a
-                    criatura é um acerto crítico se o atacante estiver dentro de 1 metro e meio da criatura.</p>
-            </div>
-            <div class="card">
-                <h3>Exaustão</h3>
-                <table>
-                    <tr>
-                        <th>Level</th>
-                        <th>Efeito</th>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>Desvantagem em testes de habilidade</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Deslocamento reduzido pela metade</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>Desvantagem nas jogadas de ataque e testes de resistência</td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>Máximo de pontos de vida reduzido pela metade</td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td>Deslocamento reduzido a o</td>
-                    </tr>
-                    <tr>
-                        <td>6</td>
-                        <td>Morte</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
+        <!-- ABA UNIFICADA: REGRAS E TABELAS DO MESTRE (100% FIEL AO PDF OFICIAL) -->
+        <div id="mestre-unificado" class="panel active">
 
-        <!-- PÁGINA 2 ORIGINAL -->
-        <div id="orig-pag2" class="panel">
-            <div class="card">
-                <h3>Cobertura</h3>
-                <table>
-                    <tr>
-                        <th>Cobertura</th>
-                        <th>Efeito</th>
-                    </tr>
-                    <tr>
-                        <td>Meio coberto</td>
-                        <td>+2 Bônus na CA e testes de resistência de Destreza contra ataques e efeitos que se originam
-                            no lado oposto da cobertura.</td>
-                    </tr>
-                    <tr>
-                        <td>Três quartos de cobertura</td>
-                        <td>+5 bônus na CA e testes de resistência de destreza contra ataques e efeitos que se originam
-                            no lado oposto da cobertura.</td>
-                    </tr>
-                    <tr>
-                        <td>Cobertura Total</td>
-                        <td>Não pode ser alvo diretamente de um ataque ou feitiço</td>
-                    </tr>
-                </table>
-                <br>
-                <h3>Áreas Obscurecidas</h3>
-                <table>
-                    <tr>
-                        <th>Obscuridade</th>
-                        <th>Efeito</th>
-                        <th>Exemplos</th>
-                    </tr>
-                    <tr>
-                        <td>Levemente obscurecida</td>
-                        <td>Criaturas têm desvantagem na teste de sabedoria (percepção) que dependem de vista.</td>
-                        <td>Penumbra, nevoeiro irregular, folhagem moderada</td>
-                    </tr>
-                    <tr>
-                        <td>Pesadamente obscurecida</td>
-                        <td>Visão é bloqueada; criaturas são efetivamente cegos.</td>
-                        <td>Escuridão, o nevoeiro opaco, folhagem densa</td>
-                    </tr>
-                </table>
-            </div>
-            <div class="card">
-                <h3>Luz</h3>
-                <table>
-                    <tr>
-                        <th>Fonte</th>
-                        <th>Luz brilhante</th>
-                        <th>Luz difusa</th>
-                        <th>Duração</th>
-                    </tr>
-                    <tr>
-                        <td>Vela</td>
-                        <td>1,5 metros</td>
-                        <td>+ 1,5 metros</td>
-                        <td>1 hora</td>
-                    </tr>
-                    <tr>
-                        <td>Lampada</td>
-                        <td>4,5 metros</td>
-                        <td>+ 4,5 metros</td>
-                        <td>6 horas</td>
-                    </tr>
-                    <tr>
-                        <td>Lanterna, na mosca</td>
-                        <td>18 metros</td>
-                        <td>+ 18 metros</td>
-                        <td>6 horas</td>
-                    </tr>
-                    <tr>
-                        <td>Lanterna, encapuzado</td>
-                        <td>9 metros</td>
-                        <td>+ 9 metros</td>
-                        <td>6 horas</td>
-                    </tr>
-                    <tr>
-                        <td>Capuz recolhido</td>
-                        <td></td>
-                        <td>+ 1,5 metros</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>Tocha</td>
-                        <td>6 metros</td>
-                        <td>+ 6 metros</td>
-                        <td>1 hora</td>
-                    </tr>
-                </table>
-            </div>
-            <div class="card">
-                <h3>PERÍCIAS E HABILIDADES ASSOCIADAS</h3>
-                <table>
-                    <tr>
-                        <th>Perícia</th>
-                        <th>Habilidade</th>
-                        <th>Skill</th>
-                        <th>Habilidade</th>
-                    </tr>
-                    <tr>
-                        <td>Acrobacia</td>
-                        <td>Destreza</td>
-                        <td>Medicina</td>
-                        <td>Sabedoria</td>
-                    </tr>
-                    <tr>
-                        <td>Adestrar animais</td>
-                        <td>Sabedoria</td>
-                        <td>Natureza</td>
-                        <td>Inteligência</td>
-                    </tr>
-                    <tr>
-                        <td>Arcanismo</td>
-                        <td>Inteligência</td>
-                        <td>Percepção</td>
-                        <td>Sabedoria</td>
-                    </tr>
-                    <tr>
-                        <td>Atletismo</td>
-                        <td>Força</td>
-                        <td>Atuação</td>
-                        <td>Carisma</td>
-                    </tr>
-                    <tr>
-                        <td>Enganação</td>
-                        <td>Carisma</td>
-                        <td>Persuasão</td>
-                        <td>Carisma</td>
-                    </tr>
-                    <tr>
-                        <td>História</td>
-                        <td>Inteligência</td>
-                        <td>Religião</td>
-                        <td>Inteligência</td>
-                    </tr>
-                    <tr>
-                        <td>Intuição</td>
-                        <td>Sabedoria</td>
-                        <td>Golpe de mão</td>
-                        <td>Destreza</td>
-                    </tr>
-                    <tr>
-                        <td>Intimidação</td>
-                        <td>Carisma</td>
-                        <td>Furtividade</td>
-                        <td>Destreza</td>
-                    </tr>
-                    <tr>
-                        <td>Investigação</td>
-                        <td>Inteligência</td>
-                        <td>Sobrevivência</td>
-                        <td>Sabedoria</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
+            <!-- COLUNA 1: CONDIÇÕES & EXAUSTÃO -->
+            <div style="display: flex; flex-direction: column; gap: 16px; width: 100%;">
+                <div class="card">
+                    <h3>CONDDIÇÕES</h3>
+                    <p><strong>Cego</strong><br>• Uma criatura cega não pode ver e falha automaticamente qualquer teste
+                        de habilidade que requer visão.<br>• Jogadas de ataque contra a criatura ganham vantagem,
+                        jogadas de ataque da criatura ganham desvantagem.</p>
+                    <p><strong>Enfeitiçado</strong><br>• Uma criatura encantada não pode atacar ou lançar magia em quem
+                        o enfeitiçou.<br>• O encantador tem a vantagem em um teste de habilidade de interagir
+                        socialmente com a criatura.</p>
+                    <p><strong>Surdo</strong><br>• Uma criatura ensurdecida não pode ouvir e falha automaticamente
+                        qualquer teste de habilidade que requer audição.</p>
+                    <p><strong>Amedrontado</strong><br>• Uma criatura amedrontada tem desvantagem em teste de habilidade
+                        e jogadas de ataque, enquanto a fonte do seu medo está na sua linha de visão.<br>• A criatura
+                        não pode se aproximar da fonte do seu medo.</p>
+                    <p><strong>Agarrado</strong><br>• Uma criatura agarrada tem deslocamento caído a zero e não se
+                        beneficia com bônus de movimento.<br>• A condição acaba se o predador estiver incapacitado.<br>•
+                        A condição também termina se um efeito remove a criatura agarrada do alcance do agarrador, como
+                        quando uma criatura é arremessada para longe com magia.</p>
+                    <p><strong>Incapacitado</strong><br>• Uma criatura incapacitada não pode realizar uma ação ou
+                        reação.</p>
+                    <p><strong>Invisível</strong><br>• Uma criatura invisível é impossível de ser vista sem ajuda de
+                        magia ou sentido especial. A localização da criatura pode ser detectada pelo seu barulho ou
+                        pelas pegadas deixadas.<br>• Jogadas de ataque contra a criatura ganham desvantagem e jogadas de
+                        ataque da criatura ganham vantagem.</p>
+                    <p><strong>Paralisado</strong><br>• Uma criatura paralisada está incapacitada (veja a condição) e
+                        não pode se mover ou falar.<br>• A criatura falha automaticamente nos testes de Força e
+                        Destreza.<br>• Ataques contra a criatura ganham vantagem.<br>• Qualquer ataque que atinja a
+                        criatura é um acerto crítico se o atacante estiver dentro de 1,5 metros da criatura.</p>
+                    <p><strong>Petrificado</strong><br>• Uma criatura petrificada é transformada, juntamente com
+                        qualquer objeto não mágico que está vestindo ou carregando, em uma substância inanimada sólida
+                        (normalmente pedra). Seu peso aumenta por um fator de dez, e ela deixa de envelhecer.<br>• A
+                        criatura está incapacitada (veja a condição), não pode se mover ou falar, e não tem conhecimento
+                        de seus arredores. Jogadas de ataque contra a criatura ganham vantagem.<br>• A criatura falha
+                        automaticamente nos testes de Força e Destreza.<br>• A criatura tem resistência a todos os
+                        danos.<br>• A criatura é imune ao veneno e doença.</p>
+                    <p><strong>Envenenado</strong><br>• Uma criatura envenenada tem desvantagem nas jogadas de ataque e
+                        testes de habilidade.</p>
+                    <p><strong>Caído</strong><br>• A única opção de movimento de uma criatura caída é engatinhar, a
+                        menos que se levante e, assim, termina a condição.<br>• A criatura ganha desvantagem nas jogadas
+                        de ataque.<br>• Uma jogada de ataque contra a criatura ganha vantagem se o invasor estiver
+                        dentro de 1,5 metro da criatura. Caso contrário, a jogada de ataque ganha desvantagem.</p>
+                    <p><strong>Impedido</strong><br>• Velocidade de uma criatura presa torna-se zero, e não pode se
+                        beneficiar de qualquer bônus de movimento.<br>• Jogadas de ataque contra a criatura ganham
+                        vantagem, e jogadas de ataque da criatura ganham desvantagem.<br>• A criatura ganha desvantagem
+                        em testes de resistência de Destreza.</p>
+                    <p><strong>Atordoado</strong><br>• Uma criatura atordoada está incapacitada (veja a condição), não
+                        pode se mover, e pode falar hesitantemente.<br>• A criatura falha automaticamente em testes de
+                        resistência de Força e Destreza.<br>• Jogadas de ataque contra a criatura ganham vantagem.</p>
+                    <p><strong>Inconsciente</strong><br>• Uma criatura inconsciente está incapacitada (veja a condição),
+                        não pode mover ou falar, e não tem conhecimento de seus arredores.<br>• A criatura derruba tudo
+                        o que está segurando e cai de bruços.<br>• A criatura falha automaticamente testes de
+                        resistência de Força e Destreza.<br>• Jogadas de ataque contra a criatura ganham vantagem.<br>•
+                        Qualquer ataque que atinja a criatura é um acerto crítico se o atacante estiver dentro de 1,5
+                        metro da criatura.</p>
+                </div>
 
-        <!-- PÁGINA 3 ORIGINAL -->
-        <div id="orig-pag3" class="panel">
-            <div class="card">
-                <h3>Classe de Dificuldade (CD)</h3>
-                <table>
-                    <tr>
-                        <th>Dificuldade</th>
-                        <th>CD</th>
-                    </tr>
-                    <tr>
-                        <td>Muito fácil</td>
-                        <td>5</td>
-                    </tr>
-                    <tr>
-                        <td>Fácil</td>
-                        <td>10</td>
-                    </tr>
-                    <tr>
-                        <td>Moderado</td>
-                        <td>15</td>
-                    </tr>
-                    <tr>
-                        <td>Dificil</td>
-                        <td>20</td>
-                    </tr>
-                    <tr>
-                        <td>Muito dificil</td>
-                        <td>25</td>
-                    </tr>
-                    <tr>
-                        <td>Quase impossível</td>
-                        <td>30</td>
-                    </tr>
-                </table>
-                <br>
-                <h3>RITMO DE VIAGEM</h3>
-                <table>
-                    <tr>
-                        <th>Ritmo</th>
-                        <th>Minuto</th>
-                        <th>Hora</th>
-                        <th>Dia</th>
-                        <th>Efeito</th>
-                    </tr>
-                    <tr>
-                        <td>Rápido</td>
-                        <td>120 metros</td>
-                        <td>6 Km</td>
-                        <td>46 Km</td>
-                        <td>Passivel de penalidade de -5 pontos em sabedoria (Percepção)</td>
-                    </tr>
-                    <tr>
-                        <td>Normal</td>
-                        <td>90 metros</td>
-                        <td>4,5 Km</td>
-                        <td>36 Km</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>Devagar</td>
-                        <td>60 metros</td>
-                        <td>3 Km</td>
-                        <td>27 Km</td>
-                        <td>Capaz de usar furtividade</td>
-                    </tr>
-                </table>
             </div>
-            <div class="card">
-                <h3>Distância de encontro</h3>
-                <table>
-                    <tr>
-                        <th>Terreno</th>
-                        <th>Distância de encontro</th>
-                    </tr>
-                    <tr>
-                        <td>Ártico, deserto, campos agrícolas ou pastagens.</td>
-                        <td>6d6 x 3 metros</td>
-                    </tr>
-                    <tr>
-                        <td>Floresta, pântano ou bosque.</td>
-                        <td>2d8 x 3 metros</td>
-                    </tr>
-                    <tr>
-                        <td>Colina ou terreno baldio</td>
-                        <td>2d10 x 3 metros</td>
-                    </tr>
-                    <tr>
-                        <td>Selva</td>
-                        <td>2d6 x 3 metros</td>
-                    </tr>
-                    <tr>
-                        <td>Montanha</td>
-                        <td>4d10 x 3 metros</td>
-                    </tr>
-                </table>
-                <br>
-                <h3>Distância audível</h3>
-                <p>Tentando ser quieto: 2d6 x 1,5 metros<br>Nível de ruído normal: 2d6 x 3 metros<br>Muito alto: 2d6 x
-                    15 metros</p>
-                <h3>Visibilidade ao ar livre</h3>
-                <p>Dia claro sem obstruções: 3 Km<br>Chuvoso: 1,5 Km<br>Neblina: 30 a 90 metros</p>
-            </div>
-            <div class="card">
-                <h3>ALGO ACONTECE</h3>
-                <table>
-                    <tr>
-                        <th>d20</th>
-                        <th>Evento</th>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>Uma porta se abre.</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Um incêndio começa.</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>Um meteoro cai do céu.</td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>Um monstro aparece.</td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td>Um som perfura o ar.</td>
-                    </tr>
-                    <tr>
-                        <td>6</td>
-                        <td>Uma tempestade começa.</td>
-                    </tr>
-                    <tr>
-                        <td>7</td>
-                        <td>Uma estranha estrela aparece no céu.</td>
-                    </tr>
-                    <tr>
-                        <td>8</td>
-                        <td>Uma forte rajada de vento sopra.</td>
-                    </tr>
-                    <tr>
-                        <td>9</td>
-                        <td>Um tremor sacode o chão.</td>
-                    </tr>
-                    <tr>
-                        <td>10</td>
-                        <td>Alguém tem um déjà vu.</td>
-                    </tr>
-                    <tr>
-                        <td>11</td>
-                        <td>Alguém fica furioso.</td>
-                    </tr>
-                    <tr>
-                        <td>12</td>
-                        <td>Alguém tem um vislumbre do futuro.</td>
-                    </tr>
-                    <tr>
-                        <td>13</td>
-                        <td>Alguém tem um pressentimento.</td>
-                    </tr>
-                    <tr>
-                        <td>14</td>
-                        <td>Alguém tem que ir ao banheiro.</td>
-                    </tr>
-                    <tr>
-                        <td>15</td>
-                        <td>Algo derrama ou cai no chão.</td>
-                    </tr>
-                    <tr>
-                        <td>16</td>
-                        <td>Algo não é o que parece ser.</td>
-                    </tr>
-                    <tr>
-                        <td>17</td>
-                        <td>A luz se apaga.</td>
-                    </tr>
-                    <tr>
-                        <td>18</td>
-                        <td>O sol se põe.</td>
-                    </tr>
-                    <tr>
-                        <td>19</td>
-                        <td>Há um mau cheiro no ar.</td>
-                    </tr>
-                    <tr>
-                        <td>20</td>
-                        <td>Uma magia inexplicável ocorre.</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
 
-        <!-- PÁGINA 4 ORIGINAL -->
-        <div id="orig-pag4" class="panel">
-            <div class="card">
-                <h3>ACHADOS RAPIDOS</h3>
-                <table>
-                    <tr>
-                        <th>d12</th>
-                        <th>Achado</th>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>Pintura</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Corpo</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>Comida e bebida</td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>Joia</td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td>Chave</td>
-                    </tr>
-                    <tr>
-                        <td>6</td>
-                        <td>Carta</td>
-                    </tr>
-                    <tr>
-                        <td>7</td>
-                        <td>Ervas mágicas</td>
-                    </tr>
-                    <tr>
-                        <td>8</td>
-                        <td>Mapa</td>
-                    </tr>
-                    <tr>
-                        <td>9</td>
-                        <td>Parte de monstro</td>
-                    </tr>
-                    <tr>
-                        <td>10</td>
-                        <td>Mensagem secreta</td>
-                    </tr>
-                    <tr>
-                        <td>11</td>
-                        <td>Sinete ou insignia</td>
-                    </tr>
-                    <tr>
-                        <td>12</td>
-                        <td>Livro grosso</td>
-                    </tr>
-                </table>
-                <br>
-                <h3>DANO POR NÍVEL E GRAVIDADE</h3>
-                <table>
-                    <tr>
-                        <th>Level</th>
-                        <th>Revés</th>
-                        <th>Perigoso</th>
-                        <th>Mortal</th>
-                    </tr>
-                    <tr>
-                        <td>1-4</td>
-                        <td>1d10</td>
-                        <td>2d10</td>
-                        <td>4d10</td>
-                    </tr>
-                    <tr>
-                        <td>5-10</td>
-                        <td>2d10</td>
-                        <td>4d10</td>
-                        <td>10d10</td>
-                    </tr>
-                    <tr>
-                        <td>11-16</td>
-                        <td>4d10</td>
-                        <td>10d10</td>
-                        <td>18d10</td>
-                    </tr>
-                    <tr>
-                        <td>17-20</td>
-                        <td>10d10</td>
-                        <td>18d10</td>
-                        <td>24d10</td>
-                    </tr>
-                </table>
-                <p style="font-size: 13px; margin-top: 5px;">A partir de um altura X 20</p>
+            <!-- COLUNA 2: AMBIENTE, LUZ & PERÍCIAS -->
+            <div style="display: flex; flex-direction: column; gap: 16px; width: 100%;">
+                <div class="card">
+                    <h3>Exaustão</h3>
+                    <table>
+                        <tr>
+                            <th>Level</th>
+                            <th>Efeito</th>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>Desvantagem em testes de habilidade</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Deslocamento reduzido pela metade</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Desvantagem nas jogadas de ataque e testes de resistência</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Máximo de pontos de vida reduzido pela metade</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Deslocamento reduzido a 0</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Morte</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="card">
+                    <h3>Cobertura</h3>
+                    <table>
+                        <tr>
+                            <th>Cobertura</th>
+                            <th>Efeito</th>
+                        </tr>
+                        <tr>
+                            <td>Meio coberto</td>
+                            <td>+2 Bônus na CA e testes de resistência de Destreza contra ataques e efeitos que se
+                                originam no lado oposto da cobertura.</td>
+                        </tr>
+                        <tr>
+                            <td>Três quartos de cobertura</td>
+                            <td>+5 bônus na CA e testes de resistência de Destreza contra ataques e efeitos que se
+                                originam no lado oposto da cobertura.</td>
+                        </tr>
+                        <tr>
+                            <td>Cobertura Total</td>
+                            <td>Não pode ser alvo diretamente de um ataque ou feitiço</td>
+                        </tr>
+                    </table>
+                    <br>
+                    <h3>Áreas Obscurecidas</h3>
+                    <table>
+                        <tr>
+                            <th>Obscuridade</th>
+                            <th>Efeito</th>
+                            <th>Exemplos</th>
+                        </tr>
+                        <tr>
+                            <td>Levemente obscurecida</td>
+                            <td>Criaturas têm desvantagem no teste de Sabedoria (Percepção) que dependem da visão.</td>
+                            <td>Penumbra, nevoeiro irregular, folhagem moderada</td>
+                        </tr>
+                        <tr>
+                            <td>Pesadamente obscurecida</td>
+                            <td>Visão é bloqueada; criaturas são efetivamente cegas.</td>
+                            <td>Escuridão, nevoeiro opaco, folhagem densa</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <h3>Luz</h3>
+                    <table>
+                        <tr>
+                            <th>Fonte</th>
+                            <th>Luz brilhante</th>
+                            <th>Luz difusa</th>
+                            <th>Duração</th>
+                        </tr>
+                        <tr>
+                            <td>Vela</td>
+                            <td>1,5 metros</td>
+                            <td>+ 1,5 metros</td>
+                            <td>1 hora</td>
+                        </tr>
+                        <tr>
+                            <td>Lâmpada</td>
+                            <td>4,5 metros</td>
+                            <td>+ 4,5 metros</td>
+                            <td>6 horas</td>
+                        </tr>
+                        <tr>
+                            <td>Lanterna, furta-fogo</td>
+                            <td>18 metros</td>
+                            <td>+ 18 metros</td>
+                            <td>6 horas</td>
+                        </tr>
+                        <tr>
+                            <td>Lanterna, coberta</td>
+                            <td>9 metros</td>
+                            <td>+ 9 metros</td>
+                            <td>6 horas</td>
+                        </tr>
+                        <tr>
+                            <td>Capuz fechado</td>
+                            <td>-</td>
+                            <td>+ 1,5 metros</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>Tocha</td>
+                            <td>6 metros</td>
+                            <td>+ 6 metros</td>
+                            <td>1 hora</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <h3>PERÍCIAS E HABILIDADES ASSOCIADAS</h3>
+                    <table>
+                        <tr>
+                            <th>Perícia</th>
+                            <th>Habilidade</th>
+                            <th>Perícia (EN)</th>
+                            <th>Habilidade</th>
+                        </tr>
+                        <tr>
+                            <td>Acrobacia</td>
+                            <td>Destreza</td>
+                            <td>Medicina</td>
+                            <td>Sabedoria</td>
+                        </tr>
+                        <tr>
+                            <td>Adestrar animais</td>
+                            <td>Sabedoria</td>
+                            <td>Natureza</td>
+                            <td>Inteligência</td>
+                        </tr>
+                        <tr>
+                            <td>Arcanismo</td>
+                            <td>Inteligência</td>
+                            <td>Percepção</td>
+                            <td>Sabedoria</td>
+                        </tr>
+                        <tr>
+                            <td>Atletismo</td>
+                            <td>Força</td>
+                            <td>Atuação</td>
+                            <td>Carisma</td>
+                        </tr>
+                        <tr>
+                            <td>Enganação</td>
+                            <td>Carisma</td>
+                            <td>Persuasão</td>
+                            <td>Carisma</td>
+                        </tr>
+                        <tr>
+                            <td>História</td>
+                            <td>Inteligência</td>
+                            <td>Religião</td>
+                            <td>Inteligência</td>
+                        </tr>
+                        <tr>
+                            <td>Intuição</td>
+                            <td>Sabedoria</td>
+                            <td>Prestidigitação</td>
+                            <td>Destreza</td>
+                        </tr>
+                        <tr>
+                            <td>Intimidação</td>
+                            <td>Carisma</td>
+                            <td>Furtividade</td>
+                            <td>Destreza</td>
+                        </tr>
+                        <tr>
+                            <td>Investigação</td>
+                            <td>Inteligência</td>
+                            <td>Sobrevivência</td>
+                            <td>Sabedoria</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <h3>Classe de Dificuldade (CD)</h3>
+                    <table>
+                        <tr>
+                            <th>Dificuldade</th>
+                            <th>CD</th>
+                        </tr>
+                        <tr>
+                            <td>Muito fácil</td>
+                            <td>5</td>
+                        </tr>
+                        <tr>
+                            <td>Fácil</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td>Moderado</td>
+                            <td>15</td>
+                        </tr>
+                        <tr>
+                            <td>Difícil</td>
+                            <td>20</td>
+                        </tr>
+                        <tr>
+                            <td>Muito difícil</td>
+                            <td>25</td>
+                        </tr>
+                        <tr>
+                            <td>Quase impossível</td>
+                            <td>30</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="card">
+                    <h3>RITMO DE VIAGEM</h3>
+                    <table>
+                        <tr>
+                            <th>Ritmo</th>
+                            <th>Minuto</th>
+                            <th>Hora</th>
+                            <th>Dia</th>
+                            <th>Efeito</th>
+                        </tr>
+                        <tr>
+                            <td>Rápido</td>
+                            <td>120 metros</td>
+                            <td>6 Km</td>
+                            <td>46 Km</td>
+                            <td>Penalidade de -5 em Sabedoria (Percepção) passiva</td>
+                        </tr>
+                        <tr>
+                            <td>Normal</td>
+                            <td>90 metros</td>
+                            <td>4,5 Km</td>
+                            <td>36 Km</td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <td>Devagar</td>
+                            <td>60 metros</td>
+                            <td>3 Km</td>
+                            <td>27 Km</td>
+                            <td>Capaz de usar furtividade</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <h3>Distância de Encontro</h3>
+                    <table>
+                        <tr>
+                            <th>Terreno</th>
+                            <th>Distância</th>
+                        </tr>
+                        <tr>
+                            <td>Ártico, deserto, campos agrícolas ou pastagens</td>
+                            <td>6d6 x 3 metros</td>
+                        </tr>
+                        <tr>
+                            <td>Floresta, pântano ou bosque</td>
+                            <td>2d8 x 3 metros</td>
+                        </tr>
+                        <tr>
+                            <td>Colina ou terreno baldio</td>
+                            <td>2d10 x 3 metros</td>
+                        </tr>
+                        <tr>
+                            <td>Selva</td>
+                            <td>2d6 x 3 metros</td>
+                        </tr>
+                        <tr>
+                            <td>Montanha</td>
+                            <td>4d10 x 3 metros</td>
+                        </tr>
+                    </table>
+                    <br>
+                    <h3>Distância Audível</h3>
+                    <p>• Tentando ser quieto: 2d6 x 1,5 metros<br>• Nível de ruído normal: 2d6 x 3 metros<br>• Muito
+                        alto: 2d6 x 15 metros</p>
+                    <h3>Visibilidade ao Ar Livre</h3>
+                    <p>• Dia claro sem obstruções: 3 Km<br>• Chuvoso: 1,5 Km<br>• Neblina: 30 a 90 metros</p>
+                </div>
             </div>
-            <div class="card">
-                <h3>PdM Característica</h3>
-                <p><strong>d20 Características:</strong> 1: Distraido, 2: Arrogante, 3: Grosseiro, 4: Mastiga algo, 5:
-                    Desajeitado, 6: Curioso, 7: Estúpido (Pouco inteligente), 8: Inquieto e impaciente, 9: Usa palavras
-                    erradas com frequência, 10: Amigável, 11: Nervoso, 12: Sempre prevê desgraça, 13: Marcado com
-                    cicatrizes, 14: Usa palavras de calúnia, lingua presa, ou gagueja, 15: Fala alto ou sussurrando, 16:
-                    Vesgo, 17: Olhar distante, 18: Desconfiado, 19: Faz juramentos coloridos, 20: Usa discurso florido
-                    ou palavras longa.</p>
-                <h3>PdM IDEAI</h3>
-                <p><strong>d20 Ideais (Alinhamento):</strong> 1: Pretenção (qualquer), 2: Caridade (bom), 3: Comunidade
-                    (leal), 4: Creatividade (caótico), 5: Descoberta (qualquer), 6: Justiça (leal), 7: Liberdade
-                    (caótico), 8: Gloria (qualquer), 9: Bem maior (bom), 10: Ganancia (mau), 11: Honra (leal), 12:
-                    Independência (caótico), 13: Conhecimento (neutro), 14: Vida (bom), 15: Viva e deixe viver (neutro),
-                    16: Força (mau), 17: Nação (qualquer), 18: Pessoas (neutro), 19: Poder (mau), 20: Redenção
-                    (qualquer).</p>
-                <h3>PdM Defeitos</h3>
-                <p><strong>d12 FALHA:</strong> 1: Amor proibido ou susceptibilidade romântica, 2: Decadência, 3:
-                    Arrogância, 4: Inveja de bens de outra pessoa, 5: Ganância avassaladora, 6: Propenso a raiva, 7:
-                    Inimigo poderoso, 8: Fobia especifica, 9: História vergonhosa ou escandalosa, 10: Crime secreto ou
-                    delito, 11: Porte de conhecimento proibido, 12: Bravura imprudente.</p>
+
+            <!-- COLUNA 3: VIAGEM, TABELAS DE DADOS & GERADORES -->
+            <div style="display: flex; flex-direction: column; gap: 16px; width: 100%;">
+
+
+                <div class="card">
+                    <h3>ALGO ACONTECE</h3>
+                    <table>
+                        <tr>
+                            <th>d20</th>
+                            <th>Evento</th>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>Uma porta se abre.</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Um incêndio começa.</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Um meteoro cai do céu.</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Um monstro aparece.</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Um som perfura o ar.</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Uma tempestade começa.</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>Uma estranha estrela aparece no céu.</td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>Uma forte rajada de vento sopra.</td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td>Um tremor sacode o chão.</td>
+                        </tr>
+                        <tr>
+                            <td>10</td>
+                            <td>Alguém tem um déjà vu.</td>
+                        </tr>
+                        <tr>
+                            <td>11</td>
+                            <td>Alguém fica furioso.</td>
+                        </tr>
+                        <tr>
+                            <td>12</td>
+                            <td>Alguém tem um vislumbre do futuro.</td>
+                        </tr>
+                        <tr>
+                            <td>13</td>
+                            <td>Alguém tem um pressentimento.</td>
+                        </tr>
+                        <tr>
+                            <td>14</td>
+                            <td>Alguém tem que ir ao banheiro.</td>
+                        </tr>
+                        <tr>
+                            <td>15</td>
+                            <td>Algo derrama ou cai no chão.</td>
+                        </tr>
+                        <tr>
+                            <td>16</td>
+                            <td>Algo não é o que parece ser.</td>
+                        </tr>
+                        <tr>
+                            <td>17</td>
+                            <td>A luz se apaga.</td>
+                        </tr>
+                        <tr>
+                            <td>18</td>
+                            <td>O sol se põe.</td>
+                        </tr>
+                        <tr>
+                            <td>19</td>
+                            <td>Há um mau cheiro no ar.</td>
+                        </tr>
+                        <tr>
+                            <td>20</td>
+                            <td>Uma magia inexplicável ocorre.</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <h3>ACHADOS RÁPIDOS</h3>
+                    <table>
+                        <tr>
+                            <th>d12</th>
+                            <th>Achado</th>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>Pintura</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Corpo</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Comida e bebida</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Joia</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Chave</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Carta</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>Ervas mágicas</td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>Mapa</td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td>Parte de monstro</td>
+                        </tr>
+                        <tr>
+                            <td>10</td>
+                            <td>Mensagem secreta</td>
+                        </tr>
+                        <tr>
+                            <td>11</td>
+                            <td>Sinete ou insígnia</td>
+                        </tr>
+                        <tr>
+                            <td>12</td>
+                            <td>Livro grosso</td>
+                        </tr>
+                    </table>
+                    <br>
+                    <h3>DANO POR NÍVEL E GRAVIDADE</h3>
+                    <table>
+                        <tr>
+                            <th>Level</th>
+                            <th>Revés</th>
+                            <th>Perigoso</th>
+                            <th>Mortal</th>
+                        </tr>
+                        <tr>
+                            <td>1-4</td>
+                            <td>1d10</td>
+                            <td>2d10</td>
+                            <td>4d10</td>
+                        </tr>
+                        <tr>
+                            <td>5-10</td>
+                            <td>2d10</td>
+                            <td>4d10</td>
+                            <td>10d10</td>
+                        </tr>
+                        <tr>
+                            <td>11-16</td>
+                            <td>4d10</td>
+                            <td>10d10</td>
+                            <td>18d10</td>
+                        </tr>
+                        <tr>
+                            <td>17-20</td>
+                            <td>10d10</td>
+                            <td>18d10</td>
+                            <td>24d10</td>
+                        </tr>
+                    </table>
+                    <p style="font-size: 11px; margin-top: 5px; color: #aaa;">Dano de Queda: 1d6 por 3 metros de altura
+                        (máximo de 20d6).</p>
+                </div>
+
+                <div class="card">
+                    <h3>PdM CARACTERÍSTICAS</h3>
+                    <p style="font-size: 11px; line-height: 1.4;"><strong>d20 Características:</strong> 1: Distraído, 2:
+                        Arrogante, 3: Grosseiro, 4: Mastiga algo, 5: Desajeitado, 6: Curioso, 7: Estúpido (Pouco
+                        inteligente), 8: Inquieto e impaciente, 9: Usa palavras erradas com frequência, 10: Amigável,
+                        11: Nervoso, 12: Sempre prevê desgraça, 13: Marcado com cicatrizes, 14: Usa palavras de calúnia,
+                        língua presa ou gagueja, 15: Fala alto ou sussurrando, 16: Vesgo, 17: Olhar distante, 18:
+                        Desconfiado, 19: Faz juramentos coloridos, 20: Usa discurso florido ou palavras longas.</p>
+
+                    <h3>PdM IDEIAS / IDEAIS</h3>
+                    <p style="font-size: 11px; line-height: 1.4;"><strong>d20 Ideais (Alinhamento):</strong> 1:
+                        Pretenção (qualquer), 2: Caridade (bom), 3: Comunidade (leal), 4: Criatividade (caótico), 5:
+                        Descoberta (qualquer), 6: Justiça (leal), 7: Liberdade (caótico), 8: Glória (qualquer), 9: Bem
+                        maior (bom), 10: Ganância (mau), 11: Honra (leal), 12: Independência (caótico), 13: Conhecimento
+                        (neutro), 14: Vida (bom), 15: Viva e deixe viver (neutro), 16: Força (mau), 17: Nação
+                        (qualquer), 18: Pessoas (neutro), 19: Poder (mau), 20: Redenção (qualquer).</p>
+
+                    <h3>PdM DEFEITOS</h3>
+                    <p style="font-size: 11px; line-height: 1.4;"><strong>d12 Falha:</strong> 1: Amor proibido ou
+                        susceptibilidade romântica, 2: Decadência, 3: Arrogância, 4: Inveja de bens de outra pessoa, 5:
+                        Ganância avassaladora, 6: Propenso à raiva, 7: Inimigo poderoso, 8: Fobia específica, 9:
+                        História vergonhosa ou escandalosa, 10: Crime secreto ou delito, 11: Porte de conhecimento
+                        proibido, 12: Bravura imprudente.</p>
+                </div>
+
+                <div class="card">
+                    <h3>GERADOR DE NOMES</h3>
+                    <table>
+                        <tr>
+                            <th>d20</th>
+                            <th>Começo</th>
+                            <th>Meio</th>
+                            <th>Fim</th>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>—</td>
+                            <td>bar</td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>—</td>
+                            <td>ched</td>
+                            <td>-a</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>—</td>
+                            <td>dell</td>
+                            <td>-ac</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>—</td>
+                            <td>far</td>
+                            <td>-ai</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>A-</td>
+                            <td>gran</td>
+                            <td>-al</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Be-</td>
+                            <td>hal</td>
+                            <td>-am</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>De-</td>
+                            <td>jen</td>
+                            <td>-an</td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>El-</td>
+                            <td>kel</td>
+                            <td>-ar</td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td>Fa-</td>
+                            <td>lim</td>
+                            <td>-ea</td>
+                        </tr>
+                        <tr>
+                            <td>10</td>
+                            <td>Jo-</td>
+                            <td>mor</td>
+                            <td>-el</td>
+                        </tr>
+                        <tr>
+                            <td>11</td>
+                            <td>Ki-</td>
+                            <td>net</td>
+                            <td>-er</td>
+                        </tr>
+                        <tr>
+                            <td>12</td>
+                            <td>La-</td>
+                            <td>penn</td>
+                            <td>-ess</td>
+                        </tr>
+                        <tr>
+                            <td>13</td>
+                            <td>Ma-</td>
+                            <td>quil</td>
+                            <td>-ett</td>
+                        </tr>
+                        <tr>
+                            <td>14</td>
+                            <td>Na-</td>
+                            <td>rond</td>
+                            <td>-ic</td>
+                        </tr>
+                        <tr>
+                            <td>15</td>
+                            <td>0-</td>
+                            <td>sark</td>
+                            <td>-id</td>
+                        </tr>
+                        <tr>
+                            <td>16</td>
+                            <td>Pa-</td>
+                            <td>shen</td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <td>17</td>
+                            <td>Re-</td>
+                            <td>tur</td>
+                            <td>-in</td>
+                        </tr>
+                        <tr>
+                            <td>18</td>
+                            <td>Si-</td>
+                            <td>vash</td>
+                            <td>-is</td>
+                        </tr>
+                        <tr>
+                            <td>19</td>
+                            <td>Ta-</td>
+                            <td>yor</td>
+                            <td>-or</td>
+                        </tr>
+                        <tr>
+                            <td>20</td>
+                            <td>Va-</td>
+                            <td>zen</td>
+                            <td>-us</td>
+                        </tr>
+                    </table>
+                    <br>
+                    <h3>NPC VÍNCULO</h3>
+                    <p style="font-size: 11px; line-height: 1.4;"><strong>d10 Vínculos:</strong> 1: Objetivo pessoal ou
+                        realização, 2: Membros da família, 3: Companheiros ou compatriotas, 4: Benfeitor, patrono ou
+                        empregador, 5: Interesse romântico, 6: Lugar especial, 7: Lembrança, 8: Posse de algo valioso,
+                        9: Vingança, 10: Role duas vezes, ignorando mais rolos de 10.</p>
+                </div>
             </div>
-            <div class="card">
-                <h3>Gerador de Nomes</h3>
-                <table>
-                    <tr>
-                        <th>d20</th>
-                        <th>Começo</th>
-                        <th>Meio</th>
-                        <th>Fim</th>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>-</td>
-                        <td>bar</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>-</td>
-                        <td>ched</td>
-                        <td>-a</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>-</td>
-                        <td>dell</td>
-                        <td>-ac</td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>-</td>
-                        <td>far</td>
-                        <td>-ai</td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td>A-</td>
-                        <td>gran</td>
-                        <td>-al</td>
-                    </tr>
-                    <tr>
-                        <td>6</td>
-                        <td>Be-</td>
-                        <td>hal</td>
-                        <td>-am</td>
-                    </tr>
-                    <tr>
-                        <td>7</td>
-                        <td>De-</td>
-                        <td>jen</td>
-                        <td>-an</td>
-                    </tr>
-                    <tr>
-                        <td>8</td>
-                        <td>El-</td>
-                        <td>kel</td>
-                        <td>-ar</td>
-                    </tr>
-                    <tr>
-                        <td>9</td>
-                        <td>Fa-</td>
-                        <td>lim</td>
-                        <td>-ea</td>
-                    </tr>
-                    <tr>
-                        <td>10</td>
-                        <td>Jo-</td>
-                        <td>mor</td>
-                        <td>-el</td>
-                    </tr>
-                    <tr>
-                        <td>11</td>
-                        <td>Ki-</td>
-                        <td>net</td>
-                        <td>-er</td>
-                    </tr>
-                    <tr>
-                        <td>12</td>
-                        <td>La-</td>
-                        <td>penn</td>
-                        <td>-ess</td>
-                    </tr>
-                    <tr>
-                        <td>13</td>
-                        <td>Ma-</td>
-                        <td>quil</td>
-                        <td>-ett</td>
-                    </tr>
-                    <tr>
-                        <td>14</td>
-                        <td>Na-</td>
-                        <td>rond</td>
-                        <td>-ic</td>
-                    </tr>
-                    <tr>
-                        <td>15</td>
-                        <td>O-</td>
-                        <td>sark</td>
-                        <td>-id</td>
-                    </tr>
-                    <tr>
-                        <td>16</td>
-                        <td>Pa-</td>
-                        <td>shen</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>17</td>
-                        <td>Re-</td>
-                        <td>tur</td>
-                        <td>-in</td>
-                    </tr>
-                    <tr>
-                        <td>18</td>
-                        <td>Si-</td>
-                        <td>vash</td>
-                        <td>-is</td>
-                    </tr>
-                    <tr>
-                        <td>19</td>
-                        <td>Ta-</td>
-                        <td>yor</td>
-                        <td>-or</td>
-                    </tr>
-                    <tr>
-                        <td>20</td>
-                        <td>Va-</td>
-                        <td>zen</td>
-                        <td>-us</td>
-                    </tr>
-                </table>
-                <br>
-                <h3>NPC Vínculo</h3>
-                <p><strong>d10 Vínculos:</strong> 1: Objetivo pessoal ou realização, 2: Membros da familia, 3:
-                    Companheiros o compatriotas, 4: Benfeitor, patrono, ou empregador, 5: Interesse romantico, 6: Lugar
-                    especial, 7: Lembrança, 8: Posse de algo valioso, 9: Vingança, 10: Role duas vezes, ignorando mais
-                    rolos de 10.</p>
-            </div>
+
         </div>
 
         <!-- ABA: REFERÊNCIA RÁPIDA D&D 5E -->
@@ -1724,7 +1824,7 @@
             </div>
         </div>
 
-      <!-- ABA 6: STATUS DOS JOGADORES, GATILHOS, MOTIVAÇÕES & AMBIENTAÇÃO -->
+        <!-- ABA 6: STATUS DOS JOGADORES, GATILHOS, MOTIVAÇÕES & AMBIENTAÇÃO -->
         <div id="jogadores" class="panel">
 
             <!-- COLUNA DA ESQUERDA -->
@@ -1732,53 +1832,92 @@
 
                 <!-- CARDE 1: ALVO QUIRIQUIRI -->
                 <div class="card" style="border-color: #8c7355;">
-                    <h3 style="color: #d4af37; border-bottom: 1px solid #8c7355;">🌪️ Alvo Quiriquiri (Genasi do Ar / Druida)</h3>
-                    <p><strong>Motivação Principal:</strong> Seguir os sussurros do vento para encontrar o solo fértil onde a semente rosa possa renascer e tornar-se o lar do seu povo nômade.</p>
+                    <h3 style="color: #d4af37; border-bottom: 1px solid #8c7355;">🌪️ Alvo Quiriquiri (Genasi do Ar /
+                        Druida)</h3>
+                    <p><strong>Motivação Principal:</strong> Seguir os sussurros do vento para encontrar o solo fértil
+                        onde a semente rosa possa renascer e tornar-se o lar do seu povo nômade.</p>
                     <p><strong>Gatilhos Narrativos de Background:</strong>
-                        <br>• <strong>Pulsar da Semente Rosa:</strong> Vibra na presença de vida vegetal, mas fica fria e exala decomposição perto da corrupção de Gulthias.
-                        <br>• <strong>Bússola do Vento:</strong> Lê correntes de ar em aberturas e fendas para prever mudanças de clima ou sentir cheiros de salas ocupadas a jusante.
-                        <br>• <strong>A Profecia do Lar:</strong> Enxerga na Árvore Gulthias a antítese do seu destino (enraizamento maligno vs. renascimento puro).
+                        <br>• <strong>Pulsar da Semente Rosa:</strong> Vibra na presença de vida vegetal, mas fica fria
+                        e exala decomposição perto da corrupção de Gulthias.
+                        <br>• <strong>Bússola do Vento:</strong> Lê correntes de ar em aberturas e fendas para prever
+                        mudanças de clima ou sentir cheiros de salas ocupadas a jusante.
+                        <br>• <strong>A Profecia do Lar:</strong> Enxerga na Árvore Gulthias a antítese do seu destino
+                        (enraizamento maligno vs. renascimento puro).
                     </p>
                     <p><strong>Sugestões por Área da Masmorra:</strong>
-                        <br>• <strong>Áreas 1 e 2 (Mirante e Escadas):</strong> Sente o vento "preso" e sufocado pela terra ao descer a ravina.
-                        <br>• <strong>Área 14 (Estoque de Água Enfeitiçada):</strong> Sente a presença de elementais aprisionados no barril de ferro e pode tentar mediar conversa em Auran com o Mefit de Vapor.
-                        <br>• <strong>Área 42 (Jardim Central):</strong> Primeiro contato com o solo corrompido; a semente rosa esquenta e ele sente dor empática pelas plantas tratadas como adubo por esqueletos.
-                        <br>• <strong>Área 50 (Santuário de Ashardalon):</strong> O vento rodopia ao redor da semente rosa ao ativar a bênção do ladrilho circular em Dracônico.
-                        <br>• <strong>Área 56 (Árvore Gulthias):</strong> Confronto ideológico direto com Belak; pode usar a semente rosa após a luta para purificar a clareira.
+                        <br>• <strong>Áreas 1 e 2 (Mirante e Escadas):</strong> Sente o vento "preso" e sufocado pela
+                        terra ao descer a ravina.
+                        <br>• <strong>Área 14 (Estoque de Água Enfeitiçada):</strong> Sente a presença de elementais
+                        aprisionados no barril de ferro e pode tentar mediar conversa em Auran com o Mefit de Vapor.
+                        <br>• <strong>Área 42 (Jardim Central):</strong> Primeiro contato com o solo corrompido; a
+                        semente rosa esquenta e ele sente dor empática pelas plantas tratadas como adubo por esqueletos.
+                        <br>• <strong>Área 50 (Santuário de Ashardalon):</strong> O vento rodopia ao redor da semente
+                        rosa ao ativar a bênção do ladrilho circular em Dracônico.
+                        <br>• <strong>Área 56 (Árvore Gulthias):</strong> Confronto ideológico direto com Belak; pode
+                        usar a semente rosa após a luta para purificar a clareira.
                     </p>
                 </div>
 
                 <!-- CARDE 2: BAO DE XANGÔ -->
                 <div class="card" style="border-color: #4a5d4e;">
-                    <h3 style="color: #5c7361; border-bottom: 1px solid #4a5d4e;">🍲 Bao de Xangô, o Punho do Dendê (Meio-Orc / Monge)</h3>
-                    <p><strong>Motivação Principal:</strong> Provar que justiça, gentileza e disciplina podem vir com riso e boa comida. Aperfeiçoar o <em>Punho do Dendê</em> e achar a receita do bolinho com dendê.</p>
+                    <h3 style="color: #5c7361; border-bottom: 1px solid #4a5d4e;">🍲 Bao de Xangô, o Punho do Dendê
+                        (Meio-Orc / Monge)</h3>
+                    <p><strong>Motivação Principal:</strong> Provar que justiça, gentileza e disciplina podem vir com
+                        riso e boa comida. Aperfeiçoar o <em>Punho do Dendê</em> e achar a receita do bolinho com dendê.
+                    </p>
                     <p><strong>Gatilhos Narrativos de Background:</strong>
-                        <br>• <strong>Pimenta do Descanso Curto:</strong> Ao cozinhar no descanso curto, quem passar em <strong>TR de Constituição CD 10</strong> ganha <strong>+1d4 PV bônus</strong> nos dados de vida.
-                        <br>• <strong>Persuasão Bizarra:</strong> Tenta dialogar com líderes monstros usando frases filosóficas improvisadas e nomes de golpes extravagantes.
-                        <br>• <strong>Humor Desarmante:</strong> Responde a preconceitos por ser meio-orc com piadas e frases poéticas para quebrar a tensão.
+                        <br>• <strong>Pimenta do Descanso Curto:</strong> Ao cozinhar no descanso curto, quem passar em
+                        <strong>TR de Constituição CD 10</strong> ganha <strong>+1d4 PV bônus</strong> nos dados de
+                        vida.
+                        <br>• <strong>Persuasão Bizarra:</strong> Tenta dialogar com líderes monstros usando frases
+                        filosóficas improvisadas e nomes de golpes extravagantes.
+                        <br>• <strong>Humor Desarmante:</strong> Responde a preconceitos por ser meio-orc com piadas e
+                        frases poéticas para quebrar a tensão.
                     </p>
                     <p><strong>Sugestões por Área da Masmorra:</strong>
-                        <br>• <strong>Área 15 (Cela do Dragão):</strong> Trata Meepo como um "irmãozinho precisando de consolo", oferecendo comida e apoio espiritual de Xangô.
-                        <br>• <strong>Área 21 (Trono do Dragão):</strong> Tenta saudar Yusdrayl com formalidade exaggerated para resolver a guerra diplomaticamente.
-                        <br>• <strong>Áreas 22 e 38 (Despensas):</strong> Fica horrorizado com a podridão da comida goblin/kobold e com o "Pudim de Elfo", prometendo ensiná-los a temperar alimentos.
-                        <br>• <strong>Área 40 (Vilarejo Goblin):</strong> Usa a <em>Técnica do "Oxente, Atrás de Você!"</em> ou golpes não-letais para assustar não-combatentes em vez de matá-los.
-                        <br>• <strong>Área 41 (Salão do Chefe Durnn):</strong> Aplica a <em>Cabeçada do Trovão Educado</em> (dá um golpe e pede desculpas) para forçar negociação.
+                        <br>• <strong>Área 15 (Cela do Dragão):</strong> Trata Meepo como um "irmãozinho precisando de
+                        consolo", oferecendo comida e apoio espiritual de Xangô.
+                        <br>• <strong>Área 21 (Trono do Dragão):</strong> Tenta saudar Yusdrayl com formalidade
+                        exaggerated para resolver a guerra diplomaticamente.
+                        <br>• <strong>Áreas 22 e 38 (Despensas):</strong> Fica horrorizado com a podridão da comida
+                        goblin/kobold e com o "Pudim de Elfo", prometendo ensiná-los a temperar alimentos.
+                        <br>• <strong>Área 40 (Vilarejo Goblin):</strong> Usa a <em>Técnica do "Oxente, Atrás de
+                            Você!"</em> ou golpes não-letais para assustar não-combatentes em vez de matá-los.
+                        <br>• <strong>Área 41 (Salão do Chefe Durnn):</strong> Aplica a <em>Cabeçada do Trovão
+                            Educado</em> (dá um golpe e pede desculpas) para forçar negociação.
                     </p>
                 </div>
 
                 <!-- CARDE 5: DINÂMICA DE FACÇÕES E TÁTICAS SOCIAIS -->
                 <div class="card" style="border-color: #a63a2b;">
-                    <h3 style="color: #cc4e3b; border-bottom: 1px solid #a63a2b;">⚔️ Dinâmica de Facções e Táticas Sociais (Kobolds vs. Goblins)</h3>
-                    <p><strong>Guerra Fria nas Ruínas:</strong> Use as Áreas 24 e 25 (câmaras vazias e acessos bloqueados) para mostrar o estado de sítio entre as tribos. Descreva marcas de arranhões recentes, manchas de sangue seco e armadilhas que já foram armadas e desarmadas várias vezes por patrulhas rivais.</p>
-                    <p><strong>Barganha com a Xamã Grenl (Área 41):</strong> O livro estabelece que Grenl odeia o Chefe Hobgoblin Durnn por ele ter usurpado o controle da tribo Durbuluk. Se o combate no Salão do Chefe parecer inevitável, faça Grenl hesitar no 1º turno ou oferecer uma trégua secreta com os PJs caso Durnn seja derrubado.</p>
-                    <p><strong>Uso dos Goblins Prisioneiros (Área 18):</strong> Se os jogadores libertarem os 4 goblins presos pelos kobolds, lembre-se de que eles tentam fugir no primeiro sinal de perigo e traem o grupo se forem encurralados por outros goblins. Isso cria um excelente momento de tensão sem precisar de combate direto.</p>
+                    <h3 style="color: #cc4e3b; border-bottom: 1px solid #a63a2b;">⚔️ Dinâmica de Facções e Táticas
+                        Sociais (Kobolds vs. Goblins)</h3>
+                    <p><strong>Guerra Fria nas Ruínas:</strong> Use as Áreas 24 e 25 (câmaras vazias e acessos
+                        bloqueados) para mostrar o estado de sítio entre as tribos. Descreva marcas de arranhões
+                        recentes, manchas de sangue seco e armadilhas que já foram armadas e desarmadas várias vezes por
+                        patrulhas rivais.</p>
+                    <p><strong>Barganha com a Xamã Grenl (Área 41):</strong> O livro estabelece que Grenl odeia o Chefe
+                        Hobgoblin Durnn por ele ter usurpado o controle da tribo Durbuluk. Se o combate no Salão do
+                        Chefe parecer inevitável, faça Grenl hesitar no 1º turno ou oferecer uma trégua secreta com os
+                        PJs caso Durnn seja derrubado.</p>
+                    <p><strong>Uso dos Goblins Prisioneiros (Área 18):</strong> Se os jogadores libertarem os 4 goblins
+                        presos pelos kobolds, lembre-se de que eles tentam fugir no primeiro sinal de perigo e traem o
+                        grupo se forem encurralados por outros goblins. Isso cria um excelente momento de tensão sem
+                        precisar de combate direto.</p>
                 </div>
 
                 <!-- CARDE 7: ECOSSISTEMA VIVO E REAÇÃO AO DESCANSO -->
                 <div class="card" style="border-color: #8c7355;">
-                    <h3 style="color: #d4af37; border-bottom: 1px solid #8c7355;">🏕️ Ecossistema Vivo e Reação ao Descanso</h3>
-                    <p><strong>A Regra de Restauração de Salas (Descansos Longos):</strong> Se os aventureiros recuarem para descansar fora da masmorra ou em salas limpas, aplique a regra oficial de <strong>Monstros em Alerta</strong>: os kobolds e goblins reocupam salas vazias, reforçam os postos de guarda (como a Área 16 e Área 32) e rearmam os alçapões de fosso.</p>
-                    <p><strong>Caçadores na Umbreterna:</strong> As passagens naturais nas Áreas 23 e 43 conectam a cidadela ao mundo subterrâneo selvagem. Você pode descrever rastros de criaturas rastejantes e grilos de caverna ninados nas despensas (Área 22) para lembrar aos jogadores que a fortaleza é apenas a "superfície" de um abismo maior.</p>
+                    <h3 style="color: #d4af37; border-bottom: 1px solid #8c7355;">🏕️ Ecossistema Vivo e Reação ao
+                        Descanso</h3>
+                    <p><strong>A Regra de Restauração de Salas (Descansos Longos):</strong> Se os aventureiros recuarem
+                        para descansar fora da masmorra ou em salas limpas, aplique a regra oficial de <strong>Monstros
+                            em Alerta</strong>: os kobolds e goblins reocupam salas vazias, reforçam os postos de guarda
+                        (como a Área 16 e Área 32) e rearmam os alçapões de fosso.</p>
+                    <p><strong>Caçadores na Umbreterna:</strong> As passagens naturais nas Áreas 23 e 43 conectam a
+                        cidadela ao mundo subterrâneo selvagem. Você pode descrever rastros de criaturas rastejantes e
+                        grilos de caverna ninados nas despensas (Área 22) para lembrar aos jogadores que a fortaleza é
+                        apenas a "superfície" de um abismo maior.</p>
                 </div>
 
                 <!-- CARDE 9: FICHA PASSIVA DOS JOGADORES -->
@@ -1825,69 +1964,115 @@
 
                 <!-- CARDE 3: VENTO LIGEIRO -->
                 <div class="card" style="border-color: #a63a2b;">
-                    <h3 style="color: #cc4e3b; border-bottom: 1px solid #a63a2b;">🪓 Vento Ligeiro (Humano / Bárbaro)</h3>
-                    <p><strong>Motivação Principal:</strong> Honrar a memória da tribo Qué-Shu massacrada por Draconianos e proteger sua nova "tribo" (o grupo de aventureiros).</p>
+                    <h3 style="color: #cc4e3b; border-bottom: 1px solid #a63a2b;">🪓 Vento Ligeiro (Humano / Bárbaro)
+                    </h3>
+                    <p><strong>Motivação Principal:</strong> Honrar a memória da tribo Qué-Shu massacrada por
+                        Draconianos e proteger sua nova "tribo" (o grupo de aventureiros).</p>
                     <p><strong>Gatilhos Narrativos de Background:</strong>
-                        <br>• <strong>Alergia Mística à Poeira:</strong> Em salas empoeiradas, exige <strong>TR de Constituição CD 12</strong>. Falha = crises violentas de espirros por 1d4 rodadas, zerando a furtividade.
-                        <br>• <strong>Fúria dos Ancestrais:</strong> Ao entrar em Fúria, o grupo escuta o eco distante de tambores de guerra e do vento das planícies.
-                        <br>• <strong>Fúria Protetora/Antidracônica:</strong> Ativa Fúria automaticamente sem gasto de recurso na 1ª rodada ao ver traços dracônicos agressivos, dragões ou indefesos sob ataque.
+                        <br>• <strong>Alergia Mística à Poeira:</strong> Em salas empoeiradas, exige <strong>TR de
+                            Constituição CD 12</strong>. Falha = crises violentas de espirros por 1d4 rodadas, zerando a
+                        furtividade.
+                        <br>• <strong>Fúria dos Ancestrais:</strong> Ao entrar em Fúria, o grupo escuta o eco distante
+                        de tambores de guerra e do vento das planícies.
+                        <br>• <strong>Fúria Protetora/Antidracônica:</strong> Ativa Fúria automaticamente sem gasto de
+                        recurso na 1ª rodada ao ver traços dracônicos agressivos, dragões ou indefesos sob ataque.
                     </p>
                     <p><strong>Sugestões por Área da Masmorra:</strong>
-                        <br>• <strong>Áreas 6 e 9 (Passagem Antiga e Enigma):</strong> A poeira espessa nessas salas não mexidas há décadas exige testes contra espirros, e as esculturas dracônicas de Ashardalon fazem seu amuleto de osso vibrar.
-                        <br>• <strong>Área 12 (Tumba do Sacerdote Dragão):</strong> O troll que venerava dragões e veste anéis dracônicos aciona as memórias do massacre de seu povo, garantindo Vantagem no 1º ataque.
-                        <br>• <strong>Área 18 e 34 (Prisões Kobold e Goblin):</strong> Exige a libertação imediata dos prisioneiros acorrentados pelo seu código de honra.
-                        <br>• <strong>Área 30 (Ninho da Mamãe Rato):</strong> Encontrar os restos de Karakas (um guardião indefeso) reforça sua fúria contra as feras da masmorra.
-                        <br>• <strong>Área 37 (Covil de Calcryx):</strong> Encarar a dragonesa branca aciona sua fúria imediata se ela ameaçar Meepo ou seus companheiros.
+                        <br>• <strong>Áreas 6 e 9 (Passagem Antiga e Enigma):</strong> A poeira espessa nessas salas não
+                        mexidas há décadas exige testes contra espirros, e as esculturas dracônicas de Ashardalon fazem
+                        seu amuleto de osso vibrar.
+                        <br>• <strong>Área 12 (Tumba do Sacerdote Dragão):</strong> O troll que venerava dragões e veste
+                        anéis dracônicos aciona as memórias do massacre de seu povo, garantindo Vantagem no 1º ataque.
+                        <br>• <strong>Área 18 e 34 (Prisões Kobold e Goblin):</strong> Exige a libertação imediata dos
+                        prisioneiros acorrentados pelo seu código de honra.
+                        <br>• <strong>Área 30 (Ninho da Mamãe Rato):</strong> Encontrar os restos de Karakas (um
+                        guardião indefeso) reforça sua fúria contra as feras da masmorra.
+                        <br>• <strong>Área 37 (Covil de Calcryx):</strong> Encarar a dragonesa branca aciona sua fúria
+                        imediata se ela ameaçar Meepo ou seus companheiros.
                     </p>
                 </div>
 
                 <!-- CARDE 4: ORRIN FAÍSCAPONTA -->
                 <div class="card" style="border-color: #8c7355;">
-                    <h3 style="color: #8c7355; border-bottom: 1px solid #8c7355;">⚙️ Orrin Faíscaponta (Gnomo das Rochas / Artífice)</h3>
-                    <p><strong>Motivação Principal:</strong> Encontrar o mecanismo/núcleo capaz de dar autonomia total ao <strong>Projeto Sentinela</strong> (seu cão autômato em desenvolvimento) para proteger vidas.</p>
+                    <h3 style="color: #8c7355; border-bottom: 1px solid #8c7355;">⚙️ Orrin Faíscaponta (Gnomo das Rochas
+                        / Artífice)</h3>
+                    <p><strong>Motivação Principal:</strong> Encontrar o mecanismo/núcleo capaz de dar autonomia total
+                        ao <strong>Projeto Sentinela</strong> (seu cão autômato em desenvolvimento) para proteger vidas.
+                    </p>
                     <p><strong>Gatilhos Narrativos de Background:</strong>
-                        <br>• <strong>Coleta para o Sentinela:</strong> Investe 10 minutos vasculhando tecnologia anã ou engenhocas para coletar peças e engrenagens raras.
-                        <br>• <strong>Intuição em Estruturas:</strong> Ganha intuição extra para identificar lajes instáveis, alçapões e mecanismos de pressão por sua vivência em minas.
-                        <br>• <strong>Fascínio por Construtos:</strong> Entusiasmo imediato diante de portas mecânicas e fechaduras complexas.
+                        <br>• <strong>Coleta para o Sentinela:</strong> Investe 10 minutos vasculhando tecnologia anã ou
+                        engenhocas para coletar peças e engrenagens raras.
+                        <br>• <strong>Intuição em Estruturas:</strong> Ganha intuição extra para identificar lajes
+                        instáveis, alçapões e mecanismos de pressão por sua vivência em minas.
+                        <br>• <strong>Fascínio por Construtos:</strong> Entusiasmo imediato diante de portas mecânicas e
+                        fechaduras complexas.
                     </p>
                     <p><strong>Sugestões por Área da Masmorra:</strong>
-                        <br>• <strong>Áreas 3, 8 e 24 (Fossos e Placas):</strong> Notar o mecanismo dos alçapões sob as passarelas e emperrar as armadilhas por sua experiência em tragédias de minas.
-                        <br>• <strong>Área 14 (Estoque de Água Enfeitiçada):</strong> Reconhece a engenharia e tubulações do barril de ferro dos Mefits e tenta coletar peças metálicas para seu robô.
-                        <br>• <strong>Área 37 (Estojo de Khundrukar):</strong> Reconhece a importância do Clã dos Anões Ferreiros ao ler a menção a <em>Durgeddin o Soturno</em> e sabe que em Khundrukar pode estar o núcleo do Sentinela.
-                        <br>• <strong>Área 41 (Baú do Chefe Durnn):</strong> Analisa o mecanismo da agulha envenenada e busca o símbolo sagrado de Bahamut de Erky no interior.
-                        <br>• <strong>Áreas 50 e 51 (Santuário e Biblioteca):</strong> Encontra nos tomos arcanos e mecanismos da cidadela a base para fundir magia com metal no seu protótipo.
+                        <br>• <strong>Áreas 3, 8 e 24 (Fossos e Placas):</strong> Notar o mecanismo dos alçapões sob as
+                        passarelas e emperrar as armadilhas por sua experiência em tragédias de minas.
+                        <br>• <strong>Área 14 (Estoque de Água Enfeitiçada):</strong> Reconhece a engenharia e
+                        tubulações do barril de ferro dos Mefits e tenta coletar peças metálicas para seu robô.
+                        <br>• <strong>Área 37 (Estojo de Khundrukar):</strong> Reconhece a importância do Clã dos Anões
+                        Ferreiros ao ler a menção a <em>Durgeddin o Soturno</em> e sabe que em Khundrukar pode estar o
+                        núcleo do Sentinela.
+                        <br>• <strong>Área 41 (Baú do Chefe Durnn):</strong> Analisa o mecanismo da agulha envenenada e
+                        busca o símbolo sagrado de Bahamut de Erky no interior.
+                        <br>• <strong>Áreas 50 e 51 (Santuário e Biblioteca):</strong> Encontra nos tomos arcanos e
+                        mecanismos da cidadela a base para fundir magia com metal no seu protótipo.
                     </p>
                 </div>
 
                 <!-- CARDE 6: CLIMA, ILUMINAÇÃO E SENSAÇÃO DE PROFUNDIDADE -->
                 <div class="card" style="border-color: #4a5d4e;">
-                    <h3 style="color: #5c7361; border-bottom: 1px solid #4a5d4e;">🌌 Clima, Iluminação e Sensação de Profundidade</h3>
-                    <p><strong>Transição de Luz (Superfície vs. Subterrâneo):</strong> A masmorra não possui luz natural além da Área 2. Enfatize a escuridão total ao descerem pelas escadas sinuosas. No nível inferior (Bosque do Crepúsculo), a transição da escuridão para a luz violeta e fúnebre dos fungos bioluminescentes (Áreas 42 e 55) dá uma sensação de ambiente alienígena e corrompido.</p>
-                    <p><strong>Eco e Ventilação:</strong> As fendas na rocha mantêm o ar renovado na masmorra, mas propagam barulhos. Se os PJs fizerem barulho na Área 7 (Galeria das Notas Perdidas) ou na Área 39 (Névoa do Dragão), use a regra de reforços do livro: patrulhas vizinhas começam a se movimentar ou preparar emboscadas.</p>
-                    <p><strong>O Cheiro de Mudança no Bosque:</strong> No Nível do Bosque (Áreas 42 a 56), o ar muda de poeira seca de pedra para umidade pesada com cheiro de argila, mofo, vinho de fungo e decomposição vegetal.</p>
+                    <h3 style="color: #5c7361; border-bottom: 1px solid #4a5d4e;">🌌 Clima, Iluminação e Sensação de
+                        Profundidade</h3>
+                    <p><strong>Transição de Luz (Superfície vs. Subterrâneo):</strong> A masmorra não possui luz natural
+                        além da Área 2. Enfatize a escuridão total ao descerem pelas escadas sinuosas. No nível inferior
+                        (Bosque do Crepúsculo), a transição da escuridão para a luz violeta e fúnebre dos fungos
+                        bioluminescentes (Áreas 42 e 55) dá uma sensação de ambiente alienígena e corrompido.</p>
+                    <p><strong>Eco e Ventilação:</strong> As fendas na rocha mantêm o ar renovado na masmorra, mas
+                        propagam barulhos. Se os PJs fizerem barulho na Área 7 (Galeria das Notas Perdidas) ou na Área
+                        39 (Névoa do Dragão), use a regra de reforços do livro: patrulhas vizinhas começam a se
+                        movimentar ou preparar emboscadas.</p>
+                    <p><strong>O Cheiro de Mudança no Bosque:</strong> No Nível do Bosque (Áreas 42 a 56), o ar muda de
+                        poeira seca de pedra para umidade pesada com cheiro de argila, mofo, vinho de fungo e
+                        decomposição vegetal.</p>
                 </div>
 
                 <!-- CARDE 8: MISTÉRIOS DA TRADIÇÃO ANCESTRAL (CULTO AO DRAGÃO) -->
                 <div class="card" style="border-color: #8c7355;">
-                    <h3 style="color: #d4af37; border-bottom: 1px solid #8c7355;">📜 Mistérios da Tradição Ancestral (Culto ao Dragão)</h3>
-                    <p><strong>O Retrato de Ashardalon:</strong> Espalhe o nome do dragão vermelho Ashardalon em entalhes, estátuas e inscrições (Áreas 4, 9, 21 e 50). Se os PJs investigarem as ruínas com testes de História ou Arcanismo, revele trechos do antigo culto de adoradores que ergueu o lugar antes de ser soterrado pelo cataclisma.</p>
-                    <p><strong>Enigmas e Mecanismos Mágicos:</strong> Câmaras como a Área 26 (Fonte de Bafo de Fogo) e Área 50 (Bênção Espectral) recompensam o uso do idioma Dracônico e a leitura atenta das inscrições nas paredes. Utilize esses locais para dar pausas narrativas e recompensar os jogadores curiosos entre os confrontos de facções.</p>
+                    <h3 style="color: #d4af37; border-bottom: 1px solid #8c7355;">📜 Mistérios da Tradição Ancestral
+                        (Culto ao Dragão)</h3>
+                    <p><strong>O Retrato de Ashardalon:</strong> Espalhe o nome do dragão vermelho Ashardalon em
+                        entalhes, estátuas e inscrições (Áreas 4, 9, 21 e 50). Se os PJs investigarem as ruínas com
+                        testes de História ou Arcanismo, revele trechos do antigo culto de adoradores que ergueu o lugar
+                        antes de ser soterrado pelo cataclisma.</p>
+                    <p><strong>Enigmas e Mecanismos Mágicos:</strong> Câmaras como a Área 26 (Fonte de Bafo de Fogo) e
+                        Área 50 (Bênção Espectral) recompensam o uso do idioma Dracônico e a leitura atenta das
+                        inscrições nas paredes. Utilize esses locais para dar pausas narrativas e recompensar os
+                        jogadores curiosos entre os confrontos de facções.</p>
                 </div>
 
                 <!-- CARDE 10: GERADOR DE REAÇÃO DE PDMS -->
                 <div class="card" style="flex-grow: 1;">
                     <h3>🎭 Gerador de Reação & Interação de PdMs</h3>
-                    
-                    <p><strong>Contexto na Área 40 (Vilarejo Goblin):</strong> Há 34 goblins no local (4 combatentes, 10 plebeus e 20 não-combatentes). Os plebeus e não-combatentes vivem sob o domínio opressor de Durnn e Grenl; eles são medrosos e abertos a barganhas se os PJs demonstrarem força ou oferecerem vantagem.</p>
 
-                    <h4 style="color: #8c7355; margin: 8px 0 4px 0; font-size: 13px;">1. Modificadores de Atitude Inicial</h4>
+                    <p><strong>Contexto na Área 40 (Vilarejo Goblin):</strong> Há 34 goblins no local (4 combatentes, 10
+                        plebeus e 20 não-combatentes). Os plebeus e não-combatentes vivem sob o domínio opressor de
+                        Durnn e Grenl; eles são medrosos e abertos a barganhas se os PJs demonstrarem força ou
+                        oferecerem vantagem.</p>
+
+                    <h4 style="color: #8c7355; margin: 8px 0 4px 0; font-size: 13px;">1. Modificadores de Atitude
+                        Inicial</h4>
                     <p style="font-size: 12px; margin-bottom: 6px;">
                         • <strong>Hostil (Padrão ao ver intrusos):</strong> Ataca, busca alarme ou exige que saiam.
-                        <br>• <strong>Indiferente (Com suborno/comida/se Durnn cair):</strong> Não ataca, escuta o grupo.
+                        <br>• <strong>Indiferente (Com suborno/comida/se Durnn cair):</strong> Não ataca, escuta o
+                        grupo.
                         <br>• <strong>Amigável (Se libertarem prisioneiros/derrotarem Durnn):</strong> Ajuda ativamente.
                     </p>
 
-                    <h4 style="color: #8c7355; margin: 8px 0 4px 0; font-size: 13px;">2. Teste de Socialização (Persuasão / Enganação / Intimidação)</h4>
+                    <h4 style="color: #8c7355; margin: 8px 0 4px 0; font-size: 13px;">2. Teste de Socialização
+                        (Persuasão / Enganação / Intimidação)</h4>
                     <table style="font-size: 11px; margin-top: 4px;">
                         <tr>
                             <th>Atitude</th>
@@ -1915,14 +2100,16 @@
                         </tr>
                     </table>
 
-                    <h4 style="color: #8c7355; margin: 8px 0 4px 0; font-size: 13px;">3. Tabela de Improviso Rápido de Personalidade (1d6)</h4>
+                    <h4 style="color: #8c7355; margin: 8px 0 4px 0; font-size: 13px;">3. Tabela de Improviso Rápido de
+                        Personalidade (1d6)</h4>
                     <p style="font-size: 11px; margin-bottom: 0;">
                         <strong>1. Distraído:</strong> Cuspindo no chão ou focado em arrumar um trapo velho.
                         <br><strong>2. Arrogante:</strong> Fala alto e tenta se fazer de durão para não parecer acuado.
                         <br><strong>3. Grosseiro:</strong> Coça as costas com uma faca e faz barulhos nojentos ao falar.
                         <br><strong>4. Mastigador:</strong> Rói um osso de rato ou fungo seco enquanto escuta os PJs.
                         <br><strong>5. Desajeitado:</strong> Derruba algo de metal ao ser abordado e se assusta fácil.
-                        <br><strong>6. Curioso:</strong> Fica fascinado pelas roupas, armas ou brilho das moedas dos PJs.
+                        <br><strong>6. Curioso:</strong> Fica fascinado pelas roupas, armas ou brilho das moedas dos
+                        PJs.
                     </p>
                 </div>
 
@@ -1943,7 +2130,8 @@
                     <p><strong>Use Meepo para ditar a política local:</strong> Meepo (Área 15) é a melhor ferramenta
                         para evitar que a masmorra vire um massacre contínuo. Ele conduz o grupo com a senha
                         <em>"Coceguinhas!"</em> para o Trono dos Kobolds. Se ele morrer, a relação do grupo com os
-                        Kobolds colapsa e todos na tribo viram hostis.</p>
+                        Kobolds colapsa e todos na tribo viram hostis.
+                    </p>
 
                     <p><strong>A Rivalidade Geográfica (Goblins vs Kobolds):</strong> Enfatize a guerra de facções. A
                         Área 25a e 25b são terrenos de terra arrasada repleto de marcas de sangue e armadilhas. Permita
@@ -1958,7 +2146,8 @@
                         <em>Fuga Ágil</em> (Ação Bônus para Desengajar ou Esconder-se). Na Área 32 e 33, eles atiram e
                         se agacham atrás da mureta para ganhar <strong>Três Quartos de Cobertura (+5 na CA)</strong>.
                         Lembre os jogadores que eles podem preparar ações no gatilho para atacá-los quando eles
-                        levantarem para atirar.</p>
+                        levantarem para atirar.
+                    </p>
 
                     <p><strong>O Terror das Sarças no Bosque do Crepúsculo:</strong> Na Área 55, as sarças causam dano e
                         reduzem o movimento. Descreva a escuridão e o frio aterrador do nível inferior para acentuar o
@@ -1978,7 +2167,8 @@
                     <p><strong>Portas Especiais (Com texto no livro):</strong> O módulo gastará linhas de texto apenas
                         para quebrar a normalidade. Se uma porta exigir esforço, o texto avisará de forma direta (ex:
                         <em>"porta emperrada, requer um teste de Força CD 13 para arrombar"</em> ou <em>"porta trancada,
-                            requer ferramentas de ladrão CD 15"</em>).</p>
+                            requer ferramentas de ladrão CD 15"</em>).
+                    </p>
 
                     <p><strong>A Lógica das Facções Vivas:</strong> Use o bom senso com base nos moradores. Portas que
                         dividem os territórios das tribos rivais (como as defesas na Área 32) ou que guardam tesouros de
@@ -1989,7 +2179,8 @@
                         para descansar ou bloquear perseguidores, permita soluções criativas. Se o ladino possuir
                         ferramentas, pode trancá-la com teste de Destreza (CD 15). Se não houver chaves, podem usar
                         <strong>cunhas de ferro</strong> (item padrão) ou empilhar móveis criando uma barricada,
-                        forçando os monstros a realizarem testes de Força caso tentem invadir.</p>
+                        forçando os monstros a realizarem testes de Força caso tentem invadir.
+                    </p>
                 </div>
 
                 <!-- CARDE 3: DICAS DE NARRAÇÃO E RITMO (NOVAS) -->
@@ -3367,7 +3558,8 @@
                             anos</strong>, seguindo histórias de frutas estranhamente encantadas até sua fonte. No
                         centro da velha fortaleza, Belak se deparou com o <strong>Bosque do Crepúsculo</strong>, onde a
                         Árvore Gulthias brotara de uma <strong>estaca de madeira usada para matar um vampiro
-                            ancestral</strong>.</p>
+                            ancestral</strong>.
+                    </p>
 
                     <p>Uma perfeita <strong>maçã vermelho-rubi amadurece no solstício de verão</strong> (confere vigor,
                         saúde e cura 70 PV), e a árvore produz uma única <strong>maçã albina no solstício de
@@ -3381,11 +3573,13 @@
                         atrás e desapareceu. Dois membros eram os irmãos <strong>Talgen Hucrele (guerreiro)</strong> e
                         <strong>Sharwyn Hucrele (maga)</strong>. A matriarca <strong>Kerowyn Hucrele</strong> oferece
                         uma recompensa de <strong>125 PO por anel de sinete de ouro</strong> retornado (ou o dobro se
-                        resgatá-los vivos).</p>
+                        resgatá-los vivos).
+                    </p>
                     <p><strong>Resolvendo um Mistério:</strong> A tribo goblin vende uma única fruta mágica de cura por
                         <strong>50 PO</strong> a cada solstício de verão em Carvalhal. As mudas plantadas das sementes
                         são sempre roubadas quando atingem 60 cm. Os aventureiros buscam descobrir quem rouba as mudas e
-                        encontrar a árvore de cura.</p>
+                        encontrar a árvore de cura.
+                    </p>
 
                     <h4 style="color: #8c7355; margin-top: 15px;">VILA DE CARVALHAL (OAKHURST) & RUMORES</h4>
                     <p>Vila de <strong>900 moradores</strong>. Locais e figuras de interesse:</p>
@@ -4030,9 +4224,12 @@
 
                 <!-- CARDE 1: VISÃO GERAL DE TEMPO REAL -->
                 <div class="card" style="border-color: #8c7355;">
-                    <h3 style="color: #d4af37; border-bottom: 1px solid #8c7355;">🎲 Tempo Real de Mesa (Média: 16h a 22h / 4 a 6 Sessões)</h3>
-                    <p>Para um grupo de 4 jogadores explorando 100% do mapa (56 áreas), travando combates, investigando armadilhas e interagindo com as facções, a campanha dura entre <strong>16 e 22 horas de jogo real</strong> (4 a 6 sessões de 4 horas).</p>
-                    
+                    <h3 style="color: #d4af37; border-bottom: 1px solid #8c7355;">🎲 Tempo Real de Mesa (Média: 16h a
+                        22h / 4 a 6 Sessões)</h3>
+                    <p>Para um grupo de 4 jogadores explorando 100% do mapa (56 áreas), travando combates, investigando
+                        armadilhas e interagindo com as facções, a campanha dura entre <strong>16 e 22 horas de jogo
+                            real</strong> (4 a 6 sessões de 4 horas).</p>
+
                     <h4 style="color: #8c7355; margin: 12px 0 6px 0; font-size: 13px;">Resumo Executivo por Sessões</h4>
                     <table>
                         <tr>
@@ -4078,32 +4275,48 @@
                 <div class="card" style="border-color: #a63a2b; flex-grow: 1;">
                     <h3 style="color: #cc4e3b; border-bottom: 1px solid #a63a2b;">⏱️ O Que Consome Tempo na Mesa?</h3>
 
-                    <h4 style="color: #d4af37; margin: 8px 0 4px 0; font-size: 13px;">Etapa 1: Carvalhal & Ravina (1,5h – 2h em Mesa)</h4>
+                    <h4 style="color: #d4af37; margin: 8px 0 4px 0; font-size: 13px;">Etapa 1: Carvalhal & Ravina (1,5h
+                        – 2h em Mesa)</h4>
                     <p style="font-size: 12px;">
-                        • <strong>RPG & Contratação:</strong> Conversas na taverna, coleta de boatos e negociação com Kerowyn Hucrele.
-                        <br>• <strong>Combate Noturno:</strong> Resolução tática da emboscada dos 4 inços-praga ramo na estrada.
-                        <br>• <strong>Chegada & Descida:</strong> Descrição e tomada de decisão para descer pela ravina (Áreas 1 e 2).
+                        • <strong>RPG & Contratação:</strong> Conversas na taverna, coleta de boatos e negociação com
+                        Kerowyn Hucrele.
+                        <br>• <strong>Combate Noturno:</strong> Resolução tática da emboscada dos 4 inços-praga ramo na
+                        estrada.
+                        <br>• <strong>Chegada & Descida:</strong> Descrição e tomada de decisão para descer pela ravina
+                        (Áreas 1 e 2).
                     </p>
 
-                    <h4 style="color: #d4af37; margin: 12px 0 4px 0; font-size: 13px;">Etapa 2: Toca dos Kobolds (4h – 6h em Mesa)</h4>
+                    <h4 style="color: #d4af37; margin: 12px 0 4px 0; font-size: 13px;">Etapa 2: Toca dos Kobolds (4h –
+                        6h em Mesa)</h4>
                     <p style="font-size: 12px;">
-                        • <strong>Armadilhas & Enigmas:</strong> Resolução do alçapão (Área 3), globo musical (Área 7), enigma da estátua (Área 9) e combate com o quasit invisível (Área 10).
-                        <br>• <strong>Combate Complexo:</strong> Abertura do sarcófago do Sacerdote Dragão (Troll enclausurado na Área 12).
-                        <br>• <strong>Diplomacia:</strong> Roleplay com Meepo (Área 15) e negociações de trégua com a Rainha Yusdrayl (Área 21).
+                        • <strong>Armadilhas & Enigmas:</strong> Resolução do alçapão (Área 3), globo musical (Área 7),
+                        enigma da estátua (Área 9) e combate com o quasit invisível (Área 10).
+                        <br>• <strong>Combate Complexo:</strong> Abertura do sarcófago do Sacerdote Dragão (Troll
+                        enclausurado na Área 12).
+                        <br>• <strong>Diplomacia:</strong> Roleplay com Meepo (Área 15) e negociações de trégua com a
+                        Rainha Yusdrayl (Área 21).
                     </p>
 
-                    <h4 style="color: #d4af37; margin: 12px 0 4px 0; font-size: 13px;">Etapa 3: Covil dos Goblins (5h – 7h em Mesa)</h4>
+                    <h4 style="color: #d4af37; margin: 12px 0 4px 0; font-size: 13px;">Etapa 3: Covil dos Goblins (5h –
+                        7h em Mesa)</h4>
                     <p style="font-size: 12px;">
-                        • <strong>Combates Táticos:</strong> Ultrapassar a linha de defesa com estrepes e atiradores (Áreas 31 a 33).
-                        <br>• <strong>Luta Contra Dragão:</strong> Confronto tenso e perigoso contra a dragonesa Calcryx (Área 37).
-                        <br>• <strong>Invasão Massiva:</strong> Batalha contra o Vilarejo Goblin (34 goblins na Área 40) e o Salão do Chefe Durnn, Grenl e hobgoblins (Área 41).
+                        • <strong>Combates Táticos:</strong> Ultrapassar a linha de defesa com estrepes e atiradores
+                        (Áreas 31 a 33).
+                        <br>• <strong>Luta Contra Dragão:</strong> Confronto tenso e perigoso contra a dragonesa Calcryx
+                        (Área 37).
+                        <br>• <strong>Invasão Massiva:</strong> Batalha contra o Vilarejo Goblin (34 goblins na Área 40)
+                        e o Salão do Chefe Durnn, Grenl e hobgoblins (Área 41).
                     </p>
 
-                    <h4 style="color: #d4af37; margin: 12px 0 4px 0; font-size: 13px;">Etapa 4: Bosque do Crepúsculo (5h – 7h em Mesa)</h4>
+                    <h4 style="color: #d4af37; margin: 12px 0 4px 0; font-size: 13px;">Etapa 4: Bosque do Crepúsculo (5h
+                        – 7h em Mesa)</h4>
                     <p style="font-size: 12px; margin-bottom: 0;">
-                        • <strong>Cavernas & Riscos:</strong> Luta contra Balsag (Área 43), cobras de fogo (Área 49) e laboratório de alquimia (Área 47).
-                        <br>• <strong>Navegação em Sarças:</strong> Avançar pelas sarças espinhosas que geram ondas de inços-pragas (Área 55).
-                        <br>• <strong>Confronto Final:</strong> Diálogo, táticas e batalha decisiva contra Belak, o sapo Kulket, os servos corrompidos e a Árvore Gulthias (Área 56).
+                        • <strong>Cavernas & Riscos:</strong> Luta contra Balsag (Área 43), cobras de fogo (Área 49) e
+                        laboratório de alquimia (Área 47).
+                        <br>• <strong>Navegação em Sarças:</strong> Avançar pelas sarças espinhosas que geram ondas de
+                        inços-pragas (Área 55).
+                        <br>• <strong>Confronto Final:</strong> Diálogo, táticas e batalha decisiva contra Belak, o sapo
+                        Kulket, os servos corrompidos e a Árvore Gulthias (Área 56).
                     </p>
                 </div>
 
@@ -4114,10 +4327,14 @@
 
                 <!-- CARDE 3: VISÃO GERAL DE TEMPO DENTRO DO JOGO -->
                 <div class="card" style="border-color: #4a5d4e;">
-                    <h3 style="color: #5c7361; border-bottom: 1px solid #4a5d4e;">🗡️ Tempo Dentro do Jogo (Média: 2 a 4 Dias Corridos)</h3>
-                    <p>Na cronologia da história, os aventureiros passam entre <strong>48 e 96 horas em missão</strong> (do momento em que saem de Carvalhal até a destruição da Árvore Gulthias e o retorno à vila).</p>
+                    <h3 style="color: #5c7361; border-bottom: 1px solid #4a5d4e;">🗡️ Tempo Dentro do Jogo (Média: 2 a 4
+                        Dias Corridos)</h3>
+                    <p>Na cronologia da história, os aventureiros passam entre <strong>48 e 96 horas em missão</strong>
+                        (do momento em que saem de Carvalhal até a destruição da Árvore Gulthias e o retorno à vila).
+                    </p>
 
-                    <h4 style="color: #5c7361; margin: 12px 0 6px 0; font-size: 13px;">Cronologia Narrativa por Etapas</h4>
+                    <h4 style="color: #5c7361; margin: 12px 0 6px 0; font-size: 13px;">Cronologia Narrativa por Etapas
+                    </h4>
                     <table>
                         <tr>
                             <th>Etapa</th>
@@ -4154,35 +4371,159 @@
 
                 <!-- CARDE 4: DETALHAMENTO DO TEMPO FICTÍCIO POR ETAPAS -->
                 <div class="card" style="border-color: #8c7355; flex-grow: 1;">
-                    <h3 style="color: #d4af37; border-bottom: 1px solid #8c7355;">📜 Detalhamento do Tempo Narrativo (Fictício)</h3>
+                    <h3 style="color: #d4af37; border-bottom: 1px solid #8c7355;">📜 Detalhamento do Tempo Narrativo
+                        (Fictício)</h3>
 
-                    <h4 style="color: #5c7361; margin: 8px 0 4px 0; font-size: 13px;">Etapa 1: Preparação & Viagem (~24 Horas no Mundo)</h4>
+                    <h4 style="color: #5c7361; margin: 8px 0 4px 0; font-size: 13px;">Etapa 1: Preparação & Viagem (~24
+                        Horas no Mundo)</h4>
                     <p style="font-size: 12px;">
-                        • <strong>Carvalhal & Marcha:</strong> ~2h a 4h negociando e comprando suprimentos + ~2h a 3h de caminhada a pé pelos 11 km da Estrada Velha.
-                        <br>• <strong>Pernoite:</strong> ~8h de Descanso Longo acampados nos ermos após o ataque dos inços-pragas.
+                        • <strong>Carvalhal & Marcha:</strong> ~2h a 4h negociando e comprando suprimentos + ~2h a 3h de
+                        caminhada a pé pelos 11 km da Estrada Velha.
+                        <br>• <strong>Pernoite:</strong> ~8h de Descanso Longo acampados nos ermos após o ataque dos
+                        inços-pragas.
                         <br>• <strong>Entrada:</strong> ~30 min examinando os pilares e descendo os 15m da ravina.
                     </p>
 
-                    <h4 style="color: #5c7361; margin: 12px 0 4px 0; font-size: 13px;">Etapa 2: Território Kobold (~12h a 18h no Mundo)</h4>
+                    <h4 style="color: #5c7361; margin: 12px 0 4px 0; font-size: 13px;">Etapa 2: Território Kobold (~12h
+                        a 18h no Mundo)</h4>
                     <p style="font-size: 12px;">
-                        • <strong>Caminhada & Caça:</strong> ~2h a 3h inspecionando pisos, desarmando armadilhas e decifrando inscrições (Áreas 3, 7, 8 e 9).
-                        <br>• <strong>Batalhas & Buscas:</strong> ~30 min (combates duram segundos na história, mas revistar corpos e baús consome tempo).
-                        <br>• <strong>Diplomacia & Paradas:</strong> ~1h a 2h de negociação com Yusdrayl + ~1h de Descanso Curto para curar ferimentos graves.
+                        • <strong>Caminhada & Caça:</strong> ~2h a 3h inspecionando pisos, desarmando armadilhas e
+                        decifrando inscrições (Áreas 3, 7, 8 e 9).
+                        <br>• <strong>Batalhas & Buscas:</strong> ~30 min (combates duram segundos na história, mas
+                        revistar corpos e baús consome tempo).
+                        <br>• <strong>Diplomacia & Paradas:</strong> ~1h a 2h de negociação com Yusdrayl + ~1h de
+                        Descanso Curto para curar ferimentos graves.
                     </p>
 
-                    <h4 style="color: #5c7361; margin: 12px 0 4px 0; font-size: 13px;">Etapa 3: Território Goblin (~14h a 24h no Mundo)</h4>
+                    <h4 style="color: #5c7361; margin: 12px 0 4px 0; font-size: 13px;">Etapa 3: Território Goblin (~14h
+                        a 24h no Mundo)</h4>
                     <p style="font-size: 12px;">
-                        • <strong>Invasão & Caos:</strong> ~2h a 3h avançando entre barricadas e estrepes + ~1h vasculhando o ninho de Guthash e o covil de Calcryx.
-                        <br>• <strong>Confronto com Durnn:</strong> ~30 min de combate acelerado no vilarejo e salão do chefe.
-                        <br>• <strong>Descanso de Emergência:</strong> Opcional de 8h de Descanso Longo num posto limpo para recuperar recursos antes de descer pelo poço.
+                        • <strong>Invasão & Caos:</strong> ~2h a 3h avançando entre barricadas e estrepes + ~1h
+                        vasculhando o ninho de Guthash e o covil de Calcryx.
+                        <br>• <strong>Confronto com Durnn:</strong> ~30 min de combate acelerado no vilarejo e salão do
+                        chefe.
+                        <br>• <strong>Descanso de Emergência:</strong> Opcional de 8h de Descanso Longo num posto limpo
+                        para recuperar recursos antes de descer pelo poço.
                     </p>
 
-                    <h4 style="color: #5c7361; margin: 12px 0 4px 0; font-size: 13px;">Etapa 4: Nível do Bosque & Clímax (~6h a 10h no Mundo)</h4>
+                    <h4 style="color: #5c7361; margin: 12px 0 4px 0; font-size: 13px;">Etapa 4: Nível do Bosque & Clímax
+                        (~6h a 10h no Mundo)</h4>
                     <p style="font-size: 12px; margin-bottom: 0;">
-                        • <strong>Descida & Laboratório:</strong> ~15 min descendo o duto de vinhas + ~2h a 3h vasculhando laboratórios, arboretos e diários de Belak.
-                        <br>• <strong>Caverna & Batalha:</strong> ~1h a 2h cortando sarças espinhosas + ~30 min de diálogo, combate final e destruição da Árvore Gulthias.
-                        <br>• <strong>Retorno:</strong> ~3h a 4h transportando feridos/tesouros e marchando de volta para Carvalhal.
+                        • <strong>Descida & Laboratório:</strong> ~15 min descendo o duto de vinhas + ~2h a 3h
+                        vasculhando laboratórios, arboretos e diários de Belak.
+                        <br>• <strong>Caverna & Batalha:</strong> ~1h a 2h cortando sarças espinhosas + ~30 min de
+                        diálogo, combate final e destruição da Árvore Gulthias.
+                        <br>• <strong>Retorno:</strong> ~3h a 4h transportando feridos/tesouros e marchando de volta
+                        para Carvalhal.
                     </p>
+                </div>
+
+            </div>
+
+        </div>
+        <!-- ABA: RESUMO CRONOLÓGICO DA CAMPANHA -->
+        <div id="resumo-aventura" class="panel">
+
+            <!-- COLUNA 1: LORE, CRONOLOGIA E MACIEIRA -->
+            <div style="display: flex; flex-direction: column; gap: 16px; width: 100%;">
+                
+                <div class="card" style="border-color: #a63a2b;">
+                    <h3 style="color: #cc4e3b; border-bottom: 1px solid #a63a2b;">🏰 Parte 1: Cronologia Histórica e Lore da Masmorra</h3>
+                    <p><strong>1.1. A Era Ancestral e a Queda:</strong> Erguida na superfície por um culto fanático ao dragão vermelho <strong>Ashardalon</strong>. O dragão incinerou a região criando a <em>Planície Cinzenta</em>. Um cataclisma afundou a fortaleza na fenda, sobrevivendo intacta pela magia.</p>
+                    <p><strong>1.2. O Vampiro Gulthias & A Árvore:</strong> Anos após o soterramento, o vampiro <strong>Gulthias do Sangue Noturno</strong> fez da masmorra seu refúgio. Um herói o empalou no chão com uma estaca de madeira verde. A estaca absorveu o sangue e a energia do vampiro, criando raízes e virando a <strong>Árvore Gulthias</strong>. A árvore da Cidadela é a matriz primordial de D&D (outras, como em Barovia, são mudas filhas).</p>
+                    <p><strong>1.3. A Biologia das Maçãs e Inços-Praga:</strong></p>
+                    <ul style="padding-left: 18px; margin: 4px 0;">
+                        <li><strong>Maçã de Verão (Rubi):</strong> Cura 70 PV, remove cegueira, surdez e doenças.</li>
+                        <li><strong>Maçã de Inverno (Albina):</strong> Causa 70 de dano necrótico e é venenosa ao toque.</li>
+                        <li><strong>Os Inços-Praga (60 cm):</strong> As sementes plantadas pelos humanos germinam. Ao atingirem 60 cm, ganham vida, desarrancam-se do solo e saem andando sozinhos como monstros. <strong>Eles NÃO viram árvores</strong>; reproduzem-se por brotos de raiz.</li>
+                    </ul>
+                    <p><strong>1.4. O Plano de Belak (Há 12 Anos):**</strong> O druida expulso Belak uniu-se aos goblins para vender as maçãs em Carvalhal. Os moradores achavam que os goblins roubavam as mudas de 60 cm, mas na verdade era Belak usando as plantas vivas para colonizar a superfície.</p>
+                </div>
+
+                <div class="card" style="border-color: #8c7355;">
+                    <h3 style="color: #d4af37; border-bottom: 1px solid #8c7355;">🔍 O Destino dos Aventureiros Perdidos (Há 1 Mês)</h3>
+                    <p>• <strong>Karakas (Guardião):</strong> Morto e devorado no ninho da rata Guthash (Área 30). Seu corpo carrega seu anel gravado.</p>
+                    <p>• <strong>Talgen Hucrele (Guerreiro):</strong> Morto no cativeiro pelo chefe hobgoblin Durnn num acesso de raiva. Durnn veste sua cota de talas e anel (Área 41).</p>
+                    <p>• <strong>Sharwyn Hucrele & Ser Braford:</strong> Entregues vivos a Belak. Absorvidos pela Árvore Gulthias por 24h e expelidos como <strong>Servos da Árvore (Suplicantes)</strong> com pele de casca e mentes destruídas (Área 56).</p>
+                    <p>• <strong>Erky Lenhas (Acólito Gnomo):</strong> Capturado na estrada e preso na gaiola da Área 34. Está vivo e pronto para se juntar ao grupo.</p>
+                </div>
+
+                <div class="card">
+                    <h3>🏡 Parte 2: Vila de Carvalhal & Boatos de Taverna</h3>
+                    <p>Comunidade de 900 moradores próxima à <em>Estrada Velha</em> e à fenda <em>A Cicatriz</em>.</p>
+                    <p>• <strong>Burgomestre Vurnor Leng:</strong> Autoridade estressada no Salão Comunal.</p>
+                    <p>• <strong>Kerowyn Hucrele (Armazém):</strong> Contratante principal. Paga <strong>125 PO por anel de sinete de ouro</strong> dos filhos ou o dobro se os resgatarem vivos.</p>
+                    <p>• <strong>Capitã Felosial (Cadeia):</strong> Comanda a milícia. Pode ceder mapas e suprimentos em troca de ajuda na fenda.</p>
+                    <p>• <strong>Garon (Estalagem Javali Véio):</strong> Confirma que o druida sinistro Belak passou por ali há 13 anos com um sapo gigante.</p>
+                </div>
+
+            </div>
+
+            <!-- COLUNA 2: MOTIVAÇÕES DOS HERÓIS & ROTEIRO DA SESSÃO INICIAL -->
+            <div style="display: flex; flex-direction: column; gap: 16px; width: 100%;">
+
+                <div class="card" style="border-color: #4a5d4e;">
+                    <h3 style="color: #5c7361; border-bottom: 1px solid #4a5d4e;">🎭 Parte 3: Conexões e Gatilhos dos 4 Heróis</h3>
+                    <p><strong>1. Alvo Quiriquiri (Genasi do Ar / Druida):</strong> Guiado pela profecia da semente rosa. A masmorra abafada aumenta a CD de Percepção baseada no ar em +2. Vantagem em Natureza ao notar a terra corrompida com sangue de vampiro nas Áreas 42 e 47.</p>
+                    <p><strong>2. Vento Ligeiro (Bárbaro):</strong> Sobrevivente da tribo Qué-Shu. Em salas com poeira (Áreas 1, 4, 6, 7, 9, 10, 26), faz **TR de CON CD 12**. Falha fora de combate = espirro que zera a furtividade; falha em combate = desvantagem no 1º ataque. Entra em Fúria automática ao ver dragões ou indefesos sob ataque. Teste de História sobre Ashardalon é com VANTAGEM.</p>
+                    <p><strong>3. Bao de Xangô (Meio-Orc / Monge):</strong> Cozinha com pimenta no descanso curto (TR CON CD 10 nos aliados confere +1d4 PV bônus). Tenta dialogar com monstros usando *"Calma meu rei, primeiro a gente respira"*, alterando atitudes hostis para neutras por 1 rodada. Ganha Inspiração ao gritar golpes improvisados.</p>
+                    <p><strong>4. Orrin Faíscaponta (Gnomo / Artífice):</strong> Vantagem em intuição contra armadilhas e fossos por sua experiência em minas. Coleta peças para o <em>Projeto Sentinela</em> nas tubulações da Área 14, baú da Área 41 e estojo anão de Khundrukar da Área 37.</p>
+                </div>
+
+                <div class="card">
+                    <h3>🎬 Parte 4: Roteiro Passo a Passo da Sessão Inicial</h3>
+                    <p><strong>Cena 1 (A Lareira do Javali Véio):</strong> Ative os traços dos PJs na mesa: a poeira faz Vento espirrar, Bao tempera o ensopado de todos, Alvo conversa com o pássaro na janela e Orrin liga o robozinho de bronze na mesa. O anão Rurik Lutgehr intervém e lança o gancho da masmorra.</p>
+                    <p><strong>Cena 2 (O Armazém Geral):</strong> Contratação com Kerowyn Hucrele. Desconto em cordas, rações e tochas.</p>
+                    <p><strong>Cena 3 (A Estrada Velha):</strong> Marcha de 11 km e combate noturno em emboscada contra **4 Inços-Praga Ramo**.</p>
+                </div>
+
+                <div class="card" style="border-color: #8c7355;">
+                    <h3 style="color: #d4af37; border-bottom: 1px solid #8c7355;">🗣️ Os 3 Momentos de Revelação da Árvore</h3>
+                    <p>1. <strong>Na Área 34 (Prisão Goblin):</strong> O gnomo Erky Lenhas menciona pela primeira vez o nome <em>"Árvore Gulthias"</em> e o druida Belak.</p>
+                    <p>2. <strong>Na Área 56 (Confronto Final):</strong> Belak revela que a árvore veio de um vampiro e debocha dizendo que as sementes viram os Inços-Praga na superfície.</p>
+                    <p>3. <strong>Na Conclusão (Carvalhal):</strong> O Burgomestre e os moradores queimam todas as mudas dos jardins ao entenderem a verdade.</p>
+                </div>
+
+            </div>
+
+            <!-- COLUNA 3: GUIA RÁPIDO SALA A SALA -->
+            <div style="display: flex; flex-direction: column; gap: 16px; width: 100%;">
+                
+                <div class="card">
+                    <h3>🏰 Parte 5: Guia Rápido de Salas (Fortaleza)</h3>
+                    <p>• <strong>Área 1:</strong> 3 Ratos Gigantes nos escombros.</p>
+                    <p>• <strong>Área 3:</strong> Fosso oculto (1 Rato vivo e corpo de goblin).</p>
+                    <p>• <strong>Área 4:</strong> Lança no corpo revela o nome <em>Ashardalon</em>. Porta secreta com agulha no tijolo.</p>
+                    <p>• <strong>Área 5:</strong> 3 Esqueletos Arqueiros com **3 Flechas +1**.</p>
+                    <p>• <strong>Área 7:</strong> Globo azul hipnótico (TR SAB CD 15).</p>
+                    <p>• <strong>Área 9:</strong> Enigma do Dragão (Resposta: <em>estrelas</em>).</p>
+                    <p>• <strong>Área 12:</strong> Sarcófago lacrado guarda o **Sacerdote Dragão (Troll com 30 PV)**. Tesouro e 4 pergaminhos.</p>
+                    <p>• <strong>Área 14:</strong> Barril com Mefit de Gelo e Mefit de Vapor.</p>
+                    <p>• <strong>Área 15:</strong> **Meepo** chorando no saco de dormir. Guia o grupo com a senha *"Coceguinhas!"*.</p>
+                    <p>• <strong>Área 18:</strong> 4 Goblins acorrentados.</p>
+                    <p>• <strong>Área 21:</strong> Líder Yusdrayl e Chave da Área 7. *(Sobe p/ Nível 2)*.</p>
+                    <p>• <strong>Área 26:</strong> Fonte verga **1 Poção de Bafo de Fogo** em Dracônico.</p>
+                    <p>• <strong>Área 30:</strong> Rata Guthash (16 PV) e **corpo de Karakas** (anel de ouro).</p>
+                    <p>• <strong>Área 34:</strong> Resgate de **Erky Lenhas**.</p>
+                    <p>• <strong>Área 37:</strong> Dragonesa **Calcryx (32 PV)** e Estojo Anão de Khundrukar.</p>
+                    <p>• <strong>Área 41:</strong> Chefe Hobgoblin **Durnn (CA 19, usa cota Hucrele e anel de Talgen)**, Xamã Grenl e Duto de vinhas (25m). *(Sobe p/ Nível 3)*.</p>
+                </div>
+
+                <div class="card" style="border-color: #a63a2b;">
+                    <h3 style="color: #cc4e3b; border-bottom: 1px solid #a63a2b;">🌳 Parte 6: Guia Rápido (Bosque e Clímax)</h3>
+                    <p>• <strong>Área 42:</strong> 2 Esqueletos Jardineiros e 2 Inços-Praga.</p>
+                    <p>• <strong>Área 43:</strong> Bugbear caçador Balsag e ratos Aperto e Presa.</p>
+                    <p>• <strong>Área 47:</strong> Laboratório de alquimia com ratos de tumores de madeira.</p>
+                    <p>• <strong>Área 50:</strong> Santuário de Ashardalon. Ladrilho concede Vantagem em Carisma por 24h. Guarda 1 Sombra.</p>
+                    <p>• <strong>Área 53:</strong> Gabinete de Belak. Livro com Glifo de Proteção (22 dano gélido).</p>
+                    <p>• <strong>Área 55:</strong> Sarças espinhosas e 10 Inços-Praga em ondas.</p>
+                    <p>• <strong>Área 56 (Confronto Final):</strong></p>
+                    <ul style="padding-left: 18px; margin: 4px 0;">
+                        <li><strong>Belak o Proscrito:</strong> Druida (usa *Pele-Casca*, *Esfera Flamejante*, Varinha de *Emaranhar*).</li>
+                        <li><strong>Sapo Kulket:</strong> Embosca dos galhos no 2º turno.</li>
+                        <li><strong>Servos da Árvore:</strong> Ser Braford (espada *Estilhaçadora*) e Sharwyn Hucrele (maga).</li>
+                        <li><strong>Árvore Gulthias:</strong> Planta Colossal (CA 10, 35 PV, vulnerável a Fogo). Destruí-la faz os servos morrerem em 24h (a menos que sejam salvos por Restauração Maior ou rituais).</li>
+                    </ul>
                 </div>
 
             </div>
@@ -4193,7 +4534,7 @@
 
 
         <!-- BARRA LATERAL (ROLADOR DE DADOS GERAL) -->
-        <div class="sidebar">
+        <!-- <div class="sidebar">
             <h3 style="margin: 0; color: var(--border-color); text-align: center;">🎲 Rolador de Dados</h3>
             <div class="dice-grid">
                 <button class="dice-btn" onclick="rollDice(20)">d20</button>
@@ -4205,7 +4546,9 @@
             </div>
             <div id="dice-log">Logs de rolagem...</div>
             <button class="xp-btn" style="width: 100%; padding: 8px;" onclick="clearLog()">Limpar Histórico</button>
-        </div>
+        </div> -->
+
+        
     </main>
 
     <!-- ESTRUTURA DO MODAL DE REFERÊNCIA RÁPIDA -->
@@ -4371,7 +4714,7 @@
             // Garante que 'hours' seja um número válido antes de somar
             let tempoAtual = (typeof hours === 'number' && !isNaN(hours)) ? hours : 0;
             let novoTempo = tempoAtual + 1;
-            
+
             // Grava no Firebase
             db.ref('campanha/status/tempo').set(novoTempo)
                 .then(() => {
