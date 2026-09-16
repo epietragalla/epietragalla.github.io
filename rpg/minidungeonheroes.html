@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Pequenos Heróis da Masmorra - Capa, Cartas, Verso e Manual A4</title>
+    <style>
+        /* Reset e Configurações de Impressão */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #2c3e50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .no-print-bar {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .btn-print {
+            background-color: #27ae60;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            transition: background 0.2s;
+        }
+
+        .btn-print:hover {
+            background-color: #219150;
+        }
+
+        /* ESTILOS DA CAPA DO JOGO (PÁGINA 1 - A4) */
+        .page.cover-page {
+            width: 210mm;
+            height: 297mm;
+            background: linear-gradient(135deg, #1a252f 0%, #2c3e50 50%, #34495e 100%);
+            padding: 12mm;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            page-break-after: always;
+            break-after: page;
+        }
+
+        .cover-pattern {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background-image: 
+                radial-gradient(#34495e 15%, transparent 16%),
+                radial-gradient(#f1c40f 15%, transparent 16%);
+            background-size: 24px 24px;
+            background-position: 0 0, 12px 12px;
+            opacity: 0.15;
+            z-index: 1;
+        }
+
+        .cover-border {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            height: 100%;
+            border: 4px dashed #f1c40f;
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            background: rgba(26, 37, 47, 0.65);
+            backdrop-filter: blur(2px);
+        }
+
+        .cover-header {
+            margin-top: 15px;
+        }
+
+        .cover-tag {
+            background: #e67e22;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 4px 16px;
+            border-radius: 20px;
+            letter-spacing: 1px;
+            display: inline-block;
+            margin-bottom: 12px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+        }
+
+        .cover-title {
+            font-size: 38px;
+            color: #f1c40f;
+            text-transform: uppercase;
+            font-weight: 900;
+            line-height: 1.1;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.6), 0 0 12px rgba(241, 196, 15, 0.4);
+            letter-spacing: 1px;
+        }
+
+        .cover-hero-illustration {
+            font-size: 90px;
+            margin: 15px 0;
+            filter: drop-shadow(0 8px 12px rgba(0,0,0,0.5));
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .cover-cta-box {
+            background: rgba(255, 255, 255, 0.95);
+            color: #2c3e50;
+            padding: 18px 24px;
+            border-radius: 12px;
+            border-left: 6px solid #e67e22;
+            max-width: 90%;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+            margin: 10px 0;
+        }
+
+        .cover-cta-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: #d35400;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .cover-cta-text {
+            font-size: 13.5px;
+            line-height: 1.4;
+            font-weight: 600;
+        }
+
+        .cover-features {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            background: rgba(52, 73, 94, 0.8);
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #f1c40f;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .cover-feature-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #fff;
+        }
+
+        .cover-footer {
+            font-size: 11px;
+            color: #bdc3c7;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        /* Folha A4 para Impressão (Frente: 3x3 Cartas com Espaçamento) */
+        .page {
+            width: 210mm;
+            height: 297mm;
+            background-color: white;
+            padding: 8mm;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 4mm;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            page-break-after: always;
+            break-after: page;
+        }
+
+        /* Folha A4 Especial para o Verso (Sem Margens, Sem Espaços, 100% Sangria) */
+        .page.back-page {
+            padding: 0;
+            gap: 0;
+            background-color: #2c3e50;
+        }
+
+        /* Estrutura da Carta */
+        .card {
+            border: 3px solid #2c3e50;
+            padding: 6px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            background: #f8f9fa;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* Cores das Bordas e Fundos das Cartas */
+        .card.heroe {
+            border-color: #f1c40f;
+            background: linear-gradient(135deg, #fff9e6, #fff3cd);
+        }
+
+        .card.monster-light {
+            border-color: #e67e22;
+            background: linear-gradient(135deg, #fff5eb, #ffe5d1);
+        }
+
+        .card.monster-medium {
+            border-color: #d35400;
+            background: linear-gradient(135deg, #fbeee6, #f5cba7);
+        }
+
+        .card.boss {
+            border-color: #c0392b;
+            background: linear-gradient(135deg, #fadbd8, #f5b7b1);
+        }
+
+        .card.trap {
+            border-color: #8e44ad;
+            background: linear-gradient(135deg, #f4ecf7, #d7bde2);
+        }
+
+        .card.action-sword {
+            border-color: #2980b9;
+            background: linear-gradient(135deg, #ebf5fb, #a9cce3);
+        }
+
+        .card.action-magic {
+            border-color: #8e44ad;
+            background: linear-gradient(135deg, #f4ecf7, #bb8fce);
+        }
+
+        .card.action-shield {
+            border-color: #f39c12;
+            background: linear-gradient(135deg, #fef9e7, #f9e79f);
+        }
+
+        .card.action-potion {
+            border-color: #27ae60;
+            background: linear-gradient(135deg, #e8f8f5, #a3e4d7);
+        }
+
+        .card.action-item {
+            border-color: #f1c40f;
+            background: linear-gradient(135deg, #fefde8, #f9e79f);
+        }
+
+        /* Cabeçalho */
+        .card-header {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Badges de Atributos */
+        .stat-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 3px 8px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            font-size: 20px;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        /* Centro do Card */
+        .card-main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: auto 0;
+        }
+
+        /* Símbolo Central Grandes */
+        .card-main-icon {
+            font-size: 68px;
+            line-height: 1;
+            filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.15));
+        }
+
+        /* Nome Discreto */
+        .card-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-top: 10px;
+            opacity: 0.85;
+            background: rgba(255, 255, 255, 0.65);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        /* Dano do Monstro */
+        .monster-dmg-badge {
+            margin-top: 6px;
+            background: rgba(192, 57, 43, 0.15);
+            border: 1px dashed #c0392b;
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #c0392b;
+            display: inline-block;
+        }
+
+        /* Rodapé do Card */
+        .card-footer {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 28px;
+        }
+
+        /* DESIGN DO VERSO DAS CARTAS - SEM ESPAÇOS E 100% PREENCHIDO */
+        .card-back {
+            background: #2c3e50;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+        }
+
+        .card-back-pattern {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(#34495e 15%, transparent 16%),
+                radial-gradient(#f1c40f 15%, transparent 16%);
+            background-size: 16px 16px;
+            background-position: 0 0, 8px 8px;
+            opacity: 0.25;
+        }
+
+        .card-back-inner {
+            width: 82%;
+            height: 82%;
+            border: 2px dashed #f1c40f;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+            background: rgba(26, 37, 47, 0.85);
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .card-back-logo {
+            font-size: 38px;
+            margin-bottom: 4px;
+            filter: drop-shadow(0 0 6px #f1c40f);
+        }
+
+        .card-back-sub {
+            font-size: 22px;
+        }
+
+        /* ESTILOS DO MANUAL DE INSTRUÇÕES */
+        .manual-page {
+            width: 210mm;
+            height: 297mm;
+            background-color: #fff;
+            padding: 12mm 15mm;
+            margin-bottom: 20px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            page-break-after: always;
+            break-after: page;
+            color: #2c3e50;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .manual-header {
+            border-bottom: 3px solid #2c3e50;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .manual-title {
+            font-size: 26px;
+            color: #2c3e50;
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .manual-subtitle {
+            font-size: 13px;
+            color: #e67e22;
+            font-weight: 600;
+            font-style: italic;
+            margin-top: 2px;
+        }
+
+        .manual-meta {
+            display: flex;
+            justify-content: space-around;
+            background: #ecf0f1;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 14px;
+            border: 1px solid #bdc3c7;
+        }
+
+        .manual-columns {
+            column-count: 2;
+            column-gap: 10mm;
+            font-size: 11px;
+            line-height: 1.4;
+            text-align: justify;
+            flex-grow: 1;
+        }
+
+        .manual-section {
+            margin-bottom: 12px;
+            break-inside: avoid;
+        }
+
+        .manual-section h2 {
+            font-size: 12px;
+            background: #2c3e50;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .manual-section h3 {
+            font-size: 11.5px;
+            color: #d35400;
+            margin: 8px 0 4px 0;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 2px;
+        }
+
+        .manual-list {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 4px;
+        }
+
+        .manual-list li {
+            margin-bottom: 5px;
+            position: relative;
+            padding-left: 14px;
+        }
+
+        .manual-list li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #e67e22;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .manual-box {
+            background: #fff9e6;
+            border-left: 4px solid #f1c40f;
+            padding: 6px 10px;
+            margin: 8px 0;
+            font-size: 10.5px;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .manual-box-danger {
+            background: #fdf2e9;
+            border-left: 4px solid #e67e22;
+        }
+
+        .symbol-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-top: 6px;
+            margin-bottom: 6px;
+        }
+
+        .symbol-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10.5px;
+            background: #f8f9fa;
+            padding: 4px 6px;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+        }
+
+        .manual-footer {
+            border-top: 1px solid #ddd;
+            padding-top: 6px;
+            font-size: 10px;
+            text-align: center;
+            color: #7f8c8d;
+            font-weight: 600;
+        }
+
+        /* Regras de Impressão */
+        @media print {
+            body {
+                background-color: transparent;
+                padding: 0;
+            }
+
+            .no-print-bar {
+                display: none;
+            }
+
+            .page,
+            .manual-page,
+            .cover-page {
+                margin-bottom: 0;
+                box-shadow: none;
+                width: 210mm;
+                height: 297mm;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="no-print-bar">
+        <button class="btn-print" onclick="window.print()">🖨️ Imprimir Capa, Cartas e Manual (PDF / A4)</button>
+    </div>
+
+    <!-- PÁGINA 1: CAPA A4 DO JOGO -->
+    <div class="page cover-page">
+        <div class="cover-pattern"></div>
+        <div class="cover-border">
+            <div class="cover-header">
+                <div class="cover-tag"> Card Game Infantil de Fantasia </div>
+                <div class="cover-title">Pequenos Heróis<br>da Masmorra</div>
+            </div>
+
+            <div class="cover-hero-illustration">
+                <span>🛡️</span>
+                <span>🧙‍♂️</span>
+                <span>🐲</span>
+                <span>🗡️</span>
+            </div>
+
+            <div class="cover-cta-box">
+                <div class="cover-cta-title">⚔️ Uma Grande Aventura te Espera! ⚔️</div>
+                <div class="cover-cta-text">
+                    Junte seus amigos, escolha seu herói e prepare-se para explorar uma masmorra cheia de monstros, armadilhas e tesouros mágicos! Você tem coragem para enfrentar o grande Dragão?
+                </div>
+            </div>
+
+            <div class="cover-features">
+                <div class="cover-feature-item"><span>👶</span> 4+ Anos</div>
+                <div class="cover-feature-item"><span>🚫📖</span> Sem Leitura</div>
+                <div class="cover-feature-item"><span>🤝</span> Cooperativo</div>
+                <div class="cover-feature-item"><span>⏱️</span> 10-15 min</div>
+            </div>
+
+            <div class="cover-footer">
+                Card Game Print & Play • 54 Cartas Ilustradas + Manual de Instruções
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTAINER ONDE O JAVASCRIPT GERA AS CARTAS (PÁGINAS 2 A 8) -->
+    <div id="deck-container"></div>
+
+    <!-- PÁGINA 9: MANUAL DE INSTRUÇÕES -->
+    <div class="manual-page">
+        <div>
+            <div class="manual-header">
+                <div class="manual-title">📖 Pequenos Heróis da Masmorra</div>
+                <div class="manual-subtitle">Manual de Instruções do Card Game Infantil Sem Texto</div>
+            </div>
+
+            <div class="manual-meta">
+                <span>👶 Idade: 4+ anos</span>
+                <span>👥 Jogadores: 1 a 4</span>
+                <span>⏱️ Tempo: 10-15 min</span>
+                <span>🃏 54 Cartas + D6 + Corações</span>
+            </div>
+
+            <div class="manual-columns">
+                <div class="manual-section">
+                    <h2>🎨 1. Guia dos Símbolos</h2>
+                    <p>Mostre estes símbolos para a criança antes de jogar:</p>
+                    <div class="symbol-grid">
+                        <div class="symbol-item"><span>❤️</span> <b>Coração:</b> Vida</div>
+                        <div class="symbol-item"><span>⚔️</span> <b>Espada:</b> Ataque</div>
+                        <div class="symbol-item"><span>🪄</span> <b>Cajado:</b> Magia</div>
+                        <div class="symbol-item"><span>🛡️</span> <b>Escudo:</b> Defesa</div>
+                        <div class="symbol-item"><span>🧪</span> <b>Poção:</b> Cura</div>
+                        <div class="symbol-item"><span>💔</span> <b>Dano:</b> Perda Vida</div>
+                        <div class="symbol-item"><span>🎲</span> <b>Dado:</b> Sorte</div>
+                        <div class="symbol-item"><span>👣</span> <b>Pegadas:</b> Desviar</div>
+                    </div>
+                </div>
+
+                <div class="manual-section">
+                    <h2>🏆 2. Modo 1: COOPERATIVO</h2>
+                    <p><i>Todos jogam juntos contra a Masmorra! Todos vencem ou perdem juntos.</i></p>
+
+                    <h3>Preparação da Partida</h3>
+                    <ul class="manual-list">
+                        <li><b>Heróis:</b> Cada criança escolhe 1 Herói (Guerreiro 🛡️, Mago 🧙‍♂️, Clérigo 🧝‍♀️ ou
+                            Ladino 🗡️).</li>
+                        <li><b>Vida:</b> Pegue <b>4 Corações</b> ❤️ para cada herói.</li>
+                        <li><b>Ação (Azul):</b> Entregue <b>3 cartas para cada criança</b>. O resto forma o Monte de
+                            Compra.</li>
+                        <li><b>Masmorra (Cinza):</b> Coloque 1 Chefão (🐲, ☠️ ou 🧙‍♂️) <b>no fundo do baralho</b> e
+                            embaralhe os outros monstros por cima.</li>
+                    </ul>
+                </div>
+
+                <div class="manual-section">
+                    <h3>Como Jogar (Turno a Turno)</h3>
+                    <p>O mais jovem começa e o jogo segue em sentido horário.</p>
+
+                    <p style="margin-top: 4px;"><b>1. Explorar:</b> Vira-se 1 carta da Masmorra no centro.</p>
+
+                    <p style="margin-top: 4px;"><b>Se for MONSTRO:</b></p>
+                    <ul class="manual-list">
+                        <li>Olhe o topo para ver o exigido (ex: ⚔️2 precisa de <b>2 Espadas</b>).</li>
+                        <li>Jogue cartas da mão (⚔️ ou 🪄) para igualar ou superar o exigido.</li>
+                        <li><b>Ajuda:</b> Amigos podem jogar cartas para ajudar!</li>
+                        <li><b>Dado:</b> Pode rolar o D6 🎲 para somar pontos.</li>
+                    </ul>
+
+                    <div class="manual-box">
+                        <b>🎉 Derrotou?</b> A carta vira Tesouro do grupo!<br>
+                        <b>💥 Não Derrotou?</b> Perde 1 Coração ❤️ (a menos que use Escudo 🛡️).
+                    </div>
+                </div>
+
+                <div class="manual-section">
+                    <p><b>Se for ARMADILHA (🪨 🕳️):</b></p>
+                    <ul class="manual-list">
+                        <li><b>Pedra 🪨:</b> Role D6 🎲 (3+ desvia, 1-2 perde 1 ❤️).</li>
+                        <li><b>Buraco 🕳️:</b> Jogue Pegada 👣 ou perca 1 ❤️. <i>(Ladino ignora a 1ª!)</i></li>
+                    </ul>
+
+                    <p style="margin-top: 4px;"><b>Se for BAÚ (🧰):</b> Role D6 🎲. Se tirar 4+, ganhe 2 cartas de presente!</p>
+
+                    <p style="margin-top: 4px;"><b>2. Fim do Turno:</b> Compre até ter 3 cartas na mão. Passa a vez.</p>
+                </div>
+
+                <div class="manual-section">
+                    <h2>⚡ 3. Super Coragem</h2>
+                    <div class="manual-box manual-box-danger">
+                        Se o herói ficar com <b>1 Coração ❤️</b>, joga o dado 🎲 duas vezes e escolhe o maior número até
+                        se curar.
+                    </div>
+                </div>
+
+                <div class="manual-section">
+                    <h2>🏆 4. Fim do Jogo</h2>
+                    <ul class="manual-list">
+                        <li><b>Vitória:</b> Derrotem o Chefão Final 🐲 para vencerem juntos!</li>
+                        <li><b>Derrota:</b> Se todos perderem a vida, tentem de novo.</li>
+                    </ul>
+                </div>
+
+                <div class="manual-section">
+                    <h2>⚔️ 5. Modo 2: DUELO 1x1</h2>
+                    <ul class="manual-list">
+                        <li>2 Jogadores com 1 Herói e 4 Corações cada.</li>
+                        <li>3 Monstros abertos no centro. No turno, escolha: Atacar Monstro <b>OU</b> Atacar o Herói
+                            rival.</li>
+                        <li><b>Vitória:</b> Derrote 3 Monstros primeiro ou zere a vida do rival.</li>
+                    </ul>
+                </div>
+
+                <div class="manual-section">
+                    <h2>🛡️ 6. Modo 3: DUPLAS (2x2)</h2>
+                    <ul class="manual-list">
+                        <li>2 Times intercalados com 6 Corações conjuntos.</li>
+                        <li>Pode passar 1 Poção 🧪 ou Escudo 🛡️ para o parceiro no turno.</li>
+                        <li><b>Vitória:</b> Zere a vida rival ou derrote mais monstros.</li>
+                    </ul>
+                </div>
+
+                <div class="manual-section">
+                    <h2>🎯 7. Ensinando em 60 Segundos</h2>
+                    <div class="manual-box">
+                        <b>1. Herói:</b> "Este é seu Guerreiro com 4 corações."<br>
+                        <b>2. Monstro:</b> "Apareceu um Goblin com 1 Espada!"<br>
+                        <b>3. Jogada:</b> "Jogue a carta com a Espada igual para vencer!"
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="manual-footer">Pequenos Heróis da Masmorra - Guia Completo do Jogo</div>
+    </div>
+
+    <script>
+        // 54 Cartas do Jogo com Nome Discreto
+        const deckData = [
+            // --- HERÓIS (4 cartas) ---
+            { name: 'Guerreiro', type: 'heroe', icon: '🛡️', hp: '❤️❤️❤️❤️', req: '⚔️+1' },
+            { name: 'Mago', type: 'heroe', icon: '🧙‍♂️', hp: '❤️❤️❤️❤️', req: '🪄+1' },
+            { name: 'Clérigo', type: 'heroe', icon: '🧝‍♀️', hp: '❤️❤️❤️❤️', req: '🧪🔄' },
+            { name: 'Ladino', type: 'heroe', icon: '🗡️', hp: '❤️❤️❤️❤️', req: '👣🚫' },
+
+            // --- MONSTROS LEVES (12 cartas) ---
+            { name: 'Goblin', type: 'monster-light', icon: '👺', hp: '❤️', req: '⚔️1', dmg: '💔1' },
+            { name: 'Goblin', type: 'monster-light', icon: '👺', hp: '❤️', req: '⚔️1', dmg: '💔1' },
+            { name: 'Goblin Forte', type: 'monster-light', icon: '👺', hp: '❤️❤️', req: '⚔️2', dmg: '💔1' },
+            { name: 'Esqueleto', type: 'monster-light', icon: '💀', hp: '❤️', req: '🪄1', dmg: '💔1' },
+            { name: 'Esqueleto', type: 'monster-light', icon: '💀', hp: '❤️', req: '🪄1', dmg: '💔1' },
+            { name: 'Esqueleto Forte', type: 'monster-light', icon: '💀', hp: '❤️❤️', req: '🪄2', dmg: '💔1' },
+            { name: 'Morcego', type: 'monster-light', icon: '🦇', hp: '❤️', req: '⚔️1', dmg: '💔1' },
+            { name: 'Morcego', type: 'monster-light', icon: '🦇', hp: '❤️', req: '🪄1', dmg: '💔1' },
+            { name: 'Morcego Grande', type: 'monster-light', icon: '🦇', hp: '❤️❤️', req: '⚔️2', dmg: '💔1' },
+            { name: 'Aranha', type: 'monster-light', icon: '🕷️', hp: '❤️', req: '⚔️1', dmg: '💔1' },
+            { name: 'Aranha', type: 'monster-light', icon: '🕷️', hp: '❤️', req: '🪄1', dmg: '💔1' },
+            { name: 'Aranha Gigante', type: 'monster-light', icon: '🕷️', hp: '❤️❤️', req: '🪄2', dmg: '💔1' },
+
+            // --- MONSTROS MÉDIOS (5 cartas) ---
+            { name: 'Ogro', type: 'monster-medium', icon: '👹', hp: '❤️❤️❤️', req: '⚔️2 🪄1', dmg: '💔2' },
+            { name: 'Ogro Guerreiro', type: 'monster-medium', icon: '👹', hp: '❤️❤️❤️❤️', req: '⚔️2 🪄2', dmg: '💔2' },
+            { name: 'Fantasma', type: 'monster-medium', icon: '👻', hp: '❤️❤️❤️', req: '🪄3', dmg: '💔2' },
+            { name: 'Fantasma Rei', type: 'monster-medium', icon: '👻', hp: '❤️❤️❤️❤️', req: '⚔️1 🪄3', dmg: '💔2' },
+            { name: 'Troll de Pedra', type: 'monster-medium', icon: '🗿', hp: '❤️❤️❤️❤️', req: '⚔️4', dmg: '💔2' },
+
+            // --- MONSTROS CHEFÕES (3 cartas) ---
+            { name: 'Dragão Vermelho', type: 'boss', icon: '🐲', hp: '❤️❤️❤️❤️❤️', req: '⚔️3 🪄3', dmg: '💔3' },
+            { name: 'Rei Esqueleto', type: 'boss', icon: '☠️', hp: '❤️❤️❤️❤️❤️', req: '⚔️4 🪄2', dmg: '💔3' },
+            { name: 'Bruxo das Sombras', type: 'boss', icon: '🧙‍♂️', hp: '❤️❤️❤️❤️❤️❤️', req: '⚔️2 🪄4', dmg: '💔3' },
+
+            // --- ARMADILHAS / EVENTOS (5 cartas) ---
+            { name: 'Pedra Rolante', type: 'trap', icon: '🪨', hp: '', req: '🎲 3+', dmg: '💔1' },
+            { name: 'Pedra Rolante', type: 'trap', icon: '🪨', hp: '', req: '🎲 3+', dmg: '💔1' },
+            { name: 'Buraco com Espinhos', type: 'trap', icon: '🕳️', hp: '', req: '👣 1', dmg: '💔1' },
+            { name: 'Buraco com Espinhos', type: 'trap', icon: '🕳️', hp: '', req: '👣 1', dmg: '💔1' },
+            { name: 'Baú Trancado', type: 'trap', icon: '🧰', hp: '', req: '🎲 4+', dmg: '🎁' },
+
+            // --- AÇÕES: ATAQUE ESPADA (8 cartas) ---
+            { name: 'Golpe de Espada', type: 'action-sword', icon: '⚔️', hp: '', req: '⚔️1', dmg: '' },
+            { name: 'Golpe de Espada', type: 'action-sword', icon: '⚔️', hp: '', req: '⚔️1', dmg: '' },
+            { name: 'Golpe de Espada', type: 'action-sword', icon: '⚔️', hp: '', req: '⚔️1', dmg: '' },
+            { name: 'Ataque Duplo', type: 'action-sword', icon: '⚔️', hp: '', req: '⚔️2', dmg: '' },
+            { name: 'Ataque Duplo', type: 'action-sword', icon: '⚔️', hp: '', req: '⚔️2', dmg: '' },
+            { name: 'Ataque Duplo', type: 'action-sword', icon: '⚔️', hp: '', req: '⚔️2', dmg: '' },
+            { name: 'Super Espada', type: 'action-sword', icon: '⚔️', hp: '', req: '⚔️3', dmg: '' },
+            { name: 'Super Espada', type: 'action-sword', icon: '⚔️', hp: '', req: '⚔️3', dmg: '' },
+
+            // --- AÇÕES: ATAQUE MÁGICO (6 cartas) ---
+            { name: 'Magia de Luz', type: 'action-magic', icon: '🪄', hp: '', req: '🪄1', dmg: '' },
+            { name: 'Magia de Luz', type: 'action-magic', icon: '🪄', hp: '', req: '🪄1', dmg: '' },
+            { name: 'Bola de Fogo', type: 'action-magic', icon: '🪄', hp: '', req: '🪄2', dmg: '' },
+            { name: 'Bola de Fogo', type: 'action-magic', icon: '🪄', hp: '', req: '🪄2', dmg: '' },
+            { name: 'Super Magia', type: 'action-magic', icon: '🪄', hp: '', req: '🪄3', dmg: '' },
+            { name: 'Super Magia', type: 'action-magic', icon: '🪄', hp: '', req: '🪄3', dmg: '' },
+
+            // --- AÇÕES: ESCUDOS (4 cartas) ---
+            { name: 'Escudo de Madeira', type: 'action-shield', icon: '🛡️', hp: '', req: '🛡️ MAX', dmg: '' },
+            { name: 'Escudo de Madeira', type: 'action-shield', icon: '🛡️', hp: '', req: '🛡️ MAX', dmg: '' },
+            { name: 'Escudo Dourado', type: 'action-shield', icon: '🛡️', hp: '', req: '🛡️ MAX', dmg: '' },
+            { name: 'Escudo Dourado', type: 'action-shield', icon: '🛡️', hp: '', req: '🛡️ MAX', dmg: '' },
+
+            // --- AÇÕES: POÇÕES (4 cartas) ---
+            { name: 'Poção de Cura', type: 'action-potion', icon: '🧪', hp: '', req: '❤️+1', dmg: '' },
+            { name: 'Poção de Cura', type: 'action-potion', icon: '🧪', hp: '', req: '❤️+1', dmg: '' },
+            { name: 'Super Poção', type: 'action-potion', icon: '🧪', hp: '', req: '❤️+2', dmg: '' },
+            { name: 'Super Poção', type: 'action-potion', icon: '🧪', hp: '', req: '❤️+2', dmg: '' },
+
+            // --- TESOUROS / EQUIPAMENTOS (3 cartas) ---
+            { name: 'Espada de Fogo', type: 'action-item', icon: '🗡️🔥', hp: '', req: '⚔️+1', dmg: '' },
+            { name: 'Escudo Mágico', type: 'action-item', icon: '🛡️⚙️', hp: '', req: '🛡️+1', dmg: '' },
+            { name: 'Anel do Poder', type: 'action-item', icon: '💍✨', hp: '', req: '🪄+1', dmg: '' }
+        ];
+
+        const container = document.getElementById('deck-container');
+        let currentPage;
+
+        // Gerar as 6 Páginas de Cartas (54 cartas)
+        deckData.forEach((data, index) => {
+            if (index % 9 === 0) {
+                currentPage = document.createElement('div');
+                currentPage.className = 'page';
+                container.appendChild(currentPage);
+            }
+
+            const card = document.createElement('div');
+            card.className = `card ${data.type}`;
+
+            card.innerHTML = `
+        <div class="card-header">
+          ${data.req ? `<div class="stat-badge">${data.req}</div>` : '<div></div>'}
+        </div>
+        <div class="card-main-container">
+          <div class="card-main-icon">${data.icon}</div>
+          <div class="card-label">${data.name}</div>
+          ${data.dmg ? `<div class="monster-dmg-badge">${data.dmg}</div>` : ''}
+        </div>
+        <div class="card-footer">
+          ${data.hp ? `<div class="stat-badge">${data.hp}</div>` : ''}
+        </div>
+      `;
+
+            currentPage.appendChild(card);
+        });
+
+        // Gerar a Página de Verso (Folha A4 com Padrão Continuo Sem Espaços)
+        const backPage = document.createElement('div');
+        backPage.className = 'page back-page';
+
+        for (let i = 0; i < 9; i++) {
+            const cardBack = document.createElement('div');
+            cardBack.className = 'card-back';
+            cardBack.innerHTML = `
+        <div class="card-back-pattern"></div>
+        <div class="card-back-inner">
+          <div class="card-back-logo">🏰</div>
+          <div class="card-back-sub">⚔️✨</div>
+        </div>
+      `;
+            backPage.appendChild(cardBack);
+        }
+
+        container.appendChild(backPage);
+    </script>
+</body>
+
+</html>
