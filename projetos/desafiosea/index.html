@@ -1,0 +1,1639 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexify - Dashboard Interno</title>
+
+  <!-- Bootstrap 5.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+  <style>
+    /* Estilização utilitária para fixação e transição da Sidebar */
+    #sidebar {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 256px;
+      z-index: 1030;
+      transition: width 0.2s ease-in-out;
+    }
+
+    .wrapper {
+      margin-left: 256px;
+      min-height: 100vh;
+      transition: margin-left 0.2s ease-in-out;
+    }
+
+    /* Estado do Menu Recuado/Retraído */
+    .sidebar-narrow #sidebar {
+      width: 64px;
+    }
+    .sidebar-narrow .wrapper {
+      margin-left: 64px;
+    }
+    .sidebar-narrow .sidebar-text,
+    .sidebar-narrow .sidebar-brand-text {
+      display: none !important;
+    }
+    .sidebar-narrow .nav-link {
+      justify-content: center !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+
+    /* Ajustes para Dispositivos Móveis */
+    @media (max-width: 767.98px) {
+      #sidebar {
+        margin-left: -256px;
+      }
+      .wrapper {
+        margin-left: 0 !important;
+      }
+      body.mobile-open #sidebar {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body class="bg-body-tertiary">
+
+  <!-- Sidebar Fixa Bootstrap -->
+  <aside id="sidebar" class="bg-dark text-white d-flex flex-column border-end border-secondary-subtle">
+    <!-- Branding Header -->
+    <div class="p-3 d-flex align-items-center justify-content-between border-bottom border-secondary-subtle" style="height: 65px;">
+      <div class="d-flex align-items-center gap-2 overflow-hidden">
+        <i class="bi bi-rocket-takeoff-fill fs-4 text-primary"></i>
+        <span class="fs-5 fw-bold sidebar-brand-text text-white">Nexify</span>
+      </div>
+    </div>
+
+    <!-- Navegação em Lista -->
+    <ul class="nav nav-pills flex-column p-2 gap-1 flex-grow-1 overflow-y-auto" id="sidebarMenu">
+      <li class="nav-item">
+        <a href="#dashboard" class="nav-link active d-flex align-items-center gap-3" data-target="section-dashboard">
+          <i class="bi bi-grid-1x2-fill fs-5"></i>
+          <span class="sidebar-text">Dashboard Geral</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="#comunicados" class="nav-link text-white-50 d-flex align-items-center gap-3" data-target="section-comunicados">
+          <i class="bi bi-megaphone-fill fs-5"></i>
+          <span class="sidebar-text">Comunicados</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="#metas" class="nav-link text-white-50 d-flex align-items-center gap-3" data-target="section-metas">
+          <i class="bi bi-trophy-fill fs-5"></i>
+          <span class="sidebar-text">Metas & Bônus</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="#votaçoes" class="nav-link text-white-50 d-flex align-items-center gap-3" data-target="section-votacoes">
+          <i class="bi bi-check-circle-fill fs-5"></i>
+          <span class="sidebar-text">Pesquisas</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="#pdi" class="nav-link text-white-50 d-flex align-items-center gap-3" data-target="section-pdi">
+          <i class="bi bi-graph-up-arrow fs-5"></i>
+          <span class="sidebar-text">Desempenho (PDI)</span>
+        </a>
+      </li>
+    </ul>
+
+    <!-- Footer Sidebar: Botão de Minimizar -->
+    <div class="p-2 border-top border-secondary-subtle d-flex justify-content-end">
+      <button class="btn btn-dark text-white-50 w-100 d-flex align-items-center justify-content-center" id="btnToggleSidebar" type="button" title="Recuar/Expandir Menu">
+        <i class="bi bi-chevron-left fs-5" id="iconToggleSidebar"></i>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Área de Conteúdo Principal -->
+  <div class="wrapper d-flex flex-column">
+    
+    <!-- Topbar Fixo -->
+    <header class="sticky-top bg-body border-bottom p-3 d-flex justify-content-between align-items-center" style="height: 65px; z-index: 1020;">
+      <div class="d-flex align-items-center gap-3">
+        <button class="btn btn-outline-secondary d-md-none p-1 px-2" type="button" id="btnMobileToggle">
+          <i class="bi bi-list fs-4"></i>
+        </button>
+        <div class="d-flex align-items-center gap-2">
+          <h1 class="h5 mb-0 fw-semibold" id="pageTitle">Portal do Colaborador</h1>
+          <span class="badge bg-primary-subtle text-primary d-none" id="viewBadge">Visão Geral</span>
+        </div>
+      </div>
+      
+      <!-- Seletor Modo Escuro / Claro -->
+      <div class="d-flex align-items-center gap-3">
+        <button class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2" id="btnThemeToggle">
+          <i class="bi bi-moon-stars-fill" id="themeIcon"></i>
+          <span id="themeLabel" class="d-none d-sm-inline">Modo Escuro</span>
+        </button>
+        <div class="vr"></div>
+        <div class="d-flex align-items-center gap-2">
+          <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 36px; height: 36px;">
+            NX
+          </div>
+          <span class="fw-medium d-none d-sm-inline">Colaborador Nexify</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="p-4 flex-grow-1">
+      <div class="container-fluid p-0">
+
+        <!-- ==================== VIEW 1: DASHBOARD COMPLETO ==================== -->
+        <div id="section-dashboard" class="app-section">
+          <div class="row g-4">
+
+            <!-- REQUISITO 2: META GLOBAL & BÔNUS -->
+            <section class="col-12">
+              <div class="card border-primary-subtle shadow-sm">
+                <div class="card-body p-4">
+                  <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                    <div>
+                      <span class="badge bg-primary-subtle text-primary mb-1">Acompanhamento Anual</span>
+                      <h2 class="h4 card-title mb-0">Meta Global Nexify 2026</h2>
+                    </div>
+                    <span class="fs-4 fw-bold text-primary">72% Concluído</span>
+                  </div>
+                  
+                  <p class="text-body-secondary small">Acompanhe o andamento da meta global para a liberação do bônus anual da equipe (Atualizado em 17/09/2026).</p>
+
+                  <div class="progress my-3" style="height: 16px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" style="width: 72%"></div>
+                  </div>
+
+                  <div class="row g-3 mt-2">
+                    <div class="col-md-4">
+                      <div class="p-3 border rounded bg-body-tertiary">
+                        <div class="text-body-secondary small">Bônus Acumulado Estimado</div>
+                        <div class="fs-5 fw-bold text-success">R$ 1.250,00 / colab</div>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="p-3 border rounded bg-body-tertiary">
+                        <div class="text-body-secondary small">Previsão de Atingimento</div>
+                        <div class="fs-5 fw-bold">Novembro / 2026</div>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="p-3 border rounded bg-body-tertiary d-flex justify-content-between align-items-center">
+                        <div>
+                          <div class="text-body-secondary small">Seu Status na Meta</div>
+                          <div class="fs-6 fw-semibold text-primary">Elegível ao Bônus</div>
+                        </div>
+                        <button class="btn btn-primary btn-sm nav-shortcut" data-target="section-metas">Detalhes & Histórico</button>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </section>
+
+            <!-- REQUISITO 1: COMUNICADOS E AVISOS (Resumo) -->
+            <section class="col-lg-8">
+              <div class="card h-100 shadow-sm">
+                <div class="card-header bg-transparent d-flex justify-content-between align-items-center pt-3 flex-wrap gap-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <h3 class="h5 card-title mb-0">Comunicados Recentes</h3>
+                    <span class="badge bg-primary-subtle text-primary">Setembro / 2026</span>
+                  </div>
+                  <button class="btn btn-link btn-sm text-decoration-none nav-shortcut p-0" data-target="section-comunicados">Ver Todos (18)</button>
+                </div>
+                
+                <div class="card-body p-0">
+                  <div class="list-group list-group-flush">
+                    <div class="list-group-item p-3 item-comunicado">
+                      <div class="d-flex w-100 justify-content-between align-items-center mb-1">
+                        <div class="d-flex align-items-center gap-2">
+                          <span class="badge bg-danger">Urgente</span>
+                          <span class="badge bg-secondary-subtle text-body">RH</span>
+                          <h4 class="h6 mb-0 fw-semibold">Nova Política de Home Office e Trabalho Híbrido</h4>
+                        </div>
+                        <small class="text-body-secondary">Hoje (17/09) • 14:30</small>
+                      </div>
+                      <p class="mb-2 text-body-secondary small">Atualizamos as diretrizes para dias presenciais e reembolso de infraestrutura.</p>
+                      <button class="btn btn-outline-success btn-sm btn-ciente" onclick="marcarCiente(this)">
+                        <i class="bi bi-check2-circle"></i> Marcar como Ciente
+                      </button>
+                    </div>
+
+                    <div class="list-group-item p-3 item-comunicado">
+                      <div class="d-flex w-100 justify-content-between align-items-center mb-1">
+                        <div class="d-flex align-items-center gap-2">
+                          <span class="badge bg-primary">Tecnologia</span>
+                          <h4 class="h6 mb-0 fw-semibold">Janela de Manutenção nos Servidores Internos</h4>
+                        </div>
+                        <small class="text-body-secondary">Ontem (16/09) • 18:00</small>
+                      </div>
+                      <p class="mb-2 text-body-secondary small">Neste sábado haverá atualização da infraestrutura do ambiente de staging.</p>
+                      <button class="btn btn-outline-success btn-sm btn-ciente" onclick="marcarCiente(this)">
+                        <i class="bi bi-check2-circle"></i> Marcar como Ciente
+                      </button>
+                    </div>
+
+                    <div class="list-group-item p-3 item-comunicado">
+                      <div class="d-flex w-100 justify-content-between align-items-center mb-1">
+                        <div class="d-flex align-items-center gap-2">
+                          <span class="badge bg-info text-dark">Geral</span>
+                          <span class="badge bg-secondary-subtle text-body">RH</span>
+                          <h4 class="h6 mb-0 fw-semibold">Calendário de Pontes e Feriados de Fim de Ano</h4>
+                        </div>
+                        <small class="text-body-secondary">15/09/2026 • 10:15</small>
+                      </div>
+                      <p class="mb-2 text-body-secondary small">Confira a lista oficial de feriados organizados pela diretoria para o segundo semestre.</p>
+                      <span class="badge bg-success-subtle text-success p-2"><i class="bi bi-check-all"></i> Ciente registrado</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- REQUISITO 3: PESQUISAS E VOTAÇÕES -->
+            <section class="col-lg-4">
+              <div class="card h-100 shadow-sm">
+                <div class="card-header bg-transparent d-flex justify-content-between align-items-center pt-3">
+                  <h3 class="h5 card-title mb-0">Pesquisas & Votações</h3>
+                  <span class="badge bg-warning text-dark">1 Pendente</span>
+                </div>
+                <div class="card-body">
+                  <div>
+                    <span class="text-body-secondary small d-block mb-1">Enquete Ativa • Encerra em 19/09/2026</span>
+                    <h4 class="h6 fw-bold mb-3">Qual tema você prefere para a próxima Hackathon interna?</h4>
+                    
+                    <form class="pollForm">
+                      <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="pollOptionDash" id="opt1" value="IA Aplicada ao Negócio" required>
+                        <label class="form-check-label" for="opt1">IA Aplicada ao Negócio</label>
+                      </div>
+                      <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="pollOptionDash" id="opt2" value="Ferramentas de Produtividade">
+                        <label class="form-check-label" for="opt2">Ferramentas de Produtividade</label>
+                      </div>
+                      <div class="form-check mb-3">
+                        <input class="form-check-input" type="radio" name="pollOptionDash" id="opt3" value="Inovação e Sustentabilidade">
+                        <label class="form-check-label" for="opt3">Inovação e Sustentabilidade</label>
+                      </div>
+                      <button type="submit" class="btn btn-primary btn-sm w-100">Registrar Meu Voto</button>
+                    </form>
+
+                    <div class="pollResults d-none">
+                      <div class="alert alert-success p-2 small mb-3">
+                        <i class="bi bi-check-circle-fill"></i> Voto computado com sucesso!
+                      </div>
+                      <div class="mb-2">
+                        <div class="d-flex justify-content-between small mb-1">
+                          <span>IA Aplicada ao Negócio</span>
+                          <span class="fw-bold">58%</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                          <div class="progress-bar bg-primary" style="width: 58%"></div>
+                        </div>
+                      </div>
+                      <div class="mb-2">
+                        <div class="d-flex justify-content-between small mb-1">
+                          <span>Ferramentas de Produtividade</span>
+                          <span class="fw-bold">27%</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                          <div class="progress-bar bg-info" style="width: 27%"></div>
+                        </div>
+                      </div>
+                      <div class="mb-2">
+                        <div class="d-flex justify-content-between small mb-1">
+                          <span>Inovação e Sustentabilidade</span>
+                          <span class="fw-bold">15%</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                          <div class="progress-bar bg-secondary" style="width: 15%"></div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- REQUISITO 4: PDI & DESEMPENHO -->
+            <section class="col-12 mb-4">
+              <div class="card shadow-sm">
+                <div class="card-header bg-transparent d-flex justify-content-between align-items-center pt-3 flex-wrap gap-2">
+                  <div>
+                    <h3 class="h5 card-title mb-0">Gestão de Desempenho e PDI</h3>
+                    <small class="text-body-secondary">Acompanhamento do ciclo vigente em Setembro de 2026</small>
+                  </div>
+                  <button class="btn btn-outline-primary btn-sm nav-shortcut" data-target="section-pdi">Acessar Meu PDI Completo</button>
+                </div>
+                <div class="card-body">
+                  <div class="row g-4">
+                    <div class="col-md-7 border-end-md">
+                      <h4 class="h6 text-body-secondary mb-3">Sua Evolução de Habilidades</h4>
+                      
+                      <div class="mb-3">
+                        <div class="d-flex justify-content-between small mb-1">
+                          <span class="fw-medium">Arquitetura de Sistemas / React</span>
+                          <span class="fw-bold text-primary">85%</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                          <div class="progress-bar bg-primary" style="width: 85%"></div>
+                        </div>
+                      </div>
+
+                      <div class="mb-3">
+                        <div class="d-flex justify-content-between small mb-1">
+                          <span class="fw-medium">Product Thinking & Visão de Negócio</span>
+                          <span class="fw-bold text-success">70%</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                          <div class="progress-bar bg-success" style="width: 70%"></div>
+                        </div>
+                      </div>
+
+                      <div class="mb-3">
+                        <div class="d-flex justify-content-between small mb-1">
+                          <span class="fw-medium">Comunicação e Liderança Técnica</span>
+                          <span class="fw-bold text-warning">60%</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                          <div class="progress-bar bg-warning" style="width: 60%"></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-md-5">
+                      <h4 class="h6 text-body-secondary mb-3">Próximo Ciclo de Avaliação</h4>
+                      <div class="p-3 bg-body-tertiary rounded border">
+                        <div class="d-flex align-items-center gap-3">
+                          <div class="p-2 bg-primary-subtle text-primary rounded">
+                            <i class="bi bi-calendar-event fs-3"></i>
+                          </div>
+                          <div>
+                            <div class="fw-bold">Avaliação 360° - Q4 2026</div>
+                            <div class="small text-body-secondary">Data prevista: 15 de Outubro de 2026</div>
+                          </div>
+                        </div>
+                        <hr class="my-2">
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                          <span class="small text-body-secondary">Status do PDI Atual:</span>
+                          <span class="badge bg-success-subtle text-success">Em Dia</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+          </div>
+        </div>
+
+        <!-- ==================== VIEW 2: SEÇÃO COMUNICADOS (TIMELINE CRONOLÓGICA REAL) ==================== -->
+        <div id="section-comunicados" class="app-section d-none">
+          <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <div>
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                  <li class="breadcrumb-item"><a href="#" class="nav-shortcut text-decoration-none" data-target="section-dashboard">Dashboard</a></li>
+                  <li class="breadcrumb-item active">Comunicados & Avisos</li>
+                </ol>
+              </nav>
+              <h2 class="h3 fw-bold mb-0">Central de Comunicados Internos</h2>
+            </div>
+            <button class="btn btn-outline-secondary btn-sm nav-shortcut" data-target="section-dashboard">
+              <i class="bi bi-arrow-left me-1"></i> Voltar ao Dashboard
+            </button>
+          </div>
+
+          <div class="card shadow-sm">
+            <div class="card-header bg-transparent p-3">
+              <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                  <div class="input-group">
+                    <span class="input-group-text bg-body"><i class="bi bi-search"></i></span>
+                    <input type="text" id="inputSearchComunicados" class="form-control" placeholder="Buscar por palavra-chave em Setembro/2026...">
+                  </div>
+                </div>
+                <div class="col-md-6 text-md-end">
+                  <span class="text-body-secondary small me-2">Filtrar por Categoria:</span>
+                  <div class="btn-group btn-group-sm" role="group" id="comunicadosFilterGroup">
+                    <button type="button" class="btn btn-outline-secondary active" data-filter="all">Todos (18)</button>
+                    <button type="button" class="btn btn-outline-secondary" data-filter="urgente">Urgentes</button>
+                    <button type="button" class="btn btn-outline-secondary" data-filter="rh">RH</button>
+                    <button type="button" class="btn btn-outline-secondary" data-filter="tech">Tecnologia</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-body p-0">
+              <div class="list-group list-group-flush" id="timelineComunicadosList">
+                
+                <!-- HOJE: 17 DE SETEMBRO DE 2026 -->
+                <div class="list-group-item p-4 item-comunicado-full" data-category="urgente rh">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                      <span class="badge bg-danger mb-2">Urgente</span>
+                      <span class="badge bg-secondary-subtle text-body mb-2">RH</span>
+                      <h3 class="h5 fw-bold mb-1">Nova Política de Home Office e Trabalho Híbrido</h3>
+                    </div>
+                    <small class="text-body-secondary fw-semibold">Hoje (17/09/2026) • 14:30</small>
+                  </div>
+                  <p class="text-body-secondary mb-3">Atualizamos as diretrizes para dias presenciais e reembolso de infraestrutura. Por favor, leia o documento anexo na intranet e confirme sua ciência.</p>
+                  <button class="btn btn-outline-success btn-sm btn-ciente" onclick="marcarCiente(this)">
+                    <i class="bi bi-check2-circle"></i> Confirmar Leitura e Ciência
+                  </button>
+                </div>
+
+                <!-- ONTEM: 16 DE SETEMBRO DE 2026 -->
+                <div class="list-group-item p-4 item-comunicado-full" data-category="tech">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                      <span class="badge bg-primary mb-2">Tecnologia</span>
+                      <h3 class="h5 fw-bold mb-1">Janela de Manutenção nos Servidores Internos</h3>
+                    </div>
+                    <small class="text-body-secondary fw-semibold">Ontem (16/09/2026) • 18:00</small>
+                  </div>
+                  <p class="text-body-secondary mb-3">Neste sábado haverá atualização da infraestrutura do ambiente de staging entre 14h e 18h. O acesso a VPN poderá sofrer pequenas oscilações.</p>
+                  <button class="btn btn-outline-success btn-sm btn-ciente" onclick="marcarCiente(this)">
+                    <i class="bi bi-check2-circle"></i> Confirmar Leitura e Ciência
+                  </button>
+                </div>
+
+                <!-- 15 DE SETEMBRO DE 2026 -->
+                <div class="list-group-item p-4 item-comunicado-full" data-category="rh">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                      <span class="badge bg-info text-dark mb-2">Geral</span>
+                      <span class="badge bg-secondary-subtle text-body mb-2">RH</span>
+                      <h3 class="h5 fw-bold mb-1">Calendário de Pontes e Feriados de Fim de Ano</h3>
+                    </div>
+                    <small class="text-body-secondary fw-semibold">15/09/2026 • 10:15</small>
+                  </div>
+                  <p class="text-body-secondary mb-3">Confira a lista oficial de feriados organizados pela diretoria para o último trimestre de 2026.</p>
+                  <span class="badge bg-success-subtle text-success p-2"><i class="bi bi-check-all"></i> Ciente registrado</span>
+                </div>
+
+                <!-- 14 DE SETEMBRO DE 2026 -->
+                <div class="list-group-item p-4 item-comunicado-full" data-category="rh">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                      <span class="badge bg-success mb-2">Saúde & Bem-Estar</span>
+                      <span class="badge bg-secondary-subtle text-body mb-2">RH</span>
+                      <h3 class="h5 fw-bold mb-1">Abertura de Inscrições: Campanha Setembro Amarelo</h3>
+                    </div>
+                    <small class="text-body-secondary fw-semibold">14/09/2026 • 09:00</small>
+                  </div>
+                  <p class="text-body-secondary mb-3">Inscreva-se nos workshops de saúde mental e inteligência emocional organizados pelo time de RH em parceria com o Gympass.</p>
+                  <button class="btn btn-outline-success btn-sm btn-ciente" onclick="marcarCiente(this)">
+                    <i class="bi bi-check2-circle"></i> Confirmar Leitura
+                  </button>
+                </div>
+
+                <!-- 13 DE SETEMBRO DE 2026 -->
+                <div class="list-group-item p-4 item-comunicado-full" data-category="tech">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                      <span class="badge bg-primary mb-2">Tecnologia</span>
+                      <h3 class="h5 fw-bold mb-1">Nova Ferramenta de IA Generativa Liberada para o Time de Produto</h3>
+                    </div>
+                    <small class="text-body-secondary fw-semibold">13/09/2026 • 16:45</small>
+                  </div>
+                  <p class="text-body-secondary mb-3">Disponibilizamos licenças do GitHub Copilot e Claude Enterprise para o time de desenvolvimento e design.</p>
+                  <span class="badge bg-success-subtle text-success p-2"><i class="bi bi-check-all"></i> Ciente registrado</span>
+                </div>
+
+                <!-- 12 DE SETEMBRO DE 2026 -->
+                <div class="list-group-item p-4 item-comunicado-full" data-category="urgente tech">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                      <span class="badge bg-danger mb-2">Urgente</span>
+                      <span class="badge bg-primary mb-2">Tecnologia</span>
+                      <h3 class="h5 fw-bold mb-1">Alerta de Segurança: Troca Obrigatória de Senhas de Acesso</h3>
+                    </div>
+                    <small class="text-body-secondary fw-semibold">12/09/2026 • 11:20</small>
+                  </div>
+                  <p class="text-body-secondary mb-3">Em conformidade com nossas políticas anuais de cibersegurança, todos os colaboradores devem redefinir suas senhas até 20/09.</p>
+                  <button class="btn btn-outline-success btn-sm btn-ciente" onclick="marcarCiente(this)">
+                    <i class="bi bi-check2-circle"></i> Confirmar Ciência
+                  </button>
+                </div>
+
+                <!-- 11 DE SETEMBRO DE 2026 -->
+                <div class="list-group-item p-4 item-comunicado-full" data-category="rh">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                      <span class="badge bg-info text-dark mb-2">Treinamento</span>
+                      <span class="badge bg-secondary-subtle text-body mb-2">RH</span>
+                      <h3 class="h5 fw-bold mb-1">Workshop de Liderança e Feedback Contínuo</h3>
+                    </div>
+                    <small class="text-body-secondary fw-semibold">11/09/2026 • 15:00</small>
+                  </div>
+                  <p class="text-body-secondary mb-3">Inscrições abertas para o treinamento focado em liderança técnica e cultura de feedbacks. Vagas limitadas.</p>
+                  <span class="badge bg-success-subtle text-success p-2"><i class="bi bi-check-all"></i> Ciente registrado</span>
+                </div>
+
+                <!-- 10 DE SETEMBRO DE 2026 -->
+                <div class="list-group-item p-4 item-comunicado-full" data-category="geral">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                      <span class="badge bg-secondary mb-2">Finanças</span>
+                      <h3 class="h5 fw-bold mb-1">Lembrete: Prazo para Envio de Comprovantes de Reembolso</h3>
+                    </div>
+                    <small class="text-body-secondary fw-semibold">10/09/2026 • 09:30</small>
+                  </div>
+                  <p class="text-body-secondary mb-3">O sistema de despesas fechará no dia 20 de setembro para o processamento dos reembolsos do mês corrente.</p>
+                  <span class="badge bg-success-subtle text-success p-2"><i class="bi bi-check-all"></i> Ciente registrado</span>
+                </div>
+
+                <!-- 09 DE SETEMBRO DE 2026 -->
+                <div class="list-group-item p-4 item-comunicado-full" data-category="geral">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                      <span class="badge bg-info text-dark mb-2">Eventos</span>
+                      <h3 class="h5 fw-bold mb-1">Happy Hour de Boas-Vindas aos Novos Colaboradores</h3>
+                    </div>
+                    <small class="text-body-secondary fw-semibold">09/09/2026 • 17:00</small>
+                  </div>
+                  <p class="text-body-secondary mb-3">Nesta sexta-feira, às 18h, teremos nossa integração mensal no terraço do prédio com aperitivos!</p>
+                  <span class="badge bg-success-subtle text-success p-2"><i class="bi bi-check-all"></i> Ciente registrado</span>
+                </div>
+
+                <!-- 08 DE SETEMBRO DE 2026 -->
+                <div class="list-group-item p-4 item-comunicado-full" data-category="tech">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                      <span class="badge bg-primary mb-2">Tecnologia</span>
+                      <h3 class="h5 fw-bold mb-1">Atualização no Design System da Nexify (Componentes v3.2)</h3>
+                    </div>
+                    <small class="text-body-secondary fw-semibold">08/09/2026 • 14:00</small>
+                  </div>
+                  <p class="text-body-secondary mb-3">O time de Design System disponibilizou novos tokens e componentes acessíveis no Figma e no Bootstrap.</p>
+                  <span class="badge bg-success-subtle text-success p-2"><i class="bi bi-check-all"></i> Ciente registrado</span>
+                </div>
+
+                <!-- 07 DE SETEMBRO DE 2026 (FERIADO NACIONAL) -->
+                <div class="list-group-item p-4 item-comunicado-full" data-category="geral">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                      <span class="badge bg-secondary mb-2">Institucional</span>
+                      <h3 class="h5 fw-bold mb-1">Feriado Nacional: Independência do Brasil</h3>
+                    </div>
+                    <small class="text-body-secondary fw-semibold">07/09/2026 • 08:00</small>
+                  </div>
+                  <p class="text-body-secondary mb-3">Lembrete de que não haverá expediente nesta segunda-feira em virtude do feriado nacional.</p>
+                  <span class="badge bg-success-subtle text-success p-2"><i class="bi bi-check-all"></i> Ciente registrado</span>
+                </div>
+
+                <!-- 06 DE SETEMBRO DE 2026 -->
+                <div class="list-group-item p-4 item-comunicado-full" data-category="rh">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                      <span class="badge bg-secondary-subtle text-body mb-2">RH</span>
+                      <h3 class="h5 fw-bold mb-1">Divulgação dos Resultados da Pesquisa de Clima Q3</h3>
+                    </div>
+                    <small class="text-body-secondary fw-semibold">06/09/2026 • 16:15</small>
+                  </div>
+                  <p class="text-body-secondary mb-3">Atingimos 89% de satisfação interna no terceiro trimestre! Confira o dashboard completo no Portal do RH.</p>
+                  <span class="badge bg-success-subtle text-success p-2"><i class="bi bi-check-all"></i> Ciente registrado</span>
+                </div>
+
+                <!-- 05 DE SETEMBRO DE 2026 -->
+                <div class="list-group-item p-4 item-comunicado-full" data-category="tech">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                      <span class="badge bg-primary mb-2">Tecnologia</span>
+                      <h3 class="h5 fw-bold mb-1">Lançamento Interno da Plataforma "Nexify Analytics"</h3>
+                    </div>
+                    <small class="text-body-secondary fw-semibold">05/09/2026 • 11:00</small>
+                  </div>
+                  <p class="text-body-secondary mb-3">A nova ferramenta centralizada de dados para acompanhamento de métricas foi oficialmente lançada.</p>
+                  <span class="badge bg-success-subtle text-success p-2"><i class="bi bi-check-all"></i> Ciente registrado</span>
+                </div>
+
+                <!-- 04 DE SETEMBRO DE 2026 -->
+                <div class="list-group-item p-4 item-comunicado-full" data-category="urgente gerenc">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                      <span class="badge bg-danger mb-2">Urgente</span>
+                      <span class="badge bg-secondary mb-2">Operações</span>
+                      <h3 class="h5 fw-bold mb-1">Simulado de Evacuação de Emergência no Prédio Asa Norte</h3>
+                    </div>
+                    <small class="text-body-secondary fw-semibold">04/09/2026 • 10:00</small>
+                  </div>
+                  <p class="text-body-secondary mb-3">Realizaremos um treinamento preventivo de combate a incêndio e evacuação no escritório de Brasília.</p>
+                  <span class="badge bg-success-subtle text-success p-2"><i class="bi bi-check-all"></i> Ciente registrado</span>
+                </div>
+
+                <!-- 03 DE SETEMBRO DE 2026 -->
+                <div class="list-group-item p-4 item-comunicado-full" data-category="rh">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                      <span class="badge bg-secondary-subtle text-body mb-2">RH</span>
+                      <h3 class="h5 fw-bold mb-1">Abertura de Vagas Internas: Mobilidade de Carreira</h3>
+                    </div>
+                    <small class="text-body-secondary fw-semibold">03/09/2026 • 13:30</small>
+                  </div>
+                  <p class="text-body-secondary mb-3">Confira os cargos abertos para transição de carreira nas áreas de Product Design, Dados e Projetos.</p>
+                  <span class="badge bg-success-subtle text-success p-2"><i class="bi bi-check-all"></i> Ciente registrado</span>
+                </div>
+
+                <!-- 02 DE SETEMBRO DE 2026 -->
+                <div class="list-group-item p-4 item-comunicado-full" data-category="geral">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                      <span class="badge bg-info text-dark mb-2">Comunicação</span>
+                      <h3 class="h5 fw-bold mb-1">Boletim Informativo Mensal: Destaques de Agosto</h3>
+                    </div>
+                    <small class="text-body-secondary fw-semibold">02/09/2026 • 09:15</small>
+                  </div>
+                  <p class="text-body-secondary mb-3">Acesse a nossa newsletter de liderança com os principais marcos atingidos no mês de agosto.</p>
+                  <span class="badge bg-success-subtle text-success p-2"><i class="bi bi-check-all"></i> Ciente registrado</span>
+                </div>
+
+                <!-- 01 DE SETEMBRO DE 2026 -->
+                <div class="list-group-item p-4 item-comunicado-full" data-category="rh">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                      <span class="badge bg-success mb-2">Abertura do Ciclo</span>
+                      <span class="badge bg-secondary-subtle text-body mb-2">RH</span>
+                      <h3 class="h5 fw-bold mb-1">Início do Ciclo de Avaliação de Desempenho e PDI Q3</h3>
+                    </div>
+                    <small class="text-body-secondary fw-semibold">01/09/2026 • 08:30</small>
+                  </div>
+                  <p class="text-body-secondary mb-3">Damos início oficial ao ciclo de alinhamento de expectativas e preenchimento de habilidades do PDI.</p>
+                  <span class="badge bg-success-subtle text-success p-2"><i class="bi bi-check-all"></i> Ciente registrado</span>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== VIEW 3: SEÇÃO METAS & BÔNUS ==================== -->
+        <div id="section-metas" class="app-section d-none">
+          <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <div>
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                  <li class="breadcrumb-item"><a href="#" class="nav-shortcut text-decoration-none" data-target="section-dashboard">Dashboard</a></li>
+                  <li class="breadcrumb-item active">Metas & Bônus</li>
+                </ol>
+              </nav>
+              <h2 class="h3 fw-bold mb-0">Gestão de Metas & Histórico de Bônus 2026</h2>
+            </div>
+            <button class="btn btn-outline-secondary btn-sm nav-shortcut" data-target="section-dashboard">
+              <i class="bi bi-arrow-left me-1"></i> Voltar ao Dashboard
+            </button>
+          </div>
+
+          <!-- Card de Destaque Vigente -->
+          <div class="row g-4 mb-4">
+            <div class="col-lg-8">
+              <div class="card shadow-sm border-primary-subtle">
+                <div class="card-body p-4">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="badge bg-primary-subtle text-primary">Status Atual • Setembro/2026</span>
+                    <span class="fs-4 fw-bold text-primary">72% Atingido</span>
+                  </div>
+                  <h3 class="h5 fw-bold mb-3">Meta Anual de Crescimento Exponencial</h3>
+                  
+                  <div class="mb-4">
+                    <div class="d-flex justify-content-between mb-1">
+                      <span class="fw-semibold">1. Crescimento de Receita Recorrente (ARR)</span>
+                      <span class="fw-bold text-primary">80%</span>
+                    </div>
+                    <div class="progress" style="height: 12px;">
+                      <div class="progress-bar bg-primary" style="width: 80%"></div>
+                    </div>
+                  </div>
+
+                  <div class="mb-4">
+                    <div class="d-flex justify-content-between mb-1">
+                      <span class="fw-semibold">2. Retenção de Clientes (NPS > 75)</span>
+                      <span class="fw-bold text-success">92%</span>
+                    </div>
+                    <div class="progress" style="height: 12px;">
+                      <div class="progress-bar bg-success" style="width: 92%"></div>
+                    </div>
+                  </div>
+
+                  <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                      <span class="fw-semibold">3. Eficiência Operacional e Entregas</span>
+                      <span class="fw-bold text-warning">45%</span>
+                    </div>
+                    <div class="progress" style="height: 12px;">
+                      <div class="progress-bar bg-warning" style="width: 45%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-4">
+              <div class="card shadow-sm bg-primary-subtle border-primary-subtle h-100">
+                <div class="card-body p-4">
+                  <h3 class="h5 fw-bold text-primary mb-3">Regras do Bônus 2026</h3>
+                  <ul class="list-unstyled small text-body-secondary d-flex flex-column gap-2 mb-0">
+                    <li class="d-flex gap-2"><i class="bi bi-check-circle-fill text-primary"></i> Liberação do bônus proporcional ao atingimento mínimo de 70% da meta global.</li>
+                    <li class="d-flex gap-2"><i class="bi bi-check-circle-fill text-primary"></i> Elegibilidade vinculada à participação nos ciclos de PDI de Março a Novembro.</li>
+                    <li class="d-flex gap-2"><i class="bi bi-check-circle-fill text-primary"></i> Pagamento estimado para a folha de Dezembro/2026.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- HISTÓRICO DE MESES ANTERIORES -->
+          <div class="card shadow-sm">
+            <div class="card-header bg-transparent p-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+              <div>
+                <h3 class="h5 fw-bold mb-0">Histórico do Progresso das Metas (Março a Agosto/2026)</h3>
+                <small class="text-body-secondary">Acompanhe as metas mensais superadas no decorrer do ano</small>
+              </div>
+              <span class="badge bg-success-subtle text-success p-2"><i class="bi bi-trophy-fill me-1"></i> 6 Meses Concluídos</span>
+            </div>
+            
+            <div class="card-body p-4">
+              <ul class="nav nav-pills mb-4 gap-2 flex-wrap" id="monthsTabs" role="tablist">
+                <li class="nav-item">
+                  <button class="nav-link active" id="tab-agosto" data-bs-toggle="tab" data-bs-target="#month-agosto" type="button" role="tab">Agosto/2026</button>
+                </li>
+                <li class="nav-item">
+                  <button class="nav-link" id="tab-julho" data-bs-toggle="tab" data-bs-target="#month-julho" type="button" role="tab">Julho/2026</button>
+                </li>
+                <li class="nav-item">
+                  <button class="nav-link" id="tab-junho" data-bs-toggle="tab" data-bs-target="#month-junho" type="button" role="tab">Junho/2026</button>
+                </li>
+                <li class="nav-item">
+                  <button class="nav-link" id="tab-maio" data-bs-toggle="tab" data-bs-target="#month-maio" type="button" role="tab">Maio/2026</button>
+                </li>
+                <li class="nav-item">
+                  <button class="nav-link" id="tab-abril" data-bs-toggle="tab" data-bs-target="#month-abril" type="button" role="tab">Abril/2026</button>
+                </li>
+                <li class="nav-item">
+                  <button class="nav-link" id="tab-marco" data-bs-toggle="tab" data-bs-target="#month-marco" type="button" role="tab">Março/2026</button>
+                </li>
+              </ul>
+
+              <div class="tab-content" id="monthsTabsContent">
+                <!-- AGOSTO 2026 -->
+                <div class="tab-pane fade show active" id="month-agosto" role="tabpanel">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="h6 fw-bold mb-0">Metas do Mês de Agosto/2026</h4>
+                    <span class="badge bg-success">95% Concluído</span>
+                  </div>
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <div class="p-3 border rounded bg-body-tertiary">
+                        <div class="d-flex justify-content-between small mb-1">
+                          <span class="fw-semibold">1. Lançamento do Portal Nexify Analytics</span>
+                          <span class="text-success fw-bold">100%</span>
+                        </div>
+                        <div class="progress mb-2" style="height: 6px;"><div class="progress-bar bg-success" style="width: 100%"></div></div>
+                        <small class="text-body-secondary">Entregue com sucesso no dia 30/08/2026.</small>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="p-3 border rounded bg-body-tertiary">
+                        <div class="d-flex justify-content-between small mb-1">
+                          <span class="fw-semibold">2. Atingimento do NPS de 78 Pontos</span>
+                          <span class="text-success fw-bold">90%</span>
+                        </div>
+                        <div class="progress mb-2" style="height: 6px;"><div class="progress-bar bg-success" style="width: 90%"></div></div>
+                        <small class="text-body-secondary">NPS consolidado em 76 pontos em 31/08/2026.</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- JULHO 2026 -->
+                <div class="tab-pane fade" id="month-julho" role="tabpanel">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="h6 fw-bold mb-0">Metas do Mês de Julho/2026</h4>
+                    <span class="badge bg-success">95% Concluído</span>
+                  </div>
+                  <div class="row g-3">
+                    <div class="col-md-4">
+                      <div class="p-3 border rounded bg-body-tertiary">
+                        <div class="d-flex justify-content-between small mb-1">
+                          <span class="fw-semibold">1. Capacitação Interna de IA</span>
+                          <span class="text-success fw-bold">100%</span>
+                        </div>
+                        <div class="progress mb-2" style="height: 6px;"><div class="progress-bar bg-success" style="width: 100%"></div></div>
+                        <small class="text-body-secondary">100% dos times treinados em 28/07.</small>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="p-3 border rounded bg-body-tertiary">
+                        <div class="d-flex justify-content-between small mb-1">
+                          <span class="fw-semibold">2. Expansão Mercado LatAm</span>
+                          <span class="text-warning fw-bold">85%</span>
+                        </div>
+                        <div class="progress mb-2" style="height: 6px;"><div class="progress-bar bg-warning" style="width: 85%"></div></div>
+                        <small class="text-body-secondary">Operação iniciada em Bogotá.</small>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="p-3 border rounded bg-body-tertiary">
+                        <div class="d-flex justify-content-between small mb-1">
+                          <span class="fw-semibold">3. Certificação ISO 27001</span>
+                          <span class="text-success fw-bold">100%</span>
+                        </div>
+                        <div class="progress mb-2" style="height: 6px;"><div class="progress-bar bg-success" style="width: 100%"></div></div>
+                        <small class="text-body-secondary">Auditoria aprovada em 15/07.</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- JUNHO 2026 -->
+                <div class="tab-pane fade" id="month-junho" role="tabpanel">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="h6 fw-bold mb-0">Metas do Mês de Junho/2026</h4>
+                    <span class="badge bg-success">97% Concluído</span>
+                  </div>
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <div class="p-3 border rounded bg-body-tertiary">
+                        <div class="d-flex justify-content-between small mb-1">
+                          <span class="fw-semibold">1. Redução do Churn Rate (< 2%)</span>
+                          <span class="text-success fw-bold">95%</span>
+                        </div>
+                        <div class="progress mb-2" style="height: 6px;"><div class="progress-bar bg-success" style="width: 95%"></div></div>
+                        <small class="text-body-secondary">Churn mantido em 2.1% no fechamento.</small>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="p-3 border rounded bg-body-tertiary">
+                        <div class="d-flex justify-content-between small mb-1">
+                          <span class="fw-semibold">2. Automação de Onboarding</span>
+                          <span class="text-success fw-bold">100%</span>
+                        </div>
+                        <div class="progress mb-2" style="height: 6px;"><div class="progress-bar bg-success" style="width: 100%"></div></div>
+                        <small class="text-body-secondary">Tempo de setup reduzido em 40%.</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- MAIO 2026 -->
+                <div class="tab-pane fade" id="month-maio" role="tabpanel">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="h6 fw-bold mb-0">Metas do Mês de Maio/2026</h4>
+                    <span class="badge bg-success">100% Concluído</span>
+                  </div>
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <div class="p-3 border rounded bg-body-tertiary">
+                        <div class="d-flex justify-content-between small mb-1">
+                          <span class="fw-semibold">1. Migração para Infra Serverless</span>
+                          <span class="text-success fw-bold">100%</span>
+                        </div>
+                        <div class="progress mb-2" style="height: 6px;"><div class="progress-bar bg-success" style="width: 100%"></div></div>
+                        <small class="text-body-secondary">Redução de 30% nos custos cloud.</small>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="p-3 border rounded bg-body-tertiary">
+                        <div class="d-flex justify-content-between small mb-1">
+                          <span class="fw-semibold">2. Implementação de CRM de Vendas</span>
+                          <span class="text-success fw-bold">100%</span>
+                        </div>
+                        <div class="progress mb-2" style="height: 6px;"><div class="progress-bar bg-success" style="width: 100%"></div></div>
+                        <small class="text-body-secondary">Integração com time comercial concluída.</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ABRIL 2026 -->
+                <div class="tab-pane fade" id="month-abril" role="tabpanel">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="h6 fw-bold mb-0">Metas do Mês de Abril/2026</h4>
+                    <span class="badge bg-success">100% Concluído</span>
+                  </div>
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <div class="p-3 border rounded bg-body-tertiary">
+                        <div class="d-flex justify-content-between small mb-1">
+                          <span class="fw-semibold">1. Lançamento da Versão Mobile v2.0</span>
+                          <span class="text-success fw-bold">100%</span>
+                        </div>
+                        <div class="progress mb-2" style="height: 6px;"><div class="progress-bar bg-success" style="width: 100%"></div></div>
+                        <small class="text-body-secondary">Publicado nas lojas iOS e Android.</small>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="p-3 border rounded bg-body-tertiary">
+                        <div class="d-flex justify-content-between small mb-1">
+                          <span class="fw-semibold">2. Otimização do CAC (Custo de Aquisição)</span>
+                          <span class="text-success fw-bold">100%</span>
+                        </div>
+                        <div class="progress mb-2" style="height: 6px;"><div class="progress-bar bg-success" style="width: 100%"></div></div>
+                        <small class="text-body-secondary">Redução de 15% no custo por lead.</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- MARÇO 2026 -->
+                <div class="tab-pane fade" id="month-marco" role="tabpanel">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="h6 fw-bold mb-0">Metas do Mês de Março/2026</h4>
+                    <span class="badge bg-success">100% Concluído</span>
+                  </div>
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <div class="p-3 border rounded bg-body-tertiary">
+                        <div class="d-flex justify-content-between small mb-1">
+                          <span class="fw-semibold">1. Reestruturação de Microsserviços</span>
+                          <span class="text-success fw-bold">100%</span>
+                        </div>
+                        <div class="progress mb-2" style="height: 6px;"><div class="progress-bar bg-success" style="width: 100%"></div></div>
+                        <small class="text-body-secondary">Nova arquitetura em produção.</small>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="p-3 border rounded bg-body-tertiary">
+                        <div class="d-flex justify-content-between small mb-1">
+                          <span class="fw-semibold">2. Homologação LGPD & Compliance</span>
+                          <span class="text-success fw-bold">100%</span>
+                        </div>
+                        <div class="progress mb-2" style="height: 6px;"><div class="progress-bar bg-success" style="width: 100%"></div></div>
+                        <small class="text-body-secondary">Políticas de privacidade renovadas.</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== VIEW 4: SEÇÃO PESQUISAS & HISTÓRICO ==================== -->
+        <div id="section-votacoes" class="app-section d-none">
+          <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <div>
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                  <li class="breadcrumb-item"><a href="#" class="nav-shortcut text-decoration-none" data-target="section-dashboard">Dashboard</a></li>
+                  <li class="breadcrumb-item active">Pesquisas & Votações</li>
+                </ol>
+              </nav>
+              <h2 class="h3 fw-bold mb-0">Pesquisas Internas & Votações</h2>
+            </div>
+            <button class="btn btn-outline-secondary btn-sm nav-shortcut" data-target="section-dashboard">
+              <i class="bi bi-arrow-left me-1"></i> Voltar ao Dashboard
+            </button>
+          </div>
+
+          <!-- Pesquisa Ativa Vigente -->
+          <div class="card shadow-sm mb-4">
+            <div class="card-body p-4">
+              <span class="badge bg-warning text-dark mb-2">Votação Aberta • Encerra em 19/09/2026</span>
+              <h3 class="h5 fw-bold mb-3">Hackathon Interno Nexify 2026</h3>
+              <p class="text-body-secondary mb-4">Ajude a definir o tema principal da nossa próxima Hackathon. O tema vencedor receberá suporte direto da diretoria de inovação.</p>
+
+              <form class="pollForm">
+                <div class="form-check mb-3 p-3 border rounded">
+                  <input class="form-check-input ms-0 me-2" type="radio" name="pollOptionPage" id="optPage1" value="IA Aplicada ao Negócio" required>
+                  <label class="form-check-label fw-medium" for="optPage1">Inteligência Artificial Aplicada ao Negócio e Automação</label>
+                </div>
+                <div class="form-check mb-3 p-3 border rounded">
+                  <input class="form-check-input ms-0 me-2" type="radio" name="pollOptionPage" id="optPage2" value="Ferramentas de Produtividade">
+                  <label class="form-check-label fw-medium" for="optPage2">Ferramentas Internas de Produtividade e Developer Experience</label>
+                </div>
+                <div class="form-check mb-4 p-3 border rounded">
+                  <input class="form-check-input ms-0 me-2" type="radio" name="pollOptionPage" id="optPage3" value="Inovação e Sustentabilidade">
+                  <label class="form-check-label fw-medium" for="optPage3">Inovação Aberta, Impacto Social e Sustentabilidade</label>
+                </div>
+                <button type="submit" class="btn btn-primary px-4">Enviar Voto</button>
+              </form>
+
+              <div class="pollResults d-none mt-3">
+                <div class="alert alert-success p-3 mb-3">
+                  <i class="bi bi-check-circle-fill me-2"></i> Obrigado por participar! Seu voto foi registrado.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- HISTÓRICO DE PESQUISAS ANTERIORES E RESULTADOS -->
+          <div class="card shadow-sm">
+            <div class="card-header bg-transparent p-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+              <div>
+                <h3 class="h5 fw-bold mb-0">Histórico de Pesquisas Anteriores</h3>
+                <small class="text-body-secondary">Resultados consolidados das votações encerradas nos últimos meses</small>
+              </div>
+              <span class="badge bg-secondary-subtle text-body p-2"><i class="bi bi-archive-fill me-1"></i> 4 Enquetes Encerradas</span>
+            </div>
+
+            <div class="card-body p-4">
+              <div class="row g-4">
+
+                <!-- Pesquisa Anterior 1 -->
+                <div class="col-md-6">
+                  <div class="p-3 border rounded bg-body-tertiary h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <span class="badge bg-secondary">Encerrada em 31/08/2026</span>
+                      <small class="text-body-secondary">168 votos computados</small>
+                    </div>
+                    <h4 class="h6 fw-bold mb-3">Local para a Festa e Confraternização de Fim de Ano</h4>
+                    
+                    <div class="mb-3 p-2 bg-success-subtle border border-success-subtle rounded">
+                      <div class="d-flex justify-content-between small fw-bold text-success mb-1">
+                        <span><i class="bi bi-trophy-fill me-1"></i> Sítio / Casa de Campo com Almoço</span>
+                        <span>52% (Vencedora)</span>
+                      </div>
+                      <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-success" style="width: 52%"></div>
+                      </div>
+                    </div>
+
+                    <div class="mb-2">
+                      <div class="d-flex justify-content-between small mb-1">
+                        <span>Hotel Urbano com Rooftop</span>
+                        <span>33%</span>
+                      </div>
+                      <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-secondary" style="width: 33%"></div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div class="d-flex justify-content-between small mb-1">
+                        <span>Espaço de Festas Tradicional</span>
+                        <span>15%</span>
+                      </div>
+                      <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-secondary" style="width: 15%"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Pesquisa Anterior 2 -->
+                <div class="col-md-6">
+                  <div class="p-3 border rounded bg-body-tertiary h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <span class="badge bg-secondary">Encerrada em 31/07/2026</span>
+                      <small class="text-body-secondary">154 votos computados</small>
+                    </div>
+                    <h4 class="h6 fw-bold mb-3">Formato de Pontes de Feriado no 2º Semestre</h4>
+                    
+                    <div class="mb-3 p-2 bg-success-subtle border border-success-subtle rounded">
+                      <div class="d-flex justify-content-between small fw-bold text-success mb-1">
+                        <span><i class="bi bi-trophy-fill me-1"></i> Enforcamento com Compensação Antecipada</span>
+                        <span>64% (Vencedora)</span>
+                      </div>
+                      <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-success" style="width: 64%"></div>
+                      </div>
+                    </div>
+
+                    <div class="mb-2">
+                      <div class="d-flex justify-content-between small mb-1">
+                        <span>Expediente Normal em Home Office</span>
+                        <span>24%</span>
+                      </div>
+                      <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-secondary" style="width: 24%"></div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div class="d-flex justify-content-between small mb-1">
+                        <span>Sorteio de Escalas de Plantão</span>
+                        <span>12%</span>
+                      </div>
+                      <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-secondary" style="width: 12%"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Pesquisa Anterior 3 -->
+                <div class="col-md-6">
+                  <div class="p-3 border rounded bg-body-tertiary h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <span class="badge bg-secondary">Encerrada em 30/06/2026</span>
+                      <small class="text-body-secondary">142 votos computados</small>
+                    </div>
+                    <h4 class="h6 fw-bold mb-3">Janela Flexível de Suporte e Atendimento Interno</h4>
+                    
+                    <div class="mb-3 p-2 bg-success-subtle border border-success-subtle rounded">
+                      <div class="d-flex justify-content-between small fw-bold text-success mb-1">
+                        <span><i class="bi bi-trophy-fill me-1"></i> Horário Flexível com Core Hours (8h às 10h)</span>
+                        <span>71% (Vencedora)</span>
+                      </div>
+                      <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-success" style="width: 71%"></div>
+                      </div>
+                    </div>
+
+                    <div class="mb-2">
+                      <div class="d-flex justify-content-between small mb-1">
+                        <span>Turno Fixo das 08h às 17h</span>
+                        <span>19%</span>
+                      </div>
+                      <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-secondary" style="width: 19%"></div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div class="d-flex justify-content-between small mb-1">
+                        <span>Turno Fixo das 10h às 19h</span>
+                        <span>10%</span>
+                      </div>
+                      <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-secondary" style="width: 10%"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Pesquisa Anterior 4 -->
+                <div class="col-md-6">
+                  <div class="p-3 border rounded bg-body-tertiary h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <span class="badge bg-secondary">Encerrada em 31/05/2026</span>
+                      <small class="text-body-secondary">180 votos computados</small>
+                    </div>
+                    <h4 class="h6 fw-bold mb-3">Seleção do Novo Benefício de Saúde & Bem-Estar</h4>
+                    
+                    <div class="mb-3 p-2 bg-success-subtle border border-success-subtle rounded">
+                      <div class="d-flex justify-content-between small fw-bold text-success mb-1">
+                        <span><i class="bi bi-trophy-fill me-1"></i> Gympass / TotalPass com Cobertura Nacional</span>
+                        <span>83% (Vencedora)</span>
+                      </div>
+                      <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-success" style="width: 83%"></div>
+                      </div>
+                    </div>
+
+                    <div class="mb-2">
+                      <div class="d-flex justify-content-between small mb-1">
+                        <span>Parceria com Clínicas de Psicologia</span>
+                        <span>11%</span>
+                      </div>
+                      <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-secondary" style="width: 11%"></div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div class="d-flex justify-content-between small mb-1">
+                        <span>Vale-Cultura Ampliado</span>
+                        <span>6%</span>
+                      </div>
+                      <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-secondary" style="width: 6%"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== VIEW 5: SEÇÃO PDI & DESEMPENHO ==================== -->
+        <div id="section-pdi" class="app-section d-none">
+          <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <div>
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                  <li class="breadcrumb-item"><a href="#" class="nav-shortcut text-decoration-none" data-target="section-dashboard">Dashboard</a></li>
+                  <li class="breadcrumb-item active">Desempenho & PDI</li>
+                </ol>
+              </nav>
+              <h2 class="h3 fw-bold mb-0">Plano de Desenvolvimento Individual (PDI)</h2>
+            </div>
+            <button class="btn btn-outline-secondary btn-sm nav-shortcut" data-target="section-dashboard">
+              <i class="bi bi-arrow-left me-1"></i> Voltar ao Dashboard
+            </button>
+          </div>
+
+          <!-- Ciclo Atual Vigente -->
+          <div class="card shadow-sm mb-4 border-primary-subtle">
+            <div class="card-body p-4">
+              <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <div>
+                  <span class="badge bg-primary mb-1">Ciclo Vigente • Q3 2026</span>
+                  <h3 class="h5 fw-bold mb-0">Matriz de Competências de Setembro/2026</h3>
+                </div>
+                <span class="badge bg-success-subtle text-success p-2 fs-6"><i class="bi bi-check-circle-fill me-1"></i> PDI em Dia</span>
+              </div>
+
+              <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Competência</th>
+                      <th>Nível Atual</th>
+                      <th>Meta do Ciclo</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="fw-semibold">Arquitetura de Sistemas / React</td>
+                      <td>Avançado (85%)</td>
+                      <td>Especialista (90%)</td>
+                      <td><span class="badge bg-success-subtle text-success">Em Progresso</span></td>
+                    </tr>
+                    <tr>
+                      <td class="fw-semibold">Product Thinking & Visão de Negócio</td>
+                      <td>Intermediário (70%)</td>
+                      <td>Avançado (80%)</td>
+                      <td><span class="badge bg-success-subtle text-success">Em Progresso</span></td>
+                    </tr>
+                    <tr>
+                      <td class="fw-semibold">Comunicação e Liderança Técnica</td>
+                      <td>Em Desenvolvimento (60%)</td>
+                      <td>Intermediário (75%)</td>
+                      <td><span class="badge bg-warning-subtle text-warning">Atenção</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- HISTÓRICO DE CICLOS ANTERIORES DE PDI (MARÇO A AGOSTO/2026) -->
+          <div class="card shadow-sm">
+            <div class="card-header bg-transparent p-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+              <div>
+                <h3 class="h5 fw-bold mb-0">Histórico de Matrizes de Competências (Março a Agosto/2026)</h3>
+                <small class="text-body-secondary">Acompanhe a evolução histórica das suas habilidades em cada ciclo passado</small>
+              </div>
+              <span class="badge bg-secondary-subtle text-body p-2"><i class="bi bi-clock-history me-1"></i> 6 Ciclos Arquivados</span>
+            </div>
+
+            <div class="card-body p-4">
+              <!-- Abas dos Meses de PDI -->
+              <ul class="nav nav-pills mb-4 gap-2 flex-wrap" id="pdiMonthsTabs" role="tablist">
+                <li class="nav-item">
+                  <button class="nav-link active" id="pdi-tab-agosto" data-bs-toggle="tab" data-bs-target="#pdi-month-agosto" type="button" role="tab">Agosto/2026</button>
+                </li>
+                <li class="nav-item">
+                  <button class="nav-link" id="pdi-tab-julho" data-bs-toggle="tab" data-bs-target="#pdi-month-julho" type="button" role="tab">Julho/2026</button>
+                </li>
+                <li class="nav-item">
+                  <button class="nav-link" id="pdi-tab-junho" data-bs-toggle="tab" data-bs-target="#pdi-month-junho" type="button" role="tab">Junho/2026</button>
+                </li>
+                <li class="nav-item">
+                  <button class="nav-link" id="pdi-tab-maio" data-bs-toggle="tab" data-bs-target="#pdi-month-maio" type="button" role="tab">Maio/2026</button>
+                </li>
+                <li class="nav-item">
+                  <button class="nav-link" id="pdi-tab-abril" data-bs-toggle="tab" data-bs-target="#pdi-month-abril" type="button" role="tab">Abril/2026</button>
+                </li>
+                <li class="nav-item">
+                  <button class="nav-link" id="pdi-tab-marco" data-bs-toggle="tab" data-bs-target="#pdi-month-marco" type="button" role="tab">Março/2026</button>
+                </li>
+              </ul>
+
+              <!-- Conteúdo dos Ciclos de PDI -->
+              <div class="tab-content" id="pdiMonthsTabsContent">
+                
+                <!-- PDI AGOSTO 2026 -->
+                <div class="tab-pane fade show active" id="pdi-month-agosto" role="tabpanel">
+                  <div class="table-responsive">
+                    <table class="table table-bordered align-middle">
+                      <thead class="table-light">
+                        <tr>
+                          <th>Competência Avaliada em Agosto/2026</th>
+                          <th>Nível Atingido</th>
+                          <th>Meta Fixada</th>
+                          <th>Avaliação do Gestor</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td class="fw-semibold">Design Systems e Componentização Nível 3</td>
+                          <td>80%</td>
+                          <td>80%</td>
+                          <td><span class="badge bg-success-subtle text-success">Concluído</span></td>
+                        </tr>
+                        <tr>
+                          <td class="fw-semibold">Testes de Usabilidade com Usuários Reais</td>
+                          <td>75%</td>
+                          <td>70%</td>
+                          <td><span class="badge bg-success-subtle text-success">Superado</span></td>
+                        </tr>
+                        <tr>
+                          <td class="fw-semibold">Documentação Técnica no Zeroheight/Figma</td>
+                          <td>85%</td>
+                          <td>85%</td>
+                          <td><span class="badge bg-success-subtle text-success">Concluído</span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!-- PDI JULHO 2026 -->
+                <div class="tab-pane fade" id="pdi-month-julho" role="tabpanel">
+                  <div class="table-responsive">
+                    <table class="table table-bordered align-middle">
+                      <thead class="table-light">
+                        <tr>
+                          <th>Competência Avaliada em Julho/2026</th>
+                          <th>Nível Atingido</th>
+                          <th>Meta Fixada</th>
+                          <th>Avaliação do Gestor</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td class="fw-semibold">Prototipagem de Alta Fidelidade com Variáveis</td>
+                          <td>75%</td>
+                          <td>75%</td>
+                          <td><span class="badge bg-success-subtle text-success">Concluído</span></td>
+                        </tr>
+                        <tr>
+                          <td class="fw-semibold">Métricas de UX (HEART Framework e CES)</td>
+                          <td>65%</td>
+                          <td>60%</td>
+                          <td><span class="badge bg-success-subtle text-success">Superado</span></td>
+                        </tr>
+                        <tr>
+                          <td class="fw-semibold">Alinhamento de Requisitos com Product Managers</td>
+                          <td>70%</td>
+                          <td>70%</td>
+                          <td><span class="badge bg-success-subtle text-success">Concluído</span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!-- PDI JUNHO 2026 -->
+                <div class="tab-pane fade" id="pdi-month-junho" role="tabpanel">
+                  <div class="table-responsive">
+                    <table class="table table-bordered align-middle">
+                      <thead class="table-light">
+                        <tr>
+                          <th>Competência Avaliada em Junho/2026</th>
+                          <th>Nível Atingido</th>
+                          <th>Meta Fixada</th>
+                          <th>Avaliação do Gestor</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td class="fw-semibold">Acessibilidade Web (WCAG 2.1 nível AA)</td>
+                          <td>70%</td>
+                          <td>70%</td>
+                          <td><span class="badge bg-success-subtle text-success">Concluído</span></td>
+                        </tr>
+                        <tr>
+                          <td class="fw-semibold">Facilitação de Workshops de Co-criação</td>
+                          <td>60%</td>
+                          <td>60%</td>
+                          <td><span class="badge bg-success-subtle text-success">Concluído</span></td>
+                        </tr>
+                        <tr>
+                          <td class="fw-semibold">Pesquisa Qualitativa de Benchmarking</td>
+                          <td>80%</td>
+                          <td>75%</td>
+                          <td><span class="badge bg-success-subtle text-success">Superado</span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!-- PDI MAIO 2026 -->
+                <div class="tab-pane fade" id="pdi-month-maio" role="tabpanel">
+                  <div class="table-responsive">
+                    <table class="table table-bordered align-middle">
+                      <thead class="table-light">
+                        <tr>
+                          <th>Competência Avaliada em Maio/2026</th>
+                          <th>Nível Atingido</th>
+                          <th>Meta Fixada</th>
+                          <th>Avaliação do Gestor</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td class="fw-semibold">Mapeamento de User Flows e Jornadas do Cliente</td>
+                          <td>80%</td>
+                          <td>80%</td>
+                          <td><span class="badge bg-success-subtle text-success">Concluído</span></td>
+                        </tr>
+                        <tr>
+                          <td class="fw-semibold">Engenharia Reversa de Componentes Bootstrap</td>
+                          <td>85%</td>
+                          <td>80%</td>
+                          <td><span class="badge bg-success-subtle text-success">Superado</span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!-- PDI ABRIL 2026 -->
+                <div class="tab-pane fade" id="pdi-month-abril" role="tabpanel">
+                  <div class="table-responsive">
+                    <table class="table table-bordered align-middle">
+                      <thead class="table-light">
+                        <tr>
+                          <th>Competência Avaliada em Abril/2026</th>
+                          <th>Nível Atingido</th>
+                          <th>Meta Fixada</th>
+                          <th>Avaliação do Gestor</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td class="fw-semibold">Wireframing e Arquitetura da Informação</td>
+                          <td>75%</td>
+                          <td>75%</td>
+                          <td><span class="badge bg-success-subtle text-success">Concluído</span></td>
+                        </tr>
+                        <tr>
+                          <td class="fw-semibold">Comunicação Visual e Grid de Layouts</td>
+                          <td>70%</td>
+                          <td>70%</td>
+                          <td><span class="badge bg-success-subtle text-success">Concluído</span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!-- PDI MARÇO 2026 -->
+                <div class="tab-pane fade" id="pdi-month-marco" role="tabpanel">
+                  <div class="table-responsive">
+                    <table class="table table-bordered align-middle">
+                      <thead class="table-light">
+                        <tr>
+                          <th>Competência Avaliada em Março/2026</th>
+                          <th>Nível Atingido</th>
+                          <th>Meta Fixada</th>
+                          <th>Avaliação do Gestor</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td class="fw-semibold">Onboarding Metodológico na Cultura Nexify</td>
+                          <td>100%</td>
+                          <td>100%</td>
+                          <td><span class="badge bg-success-subtle text-success">Concluído</span></td>
+                        </tr>
+                        <tr>
+                          <td class="fw-semibold">Uso Básico do Design System e Tokens Visuais</td>
+                          <td>65%</td>
+                          <td>60%</td>
+                          <td><span class="badge bg-success-subtle text-success">Superado</span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Bootstrap 5.3 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Scripts de Navegação Interativa e Alternância de Telas -->
+  <script>
+    // 1. Navegação entre Views/Seções
+    function navigateToSection(targetId) {
+      document.querySelectorAll('.app-section').forEach(section => {
+        section.classList.add('d-none');
+      });
+
+      const targetSection = document.getElementById(targetId);
+      if (targetSection) {
+        targetSection.classList.remove('d-none');
+      }
+
+      document.querySelectorAll('#sidebarMenu .nav-link').forEach(link => {
+        if (link.getAttribute('data-target') === targetId) {
+          link.classList.add('active');
+          link.classList.remove('text-white-50');
+        } else {
+          link.classList.remove('active');
+          link.classList.add('text-white-50');
+        }
+      });
+
+      const pageTitle = document.getElementById('pageTitle');
+      const viewBadge = document.getElementById('viewBadge');
+
+      if (targetId === 'section-dashboard') {
+        pageTitle.innerText = 'Portal do Colaborador';
+        viewBadge.classList.add('d-none');
+      } else {
+        pageTitle.innerText = 'Visão Detalhada';
+        viewBadge.classList.remove('d-none');
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.querySelectorAll('#sidebarMenu .nav-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = link.getAttribute('data-target');
+        navigateToSection(target);
+      });
+    });
+
+    document.querySelectorAll('.nav-shortcut').forEach(button => {
+      button.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = button.getAttribute('data-target');
+        navigateToSection(target);
+      });
+    });
+
+    // 2. Toggle Sidebar Recuar/Expandir
+    const btnToggleSidebar = document.getElementById('btnToggleSidebar');
+    const iconToggleSidebar = document.getElementById('iconToggleSidebar');
+    const body = document.body;
+
+    btnToggleSidebar.addEventListener('click', () => {
+      body.classList.toggle('sidebar-narrow');
+      if (body.classList.contains('sidebar-narrow')) {
+        iconToggleSidebar.className = 'bi bi-chevron-right fs-5';
+      } else {
+        iconToggleSidebar.className = 'bi bi-chevron-left fs-5';
+      }
+    });
+
+    const btnMobileToggle = document.getElementById('btnMobileToggle');
+    btnMobileToggle.addEventListener('click', () => {
+      body.classList.toggle('mobile-open');
+    });
+
+    // 3. Tema Light/Dark
+    const btnThemeToggle = document.getElementById('btnThemeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const themeLabel = document.getElementById('themeLabel');
+    const htmlElem = document.documentElement;
+
+    btnThemeToggle.addEventListener('click', () => {
+      const currentTheme = htmlElem.getAttribute('data-bs-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      
+      htmlElem.setAttribute('data-bs-theme', newTheme);
+      
+      if (newTheme === 'dark') {
+        themeIcon.className = 'bi bi-sun-fill';
+        themeLabel.innerText = 'Modo Claro';
+        btnThemeToggle.classList.replace('btn-outline-secondary', 'btn-outline-warning');
+      } else {
+        themeIcon.className = 'bi bi-moon-stars-fill';
+        themeLabel.innerText = 'Modo Escuro';
+        btnThemeToggle.classList.replace('btn-outline-warning', 'btn-outline-secondary');
+      }
+    });
+
+    // 4. Ação Ciente
+    function marcarCiente(button) {
+      const badge = document.createElement('span');
+      badge.className = 'badge bg-success-subtle text-success p-2';
+      badge.innerHTML = '<i class="bi bi-check-all"></i> Ciente registrado';
+      button.parentNode.replaceChild(badge, button);
+    }
+
+    // 5. Formulários de Enquete
+    document.querySelectorAll('.pollForm').forEach(form => {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        form.classList.add('d-none');
+        const results = form.nextElementSibling;
+        if (results && results.classList.contains('pollResults')) {
+          results.classList.remove('d-none');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
