@@ -1,0 +1,2245 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atlas da Forma — Transdisciplinaridade, Cognição e Design</title>
+  <meta name="description" content="Um acervo transdisciplinar e interativo que investiga a forma no design através da filosofia, matemática, ciências naturais e cognição.">
+  
+  <style>
+    /* ==========================================================================
+       DESIGN TOKENS & VARIÁVEIS DO SISTEMA (ATLAS DA FORMA)
+       ========================================================================== */
+    :root {
+      /* Paleta Modo Escuro — Destaque Coral (#ff6b52) */
+      --bg: #0b0d10;
+      --bg-raised: #13171d;
+      --bg-card: #181d26;
+      --ink: #f0f4f8;
+      --ink-muted: #94a3b8;
+      --ink-faint: #64748b;
+      
+      --accent: #ff6b52; /* Coral Quente */
+      --accent-hover: #ff5236;
+      --accent-ink: #0f172a;
+      
+      --line: #222c37;
+      --line-strong: #334155;
+      
+      /* Dimensões */
+      --shell: 72rem;
+      --prosa: 42rem;
+      --radius: 0.625rem;
+      --header-height: 4rem;
+      
+      color-scheme: dark;
+    }
+
+    /* TEMA CLARO (LIGHT MODE) — Marrom Terroso Acessível (#8c4a27) */
+    :root[data-theme='light'] {
+      --bg: #f8fafc;
+      --bg-raised: #ffffff;
+      --bg-card: #f1f5f9;
+      --ink: #0f172a;
+      --ink-muted: #475569;
+      --ink-faint: #64748b;
+      
+      --accent: #8c4a27; /* Marrom Terroso com Contraste WCAG > 4.5:1 */
+      --accent-hover: #70381e;
+      --accent-ink: #ffffff;
+      
+      --line: #e2e8f0;
+      --line-strong: #cbd5e1;
+      
+      color-scheme: light;
+    }
+
+    /* ==========================================================================
+       RESET & BASE RESPONSIVA
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 100%;
+    }
+
+    body {
+      margin: 0;
+      background-color: var(--bg);
+      color: var(--ink);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 1rem;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    .pular-navegacao {
+      position: absolute;
+      top: -100px;
+      left: 1rem;
+      z-index: 100;
+      padding: 0.75rem 1.25rem;
+      background: var(--accent);
+      color: var(--accent-ink);
+      font-weight: 600;
+      border-radius: var(--radius);
+      text-decoration: none;
+      transition: top 0.2s ease;
+    }
+    .pular-navegacao:focus {
+      top: 1rem;
+    }
+
+    .shell {
+      max-width: var(--shell);
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 1.25rem;
+      padding-right: 1.25rem;
+    }
+
+    .fundo-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.35;
+    }
+
+    /* TIPOGRAFIA RESPONSIVA */
+    h1, h2, h3, h4 {
+      margin: 0;
+      line-height: 1.2;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    h1 { font-size: clamp(2rem, 1.2rem + 3.5vw, 3.75rem); }
+    h2 { font-size: clamp(1.35rem, 1.1rem + 1.8vw, 2.25rem); }
+    h3 { font-size: 1.2rem; }
+
+    p { margin: 0; }
+
+    .eyebrow {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.8125rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .lead {
+      font-size: clamp(1rem, 0.95rem + 0.5vw, 1.25rem);
+      color: var(--ink-muted);
+    }
+
+    .prosa {
+      max-width: var(--prosa);
+      color: var(--ink-muted);
+    }
+
+    .mt-1 { margin-top: 0.5rem; }
+    .mt-2 { margin-top: 1rem; }
+    .mt-3 { margin-top: 1.5rem; }
+    .mt-4 { margin-top: 2rem; }
+
+    /* ==========================================================================
+       CABEÇALHO RESPONSIVO
+       ========================================================================== */
+    .topo {
+      position: sticky;
+      top: 0;
+      height: var(--header-height);
+      background: rgba(11, 13, 16, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+      z-index: 40;
+    }
+    :root[data-theme='light'] .topo {
+      background: rgba(248, 250, 252, 0.85);
+    }
+
+    .topo__container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+    }
+
+    .marca {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .marca__texto {
+      font-family: ui-monospace, SFMono-Regular, monospace;
+      font-size: 0.95rem;
+      letter-spacing: -0.02em;
+    }
+    .marca__texto b { color: var(--accent); }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+    .nav__link {
+      color: var(--ink-muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+    .nav__link:hover { color: var(--accent); }
+
+    .topo__acoes {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-icone {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.25rem;
+      height: 2.25rem;
+      background: var(--bg-raised);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      color: var(--ink-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-icone:hover {
+      color: var(--ink);
+      border-color: var(--line-strong);
+    }
+
+    .tecla-atalho {
+      font-family: ui-monospace, monospace;
+      font-size: 0.65rem;
+      background: var(--line);
+      padding: 0.1rem 0.3rem;
+      border-radius: 4px;
+      margin-left: 0.3rem;
+    }
+
+    .icone-lua { display: none; }
+    :root[data-theme='light'] .icone-sol { display: none; }
+    :root[data-theme='light'] .icone-lua { display: block; }
+
+    .topo__mobile-toggle { display: none; }
+
+    /* ==========================================================================
+       HEROI & COMPARADOR DE FLUXO
+       ========================================================================== */
+    .secao {
+      padding-top: clamp(2.5rem, 5vw, 5rem);
+      padding-bottom: clamp(2.5rem, 5vw, 5rem);
+      border-bottom: 1px solid var(--line);
+      position: relative;
+      z-index: 1;
+    }
+
+    .heroi {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      align-items: center;
+    }
+    @media (min-width: 60rem) {
+      .heroi { grid-template-columns: 1.1fr 0.9fr; }
+    }
+
+    .heroi__acoes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 2.875rem;
+      padding: 0 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn--primario {
+      background: var(--accent);
+      color: var(--accent-ink);
+    }
+    .btn--primario:hover { background: var(--accent-hover); }
+
+    .btn--linha {
+      background: transparent;
+      border: 1px solid var(--line-strong);
+      color: var(--ink);
+    }
+    .btn--linha:hover { border-color: var(--accent); color: var(--accent); }
+
+    .visor-3d-livre {
+      width: 100%;
+      aspect-ratio: 1;
+      max-width: 26rem;
+      margin: 0 auto;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .visor-3d-livre canvas {
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+    }
+    .visor-3d-livre canvas:active { cursor: grabbing; }
+
+    /* COMPARADOR DE VELOCIDADE */
+    .cartao-destaque {
+      background: var(--bg-raised);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: clamp(1.25rem, 3vw, 2.25rem);
+    }
+
+    .rio {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .rio__info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      gap: 0.5rem;
+    }
+    .rio__nome { font-weight: 600; color: var(--ink); }
+    .rio__taxa { font-family: ui-monospace, monospace; color: var(--ink-faint); }
+
+    .rio__trilho {
+      height: 6px;
+      background: var(--line);
+      border-radius: 3px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .rio__fluxo {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      background-image: linear-gradient(90deg, transparent 0%, var(--accent) 50%, transparent 100%);
+      background-size: 200px 100%;
+    }
+
+    .rio__corrente--rapido { animation: fluxo-anima 1.5s linear infinite; }
+    .rio__corrente--lento { animation: fluxo-anima 12s linear infinite; }
+
+    @keyframes fluxo-anima {
+      from { background-position: -200px 0; }
+      to { background-position: 100% 0; }
+    }
+
+    /* ==========================================================================
+       GRADE DE CARTOES (2 CARDS POR LINHA NO DESKTOP/TABLET)
+       ========================================================================== */
+    .secao__cabeca {
+      margin-bottom: 2rem;
+    }
+
+    .grade-cartoes--duas-colunas {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (min-width: 48rem) {
+      .grade-cartoes--duas-colunas {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .cartao {
+      background: var(--bg-card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+      width: 100%;
+    }
+    .cartao:hover {
+      border-color: var(--line-strong);
+      transform: translateY(-2px);
+    }
+
+    .cartao__tag {
+      font-family: ui-monospace, monospace;
+      font-size: 0.75rem;
+      color: var(--ink-faint);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .badge-evidencia {
+      display: inline-block;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .badge-evidencia--dem { background: rgba(255, 107, 82, 0.18); color: var(--accent); }
+    :root[data-theme='light'] .badge-evidencia--dem { background: rgba(140, 74, 39, 0.15); }
+    .badge-evidencia--ded { background: rgba(100, 116, 139, 0.2); color: var(--ink-muted); }
+    .badge-evidencia--reg { background: rgba(51, 65, 85, 0.3); color: var(--ink-faint); }
+
+    .cartao__titulo { color: var(--ink); }
+    .cartao__resumo { font-size: 0.9rem; color: var(--ink-muted); line-height: 1.55; }
+    .cartao__rodape { margin-top: auto; padding-top: 0.75rem; }
+
+    /* DEMO BOXES RESPONSIVAS */
+    .demo-box {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 0.75rem;
+      width: 100%;
+    }
+    .demo-box__cabeca {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .demo-box__titulo {
+      font-size: 0.75rem;
+      font-family: ui-monospace, monospace;
+      color: var(--ink-faint);
+    }
+
+    .btn-micro {
+      background: var(--line);
+      border: none;
+      color: var(--ink);
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .btn-micro:hover { background: var(--accent); color: var(--accent-ink); }
+
+    .demo-box__palco {
+      width: 100%;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .palco-flex {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      height: 80px;
+      width: 100%;
+    }
+
+    /* ==========================================================================
+       GRAFO INTERATIVO DE NÓS (.painel-grafo)
+       ========================================================================== */
+    .painel-grafo {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      background: var(--bg-raised);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    @media (min-width: 52rem) {
+      .painel-grafo { grid-template-columns: 1.3fr 0.9fr; }
+    }
+
+    .painel-grafo__canvas-wrap {
+      position: relative;
+      min-height: 20rem;
+      background: var(--bg);
+      width: 100%;
+    }
+
+    #canvas-matriz-nos {
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+      display: block;
+    }
+
+    .painel-grafo__dica {
+      position: absolute;
+      top: 0.75rem;
+      left: 0.75rem;
+      font-size: 0.75rem;
+      font-family: ui-monospace, monospace;
+      color: var(--ink-faint);
+      pointer-events: none;
+    }
+
+    .painel-grafo__info {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tags-grupo {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+    .tag {
+      font-size: 0.75rem;
+      font-family: ui-monospace, monospace;
+      padding: 0.2rem 0.5rem;
+      background: var(--line);
+      border-radius: 4px;
+      color: var(--ink-muted);
+    }
+
+    /* ==========================================================================
+       PAINEL SLIDE-OVER DE LEITURA PROFUNDA (SLIDE OVER)
+       ========================================================================== */
+    .painel-leitura {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 100%;
+      max-width: 42rem;
+      height: 100%;
+      background: var(--bg-raised);
+      border-left: 1px solid var(--line-strong);
+      z-index: 90;
+      box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow-y: auto;
+    }
+
+    .painel-leitura[aria-hidden="false"] {
+      transform: translateX(0);
+    }
+
+    .painel-leitura__conteudo {
+      padding: clamp(1.25rem, 3vw, 2.5rem);
+    }
+
+    .painel-leitura__cabeca {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 1rem;
+    }
+
+    .btn-verbete {
+      background: none;
+      border: none;
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      padding: 0;
+    }
+    .btn-verbete:hover { text-decoration: underline; }
+
+    .verbete-corpo p {
+      margin-bottom: 1.25rem;
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--ink-muted);
+    }
+
+    .verbete-corpo blockquote {
+      border-left: 3px solid var(--accent);
+      margin: 1.5rem 0;
+      padding-left: 1rem;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .verbete-corpo h4 {
+      color: var(--ink);
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .verbete-corpo ul, .verbete-corpo ol {
+      margin-bottom: 1.25rem;
+      padding-left: 1.25rem;
+      color: var(--ink-muted);
+    }
+
+    .btn--sm {
+      height: 2.2rem;
+      padding: 0 1rem;
+      font-size: 0.85rem;
+    }
+
+    /* ==========================================================================
+       MODAL DE BUSCA (CMD+K)
+       ========================================================================== */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(11, 13, 16, 0.8);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 5vh 1rem 0 1rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .modal-overlay[aria-hidden="false"] {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-busca {
+      width: 100%;
+      max-width: 36rem;
+      background: var(--bg-raised);
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+
+    .modal-busca__cabeca {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.875rem;
+      border-bottom: 1px solid var(--line);
+      color: var(--ink-faint);
+    }
+
+    .modal-busca__input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--ink);
+      font-size: 1rem;
+      outline: none;
+    }
+
+    .modal-busca__resultados {
+      max-height: 50vh;
+      overflow-y: auto;
+      padding: 0.5rem;
+    }
+
+    .item-resultado {
+      display: block;
+      padding: 0.75rem;
+      color: var(--ink-muted);
+      text-decoration: none;
+      border-radius: 4px;
+    }
+    .item-resultado:hover {
+      background: var(--line);
+      color: var(--ink);
+    }
+    .item-resultado b { color: var(--accent); }
+
+    /* ==========================================================================
+       RODAPÉ RESPONSIVO
+       ========================================================================== */
+    .rodape {
+      border-top: 1px solid var(--line);
+      padding-top: 3rem;
+      padding-bottom: 3rem;
+      margin-top: 4rem;
+    }
+    .rodape__container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+      gap: 2rem;
+    }
+    .rodape__titulo {
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 0.75rem;
+      display: block;
+    }
+    .rodape__col a {
+      display: block;
+      color: var(--ink-muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      margin-bottom: 0.4rem;
+    }
+    .rodape__col a:hover { color: var(--accent); }
+    .rodape__meta { font-size: 0.8125rem; color: var(--ink-faint); }
+
+    /* RESPONSIVIDADE MOBILE ESPECÍFICA */
+    @media (max-width: 48rem) {
+      .nav {
+        position: absolute;
+        top: var(--header-height);
+        left: 0;
+        width: 100%;
+        background: var(--bg-raised);
+        border-bottom: 1px solid var(--line);
+        flex-direction: column;
+        padding: 1.25rem;
+        display: none;
+        gap: 1rem;
+      }
+      .nav[data-aberto="true"] { display: flex; }
+      .topo__mobile-toggle { display: inline-flex; }
+      .tecla-atalho { display: none; }
+    }
+
+    /* ==========================================================================
+       SEÇÃO DE REFERÊNCIAS BIBLIOGRÁFICAS
+       ========================================================================== */
+    .lista-referencias {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.875rem;
+      margin-top: 1.5rem;
+      list-style: none;
+      padding: 0;
+    }
+
+    .item-referencia {
+      font-size: 0.875rem;
+      color: var(--ink-muted);
+      line-height: 1.55;
+      padding: 0.875rem 1.125rem;
+      background: var(--bg-card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      transition: border-color 0.2s ease;
+    }
+
+    .item-referencia:hover {
+      border-color: var(--line-strong);
+    }
+
+    .item-referencia b {
+      color: var(--ink);
+    }
+
+    .item-referencia em {
+      font-style: italic;
+      color: var(--ink);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Link de Acessibilidade -->
+  <a href="#conteudo" class="pular-navegacao">Pular para o conteúdo principal</a>
+
+  <!-- Fundo Animado -->
+  <canvas id="fundo-no-canvas" class="fundo-canvas" aria-hidden="true"></canvas>
+
+  <!-- CABEÇALHO -->
+  <header class="topo" id="topo">
+    <div class="topo__container shell">
+      <a href="#inicio" class="marca" aria-label="Atlas da Forma - Página Inicial">
+        <svg class="marca__icone" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <polygon points="12,2 2,22 22,22" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <circle cx="12" cy="14" r="3" fill="currentColor"/>
+        </svg>
+        <span class="marca__texto">ATLAS<b>FORMA</b></span>
+      </a>
+
+      <nav class="nav" id="menu-navegacao" aria-label="Navegação Principal">
+        <a href="#fundamentos" class="nav__link">Fundamentos</a>
+        <a href="#mecanismos" class="nav__link">Mecanismos</a>
+        <a href="#pratica" class="nav__link">Prática</a>
+        <a href="#matriz" class="nav__link">Matriz de Nós</a>
+        <a href="#sobre" class="nav__link">Sobre</a>
+        <a href="#referencias" class="nav__link">Referências</a>
+      </nav>
+
+      <div class="topo__acoes">
+        <button id="btn-busca" class="btn-icone" aria-label="Abrir busca rápida (Cmd+K ou Ctrl+K)">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <kbd class="tecla-atalho">⌘K</kbd>
+        </button>
+
+        <button id="btn-tema" class="btn-icone" aria-label="Alternar tema claro/escuro">
+          <svg class="icone-sol" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg class="icone-lua" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+
+        <button id="btn-menu-mobile" class="btn-icone topo__mobile-toggle" aria-label="Abrir Menu" aria-expanded="false" aria-controls="menu-navegacao">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <main id="conteudo" class="shell">
+
+    <!-- HERO -->
+    <section id="inicio" class="heroi secao">
+      <div class="heroi__conteudo">
+        <span class="eyebrow">Pesquisa Transdisciplinar & Design</span>
+        <h1 class="heroi__titulo">
+          A forma não é adorno.<br>
+          É <span class="destaque-interativo" id="palavra-eco" data-eco="Linguagem">Informação</span>.
+        </h1>
+        <p class="heroi__descricao lead">
+          Uma investigação sobre como a matemática, a biologia, a cognição e a filosofia convergem para construir a sintaxe visual e material do design.
+        </p>
+        <div class="heroi__acoes">
+          <a href="#fundamentos" class="btn btn--primario">Explorar o Atlas</a>
+          <a href="#matriz" class="btn btn--linha">Ver Matriz de Nós</a>
+        </div>
+      </div>
+
+      <!-- VISOR 3D FLUTUANTE LIVRE (NÓ TOROIDAL) -->
+      <div class="heroi__visual">
+        <div class="visor-3d-livre" id="visor-heroi">
+          <canvas id="canvas-3d-heroi"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- TESE / COMPARADOR DE VELOCIDADES -->
+    <section class="secao">
+      <div class="cartao-destaque">
+        <h2 class="eyebrow">A Tese da Forma</h2>
+        <p class="lead mt-2">
+          Ferramentas e tecnologias mudam a cada estação. A estrutura matemática da natureza e o aparato de percepção do cérebro humano, não.
+        </p>
+        
+        <div class="comparador-velocidade mt-4">
+          <div class="rio">
+            <div class="rio__info">
+              <span class="rio__nome">Tecnologias & Suportes Projetuais</span>
+              <span class="rio__taxa">Evolução Exponencial</span>
+            </div>
+            <div class="rio__trilho">
+              <div class="rio__fluxo rio__corrente--rapido"></div>
+            </div>
+          </div>
+
+          <div class="rio mt-3">
+            <div class="rio__info">
+              <span class="rio__nome">Leis Geométricas & Aparato Perceptivo</span>
+              <span class="rio__taxa">Invariante (~300.000 anos)</span>
+            </div>
+            <div class="rio__trilho">
+              <div class="rio__fluxo rio__corrente--lento"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MÓDULO 01: FUNDAMENTOS DA FORMA (ESTRITO EM 2 COLUNAS) -->
+    <section id="fundamentos" class="secao">
+      <div class="secao__cabeca">
+        <span class="eyebrow">Módulo 01</span>
+        <h2>Fundamentos da Forma</h2>
+        <p class="prosa">A evolução conceitual da forma através das ciências duras, naturais e humanas.</p>
+      </div>
+
+      <!-- GRADE ESTRITA DE 2 COLUNAS NO DESKTOP -->
+      <div class="grade-cartoes--duas-colunas">
+        
+        <!-- CARD 01.1 FILOSOFIA -->
+        <article class="cartao">
+          <div class="cartao__tag">
+            <span>01.1 — Filosofia</span>
+            <span class="badge-evidencia badge-evidencia--ded">? Modelo</span>
+          </div>
+          <h3 class="cartao__titulo">A Forma de Platão a Vilém Flusser</h3>
+          <p class="cartao__resumo">
+            De causa essencial e ideia abstrata ao conceito contemporâneo de "in-formar" a matéria amorfa.
+          </p>
+
+          <div class="demo-box mt-3">
+            <div class="demo-box__cabeca">
+              <span class="demo-box__titulo">Demonstração: In-Formar a Matéria (Flusser)</span>
+              <button class="btn-micro" id="btn-demo-flusser">Informar Matéria</button>
+            </div>
+            <div class="demo-box__palco" id="palco-flusser">
+              <canvas id="canvas-flusser" width="300" height="120"></canvas>
+            </div>
+          </div>
+
+          <div class="cartao__rodape">
+            <button class="btn-verbete" data-verbete="filosofia">Ler Verbete Completo →</button>
+          </div>
+        </article>
+
+        <!-- CARD 01.2 MATEMÁTICA -->
+        <article class="cartao">
+          <div class="cartao__tag">
+            <span>01.2 — Matemática</span>
+            <span class="badge-evidencia badge-evidencia--dem">✔ Demonstrado</span>
+          </div>
+          <h3 class="cartao__titulo">Geometria Euclidiana, Cônicas e Fractais</h3>
+          <p class="cartao__resumo">
+            A tradução de equações em projeções espaciais, seções cônicas e a iteração autossimilar na natureza.
+          </p>
+          
+          <div class="demo-box mt-3">
+            <div class="demo-box__cabeca">
+              <span class="demo-box__titulo">Demonstração: Iteração Fractal</span>
+              <button class="btn-micro" id="btn-interagir-fractal">Iterar (+1)</button>
+            </div>
+            <div class="demo-box__palco" id="palco-fractal">
+              <canvas id="canvas-fractal" width="300" height="120"></canvas>
+            </div>
+          </div>
+
+          <div class="cartao__rodape">
+            <button class="btn-verbete" data-verbete="matematica">Ler Verbete Completo →</button>
+          </div>
+        </article>
+
+        <!-- CARD 01.3 FÍSICA & QUÍMICA -->
+        <article class="cartao">
+          <div class="cartao__tag">
+            <span>01.3 — Física & Química</span>
+            <span class="badge-evidencia badge-evidencia--dem">✔ Demonstrado</span>
+          </div>
+          <h3 class="cartao__titulo">Cristalografia, Redes e Empilhamentos</h3>
+          <p class="cartao__resumo">
+            A ordem das redes cristalinas e células unitárias em contraste com a desordem do estado amorfo.
+          </p>
+
+          <div class="demo-box mt-3">
+            <div class="demo-box__cabeca">
+              <span class="demo-box__titulo">Demonstração: Rede Cristalina vs Amorfa</span>
+              <button class="btn-micro" id="btn-demo-cristal">Alternar Estado</button>
+            </div>
+            <div class="demo-box__palco" id="palco-cristal">
+              <canvas id="canvas-cristal" width="300" height="120"></canvas>
+            </div>
+          </div>
+
+          <div class="cartao__rodape">
+            <button class="btn-verbete" data-verbete="fisica-quimica">Ler Verbete Completo →</button>
+          </div>
+        </article>
+
+        <!-- CARD 01.4 BIOLOGIA -->
+        <article class="cartao">
+          <div class="cartao__tag">
+            <span>01.4 — Biologia</span>
+            <span class="badge-evidencia badge-evidencia--reg">✕ Regra Projetual</span>
+          </div>
+          <h3 class="cartao__titulo">Morfogênese e Design Biônico</h3>
+          <p class="cartao__resumo">
+            Metamorfose, adaptações homólogas e a transposição de inteligências da natureza para os artefatos.
+          </p>
+
+          <div class="demo-box mt-3">
+            <div class="demo-box__cabeca">
+              <span class="demo-box__titulo">Demonstração: Espiral de Fibonacci</span>
+              <button class="btn-micro" id="btn-demo-fibonacci">Expandir</button>
+            </div>
+            <div class="demo-box__palco" id="palco-fibonacci">
+              <canvas id="canvas-fibonacci" width="300" height="120"></canvas>
+            </div>
+          </div>
+
+          <div class="cartao__rodape">
+            <button class="btn-verbete" data-verbete="biologia">Ler Verbete Completo →</button>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- MÓDULO 02: MECANISMOS DA FORMA (ESTRITO EM 2 COLUNAS) -->
+    <section id="mecanismos" class="secao">
+      <div class="secao__cabeca">
+        <span class="eyebrow">Módulo 02</span>
+        <h2>Mecanismos & Cognição</h2>
+        <p class="prosa">Como o cérebro humano processa, decodifica e atribui significado à forma.</p>
+      </div>
+
+      <div class="grade-cartoes--duas-colunas">
+
+        <!-- CARD 02.1 LINGUAGEM -->
+        <article class="cartao">
+          <div class="cartao__tag">
+            <span>02.1 — Linguagem</span>
+            <span class="badge-evidencia badge-evidencia--reg">✕ Regra Projetual</span>
+          </div>
+          <h3 class="cartao__titulo">A Forma como Sintaxe e Signo</h3>
+          <p class="cartao__resumo">
+            A articulação do sentido visual: códigos discretos numéricos vs. expressões sensíveis da cultura.
+          </p>
+
+          <div class="demo-box mt-3">
+            <div class="demo-box__cabeca">
+              <span class="demo-box__titulo">Demonstração: Sinal vs. Significado</span>
+              <button class="btn-micro" id="btn-demo-linguagem">Alternar Código</button>
+            </div>
+            <div class="demo-box__palco" id="palco-linguagem">
+              <canvas id="canvas-linguagem" width="300" height="120"></canvas>
+            </div>
+          </div>
+
+          <div class="cartao__rodape">
+            <button class="btn-verbete" data-verbete="linguagem">Ler Verbete Completo →</button>
+          </div>
+        </article>
+
+        <!-- CARD 02.2 SIMETRIA IRREGULAR -->
+        <article class="cartao">
+          <div class="cartao__tag">
+            <span>02.2 — Geometria Sensorial</span>
+            <span class="badge-evidencia badge-evidencia--dem">✔ Demonstrado</span>
+          </div>
+          <h3 class="cartao__titulo">Simetria, Ordem e Isometria</h3>
+          <p class="cartao__resumo">
+            Operadores de reflexão, translação e rotação e a busca neural por padrões de equilíbrio.
+          </p>
+
+          <div class="demo-box mt-3">
+            <div class="demo-box__cabeca">
+              <span class="demo-box__titulo">Demonstração: Reflexão Irregular</span>
+              <button class="btn-micro" id="btn-simetria-espelho">Espelhar</button>
+            </div>
+            <div class="demo-box__palco" id="palco-simetria">
+              <canvas id="canvas-simetria" width="300" height="120"></canvas>
+            </div>
+          </div>
+
+          <div class="cartao__rodape">
+            <button class="btn-verbete" data-verbete="simetria">Ler Verbete Completo →</button>
+          </div>
+        </article>
+
+        <!-- CARD 02.3 TRÍADE DE LÖBACH -->
+        <article class="cartao">
+          <div class="cartao__tag">
+            <span>02.3 — Teoria do Design</span>
+            <span class="badge-evidencia badge-evidencia--reg">✕ Regra Projetual</span>
+          </div>
+          <h3 class="cartao__titulo">A Tríade Funcional de Löbach</h3>
+          <p class="cartao__resumo">
+            Análise das funções Prática, Estética e Simbólica do objeto através de casos históricos.
+          </p>
+
+          <div class="demo-box mt-3">
+            <div class="demo-box__cabeca">
+              <span class="demo-box__titulo">Demonstração: Dimensões da Função</span>
+              <button class="btn-micro" id="btn-demo-lobach">Alternar Função</button>
+            </div>
+            <div class="demo-box__palco" id="palco-lobach">
+              <canvas id="canvas-lobach" width="300" height="120"></canvas>
+            </div>
+          </div>
+
+          <div class="cartao__rodape">
+            <button class="btn-verbete" data-verbete="funcao">Ler Verbete Completo →</button>
+          </div>
+        </article>
+
+        <!-- CARD 02.4 AFFORDANCE E PREGNÂNCIA -->
+        <article class="cartao">
+          <div class="cartao__tag">
+            <span>02.4 — Cognição</span>
+            <span class="badge-evidencia badge-evidencia--dem">✔ Demonstrado</span>
+          </div>
+          <h3 class="cartao__titulo">Affordance e Pregnância da Forma</h3>
+          <p class="cartao__resumo">
+            Percepção ecológica em Gibson e Norman e o princípio da máxima simplicidade estrutural da Gestalt.
+          </p>
+
+          <div class="demo-box mt-3">
+            <div class="demo-box__cabeca">
+              <span class="demo-box__titulo">Demonstração: Pregnância (Ruído vs. Forma)</span>
+              <button class="btn-micro" id="btn-demo-pregnancia">Simplificar</button>
+            </div>
+            <div class="demo-box__palco" id="palco-pregnancia">
+              <canvas id="canvas-pregnancia" width="300" height="120"></canvas>
+            </div>
+          </div>
+
+          <div class="cartao__rodape">
+            <button class="btn-verbete" data-verbete="affordance">Ler Verbete Completo →</button>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- MÓDULO 03: PRÁTICA & EXPERIMENTAÇÃO -->
+    <section id="pratica" class="secao">
+      <div class="secao__cabeca">
+        <span class="eyebrow">Módulo 03</span>
+        <h2>Prática & Experimentação</h2>
+        <p class="prosa">Métodos projetuais, pedagogia tridimensional e a geometria do impossível.</p>
+      </div>
+
+      <div class="grade-cartoes--duas-colunas">
+        
+        <article class="cartao">
+          <div class="cartao__tag">
+            <span>03.1 — História da Arte</span>
+            <span class="badge-evidencia badge-evidencia--dem">✔ Demonstrado</span>
+          </div>
+          <h3 class="cartao__titulo">A Geometria Poética de M.C. Escher</h3>
+          <p class="cartao__resumo">
+            Ilusões espaciais, preenchimento regular do plano e a matemática das metamorfoses.
+          </p>
+          <div class="cartao__rodape">
+            <button class="btn-verbete" data-verbete="escher">Ler Verbete Completo →</button>
+          </div>
+        </article>
+
+        <article class="cartao">
+          <div class="cartao__tag">
+            <span>03.2 — Método Projetual</span>
+            <span class="badge-evidencia badge-evidencia--reg">✕ Regra Projetual</span>
+          </div>
+          <h3 class="cartao__titulo">O Método de Rowena Reed Kostellow</h3>
+          <p class="cartao__resumo">
+            As 4 fases da pedagogia tridimensional do Pratt Institute: Fundamentos, Avançado, Espaço e Abstração.
+          </p>
+          <div class="cartao__rodape">
+            <button class="btn-verbete" data-verbete="kostellow">Ler Verbete Completo →</button>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- MÓDULO 04: MATRIZ DE NÓS (GRAFO) -->
+    <section id="matriz" class="secao">
+      <div class="secao__cabeca">
+        <span class="eyebrow">Módulo 04 — Grafo Interativo</span>
+        <h2>Matriz de Conexões da Forma</h2>
+        <p class="prosa">Explore como os conceitos navegam livremente entre as disciplinas. Clique em um nó para isolar suas relações.</p>
+      </div>
+
+      <div class="painel-grafo">
+        <div class="painel-grafo__canvas-wrap">
+          <canvas id="canvas-matriz-nos"></canvas>
+          <div class="painel-grafo__dica">Clique nos nós para ver o resumo</div>
+        </div>
+        
+        <div id="painel-no-info" class="painel-grafo__info">
+          <span class="eyebrow" id="no-categoria">Selecione um Nó</span>
+          <h3 id="no-titulo" class="mt-1">Mapa de Relações</h3>
+          <p id="no-descricao" class="prosa mt-2">
+            Clique em qualquer ponto do mapa para revelar suas intersecções teóricas.
+          </p>
+          <div id="no-conexoes" class="tags-grupo mt-3"></div>
+          <div class="mt-3">
+            <button id="btn-no-ler" class="btn btn--primario btn--sm" style="display: none;">Ler Verbete deste Nó →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SOBRE O PROJETO -->
+    <section id="sobre" class="secao">
+      <div class="cartao-destaque">
+        <span class="eyebrow">Sobre a Pesquisa</span>
+        <h2 class="mt-1">A Origem do Atlas</h2>
+        <p class="prosa mt-2">
+          O **Atlas da Forma** é uma plataforma de conhecimento aberto resultante da dissertação de mestrado <em>"A Importância da Forma para os Projetos de Design: Reconhecimento, Conceitos e Diálogos Transdisciplinares"</em> de <strong>Estéfano Pietragalla</strong> (Universidade de Brasília - UnB, 2016).
+        </p>
+        <div class="mt-3">
+          <a href="#" class="btn btn--linha" onclick="alert('Adicione o arquivo PDF da dissertação na pasta raiz para habilitar o download!'); return false;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Baixar Dissertação Completa (PDF)
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEÇÃO DE REFERÊNCIAS BIBLIOGRÁFICAS DA DISSERTAÇÃO -->
+    <section id="referencias" class="secao">
+      <div class="secao__cabeca">
+        <span class="eyebrow">Módulo 05 — Literatura Científica</span>
+        <h2>Referencial Teórico</h2>
+        <p class="prosa">As principais obras e autores da filosofia, ciências e do design que fundamentam a pesquisa da dissertação de Estéfano Pietragalla (UnB, 2016).</p>
+      </div>
+
+      <ul class="lista-referencias">
+        <li class="item-referencia"><b>AGAMBEN, Giorgio.</b> <em>O aberto: o homem e o animal.</em> Lisboa: Edições 70, 2002.</li>
+        <li class="item-referencia"><b>ALEXANDER, Christopher.</b> <em>Ensayo sobre la síntesis de la forma.</em> Barcelona: Gustavo Gili, 1973.</li>
+        <li class="item-referencia"><b>BERTALANFFY, Ludwig von.</b> <em>General System Theory.</em> New York: George Braziller, 1969.</li>
+        <li class="item-referencia"><b>BOYER, Carl B.; MERZBACH, Uta C.</b> <em>História da Matemática.</em> 5.ed. São Paulo: Blucher, 2012.</li>
+        <li class="item-referencia"><b>BÜRDEK, Bernhard E.</b> <em>Design: História, teoria e prática do design de produtos.</em> São Paulo: Blucher, 2006.</li>
+        <li class="item-referencia"><b>CARDOSO, Rafael.</b> <em>Design para um mundo complexo.</em> São Paulo: Cosac Naify, 2012.</li>
+        <li class="item-referencia"><b>CONTADOR, Paulo Roberto Martins.</b> <em>A Matemática na arte e na vida.</em> São Paulo: Livraria da Física, 2007.</li>
+        <li class="item-referencia"><b>ELAM, Kimberly.</b> <em>Geometria do Design.</em> São Paulo: Cosac Naify, 2010.</li>
+        <li class="item-referencia"><b>ERNEST, Bruno.</b> <em>O Espelho Mágico de M.C. Escher.</em> Coréia do Sul: Taschen, 2012.</li>
+        <li class="item-referencia"><b>FLUSSER, Vilém.</b> <em>O mundo codificado: por uma filosofia do design e da comunicação.</em> 2.ed. São Paulo: Cosac Naify, 2008.</li>
+        <li class="item-referencia"><b>GIBSON, James J.</b> <em>The Ecological Approach to Visual Perception.</em> Missouri: Psychology Press, 1996.</li>
+        <li class="item-referencia"><b>GOMBRICH, Ernst H.</b> <em>A História da Arte.</em> 16.ed. Rio de Janeiro: LTC, 2008.</li>
+        <li class="item-referencia"><b>GOMES FILHO, João.</b> <em>Gestalt do Objeto: Sistema de leitura visual da forma.</em> 8.ed. São Paulo: Escrituras, 2008.</li>
+        <li class="item-referencia"><b>HANNAH, Gail Greet.</b> <em>Elements of Design: Rowena Reed Kostellow and the Structure of Visual Relationships.</em> New York: Princeton Architectural Press, 2015.</li>
+        <li class="item-referencia"><b>LÖBACH, Bernd.</b> <em>Design Industrial: As bases da configuração dos produtos industriais.</em> São Paulo: Blucher, 2001.</li>
+        <li class="item-referencia"><b>LOGAN, Robert K.</b> <em>O que é Informação?</em> Rio de Janeiro: PUC-Rio, 2012.</li>
+        <li class="item-referencia"><b>MORAES, Dijon de.</b> <em>Metaprojeto: o design do design.</em> São Paulo: Blucher, 2010.</li>
+        <li class="item-referencia"><b>NOËL, Émile.</b> <em>As Ciências da Forma Hoje.</em> Campinas: Papirus, 1996.</li>
+        <li class="item-referencia"><b>NORMAN, Donald A.</b> <em>O Design do Dia-a-Dia.</em> Rio de Janeiro: Rocco, 2002.</li>
+        <li class="item-referencia"><b>PIGNATARI, Décio.</b> <em>Informação, Linguagem, Comunicação.</em> 2.ed. São Paulo: Cultrix, 1984.</li>
+        <li class="item-referencia"><b>SANTAELLA, Lucia.</b> <em>O que é Semiótica.</em> São Paulo: Editora Brasiliense, 1983.</li>
+        <li class="item-referencia"><b>SCHAFER, R. Murray.</b> <em>A Afinação do Mundo.</em> São Paulo: UNESP, 1977.</li>
+        <li class="item-referencia"><b>SUASSUNA, Ariano.</b> <em>Iniciação à Estética.</em> 9.ed. Rio de Janeiro: José Olympio Editora, 2008.</li>
+        <li class="item-referencia"><b>VASSÃO, Caio Adorno.</b> <em>Metadesign: Ferramentas, estratégias e ética para a complexidade.</em> São Paulo: Blucher, 2010.</li>
+      </ul>
+    </section>
+
+  </main>
+  
+
+  <!-- PAINEL SLIDE-OVER DE LEITURA PROFUNDA -->
+  <aside id="painel-leitura" class="painel-leitura" aria-hidden="true" role="dialog">
+    <div class="painel-leitura__conteudo">
+      <div class="painel-leitura__cabeca">
+        <span class="eyebrow" id="verbete-tag">00.0 — Categoria</span>
+        <button id="btn-fechar-leitura" class="btn-icone" aria-label="Fechar leitura">✕</button>
+      </div>
+      <h2 id="verbete-titulo" class="mt-1">Título do Verbete</h2>
+      
+      <div id="verbete-corpo" class="verbete-corpo mt-3"></div>
+    </div>
+  </aside>
+
+  <!-- MODAL DE BUSCA (CMD+K) -->
+  <div id="modal-busca" class="modal-overlay" aria-hidden="true" role="dialog">
+    <div class="modal-busca">
+      <div class="modal-busca__cabeca">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="search" id="busca-input" class="modal-busca__input" placeholder="Buscar leis, conceitos, autores ou módulos..." autocomplete="off">
+        <button id="btn-fechar-busca" class="btn-micro">ESC</button>
+      </div>
+      <div id="busca-resultados" class="modal-busca__resultados"></div>
+    </div>
+  </div>
+
+  <!-- RODAPÉ -->
+  <footer class="rodape">
+    <div class="shell rodape__container">
+      <div class="rodape__col">
+        <span class="marca__texto">ATLAS<b>FORMA</b></span>
+        <p class="rodape__meta mt-1">Conhecimento livre sobre teoria da forma, percepção e design.</p>
+      </div>
+      <div class="rodape__col">
+        <span class="rodape__titulo">Navegação</span>
+        <a href="#fundamentos">Fundamentos</a>
+        <a href="#mecanismos">Mecanismos</a>
+        <a href="#pratica">Prática</a>
+        <a href="#matriz">Matriz de Nós</a>
+      </div>
+      <div class="rodape__col">
+        <span class="rodape__titulo">Protocolos</span>
+        <span class="rodape__meta">Construído segundo o protocolo A11Y de acessibilidade e performance.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT INTEGRADO -->
+  <script>
+    /**
+     * ATLAS DA FORMA — Engine Interativa e Banco de Dados Ampliado dos Verbetes
+     */
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initTema();
+      initNavegacaoMobile();
+      initBuscaModal();
+      initTextoEco();
+      initCanvasFundo();
+      initVisor3DHeroiComplexo();
+      initDemosInterativas();
+      initMatrizNosCanvas();
+      initGerenciadorLeituraProfunda();
+    });
+
+    /* ==========================================================================
+       BANCO DE DADOS AMPLIADO DA DISSERTAÇÃO (ESTÉFANO PIETRAGALLA, UnB)
+       ========================================================================== */
+    const bancoVerbetes = {
+      "filosofia": {
+        tag: "01.1 — Filosofia da Forma",
+        titulo: "A Forma de Platão a Vilém Flusser",
+        corpo: `
+          <p>A investigação filosófica da forma divide-se primordialmente entre duas concepções clássicas: a tradição de <strong>Platão</strong>, na qual a forma consiste em uma ideia inteligível, perfeita, eterna e independente da matéria; e a concepção de <strong>Aristóteles</strong>, onde a forma é entendida como causa ou razão de ser da própria coisa material, a substância em movimento.</p>
+          <p>Para René Descartes e Henri Bergson, a forma assume o caráter de um instantâneo em uma transição contínua, uma imagem intermediária da qual as imagens reais se aproximam no curso do tempo. Já na filosofia de Hegel, a forma representa a "totalidade das determinações", o modo fenomênico como a essência se manifesta.</p>
+          <blockquote>"A informação tem um conteúdo e uma forma. As formas não são descobertas, nem invenções, antes recipientes para fenômenos (modelos)... Se a forma é o oposto da matéria, então não há nenhum design que se possa definir material. E se a forma é o 'como' da matéria e a matéria é o 'que' da forma, então o design é um dos métodos para conferir forma à matéria e fazê-la parecer assim e não de outra forma." — Vilém Flusser (O Mundo Codificado)</blockquote>
+          <p>Analisando o pensamento contemporâneo de Vilém Flusser, a matéria sem forma (<em>hyle</em>, madeira no estado bruto em grego) é amorfa. O ato de projetar no design é essencialmente o processo de <strong>in-formar</strong>: introduzir estrutura e significado na matéria amorfa, convertendo fenômenos abstratos em objetos e modelos compreensíveis.</p>
+        `
+      },
+      "matematica": {
+        tag: "01.2 — Matemática",
+        titulo: "Geometria Euclidiana, Cônicas e Fractais",
+        corpo: `
+          <p>Na matemática, a forma possui um caráter dinâmico, expressando mutações e relações algébricas no tempo e no espaço. Conforme aponta Émile Noël, a intervenção matemática na forma resume de maneira racional as configurações geométricas do mundo.</p>
+          <h4>Seções Cônicas e Geometria Projetiva</h4>
+          <p>Através do conceito de <em>invariância de projeção</em>, a geometria projetiva estuda seções cônicas (parábola, elipse e hipérbole). Ao fatiar um sólido cônico tridimensional por diferentes planos, obtêm-se figuras bidimensionais completas, um princípio largamente utilizado hoje em softwares de modelagem 3D e algoritmos de fatiamento para impressão tridimensional.</p>
+          <h4>A Geometria Fractal da Natureza</h4>
+          <p>Diferente da geometria euclidiana (que simplifica o mundo em esferas, cones e triângulos), a <strong>Geometria Fractal</strong> de Benoit Mandelbrot descreve as formas complexas e irregulares da natureza através dos conceitos de <em>autossimilaridade</em> e <em>invariância de escala</em> — regras algébricas iterativas que se repetem do micro ao macro (como visto na estrutura das nuvens, litorais e no brócolis romanesco).</p>
+        `
+      },
+      "fisica-quimica": {
+        tag: "01.3 — Física & Química",
+        titulo: "Cristalografia, Redes e Empilhamentos",
+        corpo: `
+          <p>Na química e na física dos sólidos, a forma de um objeto ou substância é analisada através da distribuição de massa e do arranjo atômico das estruturas.</p>
+          <h4>Gravitação e Esfericidade</h4>
+          <p>Nos sistemas astronômicos, a gravitação atua como força organizadora dominante em corpos com diâmetro superior a ~500 km, atraindo a massa homogeneamente em direção ao centro e resultando na forma esférica de planetas e estrelas.</p>
+          <h4>Cristalografia vs. Estado Amorfo</h4>
+          <p>Na química estrutural, um <strong>cristal</strong> é definido como um sólido formado pelo empilhamento ordenado e tridimensional de células unitárias (cúbicas, octaédricas ou dodecaédricas). Em contraste, o elemento sólido cuja distribuição atômica é irregular e desprovida de rede repetitiva é classificado como <strong>amorfo</strong>. Na cristalografia, a forma é o resultado direto dos ângulos das ligações atômicas.</p>
+        `
+      },
+      "biologia": {
+        tag: "01.4 — Biologia",
+        titulo: "Morfogênese e Design Biônico",
+        corpo: `
+          <p>No âmbito biológico, a forma é uma resposta adaptativa às necessidades de sobrevivência e função. A <strong>morfogênese</strong> e a <strong>metamorfose</strong> demonstram como organismos vivos transformam radicalmente suas estruturas físicas ao longo do desenvolvimento.</p>
+          <h4>Homologias e Metamorfose</h4>
+          <p>Órgãos com a mesma origem ancestral que assumem formas e funções distintas em espécies diferentes demonstram a flexibilidade adaptativa da forma. A metamorfose exemplifica a capacidade de um organismo de alterar drasticamente sua morfologia sem perder a continuidade biológica.</p>
+          <h4>Aplicações em Design e Biônica</h4>
+          <p>O Design apropria-se do reconhecimento das inteligências da natureza através da <strong>Biônica</strong> e da Ecologia de Materiais. Projetos emblemáticos ilustram essa transposição:</p>
+          <ul>
+            <li><strong>Bionic Car (Mercedes-Benz):</strong> Forma aerodinâmica inspirada na estrutura óssea do peixe-cofre (<em>Box Fish</em>).</li>
+            <li><strong>Bionic Handling Assistant (Festo):</strong> Braço robótico articulado baseado na flexibilidade da tromba dos elefantes.</li>
+            <li><strong>Cadeira Acústica Gemini (Neri Oxman):</strong> Estrutura de fabricação digital que varia gradualmente 44 propriedades físicas de rigidez e opacidade, imitando os tecidos biológicos.</li>
+          </ul>
+        `
+      },
+      "linguagem": {
+        tag: "02.1 — Linguagem",
+        titulo: "A Forma como Sintaxe e Signo",
+        corpo: `
+          <p>A linguagem é um arranjo formal destinado a elaborar e veicular sentido. Segundo Lucia Santaella e Décio Pignatari, qualquer linguagem só produz significado quando dá forma a um determinado material segundo regras combinatórias (sintaxe).</p>
+          <p>No Design, os objetos operam como portadores de mensagens através de códigos discretos (numéricos/exatos) e códigos sensíveis (significados culturais e estéticos).</p>
+          <p>A <strong>redundância visual</strong> na forma de um produto introduz segurança na comunicação, permitindo que a mensagem e a intenção do objeto sejam decodificadas sem ruído pelo usuário.</p>
+        `
+      },
+      "simetria": {
+        tag: "02.2 — Geometria Sensorial",
+        titulo: "Simetria, Ordem e Isometria",
+        corpo: `
+          <p>A palavra simetria (do grego <em>symmetria</em>: justa proporção) refere-se à distribuição regular das partes em relação a um centro, linha ou plano. Como apontado por Alberti de Leone Battista no século XV, a harmonia é o arranjo perfeito entre número, limitação e ordem.</p>
+          <h4>Operadores de Simetria (Isometrias)</h4>
+          <p>Na física e na geometria dos sólidos, a simetria implica uma repetição constante orientada por operadores geométricos:</p>
+          <ul>
+            <li><strong>Translação:</strong> Deslocamento de um motivo ao longo de um eixo.</li>
+            <li><strong>Reflexão:</strong> Inversão do motivo através de um plano espelho.</li>
+            <li><strong>Rotação:</strong> Giro do motivo em torno de um ponto ou eixo central.</li>
+            <li><strong>Roto-Inversão:</strong> Combinação simultânea de rotação e inversão espacial.</li>
+          </ul>
+          <p>A mente humana possui uma predileção biológica por formas ordenadas e simétricas porque elas se aproximam da estrutura bilateral do próprio corpo humano. A assimetria desordenada, por outro lado, exige maior esforço de processamento e pode gerar frustração visual.</p>
+        `
+      },
+      "funcao": {
+        tag: "02.3 — Teoria do Design",
+        titulo: "A Tríade Funcional de Löbach",
+        corpo: `
+          <p>O debate clássico da teoria funcionalista do século XIX pregava que "a forma segue a função" (Louis Sullivan), reduzindo o produto às suas utilidades mecânicas e fisiológicas.</p>
+          <p>Superando esse reducionismo, Bernd Löbach estabeleceu que o objeto de design desempenha simultaneamente três dimensões funcionais indissociáveis:</p>
+          <ul>
+            <li><strong>Função Prática:</strong> As relações fisiológicas e utilitárias diretas entre o usuário e o objeto.</li>
+            <li><strong>Função Estética:</strong> A relação sensorial com o objeto no nível da percepção visual e tátil (harmonia de proporções, textura e cor).</li>
+            <li><strong>Função Simbólica:</strong> As conexões sociais, psíquicas e espirituais estimuladas pelo objeto.</li>
+          </ul>
+          <h4>Exemplos Clássicos de Sobreposição Funcional</h4>
+          <p><strong>Arcos da Lapa (Rio de Janeiro):</strong> Projetados em 1740 como aqueduto para transporte de água, foram convertidos em viaduto para bondes em 1896, migrando de uma função essencialmente técnica para um símbolo cultural e turístico da cidade.</p>
+          <p><strong>W.W. Stool (Philippe Starck, 1991):</strong> Uma peça esculpida em alumínio fundido que desafia a função prática tradicional, atuando como um "objeto discursivo" que provoca o usuário e estimula conversas antes de servir como assento.</p>
+        `
+      },
+      "affordance": {
+        tag: "02.4 — Cognição",
+        titulo: "Affordance e Pregnância da Forma",
+        corpo: `
+          <p>A relação entre a forma de um objeto e a capacidade humana de reconhecer seu manuseio é explicada por dois conceitos fundamentais da cognição visual:</p>
+          <h4>Affordance (Gibson / Norman)</h4>
+          <p>Conceituada originalmente por James J. Gibson na percepção ecológica e adaptada ao design por Donald Norman, <strong>Affordance</strong> é a propriedade física e formal de um objeto que comunica intuitivamente sua própria usabilidade. Uma maçaneta achatada sugere o empurrão; uma manivela circular sugere o giro — a forma dispensa a necessidade de manuais de instrução.</p>
+          <h4>Pregnância da Forma (Gestalt)</h4>
+          <p>A lei básica da percepção na Psicologia da Gestalt dita que as forças de organização visual do cérebro tendem a estruturar qualquer padrão de estímulo da forma mais simples, harmônica e estável possível. Um objeto com alto grau de pregnância possui clareza formal e mínimo ruído visual.</p>
+        `
+      },
+      "escher": {
+        tag: "03.1 — História da Arte",
+        titulo: "A Geometria Poética de M.C. Escher",
+        corpo: `
+          <p>Maurits Cornelis Escher (1898–1972) utilizou o rigor da geometria, da cristalografia e das transformações isométricas para criar uma obra gráfica baseada nas surpresas da percepção visual.</p>
+          <p>Influenciado pelos mosaicos islâmicos da Espanha, Escher dominou a <strong>tesselação</strong> (preenchimento regular do plano sem lacunas ou sobreposições) e as metamorfoses formais contínuas, demonstrando como formas geométricas rígidas podem dar origem a narrativas visuais poéticas e ilusionistas.</p>
+        `
+      },
+      "kostellow": {
+        tag: "03.2 — Método Projetual",
+        titulo: "O Método de Rowena Reed Kostellow",
+        corpo: `
+          <p>Ao longo de 50 anos de lecionamento no <em>Pratt Institute</em> (Nova York), a professora e designer Rowena Reed Kostellow desenvolveu uma metodologia rigorosa para o ensino do design tridimensional, dividida em quatro fases progressivas de complexidade:</p>
+          <ol>
+            <li><strong>Fundamentos:</strong> Estudo de volumes retilíneos, curvilíneos, fragmentos de sólidos e linhas no espaço.</li>
+            <li><strong>Estudos Avançados da Forma:</strong> Organização de formas côncavas e convexas em contraste.</li>
+            <li><strong>Estudos do Espaço:</strong> Interação entre planos e arquitetura tridimensional.</li>
+            <li><strong>Desenvolvimento & Aplicação:</strong> Transição do modelo abstrato para a síntese de produtos funcionais do design.</li>
+          </ol>
+          <p>O método demonstra que a construção do conhecimento formal deve partir de estruturas simples isoladas até a articulação de sistemas espaciais complexos.</p>
+        `
+      }
+    };
+
+    /* ==========================================================================
+       GERENCIADOR DO PAINEL DE LEITURA PROFUNDA (SLIDE-OVER)
+       ========================================================================== */
+    function initGerenciadorLeituraProfunda() {
+      const painel = document.getElementById('painel-leitura');
+      const btnFechar = document.getElementById('btn-fechar-leitura');
+      const elTag = document.getElementById('verbete-tag');
+      const elTitulo = document.getElementById('verbete-titulo');
+      const elCorpo = document.getElementById('verbete-corpo');
+
+      function abrirVerbete(idVerbete) {
+        const dados = bancoVerbetes[idVerbete];
+        if (!dados) return;
+
+        elTag.textContent = dados.tag;
+        elTitulo.textContent = dados.titulo;
+        elCorpo.innerHTML = dados.corpo;
+
+        painel.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function fecharPainel() {
+        painel.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+      }
+
+      document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('btn-verbete')) {
+          const id = e.target.getAttribute('data-verbete');
+          abrirVerbete(id);
+        }
+      });
+
+      btnFechar.addEventListener('click', fecharPainel);
+      window.abrirVerbeteGlobal = abrirVerbete;
+    }
+
+    /* ==========================================================================
+       OUTRAS FUNÇÕES DO SISTEMA
+       ========================================================================== */
+    function initTema() {
+      const btnTema = document.getElementById('btn-tema');
+      const html = document.documentElement;
+
+      const temaSalvo = localStorage.getItem('atlas-tema');
+      if (temaSalvo) {
+        html.setAttribute('data-theme', temaSalvo);
+      } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+        html.setAttribute('data-theme', 'light');
+      }
+
+      btnTema.addEventListener('click', () => {
+        const temaAtual = html.getAttribute('data-theme');
+        const novoTema = temaAtual === 'light' ? 'dark' : 'light';
+        html.setAttribute('data-theme', novoTema);
+        localStorage.setItem('atlas-tema', novoTema);
+      });
+    }
+
+    function initNavegacaoMobile() {
+      const btnMenu = document.getElementById('btn-menu-mobile');
+      const nav = document.getElementById('menu-navegacao');
+
+      btnMenu.addEventListener('click', () => {
+        const aberto = nav.getAttribute('data-aberto') === 'true';
+        nav.setAttribute('data-aberto', !aberto);
+        btnMenu.setAttribute('aria-expanded', !aberto);
+      });
+
+      nav.querySelectorAll('.nav__link').forEach(link => {
+        link.addEventListener('click', () => {
+          nav.setAttribute('data-aberto', 'false');
+          btnMenu.setAttribute('aria-expanded', 'false');
+        });
+      });
+    }
+
+    function initBuscaModal() {
+      const modal = document.getElementById('modal-busca');
+      const btnAbrir = document.getElementById('btn-busca');
+      const btnFechar = document.getElementById('btn-fechar-busca');
+      const inputBusca = document.getElementById('busca-input');
+      const conteinerResultados = document.getElementById('busca-resultados');
+
+      function abrirModal() {
+        modal.setAttribute('aria-hidden', 'false');
+        inputBusca.focus();
+      }
+
+      function fecharModal() {
+        modal.setAttribute('aria-hidden', 'true');
+        inputBusca.value = '';
+        conteinerResultados.innerHTML = '';
+      }
+
+      btnAbrir.addEventListener('click', abrirModal);
+      btnFechar.addEventListener('click', fecharModal);
+
+      window.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+          e.preventDefault();
+          modal.getAttribute('aria-hidden') === 'true' ? abrirModal() : fecharModal();
+        }
+        if (e.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') {
+          fecharModal();
+        }
+      });
+
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) fecharModal();
+      });
+
+      inputBusca.addEventListener('input', (e) => {
+        const termo = e.target.value.toLowerCase().trim();
+        conteinerResultados.innerHTML = '';
+
+        if (termo.length < 2) return;
+
+        Object.keys(bancoVerbetes).forEach(chave => {
+          const item = bancoVerbetes[chave];
+          if (item.titulo.toLowerCase().includes(termo) || item.corpo.toLowerCase().includes(termo)) {
+            const el = document.createElement('a');
+            el.href = '#';
+            el.className = 'item-resultado';
+            el.innerHTML = `<b>${item.titulo}</b> <small>(${item.tag})</small>`;
+            el.addEventListener('click', (ev) => {
+              ev.preventDefault();
+              fecharModal();
+              window.abrirVerbeteGlobal(chave);
+            });
+            conteinerResultados.appendChild(el);
+          }
+        });
+      });
+    }
+
+    function initTextoEco() {
+      const elEco = document.getElementById('palavra-eco');
+      const palavras = ["Linguagem", "Estrutura", "Geometria", "Código", "Significado"];
+      let i = 0;
+
+      setInterval(() => {
+        i = (i + 1) % palavras.length;
+        elEco.style.opacity = '0';
+        setTimeout(() => {
+          elEco.setAttribute('data-eco', palavras[i]);
+          elEco.textContent = palavras[i];
+          elEco.style.opacity = '1';
+        }, 200);
+      }, 3500);
+    }
+
+    function initCanvasFundo() {
+      const canvas = document.getElementById('fundo-no-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let largura, altura, pontos = [];
+
+      function redimensionar() {
+        largura = canvas.width = window.innerWidth;
+        altura = canvas.height = window.innerHeight;
+      }
+      window.addEventListener('resize', redimensionar);
+      redimensionar();
+
+      for (let i = 0; i < 45; i++) {
+        pontos.push({
+          x: Math.random() * largura,
+          y: Math.random() * altura,
+          vx: (Math.random() - 0.5) * 0.4,
+          vy: (Math.random() - 0.5) * 0.4
+        });
+      }
+
+      function desenhar() {
+        ctx.clearRect(0, 0, largura, altura);
+        const estiloCor = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+        ctx.fillStyle = estiloCor || '#ff6b52';
+        ctx.strokeStyle = estiloCor ? estiloCor + '15' : 'rgba(255, 107, 82, 0.08)';
+
+        pontos.forEach((p, index) => {
+          p.x += p.vx;
+          p.y += p.vy;
+
+          if (p.x < 0 || p.x > largura) p.vx *= -1;
+          if (p.y < 0 || p.y > altura) p.vy *= -1;
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2);
+          ctx.fill();
+
+          for (let j = index + 1; j < pontos.length; j++) {
+            const p2 = pontos[j];
+            const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+            if (dist < 130) {
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(p2.x, p2.y);
+              ctx.stroke();
+            }
+          }
+        });
+
+        requestAnimationFrame(desenhar);
+      }
+      desenhar();
+    }
+
+    /* VISOR 3D FLUTUANTE LIVRE COMPLEXO (NÓ TOROIDAL) */
+    function initVisor3DHeroiComplexo() {
+      const canvas = document.getElementById('canvas-3d-heroi');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+
+      canvas.width = 450;
+      canvas.height = 450;
+
+      const p = 3, q = 8;
+      const numPontos = 240;
+      let pontos = [];
+
+      for (let i = 0; i < numPontos; i++) {
+        const u = (i / numPontos) * Math.PI * 2;
+        const r = 0.8 + 0.35 * Math.cos(q * u);
+        const x = r * Math.cos(p * u);
+        const y = r * Math.sin(p * u);
+        const z = 0.35 * Math.sin(q * u);
+        pontos.push([x, y, z]);
+      }
+
+      let anguloX = 0.02, anguloY = 0.02;
+      let arrastando = false, xAnterior, yAnterior;
+
+      canvas.addEventListener('mousedown', (e) => {
+        arrastando = true;
+        xAnterior = e.clientX;
+        yAnterior = e.clientY;
+      });
+
+      window.addEventListener('mouseup', () => arrastando = false);
+
+      window.addEventListener('mousemove', (e) => {
+        if (!arrastando) return;
+        const dx = e.clientX - xAnterior;
+        const dy = e.clientY - yAnterior;
+        anguloY += dx * 0.006;
+        anguloX += dy * 0.006;
+        xAnterior = e.clientX;
+        yAnterior = e.clientY;
+      });
+
+      function rotacionar(v, ax, ay) {
+        let x1 = v[0] * Math.cos(ay) + v[2] * Math.sin(ay);
+        let z1 = -v[0] * Math.sin(ay) + v[2] * Math.cos(ay);
+        let y2 = v[1] * Math.cos(ax) - z1 * Math.sin(ax);
+        let z2 = v[1] * Math.sin(ax) + z1 * Math.cos(ax);
+        return [x1, y2, z2];
+      }
+
+      function render() {
+        ctx.clearRect(0, 0, 450, 450);
+        if (!arrastando) {
+          anguloX += 0.002;
+          anguloY += 0.004;
+        }
+
+        const projetados = pontos.map(v => {
+          const r = rotacionar(v, anguloX, anguloY);
+          const escala = 120;
+          return [r[0] * escala + 225, r[1] * escala + 225, r[2]];
+        });
+
+        const corAccent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+        ctx.strokeStyle = corAccent || '#ff6b52';
+        ctx.lineWidth = 1.5;
+
+        ctx.beginPath();
+        for (let i = 0; i < projetados.length; i++) {
+          const prox = (i + 1) % projetados.length;
+          ctx.moveTo(projetados[i][0], projetados[i][1]);
+          ctx.lineTo(projetados[prox][0], projetados[prox][1]);
+        }
+        ctx.stroke();
+
+        ctx.lineWidth = 0.5;
+        for (let i = 0; i < projetados.length; i++) {
+          const salto = (i + 15) % projetados.length;
+          const dist = Math.hypot(projetados[i][0] - projetados[salto][0], projetados[i][1] - projetados[salto][1]);
+          if (dist < 70) {
+            ctx.beginPath();
+            ctx.moveTo(projetados[i][0], projetados[i][1]);
+            ctx.lineTo(projetados[salto][0], projetados[salto][1]);
+            ctx.stroke();
+          }
+        }
+
+        requestAnimationFrame(render);
+      }
+      render();
+    }
+
+    function initDemosInterativas() {
+      // 1. DEMO FILOSOFIA
+      const canvasFlusser = document.getElementById('canvas-flusser');
+      const btnFlusser = document.getElementById('btn-demo-flusser');
+      if (canvasFlusser && btnFlusser) {
+        const ctx = canvasFlusser.getContext('2d');
+        let estruturado = false;
+        let pontosAmorfos = [];
+
+        for(let i = 0; i < 30; i++) {
+          pontosAmorfos.push({ x: Math.random() * 260 + 20, y: Math.random() * 80 + 20 });
+        }
+
+        function desenharFlusser() {
+          ctx.clearRect(0, 0, 300, 120);
+          const corAccent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+          ctx.fillStyle = corAccent || '#ff6b52';
+          ctx.strokeStyle = corAccent || '#ff6b52';
+
+          if (!estruturado) {
+            pontosAmorfos.forEach(p => {
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+              ctx.fill();
+            });
+          } else {
+            ctx.beginPath();
+            ctx.moveTo(150, 20);
+            ctx.lineTo(230, 60);
+            ctx.lineTo(190, 100);
+            ctx.lineTo(110, 100);
+            ctx.lineTo(70, 60);
+            ctx.closePath();
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.fillStyle = corAccent ? corAccent + '33' : 'rgba(255, 107, 82, 0.2)';
+            ctx.fill();
+          }
+        }
+
+        btnFlusser.addEventListener('click', () => {
+          estruturado = !estruturado;
+          btnFlusser.textContent = estruturado ? "Desorganizar (Amorfo)" : "Informar Matéria";
+          desenharFlusser();
+        });
+        desenharFlusser();
+      }
+
+      // 2. DEMO FRACTAL
+      const canvasFractal = document.getElementById('canvas-fractal');
+      const btnFractal = document.getElementById('btn-interagir-fractal');
+      if (canvasFractal) {
+        const ctx = canvasFractal.getContext('2d');
+        let nivel = 0;
+
+        function desenharArv(x, y, tam, angulo, profundidade) {
+          if (profundidade === 0) return;
+          const x2 = x + tam * Math.cos(angulo * Math.PI / 180);
+          const y2 = y + tam * Math.sin(angulo * Math.PI / 180);
+
+          const corAccent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.lineTo(x2, y2);
+          ctx.strokeStyle = profundidade % 2 === 0 ? (corAccent || '#ff6b52') : '#94a3b8';
+          ctx.stroke();
+
+          desenharArv(x2, y2, tam * 0.7, angulo - 25, profundidade - 1);
+          desenharArv(x2, y2, tam * 0.7, angulo + 25, profundidade - 1);
+        }
+
+        function atualizarFractal() {
+          ctx.clearRect(0, 0, 300, 120);
+          desenharArv(150, 115, 30, -90, nivel + 1);
+        }
+
+        btnFractal.addEventListener('click', () => {
+          nivel = (nivel + 1) % 5;
+          atualizarFractal();
+        });
+        atualizarFractal();
+      }
+
+      // 3. DEMO CRISTALOGRAFIA
+      const canvasCristal = document.getElementById('canvas-cristal');
+      const btnCristal = document.getElementById('btn-demo-cristal');
+      if (canvasCristal && btnCristal) {
+        const ctx = canvasCristal.getContext('2d');
+        let ehCristal = true;
+
+        function desenharCristal() {
+          ctx.clearRect(0, 0, 300, 120);
+          const corAccent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+          ctx.fillStyle = corAccent || '#ff6b52';
+
+          if (ehCristal) {
+            for (let x = 60; x <= 240; x += 40) {
+              for (let y = 20; y <= 100; y += 35) {
+                ctx.beginPath();
+                ctx.arc(x, y, 4, 0, Math.PI * 2);
+                ctx.fill();
+              }
+            }
+          } else {
+            let seed = [
+              [50,25], [95,40], [130,15], [180,35], [230,20],
+              [40,70], [85,95], [140,80], [195,105], [245,65],
+              [70,50], [115,60], [165,55], [210,85]
+            ];
+            seed.forEach(p => {
+              ctx.beginPath();
+              ctx.arc(p[0], p[1], 4, 0, Math.PI * 2);
+              ctx.fill();
+            });
+          }
+        }
+
+        btnCristal.addEventListener('click', () => {
+          ehCristal = !ehCristal;
+          btnCristal.textContent = ehCristal ? "Tornar Amorfo" : "Ordenar em Cristal";
+          desenharCristal();
+        });
+        desenharCristal();
+      }
+
+      // 4. DEMO FIBONACCI
+      const canvasFibo = document.getElementById('canvas-fibonacci');
+      const btnFibo = document.getElementById('btn-demo-fibonacci');
+      if (canvasFibo && btnFibo) {
+        const ctx = canvasFibo.getContext('2d');
+        let passos = 1;
+
+        function desenharFibo() {
+          ctx.clearRect(0, 0, 300, 120);
+          const corAccent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+          ctx.strokeStyle = corAccent || '#ff6b52';
+          ctx.lineWidth = 1.5;
+
+          let cx = 150, cy = 60;
+          let a = 0, b = 4;
+          
+          ctx.beginPath();
+          ctx.moveTo(cx, cy);
+
+          for (let i = 0; i < passos * 2; i++) {
+            let temp = a + b;
+            a = b;
+            b = temp;
+            
+            let raio = b * 0.4;
+            ctx.arc(cx, cy, raio, i * Math.PI / 2, (i + 1) * Math.PI / 2);
+          }
+          ctx.stroke();
+        }
+
+        btnFibo.addEventListener('click', () => {
+          passos = (passos % 5) + 1;
+          desenharFibo();
+        });
+        desenharFibo();
+      }
+
+      // 5. DEMO LINGUAGEM
+      const canvasLinguagem = document.getElementById('canvas-linguagem');
+      const btnLinguagem = document.getElementById('btn-demo-linguagem');
+      if (canvasLinguagem && btnLinguagem) {
+        const ctx = canvasLinguagem.getContext('2d');
+        let modoDiscreto = true;
+
+        function desenharLinguagem() {
+          ctx.clearRect(0, 0, 300, 120);
+          const corAccent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+          const corMuted = getComputedStyle(document.documentElement).getPropertyValue('--ink-muted').trim();
+
+          if (modoDiscreto) {
+            ctx.fillStyle = corMuted || '#94a3b8';
+            ctx.font = '12px ui-monospace, monospace';
+            ctx.fillText("CMYK: (14, 60, 0, 0)", 30, 45);
+            ctx.fillText("RGB:  (255, 107, 82)", 30, 75);
+            ctx.fillText("HEX:  #FF6B52", 30, 105);
+          } else {
+            ctx.fillStyle = corAccent || '#ff6b52';
+            ctx.beginPath();
+            ctx.arc(150, 60, 35, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim() || '#ffffff';
+            ctx.font = 'bold 13px system-ui, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText("Significado Cultural / Calor", 150, 65);
+            ctx.textAlign = 'left';
+          }
+        }
+
+        btnLinguagem.addEventListener('click', () => {
+          modoDiscreto = !modoDiscreto;
+          btnLinguagem.textContent = modoDiscreto ? "Ver Signo Sensível" : "Ver Código Discreto";
+          desenharLinguagem();
+        });
+        desenharLinguagem();
+      }
+
+      // 6. DEMO SIMETRIA IRREGULAR
+      const canvasSimetria = document.getElementById('canvas-simetria');
+      const btnSimetria = document.getElementById('btn-simetria-espelho');
+      if (canvasSimetria && btnSimetria) {
+        const ctx = canvasSimetria.getContext('2d');
+        let espelhado = false;
+
+        const pontosOriginais = [
+          [0, -35], [25, -10], [10, 15], [35, 30], [5, 35], [-20, 10]
+        ];
+
+        function desenharSimetria() {
+          ctx.clearRect(0, 0, 300, 120);
+          const corAccent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+          const corLine = getComputedStyle(document.documentElement).getPropertyValue('--line-strong').trim();
+
+          ctx.strokeStyle = corLine || '#334155';
+          ctx.lineWidth = 1.5;
+          ctx.setLineDash([4, 4]);
+          ctx.beginPath();
+          ctx.moveTo(150, 10);
+          ctx.lineTo(150, 110);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          ctx.save();
+          ctx.translate(90, 60);
+          ctx.beginPath();
+          pontosOriginais.forEach((p, idx) => {
+            if (idx === 0) ctx.moveTo(p[0], p[1]);
+            else ctx.lineTo(p[0], p[1]);
+          });
+          ctx.closePath();
+          ctx.strokeStyle = corAccent || '#ff6b52';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+          ctx.fillStyle = corAccent ? corAccent + '22' : 'rgba(255, 107, 82, 0.15)';
+          ctx.fill();
+          ctx.restore();
+
+          ctx.save();
+          ctx.translate(210, 60);
+          if (espelhado) {
+            ctx.scale(-1, 1);
+          }
+          ctx.beginPath();
+          pontosOriginais.forEach((p, idx) => {
+            if (idx === 0) ctx.moveTo(p[0], p[1]);
+            else ctx.lineTo(p[0], p[1]);
+          });
+          ctx.closePath();
+          ctx.strokeStyle = corAccent || '#ff6b52';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+          ctx.fillStyle = corAccent ? corAccent + '22' : 'rgba(255, 107, 82, 0.15)';
+          ctx.fill();
+          ctx.restore();
+        }
+
+        btnSimetria.addEventListener('click', () => {
+          espelhado = !espelhado;
+          btnSimetria.textContent = espelhado ? "Desfazer Espelhamento" : "Espelhar Polígono";
+          desenharSimetria();
+        });
+        desenharSimetria();
+      }
+
+      // 7. DEMO LÖBACH (TEXTO DO TÍTULO CORRIGIDO COM ALTO CONTRASTE)
+      const canvasLobach = document.getElementById('canvas-lobach');
+      const btnLobach = document.getElementById('btn-demo-lobach');
+      if (canvasLobach && btnLobach) {
+        const ctx = canvasLobach.getContext('2d');
+        const estados = ['pratica', 'estetica', 'simbolica'];
+        let indiceEstado = 0;
+
+        function desenharLobach() {
+          ctx.clearRect(0, 0, 300, 120);
+          const corAccent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+          const corInk = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim();
+          const corMuted = getComputedStyle(document.documentElement).getPropertyValue('--ink-muted').trim();
+
+          const est = estados[indiceEstado];
+
+          if (est === 'pratica') {
+            ctx.strokeStyle = corMuted || '#94a3b8';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(100, 35, 100, 60);
+
+            ctx.fillStyle = corInk || '#ffffff';
+            ctx.font = 'bold 12px system-ui, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText("1. Função Prática (Uso)", 150, 20);
+          } else if (est === 'estetica') {
+            ctx.beginPath();
+            ctx.ellipse(150, 65, 60, 30, 0, 0, Math.PI * 2);
+            ctx.strokeStyle = corAccent || '#ff6b52';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+            ctx.fillStyle = corAccent ? corAccent + '25' : 'rgba(255, 107, 82, 0.15)';
+            ctx.fill();
+
+            ctx.fillStyle = corInk || '#ffffff';
+            ctx.font = 'bold 12px system-ui, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText("2. Função Estética (Sensação)", 150, 20);
+          } else {
+            ctx.beginPath();
+            ctx.moveTo(150, 35);
+            ctx.lineTo(190, 100);
+            ctx.lineTo(110, 100);
+            ctx.closePath();
+            ctx.fillStyle = corAccent || '#ff6b52';
+            ctx.fill();
+
+            // Texto do título posicionado acima do triângulo na cor padrão de texto
+            ctx.fillStyle = corInk || '#ffffff';
+            ctx.font = 'bold 12px system-ui, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText("3. Função Simbólica (Status / Mitos)", 150, 20);
+
+         
+          }
+          ctx.textAlign = 'left';
+        }
+
+        btnLobach.addEventListener('click', () => {
+          indiceEstado = (indiceEstado + 1) % estados.length;
+          desenharLobach();
+        });
+        desenharLobach();
+      }
+
+      // 8. DEMO PREGNÂNCIA
+      const canvasPregnancia = document.getElementById('canvas-pregnancia');
+      const btnPregnancia = document.getElementById('btn-demo-pregnancia');
+      if (canvasPregnancia && btnPregnancia) {
+        const ctx = canvasPregnancia.getContext('2d');
+        let altaPregnancia = false;
+
+        function desenharPregnancia() {
+          ctx.clearRect(0, 0, 300, 120);
+          const corAccent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+          const corMuted = getComputedStyle(document.documentElement).getPropertyValue('--ink-muted').trim();
+
+          if (!altaPregnancia) {
+            ctx.strokeStyle = corMuted || '#94a3b8';
+            ctx.lineWidth = 1.5;
+
+            ctx.beginPath();
+            ctx.moveTo(100, 25);
+            ctx.lineTo(140, 35);
+            ctx.lineTo(120, 75);
+            ctx.lineTo(170, 45);
+            ctx.lineTo(190, 95);
+            ctx.lineTo(130, 105);
+            ctx.lineTo(85, 70);
+            ctx.closePath();
+            ctx.stroke();
+
+            ctx.fillStyle = corMuted || '#94a3b8';
+            ctx.font = '11px ui-monospace, monospace';
+            ctx.fillText("Baixa Pregnância (Ruído)", 95, 118);
+          } else {
+            ctx.strokeStyle = corAccent || '#ff6b52';
+            ctx.lineWidth = 2.5;
+
+            ctx.beginPath();
+            ctx.arc(150, 55, 35, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.fillStyle = corAccent ? corAccent + '20' : 'rgba(255, 107, 82, 0.15)';
+            ctx.fill();
+
+            ctx.fillStyle = corAccent || '#ff6b52';
+            ctx.font = 'bold 11px ui-monospace, monospace';
+            ctx.fillText("Alta Pregnância (Clareza)", 90, 118);
+          }
+        }
+
+        btnPregnancia.addEventListener('click', () => {
+          altaPregnancia = !altaPregnancia;
+          btnPregnancia.textContent = altaPregnancia ? "Adicionar Ruído" : "Simplificar Forma";
+          desenharPregnancia();
+        });
+        desenharPregnancia();
+      }
+    }
+
+    function initMatrizNosCanvas() {
+      const canvas = document.getElementById('canvas-matriz-nos');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+
+      const rect = canvas.parentNode.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = 350;
+
+      const nos = [
+        { id: 1, chave: "filosofia", x: 80, y: 100, titulo: "Filosofia da Forma", cat: "01.1 Filosofia", desc: "Estudia a forma como causa essencial (Aristóteles) e como in-formação da matéria amorfa (Flusser).", tags: ["Platão", "Flusser", "Essência"] },
+        { id: 2, chave: "matematica", x: 220, y: 80, titulo: "Geometria Fractal", cat: "01.2 Matemática", desc: "A iteração de regras simples gerando estruturas de autossimilaridade e complexidade.", tags: ["Mandelbrot", "Iteração", "Escala"] },
+        { id: 3, chave: "fisica-quimica", x: 180, y: 220, titulo: "Cristalografia", cat: "01.3 Química", desc: "A ordem das redes cristalinas oposta ao estado amorfo da matéria.", tags: ["Ordem", "Redes", "Estrutura"] },
+        { id: 4, chave: "affordance", x: 340, y: 150, titulo: "Affordance", cat: "02.4 Cognição", desc: "A propriedade formal que comunica intuitivamente a função de uso para o cérebro.", tags: ["Norman", "Gibson", "Usabilidade"] },
+        { id: 5, chave: "simetria", x: 450, y: 260, titulo: "Pregnância (Gestalt)", cat: "02.4 Cognição", desc: "A lei de organização visual que busca a máxima clareza e simetria.", tags: ["Gestalt", "Simetria", "Percepção"] },
+        { id: 6, chave: "kostellow", x: 480, y: 90, titulo: "Método Kostellow", cat: "03.2 Prática", desc: "A pedagogia tridimensional do Pratt Institute dividida em 4 fases de abstração.", tags: ["Pratt", "3D", "Espaço"] }
+      ];
+
+      const ligacoes = [
+        [1, 2], [1, 4], [2, 3], [2, 5], [3, 6], [4, 5], [5, 6]
+      ];
+
+      let noSelecionado = nos[0];
+
+      function atualizarPainel(no) {
+        document.getElementById('no-categoria').textContent = no.cat;
+        document.getElementById('no-titulo').textContent = no.titulo;
+        document.getElementById('no-descricao').textContent = no.desc;
+        
+        const contTags = document.getElementById('no-conexoes');
+        contTags.innerHTML = '';
+        no.tags.forEach(t => {
+          const span = document.createElement('span');
+          span.className = 'tag';
+          span.textContent = t;
+          contTags.appendChild(span);
+        });
+
+        const btnLer = document.getElementById('btn-no-ler');
+        btnLer.style.display = 'inline-flex';
+        btnLer.onclick = () => window.abrirVerbeteGlobal(no.chave);
+      }
+
+      function desenharGrafo() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const corAccent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+
+        ctx.strokeStyle = 'rgba(255, 107, 82, 0.2)';
+        ctx.lineWidth = 1.5;
+        ligacoes.forEach(([id1, id2]) => {
+          const n1 = nos.find(n => n.id === id1);
+          const n2 = nos.find(n => n.id === id2);
+          ctx.beginPath();
+          ctx.moveTo(n1.x, n1.y);
+          ctx.lineTo(n2.x, n2.y);
+          ctx.stroke();
+        });
+
+        nos.forEach(n => {
+          const eAtivo = n === noSelecionado;
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, eAtivo ? 10 : 6, 0, Math.PI * 2);
+          ctx.fillStyle = eAtivo ? (corAccent || '#ff6b52') : '#64748b';
+          ctx.fill();
+
+          if (eAtivo) {
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+          }
+
+          ctx.fillStyle = eAtivo ? '#ffffff' : '#94a3b8';
+          ctx.font = '11px ui-monospace, monospace';
+          ctx.fillText(n.titulo, n.x + 12, n.y + 4);
+        });
+      }
+
+      canvas.addEventListener('click', (e) => {
+        const r = canvas.getBoundingClientRect();
+        const cx = e.clientX - r.left;
+        const cy = e.clientY - r.top;
+
+        nos.forEach(n => {
+          if (Math.hypot(n.x - cx, n.y - cy) < 15) {
+            noSelecionado = n;
+            atualizarPainel(n);
+            desenharGrafo();
+          }
+        });
+      });
+
+      desenharGrafo();
+      atualizarPainel(noSelecionado);
+    }
+  </script>
+</body>
+</html>
