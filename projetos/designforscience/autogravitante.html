@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ergodicidade em Sistemas Autogravitantes — Física Estatística de Longo Alcance</title>
+<meta name="description" content="Apresentação interativa e levantamento teórico da tese de doutorado em Física Teórica (UnB): 3 métodos numéricos, simulador de N-corpos, relaxação violenta e a quebra da hipótese ergódica.">
+<meta name="author" content="Dra. Cínthia Helena Claudino Silvestre">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+<!-- KaTeX para Renderização Matemática (CSS + JS) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+<style>
+/* ==========================================================================
+   SYSTEM TOKENS & BASE (Arquitetura do Same Brain)
+   ========================================================================== */
+:root {
+  --bg: 0 0% 7%;
+  --bg-raised: 12 4% 11%;
+  --bg-math: 220 40% 4%;
+  --ink: 0 0% 95%;
+  --ink-muted: 14 6% 66%;
+  --ink-faint: 14 6% 53%;
+  --accent: 14 60% 72%;
+  --accent-cyan: 199 89% 60%;
+  --traco: 14 60% 72%;
+  --accent-ink: 0 0% 7%;
+  --line: 14 4% 21%;
+  --line-strong: 14 5% 44%;
+  
+  --shell: 68rem;
+  --prosa: 42rem;
+  --radius: 0.5rem;
+
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  --bg: 20 16% 98%;
+  --bg-raised: 0 0% 100%;
+  --bg-math: 20 12% 94%;
+  --ink: 14 12% 11%;
+  --ink-muted: 14 8% 38%;
+  --ink-faint: 14 8% 42%;
+  --accent: 14 62% 39%;
+  --accent-cyan: 199 89% 38%;
+  --traco: 176 27% 46%;
+  --accent-ink: 20 16% 98%;
+  --line: 16 12% 88%;
+  --line-strong: 14 8% 55%;
+
+  color-scheme: light;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: hsl(var(--bg));
+  color: hsl(var(--ink));
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::selection { background: hsl(var(--accent)); color: hsl(var(--accent-ink)); }
+:focus-visible { outline: 2px solid hsl(var(--accent)); outline-offset: 2px; }
+
+.mono { font-family: 'Fira Code', monospace; }
+.title-font { font-family: 'Space Grotesk', sans-serif; }
+
+.eyebrow {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.8125rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: hsl(var(--accent));
+  margin: 0;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: -0.025em;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.15;
+}
+
+h1 { font-size: clamp(2.2rem, 1.5rem + 3.5vw, 3.8rem); }
+h2 { font-size: clamp(1.5rem, 1.2rem + 1.8vw, 2.4rem); }
+h3 { font-size: 1.25rem; }
+
+p { margin: 0; text-wrap: pretty; }
+.prosa {
+  max-width: var(--prosa);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  font-size: 1.0625rem;
+  color: hsl(var(--ink-muted));
+}
+
+.shell { max-width: var(--shell); margin: 0 auto; padding: 0 1.5rem; }
+
+/* ==========================================================================
+   CABEÇALHO & NAVEGAÇÃO STICKY
+   ========================================================================== */
+.topo {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: hsl(var(--bg) / 0.88);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid hsl(var(--line));
+}
+
+.topo__interno {
+  max-width: var(--shell);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  height: 3.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.marca {
+  font-family: 'Fira Code', monospace;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: hsl(var(--ink));
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.marca span { color: hsl(var(--accent)); }
+
+.topo__controles { display: flex; align-items: center; gap: 0.5rem; }
+
+.topo__busca, .tema {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
+  min-height: 42px;
+  background: none;
+  border: 1px solid hsl(var(--line));
+  border-radius: var(--radius);
+  color: hsl(var(--ink-muted));
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.topo__busca:hover, .tema:hover {
+  color: hsl(var(--ink));
+  border-color: hsl(var(--accent) / 0.6);
+}
+
+/* ==========================================================================
+   HERO / CAPA (Animação Pulsante Sem Bordas e Sem Fundo)
+   ========================================================================== */
+.heroi {
+  position: relative;
+  padding-block: clamp(3.5rem, 8vw, 6.5rem) clamp(2.5rem, 5vw, 4rem);
+  border-bottom: 1px solid hsl(var(--line));
+  overflow: hidden;
+}
+
+.heroi__grade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(to right, hsl(var(--line)) 1px, transparent 1px),
+                    linear-gradient(to bottom, hsl(var(--line)) 1px, transparent 1px);
+  background-size: 4rem 4rem;
+  mask-image: radial-gradient(ellipse 65% 55% at 50% 0%, #000 60%, transparent 105%);
+  opacity: 0.6;
+}
+
+.heroi__interno {
+  position: relative;
+  display: grid;
+  gap: 2.5rem;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 60rem) {
+  .heroi__interno {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    align-items: center;
+  }
+}
+
+.meta-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.badge {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 999px;
+  border: 1px solid hsl(var(--line-strong));
+  color: hsl(var(--ink-faint));
+}
+
+.heroi__tese {
+  margin-top: 1.5rem;
+  font-size: clamp(1.0625rem, 1rem + 0.5vw, 1.25rem);
+  color: hsl(var(--ink-muted));
+  max-width: 36rem;
+}
+.heroi__tese strong { color: hsl(var(--ink)); }
+
+.authors-card {
+  margin-top: 2rem;
+  padding: 1.25rem;
+  background: hsl(var(--bg-raised));
+  border: 1px solid hsl(var(--line));
+  border-radius: var(--radius);
+  display: grid;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.heroi__objeto {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  max-width: 26rem;
+  margin: 0 auto;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  overflow: hidden;
+}
+
+#canvasHero { width: 100%; height: 100%; display: block; }
+
+/* ==========================================================================
+   OS 2 RIOS
+   ========================================================================== */
+.rios {
+  margin-block: 4rem;
+  border: 1px solid hsl(var(--line));
+  border-radius: 0.75rem;
+  background: hsl(var(--bg-raised) / 0.6);
+  padding: clamp(1.25rem, 3vw, 2rem);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.rio { display: grid; gap: 0.5rem; }
+@media (min-width: 52rem) {
+  .rio { grid-template-columns: 18rem 1fr 12rem; align-items: center; }
+}
+
+.rio__leito {
+  position: relative;
+  height: 3px;
+  background: hsl(var(--line));
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.rio__corrente {
+  position: absolute;
+  inset: 0;
+  background-repeat: repeat-x;
+  background-image: linear-gradient(to right, transparent 0 30%, hsl(var(--accent)) 30% 70%, transparent 70% 100%);
+}
+.rio__corrente--rapido { background-size: 2.5rem 100%; animation: correr-rapido 1.2s linear infinite; }
+.rio__corrente--lento { background-size: 15rem 100%; opacity: 0.5; animation: correr-lento 60s linear infinite; }
+
+@keyframes correr-rapido { to { background-position-x: 2.5rem; } }
+@keyframes correr-lento { to { background-position-x: 15rem; } }
+
+/* ==========================================================================
+   GRAFO VISUAL DE CONEXÕES (ORGÂNICO, ASSIMÉTRICO E LARGURA TOTAL)
+   ========================================================================== */
+.grafo-container {
+  background: hsl(var(--bg-math));
+  border: 1px solid hsl(var(--line));
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  position: relative;
+  width: 100%;
+}
+
+#svgGrafo {
+  width: 100%;
+  height: 420px;
+  overflow: visible;
+}
+
+.grafo-node {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.grafo-node circle {
+  fill: hsl(var(--bg-raised));
+  stroke: hsl(var(--line-strong));
+  stroke-width: 2;
+}
+.grafo-node:hover circle, .grafo-node.ativo circle {
+  fill: hsl(var(--accent));
+  stroke: hsl(var(--ink));
+}
+.grafo-node text {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.75rem;
+  fill: hsl(var(--ink-muted));
+  pointer-events: none;
+}
+.grafo-node:hover text, .grafo-node.ativo text {
+  fill: hsl(var(--ink));
+  font-weight: 600;
+}
+
+.grafo-link {
+  stroke: hsl(var(--line));
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+  transition: all 0.2s ease;
+}
+.grafo-link.ativo {
+  stroke: hsl(var(--accent));
+  stroke-width: 2.5;
+  stroke-dasharray: none;
+}
+
+/* CHIPS / PÍLULAS DE CONEXÃO */
+.chips-grupo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.35rem 0.75rem;
+  background: hsl(var(--bg-raised));
+  border: 1px solid hsl(var(--line-strong));
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  color: hsl(var(--ink-muted));
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+.chip:hover {
+  border-color: hsl(var(--accent));
+  color: hsl(var(--ink));
+  background: hsl(var(--accent) / 0.15);
+}
+
+/* ==========================================================================
+   SISTEMA DE MÓDULOS EXPANSÍVEIS
+   ========================================================================== */
+.secao {
+  padding-block: clamp(3rem, 6vw, 5rem);
+  border-top: 1px solid hsl(var(--line));
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 1.25rem;
+  margin-top: 2rem;
+}
+
+.cartao {
+  background: hsl(var(--bg-raised) / 0.5);
+  border: 1px solid hsl(var(--line));
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+.cartao:hover {
+  border-color: hsl(var(--accent) / 0.6);
+  background: hsl(var(--bg-raised));
+}
+
+.math-block {
+  background: hsl(var(--bg-math));
+  border-left: 3px solid hsl(var(--accent));
+  padding: 1.25rem;
+  margin-block: 1.5rem;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  font-size: 0.95rem;
+  color: hsl(var(--ink));
+  line-height: 1.6;
+  border-top: 1px solid hsl(var(--line));
+  border-right: 1px solid hsl(var(--line));
+  border-bottom: 1px solid hsl(var(--line));
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.acordeao-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.acordeao {
+  background: hsl(var(--bg-raised) / 0.4);
+  border: 1px solid hsl(var(--line));
+  border-radius: 0.75rem;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+.acordeao[open] { border-color: hsl(var(--accent) / 0.8); }
+
+.acordeao__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 1.125rem;
+  color: hsl(var(--ink));
+  cursor: pointer;
+  list-style: none;
+}
+.acordeao__summary::-webkit-details-marker { display: none; }
+.acordeao__summary:hover { color: hsl(var(--accent)); }
+
+.acordeao__conteudo {
+  padding: 0 1.5rem 1.5rem 1.5rem;
+  color: hsl(var(--ink-muted));
+  font-size: 0.95rem;
+  border-top: 1px solid hsl(var(--line) / 0.5);
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+}
+
+/* ==========================================================================
+   REFERÊNCIAS BIBLIOGRÁFICAS
+   ========================================================================== */
+.referencias-lista {
+  list-style: none;
+  margin: 2rem 0 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.ref-item {
+  padding-left: 1.5rem;
+  border-left: 2px solid hsl(var(--line-strong));
+  font-size: 0.9rem;
+  color: hsl(var(--ink-muted));
+  line-height: 1.6;
+}
+.ref-item strong { color: hsl(var(--ink)); }
+.ref-item em { color: hsl(var(--accent)); font-style: normal; }
+
+/* ==========================================================================
+   OVERLAY DE BUSCA E MODO FOCO (VELÁRIO SAME BRAIN)
+   ========================================================================== */
+.velario[hidden] { display: none !important; }
+
+.velario {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: hsl(var(--bg) / 0.85);
+  backdrop-filter: blur(14px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(1rem, 5vw, 4rem) 1rem;
+}
+
+.pill-zona {
+  width: min(100%, 36rem);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.pill {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.875rem 1.25rem;
+  background: hsl(var(--bg-raised));
+  border: 1px solid hsl(var(--line-strong));
+  border-radius: 999px;
+}
+
+.pill__campo {
+  flex: 1;
+  background: none;
+  border: 0;
+  color: hsl(var(--ink));
+  font-size: 1.125rem;
+  font-family: inherit;
+}
+.pill__campo:focus { outline: none; }
+
+.achados {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.achado-item {
+  padding: 1rem;
+  background: hsl(var(--bg-raised));
+  border: 1px solid hsl(var(--line));
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.achado-item:hover { border-color: hsl(var(--accent)); }
+
+/* ==========================================================================
+   POPOVERS DE DEFINIÇÕES TÉCNICAS
+   ========================================================================== */
+.termo {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline dotted;
+  text-underline-offset: 0.25em;
+  text-decoration-color: hsl(var(--accent));
+}
+.termo:hover { color: hsl(var(--accent)); }
+
+.definicao {
+  max-width: 24rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid hsl(var(--line-strong));
+  border-radius: 0.75rem;
+  background: hsl(var(--bg-raised));
+  color: hsl(var(--ink-muted));
+  font-size: 0.875rem;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+}
+</style>
+</head>
+<body>
+
+  <!-- TOPO / NAVEGAÇÃO -->
+  <header class="topo">
+    <div class="topo__interno">
+      <a href="#" class="marca">
+        PHYSICA <span>// STATISTICA</span>
+      </a>
+      <div class="topo__controles">
+        <button class="topo__busca" id="btnBusca" aria-label="Abrir Busca Global (Modo Foco)">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <button class="tema" id="btnTema" aria-label="Alternar Tema (Escuro/Claro)">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.389 0 0 1-5.4-5.4c0-1.81 1-3.39 2.26-4.4A9.01 9.01 0 0 0 12 3z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO SECTION -->
+    <section class="heroi">
+      <div class="heroi__grade"></div>
+      <div class="shell heroi__interno">
+        <div class="heroi__texto">
+          <div class="meta-box">
+            <span class="badge">Tese de Doutorado UnB — 2016</span>
+            <span class="badge">Física Estatística</span>
+          </div>
+          
+          <h1 class="title-font">Ergodicidade em Sistemas Autogravitantes</h1>
+          
+          <p class="heroi__tese">
+            Uma investigação sobre a dinamicidade cósmica: <strong>sistemas gravitacionais de muitos corpos realmente visitam todos os seus estados de equilíbrio com o passar do tempo?</strong>
+          </p>
+
+          <div class="authors-card">
+            <div><strong>Autora:</strong> Dra. Cínthia Helena Claudino Silvestre</div>
+            <div><strong>Orientador:</strong> Prof. Dr. Tarcísio Marciano da Rocha Filho</div>
+            <div><strong>Instituição:</strong> Instituto de Física, Universidade de Brasília (UnB)</div>
+          </div>
+        </div>
+
+        <!-- SIMULADOR INTERATIVO PULSANTE NA CAPA (SEM BORDAS E TRANSPARENTE) -->
+        <div class="heroi__objeto">
+          <canvas id="canvasHero"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- OS 2 RIOS -->
+    <section class="shell">
+      <div class="rios">
+        <div class="eyebrow">A Inequivalência das Escalas Temporais</div>
+        
+        <div class="rio">
+          <div>
+            <div class="rio__nome">Relaxação Violenta (Lynden-Bell)</div>
+            <div class="rio__taxa"><b>Rápida (Apenas algumas oscilações do sistema)</b></div>
+          </div>
+          <div class="rio__leito"><div class="rio__corrente rio__corrente--rapido"></div></div>
+          <div class="mono" style="font-size: 0.8rem; color: hsl(var(--ink-faint));">Estado Quase-Estacionário (QSS)</div>
+        </div>
+
+        <div class="rio">
+          <div>
+            <div class="rio__nome">Relaxação Colisional (Equilíbrio)</div>
+            <div class="rio__taxa"><b>Extremamente Lenta (Cresce conforme N aumenta)</b></div>
+          </div>
+          <div class="rio__leito"><div class="rio__corrente rio__corrente--lento"></div></div>
+          <div class="mono" style="font-size: 0.8rem; color: hsl(var(--ink-faint));">Equilíbrio de Boltzmann</div>
+        </div>
+        <p style="font-size: 0.875rem; color: hsl(var(--ink-faint));">
+          Sistemas autogravitantes passam por uma acomodação inicial rápida (Relaxação Violenta), ficando estagnados em um <button class="termo" popovertarget="popQSS">Estado Quase-Estacionário (QSS)</button>. O tempo para o equilíbrio final de Boltzmann aumenta proporcionalmente ao total de partículas do sistema.
+        </p>
+      </div>
+    </section>
+
+    <!-- COMPONENTE: GRAFO VISUAL DE CONEXÕES ORGÂNICO E ASSIMÉTRICO -->
+    <section class="secao shell">
+      <div class="eyebrow">Rede de Conectividade // O Espaço de Fase da Tese</div>
+      <h2 style="margin-top: 0.5rem;">Grafo de Interconexões Teóricas</h2>
+      <p style="color: hsl(var(--ink-muted)); margin-top: 0.5rem;">Passe o mouse ou toque nos nós do grafo para visualizar como as anomalias, os métodos numéricos e os princípios físicos se conectam na tese:</p>
+
+      <div class="grafo-container">
+        <svg id="svgGrafo" viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+    </section>
+
+    <!-- FUNDAMENTOS & ANOMALIAS -->
+    <section class="secao shell" id="sec-anomalias">
+      <div class="eyebrow">01 // O Problema Físico</div>
+      <h2 style="margin-top: 0.5rem;">Anomalias de Longo Alcance</h2>
+      <div class="prosa" style="margin-top: 1rem;">
+        <p>
+          Em sistemas autogravitantes, o potencial de atração diminui com a distância entre as partículas. Como a força atua em todo o volume sem se atenuar rapidamente, a energia total não é simplesmente somável, provocando anomalias fundamentais:
+        </p>
+      </div>
+
+      <div class="grid-3">
+        <div class="cartao">
+          <div class="eyebrow">[ Calor Específico Negativo ]</div>
+          <h3>Sistemas que Esfriam ao Ganhar Energia</h3>
+          <p>Sistemas autogravitantes aumentam sua temperatura cinética média quando perdem energia para o ambiente, fenômeno clássico no colapso de estrelas e buracos negros.</p>
+          <div class="chips-grupo">
+            <a href="#sec-metodos" class="chip">→ Método de Monte Carlo</a>
+          </div>
+        </div>
+        <div class="cartao">
+          <div class="eyebrow">[ Inequivalência de Ensembles ]</div>
+          <h3>Descrições Incompatíveis</h3>
+          <p>Os ensembles Microcanônico (energia fixa) e Canônico (temperatura fixa) preveem estados físicos e diagramas de fase incompatíveis entre si.</p>
+          <div class="chips-grupo">
+            <a href="#sec-teoria" class="chip">→ Modelo do Anel</a>
+          </div>
+        </div>
+        <div class="cartao">
+          <div class="eyebrow">[ Quebra de Ergodicidade ]</div>
+          <h3>Limite Termodinâmico</h3>
+          <p>No limite em que o número de partículas tende ao infinito, a média temporal percorrida por uma única partícula não coincide com a média estática tomada sobre o grupo todo.</p>
+          <div class="chips-grupo">
+            <a href="#sec-achados" class="chip">→ Fator de Kac (1/N)</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- OS 3 MÉTODOS DE MEDIÇÃO DA ERGODICIDADE (FORMATADOS COM KATEX) -->
+    <section class="secao shell" id="sec-metodos">
+      <div class="eyebrow">02 // Medição Numérica</div>
+      <h2 style="margin-top: 0.5rem;">Os 3 Métodos de Teste Ergódico</h2>
+
+      <div class="math-block">
+        <strong style="color: hsl(var(--accent));">Método 1: Dispersão nas Médias Temporais ($\sigma_{\bar{p}}$)</strong><br>
+        Avalia o desvio padrão das velocidades médias de cada partícula em relação à média global do ensemble. Quando a dispersão tende a zero no tempo, o sistema atinge o comportamento ergódico:
+        $$\sigma_{\bar{p}}(t) = \sqrt{\frac{1}{N}\sum_{k=1}^{N}\bar{p}_k(t)^2 - \langle \bar{p}(t) \rangle^2} \longrightarrow 0$$
+        <div class="chips-grupo">
+          <button class="termo chip" popovertarget="popLiouville">Teorema de Liouville</button>
+        </div>
+      </div>
+
+      <div class="math-block">
+        <strong style="color: hsl(var(--accent));">Método 2: Sojourn Time (Tempos de Visitação em Células)</strong><br>
+        Divide o espaço dos momentos em células discretas. A distribuição dos tempos de permanência $t_s$ é avaliada. A densidade de probabilidade para a média temporal é dada por:
+        $$f^{(\alpha)}(\bar{O}) = \frac{1}{\pi} \lim_{\epsilon\to 0} \text{Im} \frac{\sum_{k=1}^{L} p_k^{eq}(\bar{O} - \bar{O}_k + i\epsilon)^{\alpha/2-1}}{\sum_{k=1}^{L} p_k^{eq}(\bar{O} - \bar{O}_k + i\epsilon)^{\alpha/2}}$$
+        Para o caso de uma distribuição Gaussiana ($\alpha = 2$), assume a forma $f^{(2)}(\bar{O}) = \delta(\bar{O} - \langle\bar{O}\rangle)$, denotando que a média temporal e de ensemble coincidem de forma estritamente ergódica.
+      </div>
+
+      <div class="math-block">
+        <strong style="color: hsl(var(--accent));">Método 3: Funcional Dinâmico ($Q(n)$ e $E(n)$)</strong><br>
+        Usa a transformada de Fourier com o número de onda do processo estocástico para testar as condições formais exatas de ergodicidade e mixing:
+        $$Q(n) \equiv \frac{1}{n}\sum_{k=1}^{n-1}E(k), \qquad E(n) \equiv D(n) - |\langle e^{iY(0)} \rangle|^2$$
+        As condições para que o sistema seja ergódico e atinja o mixing em tempo limite são dadas, respectivamente, por:
+        $$\lim_{n\to\infty} Q(n) = 0 \qquad \text{e} \qquad \lim_{n\to\infty} E(n) = 0$$
+      </div>
+    </section>
+
+    <!-- SEÇÃO DE EXPLORAÇÃO TEÓRICA DETALHADA -->
+    <section class="secao shell" id="sec-teoria">
+      <div class="eyebrow">03 // Conteúdo Teórico Aprofundado</div>
+      <h2 style="margin-top: 0.5rem;">Explore a Tese por Tópicos</h2>
+      <p style="color: hsl(var(--ink-muted)); margin-top: 0.5rem;">Clique nos módulos abaixo para ler o desenvolvimento conceitual extraído diretamente da pesquisa da Dra. Cínthia Silvestre:</p>
+
+      <div class="acordeao-grupo">
+        <details class="acordeao">
+          <summary class="acordeao__summary">
+            <span>A Hipótese Ergódica de Boltzmann e Maxwell</span>
+            <span class="mono" style="font-size:0.8rem; color:hsl(var(--accent));">+ Ler</span>
+          </summary>
+          <div class="acordeao__conteudo">
+            <p>
+              A Hipótese Ergódica foi formulada por Ludwig Boltzmann entre 1860 e 1890, motivado pela Mecânica Estatística clássica. Mais tarde, James Clerk Maxwell resumiu a hipótese afirmando que: <em>"um sistema deixado em sua evolução livre passa por todas as fases e configurações compatíveis com a conservação de sua energia"</em>.
+            </p>
+            <p style="margin-top:0.75rem;">
+              Na prática, se o sistema for ergódico, a média temporal de uma grandeza calculada ao longo da trajetória de uma única partícula em tempo infinito é estritamente igual à média dessa mesma grandeza calculada sobre todas as partículas do grupo no espaço de fase.
+            </p>
+            <div class="chips-grupo">
+              <button class="termo chip" popovertarget="popLiouville">Teorema de Liouville</button>
+              <button class="termo chip" popovertarget="popVirial">Teorema do Virial</button>
+            </div>
+          </div>
+        </details>
+
+        <details class="acordeao">
+          <summary class="acordeao__summary">
+            <span>O Espaço de Fase e o Teorema de Liouville</span>
+            <span class="mono" style="font-size:0.8rem; color:hsl(var(--accent));">+ Ler</span>
+          </summary>
+          <div class="acordeao__conteudo">
+            <p>
+              O espaço de fase de um sistema com $N$ partículas possui $2n$ dimensões compostas pelas posições $q$ e momentos $p$. Para sistemas Hamiltonianos sem dissipação de energia, a densidade de probabilidade no espaço de fase satisfaz a equação de continuidade e obedece ao <strong>Teorema de Liouville</strong>:
+            </p>
+            $$\frac{d\rho}{dt} = \frac{\partial\rho}{\partial t} + \sum_{\alpha=1}^{3N} \left( \frac{\partial\rho}{\partial q}\dot{q} + \frac{\partial\rho}{\partial p}\dot{p} \right) = 0$$
+            <p style="margin-top:0.75rem;">
+              O teorema garante que o volume de qualquer região no espaço de fase permanece constante durante a evolução temporal do sistema.
+            </p>
+          </div>
+        </details>
+
+        <details class="acordeao">
+          <summary class="acordeao__summary">
+            <span>Teorema do Virial em Sistemas Autogravitantes</span>
+            <span class="mono" style="font-size:0.8rem; color:hsl(var(--accent));">+ Ler</span>
+          </summary>
+          <div class="acordeao__conteudo">
+            <p>
+              O Teorema do Virial estabelece uma relação direta entre a energia cinética média $\langle T \rangle$ e a energia potencial média $\langle V \rangle$. Para forças derivadas de um potencial que varia com a distância segundo um expoente $k$, a relação é dada por $\langle T \rangle = \frac{k+1}{2} \langle V \rangle$.
+            </p>
+            <p style="margin-top:0.75rem;">
+              Em sistemas gravitacionais tridimensionais clássicos em equilíbrio ($k=-2$), temos $2\langle T \rangle + \langle V \rangle = 0$. Já em sistemas autogravitantes unidimensionais ($k=0$), a energia cinética média equivale exatamente à metade da energia potencial média ($\langle T \rangle = \frac{1}{2}\langle V \rangle$).
+            </p>
+          </div>
+        </details>
+
+        <details class="acordeao">
+          <summary class="acordeao__summary">
+            <span>Métodos Numéricos: Monte Carlo e Integrador Simplético de Yoshida</span>
+            <span class="mono" style="font-size:0.8rem; color:hsl(var(--accent));">+ Ler</span>
+          </summary>
+          <div class="acordeao__conteudo">
+            <p>
+              Para simular as trajetórias sem acúmulo de erro na energia total, utilizou-se o <strong>Integrador Simplético de 4ª Ordem de Yoshida</strong>. Esse método numérico preserva a forma diferencial $dp \wedge dq$ no espaço de fase, garantindo transformações canônicas exatas a cada passo de integração.
+            </p>
+            <p style="margin-top:0.75rem;">
+              Além da dinâmica molecular simplética paralela em placas de vídeo usando a arquitetura <strong>CUDA</strong>, o Método de Monte Carlo foi empregado para analisar a Construção de Maxwell e mapear as transições de fase no Modelo do Anel.
+            </p>
+            <div class="chips-grupo">
+              <button class="termo chip" popovertarget="popYoshida">Yoshida 4ª Ordem</button>
+              <button class="termo chip" popovertarget="popKac">Fator de Kac</button>
+            </div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- RESULTADOS & CONCLUSÃO -->
+    <section class="secao shell" id="sec-achados">
+      <div class="eyebrow">04 // Achados do Doutorado</div>
+      <h2 style="margin-top: 0.5rem;">O Papel do Fator de Kac ($1/N$)</h2>
+
+      <div class="cartao" style="border-left: 4px solid hsl(var(--accent)); margin-top: 1.5rem;">
+        <h3 style="color: var(--accent);">Veredito das Simulações em GPU (CUDA)</h3>
+        <p style="color: var(--ink); margin-top: 0.5rem;">
+          Com a inclusão do <strong>Fator de Kac ($1/N$)</strong> na Hamiltoniana do potencial, o sistema autogravitante demonstra ser <strong>sempre ergódico</strong>, embora exija um tempo elevado de simulação. Sem o Fator de Kac, o tempo de ergodicidade cresce infinitamente conforme adicionamos mais partículas, confirmando que o sistema é estritamente não-ergódico no limite contínuo $N \to \infty$.
+        </p>
+      </div>
+    </section>
+
+    <!-- SEÇÃO: REFERÊNCIAS BIBLIOGRÁFICAS DA TESE -->
+    <section class="secao shell" id="sec-referencias">
+      <div class="eyebrow">05 // Referências Bibliográficas</div>
+      <h2 style="margin-top: 0.5rem;">Literatura & Leituras de Apoio</h2>
+      <p style="color: hsl(var(--ink-muted)); margin-top: 0.5rem;">Seleção das principais obras e artigos científicos citados no desenvolvimento desta tese de doutorado:</p>
+
+      <ul class="referencias-lista">
+        <li class="ref-item">
+          <strong>CAMPA, A.; DAUXOIS, T.; RUFFO, S.</strong> <em>Statistical mechanics and dynamics of solvable models with long-range interactions.</em> Physics Reports, v. 480, p. 57, 2009.
+        </li>
+        <li class="ref-item">
+          <strong>LYNDEN-BELL, D.</strong> <em>Statistical mechanics of violent relaxation in stellar systems.</em> Monthly Notices of the Royal Astronomical Society, v. 136, p. 101, 1967.
+        </li>
+        <li class="ref-item">
+          <strong>YOSHIDA, H.</strong> <em>Construction of higher order symplectic integrators.</em> Physics Letters A, v. 150, n. 5, p. 262-268, 1990.
+        </li>
+        <li class="ref-item">
+          <strong>FIGUEIREDO, A.; ROCHA FILHO, T. M.; AMATO, M. A.</strong> <em>Ergodicity and central limit theorem in systems with long range interactions.</em> Europhysics Letters (EPL), v. 83, p. 30011, 2008.
+        </li>
+        <li class="ref-item">
+          <strong>CHAVANIS, P. H.</strong> <em>Kinetic equations for systems with long-range interactions: a unified description.</em> Journal of Statistical Mechanics: Theory and Experiment, P05019, 2010.
+        </li>
+        <li class="ref-item">
+          <strong>SILVESTRE, C. H. C.; ROCHA FILHO, T. M.</strong> <em>Ergodicity in a two-dimensional self-gravitating many-body system.</em> Physics Letters A, v. 380, p. 337-348, 2016.
+        </li>
+      </ul>
+    </section>
+  </main>
+
+  <!-- OVERLAY DO VELÁRIO (MODO FOCO & BUSCA GLOBAL) -->
+  <div class="velario" id="velarioBusca" hidden>
+    <div class="pill-zona">
+      <div class="pill">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="campoBusca" class="pill__campo" placeholder="Buscar conceito (ex: Kac, Virial, QSS, Sojourn)..." autocomplete="off">
+        <button id="btnFecharVelario" style="background:none; border:0; color:hsl(var(--ink-faint)); cursor:pointer;">Esc</button>
+      </div>
+      <ul class="achados" id="listaAchados"></ul>
+    </div>
+  </div>
+
+  <!-- POPOVERS DE DEFINIÇÕES TÉCNICAS NATIVOS -->
+  <div id="popQSS" popover class="definicao">
+    <div class="definicao__termo">Estado Quase-Estacionário (QSS)</div>
+    <div class="definicao__curta">Estado fora do equilíbrio da mecânica estatística usual no qual o sistema permanece por um longo tempo devido à ausência de colisões. Seu tempo de vida cresce com $N$.</div>
+  </div>
+
+  <div id="popLiouville" popover class="definicao">
+    <div class="definicao__termo">Teorema de Liouville</div>
+    <div class="definicao__curta">Invariância do volume do espaço de fase durante a evolução temporal em sistemas Hamiltonianos incompressíveis.</div>
+  </div>
+
+  <div id="popVirial" popover class="definicao">
+    <div class="definicao__termo">Teorema do Virial</div>
+    <div class="definicao__curta">Relação fundamental de equilíbrio estático entre a energia cinética média e a energia potencial total do sistema.</div>
+  </div>
+
+  <div id="popYoshida" popover class="definicao">
+    <div class="definicao__termo">Integrador Simplético de Yoshida</div>
+    <div class="definicao__curta">Algoritmo de integração temporal de 4ª ordem que preserva o volume do espaço de fase sem acúmulo secular de erro na energia.</div>
+  </div>
+
+  <div id="popKac" popover class="definicao">
+    <div class="definicao__termo">Fator de Kac (1/N)</div>
+    <div class="definicao__curta">Reescala de energia no potencial de interação que torna a energia do sistema extensiva, embora permaneça não-aditiva.</div>
+  </div>
+
+  <footer class="shell" style="padding-block: 3rem; border-top: 1px solid hsl(var(--line)); margin-top: 4rem; color: hsl(var(--ink-faint)); font-size: 0.875rem;">
+    <p><strong>Ergodicidade em sistemas autogravitantes</strong> — Tese de Doutorado (UnB, 2016).</p>
+    <p>Apoio Financeiro: CAPES.</p>
+  </footer>
+
+<script>
+/* ==========================================================================
+   INTERATIVIDADE & LÓGICA SAME BRAIN
+   ========================================================================== */
+
+// Renderizador Ativo do KaTeX
+document.addEventListener("DOMContentLoaded", function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ],
+    throwOnError: false
+  });
+});
+
+// 1. GRAFO VISUAL DE CONEXÕES ORGÂNICO E ASSIMÉTRICO (LARGURA TOTAL)
+(function initGrafoConexoes() {
+  const svg = document.getElementById('svgGrafo');
+  if (!svg) return;
+
+  // Posições orgânicas e assimétricas no viewBox 1000x420
+  const nodes = [
+    { id: 'kac', label: 'Fator de Kac', x: 110, y: 140, target: '#sec-achados' },
+    { id: 'qss', label: 'Estado QSS', x: 280, y: 280, target: '#sec-rio' },
+    { id: 'virial', label: 'Teorema do Virial', x: 900, y: 150, target: '#sec-teoria' },
+    { id: 'liouville', label: 'Teorema de Liouville', x: 320, y: 100, target: '#sec-teoria' },
+    { id: 'yoshida', label: 'Yoshida 4ª Ordem', x: 740, y: 320, target: '#sec-teoria' },
+    { id: 'ergodicidade', label: 'Ergodicidade', x: 520, y: 200, target: '#sec-metodos' },
+    { id: 'longoalcance', label: 'Longo Alcance', x: 710, y: 90, target: '#sec-anomalias' }
+  ];
+
+  const links = [
+    { source: 'kac', target: 'ergodicidade' },
+    { source: 'qss', target: 'ergodicidade' },
+    { source: 'virial', target: 'ergodicidade' },
+    { source: 'liouville', target: 'ergodicidade' },
+    { source: 'yoshida', target: 'liouville' },
+    { source: 'longoalcance', target: 'qss' },
+    { source: 'longoalcance', target: 'virial' },
+    { source: 'yoshida', target: 'ergodicidade' }
+  ];
+
+  // Desenhar Arestas
+  links.forEach(link => {
+    const s = nodes.find(n => n.id === link.source);
+    const t = nodes.find(n => n.id === link.target);
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', s.x);
+    line.setAttribute('y1', s.y);
+    line.setAttribute('x2', t.x);
+    line.setAttribute('y2', t.y);
+    line.setAttribute('class', `grafo-link link-${s.id} link-${t.id}`);
+    svg.appendChild(line);
+  });
+
+  // Desenhar Nós
+  nodes.forEach(node => {
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.setAttribute('class', 'grafo-node');
+    g.setAttribute('data-id', node.id);
+
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', node.x);
+    circle.setAttribute('cy', node.y);
+    circle.setAttribute('r', node.id === 'ergodicidade' ? '24' : '16');
+
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', node.x);
+    text.setAttribute('y', node.y + (node.id === 'ergodicidade' ? 38 : 32));
+    text.setAttribute('text-anchor', 'middle');
+    text.textContent = node.label;
+
+    g.appendChild(circle);
+    g.appendChild(text);
+
+    g.addEventListener('mouseenter', () => {
+      document.querySelectorAll(`.link-${node.id}`).forEach(l => l.classList.add('ativo'));
+      g.classList.add('ativo');
+    });
+
+    g.addEventListener('mouseleave', () => {
+      document.querySelectorAll('.grafo-link').forEach(l => l.classList.remove('ativo'));
+      g.classList.remove('ativo');
+    });
+
+    g.addEventListener('click', () => {
+      const el = document.querySelector(node.target);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    svg.appendChild(g);
+  });
+})();
+
+// 1. Simulação N-Corpos com Colapso e Reinício Fluido em Loop Infinito
+(function initHeroSimulation() {
+  const canvas = document.getElementById('canvasHero');
+  const ctx = canvas.getContext('2d');
+  let width, height;
+  const N = 120;
+  let particles = [];
+  const eps = 10.0; // Amortecimento suave
+  const G = 0.08;   // Intensidade gravitacional para gerar o colapso natural
+
+  // Controle de transição fluida (Fade In / Fade Out)
+  let opacity = 0;
+  let state = 'fade-in'; // 'fade-in', 'running', 'fade-out'
+  let collapseTimer = 0;
+
+  function resize() {
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+    width = canvas.width;
+    height = canvas.height;
+  }
+
+  function createParticles() {
+    particles = [];
+    const cx = width / 2;
+    const cy = height / 2;
+    for (let i = 0; i < N; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      // Distribuição inicial expandida (fora do equilíbrio)
+      const r = 40 + Math.random() * (Math.min(width, height) * 0.32);
+      particles.push({
+        x: cx + Math.cos(angle) * r,
+        y: cy + Math.sin(angle) * r,
+        vx: -Math.sin(angle) * (0.4 + Math.random() * 0.3),
+        vy: Math.cos(angle) * (0.4 + Math.random() * 0.3),
+        mass: 1
+      });
+    }
+  }
+
+  function update() {
+    // 1. Controle de Opacidade para Transição Fluida entre os Ciclos
+    if (state === 'fade-in') {
+      opacity += 0.025;
+      if (opacity >= 1) {
+        opacity = 1;
+        state = 'running';
+      }
+    } else if (state === 'fade-out') {
+      opacity -= 0.03;
+      if (opacity <= 0) {
+        opacity = 0;
+        createParticles(); // Reinicia as posições no estado expandido inicial
+        collapseTimer = 0;
+        state = 'fade-in';
+      }
+    }
+
+    // 2. Cálculo da Física Gravitacional (Atração de Pares N-Corpos)
+    let totalDistFromCenter = 0;
+    const cx = width / 2;
+    const cy = height / 2;
+
+    for (let i = 0; i < N; i++) {
+      let fx = 0, fy = 0;
+      for (let j = 0; j < N; j++) {
+        if (i !== j) {
+          const dx = particles[j].x - particles[i].x;
+          const dy = particles[j].y - particles[i].y;
+          const d2 = dx*dx + dy*dy + eps*eps;
+          const f = (G * particles[i].mass * particles[j].mass) / d2;
+          fx += f * (dx / Math.sqrt(d2));
+          fy += f * (dy / Math.sqrt(d2));
+        }
+      }
+
+      particles[i].vx += fx;
+      particles[i].vy += fy;
+    }
+
+    // Atualização de posições e medição do raio do sistema
+    for (let i = 0; i < N; i++) {
+      particles[i].x += particles[i].vx;
+      particles[i].y += particles[i].vy;
+
+      const dxC = particles[i].x - cx;
+      const dyC = particles[i].y - cy;
+      totalDistFromCenter += Math.sqrt(dxC*dxC + dyC*dyC);
+    }
+
+    const avgRadius = totalDistFromCenter / N;
+    collapseTimer++;
+
+    // 3. Detecção do Colapso Central para Disparar a Transição Suave
+    // Se o raio médio ficar muito concentrado no centro ou passar do tempo limite do ciclo
+    if (state === 'running') {
+      if (avgRadius < 25 || collapseTimer > 280) {
+        state = 'fade-out';
+      }
+    }
+  }
+
+  function render() {
+    ctx.clearRect(0, 0, width, height);
+
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    const color = isLight ? `rgba(194, 65, 12, ${opacity})` : `rgba(244, 163, 139, ${opacity})`;
+
+    ctx.fillStyle = color;
+    for (let i = 0; i < N; i++) {
+      ctx.beginPath();
+      ctx.arc(particles[i].x, particles[i].y, 2.2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function loop() {
+    update();
+    render();
+    requestAnimationFrame(loop);
+  }
+
+  window.addEventListener('resize', () => { resize(); });
+  resize();
+  createParticles();
+  loop();
+})();
+
+// 3. OVERLAY DE BUSCA GLOBAL
+(function initSearchOverlay() {
+  const btnBusca = document.getElementById('btnBusca');
+  const velario = document.getElementById('velarioBusca');
+  const btnFechar = document.getElementById('btnFecharVelario');
+  const campoBusca = document.getElementById('campoBusca');
+  const listaAchados = document.getElementById('listaAchados');
+
+  const indiceConceitos = [
+    { titulo: 'Fator de Kac', desc: 'Reescala extensiva de energia no potencial que garante ergodicidade com N finito.' },
+    { titulo: 'Relaxação Violenta', desc: 'Processo dinâmico rápido teorizado por Lynden-Bell onde flutuações de campo médio acomodam o sistema.' },
+    { titulo: 'Calor Específico Negativo', desc: 'Anomalia onde o sistema aumenta sua temperatura ao perder energia total.' },
+    { titulo: 'Sojourn Time', desc: 'Estatística dos tempos de visitação em células discretas do espaço de fase.' },
+    { titulo: 'Funcional Dinâmico', desc: 'Transformada de Fourier para testes rigorosos de mixing e ergodicidade.' },
+    { titulo: 'Teorema de Liouville', desc: 'Invariância do volume do espaço de fase durante a evolução temporal do sistema.' },
+    { titulo: 'Teorema do Virial', desc: 'Relação fundamental entre energia cinética e potencial em equilíbrio.' },
+    { titulo: 'Integrador Simplético de Yoshida', desc: 'Algoritmo numérico de 4ª ordem que preserva o volume do espaço de fase sem acúmulo de erro de energia.' }
+  ];
+
+  function abrir() {
+    velario.removeAttribute('hidden');
+    campoBusca.focus();
+  }
+
+  function fechar() {
+    velario.setAttribute('hidden', '');
+    campoBusca.value = '';
+    listaAchados.innerHTML = '';
+  }
+
+  btnBusca.addEventListener('click', abrir);
+  btnFechar.addEventListener('click', fechar);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !velario.hasAttribute('hidden')) fechar();
+  });
+
+  campoBusca.addEventListener('input', () => {
+    const q = campoBusca.value.toLowerCase().trim();
+    listaAchados.innerHTML = '';
+    if (!q) return;
+
+    const filtrados = indiceConceitos.filter(item => 
+      item.titulo.toLowerCase().includes(q) || item.desc.toLowerCase().includes(q)
+    );
+
+    filtrados.forEach(item => {
+      const li = document.createElement('li');
+      li.className = 'achado-item';
+      li.innerHTML = `<strong>${item.titulo}</strong><p style="font-size:0.875rem; color:hsl(var(--ink-muted)); margin-top:0.25rem;">${item.desc}</p>`;
+      listaAchados.appendChild(li);
+    });
+  });
+})();
+
+// 4. ALTERNADOR DE TEMA
+(function initTheme() {
+  const btnTema = document.getElementById('btnTema');
+  btnTema.addEventListener('click', () => {
+    const atual = document.documentElement.getAttribute('data-theme');
+    if (atual === 'light') {
+      document.documentElement.removeAttribute('data-theme');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  });
+})();
+</script>
+</body>
+</html>
