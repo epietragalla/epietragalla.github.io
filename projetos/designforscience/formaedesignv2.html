@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FORMA — A importância da forma para os projetos de design</title>
+<meta name="description" content="Site interativo sobre a dissertação de mestrado de Estéfano Pietragalla (UnB, 2016): conceitos de forma na filosofia, matemática, física, química, biologia, música, arte e design, e suas relações.">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#121212">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#faf9f7">
+<style>
+/* ============================================================
+   REGRAS INVIOLÁVEIS
+   1. Nenhuma sombra. 2. Nenhum gradiente decorativo.
+   3. Hierarquia por tamanho, peso e espaço — nunca por cor ou caixa-alta.
+   4. Cor nunca é o único portador de significado.
+   5. Piso tipográfico: 14px.
+   ============================================================ */
+:root{
+  color-scheme: dark;
+  --bg: 0 0% 7%;
+  --bg-raised: 0 0% 10%;
+  --ink: 0 0% 95%;
+  --ink-muted: 0 0% 72%;
+  --ink-faint: 0 0% 50%;
+  --accent: 14 60% 72%;
+  --accent-ink: 14 70% 10%;
+  --traco: 14 60% 72%;
+  --line: 0 0% 95% / .14;
+  --line-strong: 0 0% 95% / .3;
+  --plate: 30 12% 96%;
+  --plate-ink: 20 15% 12%;
+  --shell: 68rem;
+  --prosa: 40rem;
+  --radius: .5rem;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    color-scheme: light;
+    --bg: 20 16% 98%;
+    --bg-raised: 20 14% 94%;
+    --ink: 14 12% 11%;
+    --ink-muted: 16 8% 32%;
+    --ink-faint: 18 6% 46%;
+    --accent: 14 62% 39%;
+    --accent-ink: 20 16% 98%;
+    --traco: 176 27% 46%;
+    --line: 14 12% 11% / .16;
+    --line-strong: 14 12% 11% / .38;
+    --plate: 30 12% 100%;
+    --plate-ink: 20 15% 12%;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg: 0 0% 7%; --bg-raised: 0 0% 10%;
+  --ink: 0 0% 95%; --ink-muted: 0 0% 72%; --ink-faint: 0 0% 50%;
+  --accent: 14 60% 72%; --accent-ink: 14 70% 10%; --traco: 14 60% 72%;
+  --line: 0 0% 95% / .14; --line-strong: 0 0% 95% / .3;
+  --plate: 30 12% 96%; --plate-ink: 20 15% 12%;
+}
+:root[data-theme="light"]{
+  color-scheme: light;
+  --bg: 20 16% 98%; --bg-raised: 20 14% 94%;
+  --ink: 14 12% 11%; --ink-muted: 16 8% 32%; --ink-faint: 18 6% 46%;
+  --accent: 14 62% 39%; --accent-ink: 20 16% 98%; --traco: 176 27% 46%;
+  --line: 14 12% 11% / .16; --line-strong: 14 12% 11% / .38;
+  --plate: 30 12% 100%; --plate-ink: 20 15% 12%;
+}
+*,*::before,*::after{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior:auto; }
+  *,*::before,*::after{ animation:none !important; transition:none !important; }
+}
+body{
+  margin:0; background:hsl(var(--bg)); color:hsl(var(--ink));
+  font:400 1rem/1.65 ui-sans-serif, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.mono{ font-family:ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+a{ color:hsl(var(--accent)); text-underline-offset:.18em; }
+a:hover{ text-decoration-thickness:2px; }
+:focus-visible{ outline:2px solid hsl(var(--accent)); outline-offset:2px; border-radius:2px; }
+.skip{ position:absolute; left:-999px; top:0; padding:.6rem 1rem; background:hsl(var(--accent)); color:hsl(var(--accent-ink)); z-index:99; border-radius:0 0 var(--radius) 0; font-weight:600; }
+.skip:focus{ left:0; }
+.shell{ max-width:var(--shell); margin-inline:auto; padding-inline:1.25rem; }
+
+/* ---------- header ---------- */
+header.top{ border-bottom:1px solid hsl(var(--line)); position:sticky; top:0; background:hsl(var(--bg)); z-index:20; }
+.bar{ display:flex; align-items:center; gap:1rem; padding-block:.7rem; }
+.marca{ font-weight:800; letter-spacing:.02em; font-size:1.05rem; color:hsl(var(--ink)); text-decoration:none; display:flex; align-items:baseline; gap:.5rem; }
+.marca .mono{ font-size:.72rem; color:hsl(var(--ink-faint)); font-weight:400; }
+nav.main{ display:flex; gap:.25rem; margin-left:auto; flex-wrap:wrap; }
+nav.main a{ color:hsl(var(--ink-muted)); text-decoration:none; padding:.45rem .7rem; border-radius:var(--radius); font-size:.92rem; }
+nav.main a[aria-current="page"]{ color:hsl(var(--ink)); font-weight:600; background:hsl(var(--bg-raised)); box-shadow:inset 0 0 0 1px hsl(var(--line)); }
+nav.main a:hover{ color:hsl(var(--ink)); background:hsl(var(--bg-raised)); }
+.btn-busca,.btn-tema{
+  display:inline-flex; align-items:center; gap:.45rem; cursor:pointer;
+  background:hsl(var(--bg-raised)); color:hsl(var(--ink-muted));
+  border:1px solid hsl(var(--line)); border-radius:var(--radius);
+  padding:.45rem .8rem; font-size:.85rem; font-family:inherit;
+}
+.btn-busca:hover,.btn-tema:hover{ color:hsl(var(--ink)); border-color:hsl(var(--line-strong)); }
+.btn-tema{ min-width:2.4rem; justify-content:center; }
+
+/* ---------- tipografia ---------- */
+h1{ font-size:clamp(1.9rem, 4.5vw, 3rem); line-height:1.12; margin:0 0 1rem; letter-spacing:-.02em; font-weight:800; }
+h2{ font-size:1.35rem; margin:2.4rem 0 .8rem; letter-spacing:-.01em; }
+h3{ font-size:1.05rem; margin:1.6rem 0 .4rem; }
+p{ margin:.6rem 0; max-width:var(--prosa); }
+.prosa{ max-width:var(--prosa); }
+.lede{ font-size:1.15rem; color:hsl(var(--ink-muted)); }
+.faint{ color:hsl(var(--ink-faint)); }
+.sr{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+
+/* ---------- hero ---------- */
+.hero{ padding:4.5rem 0 3rem; border-bottom:1px solid hsl(var(--line)); }
+.hero .kicker{ font-family:ui-monospace,monospace; font-size:.8rem; color:hsl(var(--accent)); margin-bottom:.9rem; }
+.intencoes{ display:grid; grid-template-columns:repeat(auto-fit,minmax(15rem,1fr)); gap:1rem; margin-top:3rem; }
+.card-int{ border:1px solid hsl(var(--line)); border-radius:var(--radius); padding:1.1rem 1.2rem; text-decoration:none; color:hsl(var(--ink)); background:hsl(var(--bg-raised)); display:block; }
+.card-int:hover{ border-color:hsl(var(--accent)); }
+.card-int strong{ display:block; font-size:1.02rem; margin-bottom:.25rem; }
+.card-int span{ color:hsl(var(--ink-muted)); font-size:.9rem; }
+.estat{ display:flex; gap:2rem; flex-wrap:wrap; margin-top:2.2rem; }
+.estat div b{ display:block; font-size:1.5rem; font-weight:800; letter-spacing:-.02em; }
+.estat div span{ font-size:.82rem; color:hsl(var(--ink-faint)); }
+
+/* ---------- chips / filtros ---------- */
+.chips{ display:flex; gap:.4rem; flex-wrap:wrap; margin:1rem 0 1.6rem; }
+.chips .lbl{ align-self:center; font-size:.8rem; color:hsl(var(--ink-faint)); margin-right:.2rem; }
+.chip{
+  font:inherit; font-size:.82rem; cursor:pointer; padding:.35rem .8rem;
+  border-radius:999px; border:1px solid hsl(var(--line)); background:transparent; color:hsl(var(--ink-muted));
+}
+.chip:hover{ border-color:hsl(var(--line-strong)); color:hsl(var(--ink)); }
+.chip[aria-pressed="true"]{ background:hsl(var(--accent)); border-color:hsl(var(--accent)); color:hsl(var(--accent-ink)); font-weight:600; }
+
+/* ---------- cards de verbete ---------- */
+.grade{ display:grid; grid-template-columns:repeat(auto-fill,minmax(17rem,1fr)); gap:1rem; padding-bottom:3rem; }
+.card{ border:1px solid hsl(var(--line)); border-radius:var(--radius); padding:1.1rem 1.2rem; background:hsl(var(--bg-raised)); text-decoration:none; color:hsl(var(--ink)); display:flex; flex-direction:column; gap:.45rem; }
+.card:hover{ border-color:hsl(var(--accent)); }
+.card .topo{ display:flex; gap:.5rem; align-items:center; flex-wrap:wrap; }
+.card h3{ margin:0; font-size:1.05rem; }
+.card p{ margin:0; font-size:.9rem; color:hsl(var(--ink-muted)); }
+.tag{ font-family:ui-monospace,monospace; font-size:.68rem; padding:.15rem .5rem; border-radius:999px; border:1px solid hsl(var(--line)); color:hsl(var(--ink-faint)); text-transform:lowercase; }
+.tag.accent{ color:hsl(var(--accent)); border-color:hsl(var(--accent) / .5); }
+
+/* ---------- verbete ---------- */
+.cab{ padding:3rem 0 1.5rem; border-bottom:1px solid hsl(var(--line)); }
+.cab h1{ margin-bottom:.6rem; }
+.meta{ display:flex; gap:.6rem; flex-wrap:wrap; font-size:.8rem; color:hsl(var(--ink-faint)); margin-top:.8rem; }
+.enunciado{ font-size:1.25rem; color:hsl(var(--ink)); font-weight:600; max-width:var(--prosa); margin-top:1.2rem; line-height:1.4; }
+.bloco{ border:1px solid hsl(var(--line)); border-left:3px solid hsl(var(--traco)); border-radius:var(--radius); padding:1rem 1.2rem; margin:1.2rem 0; background:hsl(var(--bg-raised)); }
+.bloco h3{ margin-top:0; }
+.bloco p:last-child{ margin-bottom:0; }
+.bloco.limite{ border-left-color:hsl(var(--ink-faint)); }
+.bloco.limite h3{ color:hsl(var(--ink-muted)); }
+.plate{ background:hsl(var(--plate)); color:hsl(var(--plate-ink)); border-radius:var(--radius); padding:1.2rem 1.4rem; margin:1.5rem 0; }
+.plate p{ max-width:none; }
+.rel{ display:flex; flex-wrap:wrap; gap:.5rem; margin:1rem 0 3rem; }
+.rel a{ text-decoration:none; border:1px solid hsl(var(--line)); border-radius:999px; padding:.35rem .9rem; font-size:.85rem; color:hsl(var(--ink)); background:hsl(var(--bg-raised)); }
+.rel a:hover{ border-color:hsl(var(--accent)); }
+.orelhas{ display:flex; justify-content:space-between; gap:1rem; border-top:1px solid hsl(var(--line)); padding-block:1.2rem; margin-top:1rem; }
+.orelhas a{ text-decoration:none; color:hsl(var(--ink-muted)); font-size:.9rem; max-width:46%; }
+.orelhas a:hover{ color:hsl(var(--ink)); }
+.orelhas a:last-child{ text-align:right; }
+.orelhas .d{ display:block; font-size:.72rem; color:hsl(var(--ink-faint)); }
+
+/* ---------- grafo ---------- */
+.grafo-wrap{ border:1px solid hsl(var(--line)); border-radius:var(--radius); background:hsl(var(--bg-raised)); margin:1.5rem 0 3rem; overflow:hidden; }
+svg text{ font-family:ui-sans-serif, system-ui, sans-serif; }
+.gnode circle{ fill:hsl(var(--bg)); stroke:hsl(var(--accent)); stroke-width:1.5; transition:opacity .15s; }
+.gnode text{ fill:hsl(var(--ink-muted)); font-size:11px; }
+.gnode:hover text,.gnode:focus-visible text{ fill:hsl(var(--ink)); font-weight:600; }
+.gedge{ stroke:hsl(var(--line-strong)); stroke-width:1; transition:opacity .15s; }
+.dim{ opacity:.15; }
+
+/* ---------- glossário ---------- */
+.gloss dl{ display:grid; grid-template-columns:repeat(auto-fill,minmax(16rem,1fr)); gap:1rem; margin:1.5rem 0 3rem; }
+.gloss article{ border:1px solid hsl(var(--line)); border-radius:var(--radius); padding:1rem 1.2rem; background:hsl(var(--bg-raised)); }
+.gloss dt{ font-weight:700; margin-bottom:.3rem; }
+.gloss dd{ margin:0; font-size:.9rem; color:hsl(var(--ink-muted)); }
+.gloss .ancora{ scroll-margin-top:6rem; }
+
+/* ---------- busca overlay ---------- */
+.overlay{ position:fixed; inset:0; background:hsl(var(--bg) / .8); backdrop-filter:blur(3px); z-index:50; display:none; padding:8vh 1rem 1rem; }
+.overlay.aberto{ display:block; }
+.painel{ max-width:36rem; margin-inline:auto; background:hsl(var(--bg-raised)); border:1px solid hsl(var(--line-strong)); border-radius:var(--radius); overflow:hidden; }
+.painel input{ width:100%; font:inherit; font-size:1.1rem; padding:1rem 1.2rem; background:transparent; border:0; border-bottom:1px solid hsl(var(--line)); color:hsl(var(--ink)); }
+.painel input:focus{ outline:none; }
+.resultados{ max-height:55vh; overflow:auto; }
+.resultados a{ display:block; padding:.8rem 1.2rem; text-decoration:none; color:hsl(var(--ink)); border-bottom:1px solid hsl(var(--line)); }
+.resultados a:hover,.resultados a.ativo{ background:hsl(var(--bg)); }
+.resultados b{ font-weight:600; }
+.resultados small{ display:block; color:hsl(var(--ink-faint)); font-size:.78rem; margin-top:.1rem; }
+.resultados mark{ background:hsl(var(--accent)); color:hsl(var(--accent-ink)); border-radius:2px; padding:0 .1em; }
+.status-busca{ padding:.5rem 1.2rem; font-size:.8rem; color:hsl(var(--ink-faint)); }
+
+/* ---------- referências / sobre / footer ---------- */
+.refs{ columns:2; column-gap:2.5rem; font-size:.88rem; color:hsl(var(--ink-muted)); max-width:60rem; }
+.refs p{ break-inside:avoid; margin:0 0 .5rem; max-width:none; }
+@media (max-width:40rem){ .refs{ columns:1; } }
+footer.rodape{ border-top:1px solid hsl(var(--line)); margin-top:4rem; padding:2rem 0 3rem; font-size:.82rem; color:hsl(var(--ink-faint)); }
+.divider{ border:0; border-top:1px solid hsl(var(--line)); margin:2.5rem 0; }
+@media (max-width:46rem){ nav.main{ display:none; } .hero{ padding-top:3rem; } }
+</style>
+</head>
+<body>
+<a class="skip" href="#conteudo">Ir para o conteúdo</a>
+
+<header class="top">
+  <div class="shell bar">
+    <a class="marca" href="#/">FORMA<span class="mono">pietragalla · 2016</span></a>
+    <nav class="main" aria-label="Navegação principal">
+      <a href="#/conceitos" data-nav="conceitos">Conceitos e relações</a>
+      <a href="#/grafo" data-nav="grafo">Mapa</a>
+      <a href="#/glossario" data-nav="glossario">Glossário</a>
+      <a href="#/referencias" data-nav="referencias">Referências</a>
+      <a href="#/sobre" data-nav="sobre">Sobre</a>
+    </nav>
+    <button class="btn-busca" id="abrirBusca" aria-haspopup="dialog">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      Buscar <span class="mono faint" aria-hidden="true">/</span>
+    </button>
+    <button class="btn-tema" id="tema" aria-label="Alternar tema claro e escuro">◐</button>
+  </div>
+</header>
+
+<main id="conteudo" tabindex="-1" class="shell"></main>
+
+<div class="overlay" id="overlayBusca" role="dialog" aria-modal="true" aria-label="Busca no site">
+  <div class="painel">
+    <input id="campoBusca" type="search" placeholder="Buscar conceito, relação, termo…" autocomplete="off" aria-label="Buscar">
+    <div class="status-busca" id="statusBusca" role="status">Digite para buscar. Esc fecha.</div>
+    <div class="resultados" id="resultadosBusca"></div>
+  </div>
+</div>
+
+<footer class="rodape">
+  <div class="shell">
+    <p><strong>FORMA</strong> — leitura interativa da dissertação <em>A importância da forma para os projetos de design: reconhecimento, conceitos e diálogos transdisciplinares</em>, de Estéfano Pietragalla (Universidade de Brasília, 2016). Todo o conteúdo é uma síntese fiel ao texto original; consulte a obra completa para aprofundamento.</p>
+    <p class="mono faint">SPA · hash routing · sem dependências · dados &gt; código</p>
+  </div>
+</footer>
+
+<script type="module">
+/* ================================================================
+   DADOS — o conteúdo vive aqui, uma só vez. As páginas, o índice,
+   o grafo e a busca são projeções deste dataset.
+   ================================================================ */
+
+const VERBETES = [
+{
+  slug:"forma-filosofia", nome:"Forma na Filosofia", tipo:"conceito", area:"filosofia",
+  fonte:"Cap. 1.1 · Abbagnano, Kant, Flusser",
+  curto:"Da ideia eterna de Platão à forma como recipiente de informação em Flusser.",
+  resumo:"A filosofia oferece ao Design três leituras da forma: substância necessária das coisas (Aristóteles), conjunto de relações e ordem (Kant, Gestalt) e norma de procedimento. Platão a coloca no plano das ideias; Aristóteles a entende como a causa pela qual a coisa é o que é; Flusser, por fim, define forma como o “como” da matéria — recipientes e modelos que informam.",
+  pontos:[
+    {h:"Platão × Aristóteles", p:"Para Platão, a forma é eterna e habita o plano das ideias; para Aristóteles, é a razão de ser da coisa concreta, composta de matéria e forma em movimento. Bacon acrescenta: só a indução experimental, não a dedução, revela a forma."},
+    {h:"Kant e a forma como ordem", p:"Kant usa “forma” como relação generalizável, ordem e coordenação — sentido próximo ao da Gestalt, que mostra que impressões simultâneas não são independentes, mas uma unidade de ordem definível."},
+    {h:"Flusser: forma e informação", p:"Flusser propõe que a matéria (hyle) é o amorfo e a forma é o eterno: não invenção nem descoberta, mas modelos, recipientes para fenômenos. “O design é um dos métodos para conferir forma à matéria e fazê-la parecer assim e não de outra forma.” Informar a matéria é, literalmente, dar-lhe forma."}
+  ],
+  limite:"Conceitos filosóficos operam em alto grau de abstração; o desafio do Design é traduzi-los em decisões de projeto. A ponte de Flusser — forma como informação — só ganha operacionalidade quando lida ao lado da semiótica e da percepção.",
+  relacionados:["forma-estetica","forma-design","forma-informacao","metadesign"]
+},
+{
+  slug:"forma-matematica", nome:"Forma na Matemática", tipo:"conceito", area:"matemática",
+  fonte:"Cap. 1.2 · Noël, Boyer",
+  curto:"Números descrevem formas; formas descrevem números. A fórmula é o diminutivo de forma.",
+  resumo:"Na matemática, a forma tem caráter dinâmico: expressa mutação e tempo. Um desenho geométrico é a interpretação visual de uma fórmula, e a intervenção matemática descreve critérios de existência — não tudo do objeto, mas aquilo que pode ser traduzido em números.",
+  pontos:[
+    {h:"Fórmula e desenho", p:"Toda imagem de diagrama carrega uma programação algébrica: circunferência, seções cônicas, parábola e hipérbole são fórmulas antes de serem figuras. A geometria projetiva permite achar ocorrências de um modelo dentro de outra imagem."},
+    {h:"N dimensões", p:"Buscar espaços de “n” dimensões é uma estratégia para enxergar as três ou quatro dimensões que nos dizem respeito — ideia que reaparece na geometria fractal e na cristalografia."},
+    {h:"Origem estética", p:"A geometria pode ter surgido de rituais, demarcação territorial e de um sentimento estético por design e ordem — visível nos padrões de mesquitas islâmicas desde o século VI."},
+    {h:"Design como processo", p:"Assim como o método matemático, o método de design molda a forma por etapas; o objeto tangível possui fórmulas rigorosas nas quatro dimensões, usadas com extremo rigor na modelagem e na produção."}
+  ],
+  limite:"A descrição matemática capta o quantitativo, não o qualitativo sensível: a forma do objeto de design carrega também símbolo, emoção e cultura, que escapam à fórmula.",
+  relacionados:["forma-fisica","forma-simetria-ordem","forma-estrutura-composicao","escher"]
+},
+{
+  slug:"forma-fisica", nome:"Forma na Física", tipo:"conceito", area:"física",
+  fonte:"Cap. 1.3 · Noël, Mandelbrot",
+  curto:"Fractais, simetria e a forma como relação entre massa, volume e força.",
+  resumo:"A física reúne fenômenos — medidas, trajetórias, densidades, formas — num mesmo sistema. A geometria fractal descreve objetos complexos antes indescritíveis quantitativamente; a gravitação organiza corpos em esferas; os modelos atômicos são imagens heurísticas, aproximações necessárias.",
+  pontos:[
+    {h:"A insuficiência de Euclides", p:"Mandelbrot: “Nuvens não são esferas, montanhas não são cones, litorais não são círculos.” A geometria euclidiana, por séculos símbolo de naturalidade, não descreve os fenômenos da natureza."},
+    {h:"Fractais e autossimilaridade", p:"A forma fractal consiste na repetição da regra, não na fórmula isolada: a iteração gera autossimilaridade em microescala, como no brócolis Romanesco, cuja geometria segue a sequência de Fibonacci."},
+    {h:"Modelos e heurística", p:"Na física quântica, as interações entre prótons exigiram imagens heurísticas — os modelos atômicos são representações aproximadas, posteriormente substituídas por teorias de formulação geométrica, como a Relatividade Geral."},
+    {h:"Forma e gravitação", p:"Acima de certa escala, a gravidade organiza a massa em formas esféricas: a forma é relação entre massa, volume e força gravitacional."}
+  ],
+  limite:"Modelos físicos são aproximações conscientes de sua própria limitação — lição que o Design deveria imitar ao tratar grids, proporções áureas e regras como modelos, não como verdades.",
+  relacionados:["forma-matematica","forma-simetria-ordem","forma-quimica"]
+},
+{
+  slug:"forma-quimica", nome:"Forma na Química", tipo:"conceito", area:"química",
+  fonte:"Cap. 1.4 · Noël, Pinheiro",
+  curto:"Cristais: a forma como regra, padrão e repetição — e o amorfo que também é forma.",
+  resumo:"Nas reações químicas, a configuração da molécula determina sua ação. Na cristalografia, só se considera “forma” o conjunto que segue regra e padrão — o que revela que a definição de forma depende do contexto e da taxonomia que a observa.",
+  pontos:[
+    {h:"Geometria molecular", p:"Átomos se ligam formando ângulos; as geometrias descritas pelo método VSEPR (linear, trigonal plana, tetraédrica…) refletem diretamente na configuração e no comportamento das moléculas."},
+    {h:"Cristalografia", p:"Cristais são blocos elementares que se repetem nas três dimensões. A área se divide em cristalografia geométrica, química, física e estrutural — cada uma lendo a forma sob um recorte."},
+    {h:"Cristal × amorfo", p:"Só o que segue padrão é cristal; o amorfo é forma não reconhecida dentro da taxonomia — “parece não fazer sentido um objeto sólido e tridimensional não ter forma nenhuma”. A forma depende do critério do observador."},
+    {h:"Eco para o Design", p:"Assim como a cristalografia define seu objeto de estudo, o Design precisa definir o que considera forma — e reconhecer que seus próprios critérios são convencionais, não absolutos."}
+  ],
+  limite:"Definir forma pela regra exclui o irregular; o Design lida permanentemente com o que foge do padrão — o amorfo também informa.",
+  relacionados:["forma-fisica","forma-simetria-ordem","escher"]
+},
+{
+  slug:"forma-biologia", nome:"Forma na Biologia", tipo:"conceito", area:"biologia",
+  fonte:"Cap. 1.5 · Noël, Cardoso",
+  curto:"Forma como memória celular, adaptação e metamorfose — e a bionia como apropriação pelo design.",
+  resumo:"O mundo vivo se apresenta como moléculas dissimétricas: para cada função, uma adaptação morfológica. A forma é memória em potência na célula, e a metamorfose mostra a potência criativa das transformações brutais — inspiração direta para a bionia.",
+  pontos:[
+    {h:"Forma é memória", p:"Para a embriologia, o difícil não é produzir uma célula muscular, mas decidir com as mesmas células entre produzir um braço ou uma perna. A forma habita a célula como potência — uma materialização do ideal platônico."},
+    {h:"Metamorfose", p:"A solução da natureza para mudar de morfologia é a transformação brutal: eventos de extrema potência criativa e poética que emprestam ao Design possibilidades efetivas de invenção."},
+    {h:"Bionia", p:"A bionia estuda e constrói projetos a partir de formas vivas: do espremedor Juicy Salif de Starck ao DCX Bionic Car inspirado no boxfish, até o braço robótico baseado na tromba do elefante."},
+    {h:"Evolução pelo projeto", p:"Neri Oxman parte do princípio de que as coisas vivas não são esculpidas, mas crescem — e propõe a síntese de produtos que nunca existiriam na natureza: evolução não pela seleção natural, mas pelo projeto."}
+  ],
+  limite:"Apropriar-se da forma biológica não é copiar aparências: é compreender funcionamento, material e contexto — senão o resultado é mera decoração orgânica.",
+  relacionados:["forma-funcao","forma-arte","forma-design"]
+},
+{
+  slug:"forma-musica", nome:"Forma na Música", tipo:"conceito", area:"música",
+  fonte:"Cap. 1.6 · Noël, Schafer, Agamben",
+  curto:"A forma invisível: reconhecimento sonoro no tempo e a partitura como código incompleto.",
+  resumo:"Aqui a forma não é vista, é reconhecida no curso do tempo. Escutar um som e saber o que o produziu é comparar a nova forma com outra memorizada — reconhecimento por analogia. A partitura, porém, é só um código: não representa a forma sonora.",
+  pontos:[
+    {h:"Reconhecimento", p:"Identificar uma fonte sonora exige comparar o percept novo com formas já memorizadas. O som é temporal e efêmero: sua representação visual (ondas, espectrogramas) existe para que possamos descrevê-lo, não apenas guardá-lo na memória."},
+    {h:"Paisagem sonora", p:"Schafer define paisagem sonora como o campo do estudo acústico — uma “sonografia momentânea”. Para Agamben, não existe espaço objetivo: existe o espaço de cada ser vivo, percebido segundo sua estrutura."},
+    {h:"Partitura como código", p:"A partitura representa alturas discretas da escala, mas não a frequência exata nem a forma visual do objeto sonoro — é um código interpretado, não a forma em si."},
+    {h:"Desenho para o Design", p:"O reconhecimento sonoro é análogo ao reconhecimento de formas nos objetos: uma forma que comunica suas funções de modo eficaz possui affordance, nas funções práticas, estéticas e simbólicas descritas por Löbach."}
+  ],
+  limite:"O som escapa à fixação visual — o Design, ao contrário, precisa de formas estáveis o suficiente para serem reconhecidas e usadas; a comparação ilumina, mas não se confunde com o objeto.",
+  relacionados:["forma-affordance-pregnancia","forma-linguagem","forma-estetica"]
+},
+{
+  slug:"forma-arte", nome:"Forma nas Artes Visuais", tipo:"conceito", area:"arte",
+  fonte:"Cap. 1.7 · Gombrich, Dewey",
+  curto:"A forma como ressurreição: perspectiva, impressão e a pintura que virou música.",
+  resumo:"Na arte, a forma é antes de tudo deslocamento — navegar por processos não comuns do cotidiano. Do rigor matemático da perspectiva renascentista ao registro do tempo no impressionismo e à “música cromática” de Kandinsky, o conceito de forma muda com contexto histórico, social e espacial.",
+  pontos:[
+    {h:"Renascimento e a matemática", p:"Artistas italianos voltaram-se para as leis da perspectiva e para a anatomia: o artista deixou de ser artífice para ser mestre, autônomo, sondando “as leis secretas do universo”. A Santíssima Trindade, de Masaccio, exemplifica o domínio do espaço perspectivo."},
+    {h:"Impressionismo e o tempo", p:"Monet priorizou pintar in loco: o motivo muda a cada minuto, e a forma registrada é uma impressão única com poucos detalhes — a dimensão temporal sobreposta à forma."},
+    {h:"Arte não-figurativa", p:"Kandinsky buscava os efeitos psicológicos da cor pura e a comunhão “espírito a espírito”: a música como modelo de arte sem objeto reconhecível."},
+    {h:"A obra como experiência", p:"Dewey trata a arte como vivência temporal e situada — satisfação e prazer dependem do contexto de quem vive a experiência. O objeto de Design também é vivido, não apenas usado."}
+  ],
+  limite:"A arte se permite existir sem método obrigatório; o Design, não. A apropriação da poética pela disciplina exige, por trás dela, um processo estruturado de resolução de problemas.",
+  relacionados:["forma-estetica","forma-design","forma-estrutura-composicao","escher"]
+},
+{
+  slug:"forma-design", nome:"Forma no Design", tipo:"conceito", area:"design",
+  fonte:"Cap. 1.8 · Cardoso, Alexander, Elam",
+  curto:"Forma e contexto: a forma é a solução; o contexto, o problema.",
+  resumo:"Entre a determinação e a liberdade da arte está o Design, que dá pluralidade às apresentações dos objetos. Christopher Alexander formula o cerne: o problema de design possui duas condições — a forma e seu contexto — e o limite entre elas é imposto pelo método de design.",
+  pontos:[
+    {h:"Desvio funcional", p:"Os Arcos da Lapa migraram de aqueduto (1740) a viaduto (1896) — a função muda, a forma permanece e ganha valor simbólico. Já a banqueta W.W. Stool, de Starck, nasce ambígua: “uma escultura que pode ser usada como banqueta”, um motivo para começar conversas."},
+    {h:"Análise objetiva × subjetiva", p:"Do lado objetivo: razão áurea, geometria euclidiana, grid — ordem e harmonia mensuráveis, como nas proporções da cadeira Plywood. Do lado subjetivo: cor, textura, densidade, construções simbólicas inscritas na cultura."},
+    {h:"Alexander: forma e contexto", p:"A forma ideal está adaptada ao contexto; descrever o contexto por completo é praticamente impossível. “Procura-se uma harmonia de duas coisas intangiíveis: a forma que ainda não projetamos e o contexto que não podemos descrever.”"},
+    {h:"Forma não é só função", p:"Para Dagognet, a forma é o mais importante no objeto; mas, embora inclua a função — como notou Sullivan — não se reduz a ela: há valores simbólicos, sociais e o que agrada o olhar."}
+  ],
+  limite:"O desafio permanente: reduzir requisitos infinitos a uma escolha criteriosa, sabendo que toda descrição de contexto é incompleta. O metaprojeto e o metadesign ampliam o campo, mas não eliminam a decisão.",
+  relacionados:["metadesign","forma-funcao","forma-arte","forma-estrutura-composicao"]
+},
+{
+  slug:"forma-linguagem", nome:"Forma e Linguagem", tipo:"relação", area:"design",
+  fonte:"Cap. 2.1 · Noël, Pignatari, Santaella",
+  curto:"Linguagem é arranjo formal: signos e regras que, combinados, produzem sentido.",
+  resumo:"Linguagem é o conjunto de signos e regras — sintaxes — usado com flexibilidade como padrão de identidade cultural. A língua é apenas uma manifestação particular. Os objetos de design, como os produtos do cotidiano, também são portadores de informação: têm linguagem.",
+  pontos:[
+    {h:"Signos e regras", p:"Fonemas sem sintaxe não significam. Do mesmo modo, cores no padrão CMYK ou a notação de raiz quadrada são códigos: seguindo as regras, decodifica-se a mensagem."},
+    {h:"Códigos descritíveis e não descritíveis", p:"O Design opera com códigos discretos, traduzíveis termo a termo, e com códigos que acessam o sensível — significados culturais transmitidos de geração a geração, nem sempre explicáveis objetivamente."},
+    {h:"Linguagem do produto", p:"Gert Selle: “Podemos falar de sua linguagem de produto na medida em que os objetos de design não são apenas portadores de funções, mas são sempre portadores de informação.” Os arquétipos sobrevivem séculos como padrões de referência carregados de sentido."}
+  ],
+  limite:"Nem todo significado do objeto é intencional ou decodificável: parte da “linguagem” escapa ao controle do designer e é negociada pelo uso e pela cultura.",
+  relacionados:["forma-informacao","forma-musica","forma-design"]
+},
+{
+  slug:"forma-simetria-ordem", nome:"Forma, Simetria e Ordem", tipo:"relação", area:"design",
+  fonte:"Cap. 2.2 · Contador, Pinheiro, Frutiger",
+  curto:"Pontos ordenados revelam um quadrado sem nenhuma linha: a mente completa a forma pela ordem.",
+  resumo:"Symmetria, do grego, é justa proporção. Distribuições regulares produzem reconhecimento sem demarcação explícita — e a assimetria tende à frustração. A ordem e a simetria se aproximam das estruturas do nosso próprio corpo.",
+  pontos:[
+    {h:"A demonstração dos pontos", p:"Pontos aleatórios não revelam forma; pontos alinhados e ordenados revelam um quadrado sem que nenhuma linha o delimite. A forma só é identificada quando existe ordem — a mente reconhece padrões."},
+    {h:"Operadores de simetria", p:"Translação, rotação, reflexão e inversão são operações definidas sobre pontos, retas e planos; aplicadas a um motivo com ritmo constante, geram toda a ordem dos cristais — e dos padrões visuais."},
+    {h:"Harmonia", p:"Alberti: a harmonia ilumina toda beleza e “abrange toda a vida humana” — número, limitação e arranjo. O corpo humano é simétrico e proporcional; por isso reconhecemos com naturalidade o que segue o mesmo princípio."}
+  ],
+  limite:"Ordem excessiva é previsibilidade — e previsibilidade demais empobrece o objeto. O design contemporâneo negocia constantemente entre a legibilidade da ordem e a vitalidade do desvio.",
+  relacionados:["forma-matematica","forma-quimica","forma-estetica","escher"]
+},
+{
+  slug:"forma-estetica", nome:"Forma e Estética", tipo:"relação", area:"design",
+  fonte:"Cap. 2.3 · Suassuna, Kant",
+  curto:"Objetivismo aristotélico × subjetivismo: o que pode ser medido e o que só se opina.",
+  resumo:"A estética filosófica oscila entre duas leituras: a beleza como harmonia ordenada entre as partes (Aristóteles, De Bruyne) ou como comunicação com uma Beleza absoluta, dependente do observador (Platão, Kant, Hegel). No Design, as duas convivem.",
+  pontos:[
+    {h:"Objetivismo", p:"Para Aristóteles, a beleza decorre da ordenação das partes entre si e em relação ao todo, com grandezas e proporções adequadas — análise possível de medir e quantificar."},
+    {h:"Subjetivismo", p:"Para Kant, o belo não é conhecimento, mas prazer de contemplar: emitimos opinião sem conceito definidor. Hegel o veria como manifestação sensível da Ideia."},
+    {h:"No objeto de design", p:"Questões de ordem, simetria, equilíbrio e composição são objetivas e mensuráveis; o gosto — “gostar ou não gostar” — permanece. Mesmo em processos rigorosos, referências estéticas vivenciadas pelo designer atravessam o resultado."}
+  ],
+  limite:"Medir o mensurável não elimina o juízo: declarar um projeto “bom” por critérios objetivos não responde se ele será vivido como belo — e a experiência (Dewey) sempre é de alguém, em algum lugar.",
+  relacionados:["forma-filosofia","forma-arte","forma-simetria-ordem"]
+},
+{
+  slug:"forma-estrutura-composicao", nome:"Forma, Estrutura e Composição", tipo:"relação", area:"design",
+  fonte:"Cap. 2.4 · Samara, Le Corbusier, Med",
+  curto:"O grid como fichário visual e o Modulor: estruturas que organizam a informação.",
+  resumo:"O grid converte elementos num campo neutro de regularidade que facilita o acesso: o observador sabe onde localizar a informação porque os cruzamentos das divisões funcionam como sinalizadores. Le Corbusier buscou na música medidas visuais universalizáveis.",
+  pontos:[
+    {h:"Grid", p:"Timothy Samara: “O grid é como um fichário visual.” Itens parecidos distribuídos de maneiras parecidas destacam suas semelhanças e orientam o uso — regularidade como interface."},
+    {h:"Modulor", p:"Le Corbusier criou um aparato de medida fundamentado na estatura humana e na matemática — três intervalos do corpo que definem seções áureas de Fibonacci — “mantendo sempre a escala humana, assegurando a unidade na diversidade”."},
+    {h:"Música como modelo", p:"A música é, em síntese, matemática: melodia é ordem sucessiva, harmonia é ordem simultânea, ritmo é ordem e proporção no tempo. Daí derivam sistemas aplicáveis a outras composições."},
+    {h:"Geometria como código", p:"No Design, a geometria opera como possível codificação para as formas: um sistema modelizante cultural capaz de decompor qualquer forma — como a cristalografia decompõe os sólidos."}
+  ],
+  limite:"Estrutura é meio, não fim: o grid organiza, mas é a desconstrução pontual do grid que frequentemente produz hierarquia e interesse — sem estrutura nenhuma, só resta ruído.",
+  relacionados:["forma-matematica","forma-musica","forma-design","kostellow"]
+},
+{
+  slug:"forma-funcao", nome:"Forma e Função", tipo:"relação", area:"design",
+  fonte:"Cap. 2.5 · Löbach, Bürdek",
+  curto:"Reler Sullivan: a forma comunica a função — prática, simbólica e estética.",
+  resumo:"O funcionalismo do século XIX reduziu a forma à função prática e à eficiência de produção — produtos mecânicos, pouco competitivos, sem relação emocional. Bürdek mostra que Sullivan, ao dizer “a forma segue a função”, falava das dimensões semióticas do objeto. Löbach sistematiza três funções.",
+  pontos:[
+    {h:"O funcionalismo e seus limites", p:"Uso racional dos meios, objetivos determinados, ênfase na configuração prático-funcional: produtos com poucas variantes, que não se sustentam no mercado por falta de relação emocional com o usuário."},
+    {h:"Três funções (Löbach)", p:"Função prática: o uso efetivo. Função simbólica: “a espiritualidade do homem é estimulada pela percepção do objeto, ao estabelecer ligações com suas experiências e sensações anteriores”. Função estética: a relação com o usuário no nível dos processos sensoriais — cor, formato, contraste."},
+    {h:"Forma comunica", p:"Uma forma que comunica suas funções com eficácia possui affordance: o reconhecimento do uso é feito pela forma, sem manual — princípio que conecta função e percepção."}
+  ],
+  limite:"A função não antecede a forma de modo mecânico: contexto, época e a relação com o indivíduo constroem as funções — a forma contém funções, mas não as contém todas sozinha.",
+  relacionados:["forma-biologia","forma-affordance-pregnancia","forma-design","forma-linguagem"]
+},
+{
+  slug:"forma-informacao", nome:"Forma, Informação e Comunicação", tipo:"relação", area:"design",
+  fonte:"Cap. 2.6 · Shannon, MacKay, Logan, Pignatari",
+  curto:"Sinal com ou sem significado: a informação que organiza e a mensagem que precisa de redundância.",
+  resumo:"Shannon define informação como medida de redução de incerteza — entropia — declarando os aspectos semânticos “irrelevantes para o problema da engenharia”. MacKay responde: sem distinção, sem significado, não existe informação. Para o Design, informação é sempre mensagem.",
+  pontos:[
+    {h:"Shannon × MacKay", p:"Shannon: informação como sinal, pode conter ou não significado. MacKay: informação é definida pelo que faz — causa mudança mental no receptor, depende de contexto. Organização que se propaga é o conteúdo da informação biótica."},
+    {h:"Entropia e negentropia", p:"Sistemas trocam informação e se desorganizam (entropia), reorganizam-se (negentropia) ou entram em equilíbrio (homeostase). Só a entropia isolada não revela o processo total."},
+    {h:"Redundância", p:"Pignatari: “mensagem é redundância mais informação; sem redundância a informação não pode ser codificada.” A repetição dá previsibilidade e previne o erro — o design usa redundância como camada de segurança da comunicação."},
+    {h:"Flusser", p:"“A forma informa à matéria o que ela é.” A informação do Design não é mero sinal: possui significado em vários níveis — prático, estético, simbólico."}
+  ],
+  limite:"Redundância excessiva é ruído; informação sem redundância não decodifica. Calibrar essa equação é decisão de projeto, não fórmula.",
+  relacionados:["forma-linguagem","forma-filosofia","forma-design"]
+},
+{
+  slug:"forma-affordance-pregnancia", nome:"Forma, Affordance e Pregnância", tipo:"relação", area:"design",
+  fonte:"Cap. 2.7 · Gibson, Norman, Gomes Filho",
+  curto:"A maçaneta que anuncia o empurrar: reconhecimento de uso pela forma, sem manual.",
+  resumo:"Affordance, de Gibson, é o potencial de ação que o ambiente oferece ao indivíduo — relação entre ambiente e observador. Norman a trouxe para o design do cotidiano: a porta certa dispensa explicação. Pregnância é a lei gestalt da forma mais simples possível.",
+  pontos:[
+    {h:"Gibson e Norman", p:"A affordance é relacional: o objeto oferece ações conforme a estrutura de quem percebe. Norman mostra como uma maçaneta horizontal convida ao empurrão — e como o design errado das portas gera o famoso sinal “Puxe” colado onde a forma já deveria ter dito."},
+    {h:"Pregnância", p:"Lei básica da percepção da Gestalt: qualquer padrão tende a ser visto de modo que a estrutura resultante seja tão simples quanto as condições permitem. A letra “K” nítida tem alto grau de pregnância; ornada e confundida com o fundo, perde legibilidade."},
+    {h:"Reconhecimento intrínseco", p:"Nos objetos de Design, os fatores de reconhecimento — função, acoplamentos, interações no contexto — são intrínsecos ao resultado: o processo busca eliminar erros de leitura da forma."}
+  ],
+  limite:"Affordances são culturais e aprendidas: o que é óbvio para um público pode não ser para outro — o reconhecimento “natural” é, em parte, convenção sedimentada.",
+  relacionados:["forma-funcao","forma-musica","forma-design"]
+},
+{
+  slug:"escher", nome:"O Espelho Mágico de Escher", tipo:"caso", area:"arte",
+  fonte:"Cap. 3.1 · Ernest, Berro",
+  curto:"Quatro fases de um artista que operou a forma com precisão de matemático.",
+  resumo:"M. C. Escher começou copiando ornamentos árabes e descobriu as isometrias — translação, rotação, translação refletida. Bruno Ernest divide sua obra em quatro fases, das paisagens ao infinito, passando pela geometria, pelas transições de forma e pelos sólidos cristalográficos.",
+  pontos:[
+    {h:"Fase 1 — Paisagens e cidades", p:"Gravuras de ambientes reais, como a Natureza morta com espelho (1934), já com o espelho como dispositivo de duplicação da forma."},
+    {h:"Fase 2 — Geometria e transição", p:"A descoberta dos padrões de simetria leva às metamorfoses: uma forma se transforma em outra continuamente, como em Metamorfose I (1937), e Varanda (1945) distorce a perspectiva sobre um sólido esférico."},
+    {h:"Fases 3 e 4 — Sólidos e o infinito", p:"Os sólidos cristalográficos entram como protagonistas (Cristal, 1947), e o infinito se torna tema central em obras como Galeria de Arte (1946), onde a realidade dentro e fora do quadro se funde."},
+    {h:"O prazer da ordem", p:"A satisfação em observar obras simétricas e padronizadas explica-se: o corpo humano é simétrico e proporcional — reconhecemos a ordem de modo natural. Escher internalizou modelos matemáticos e geométricos na construção da percepção."}
+  ],
+  limite:"A precisão matemática de Escher serve à invenção poética, não ao cálculo: usar seus recursos como mera técnica decorativa é perder o que as obras têm de investigação sobre a forma.",
+  relacionados:["forma-simetria-ordem","forma-matematica","forma-quimica","forma-arte"]
+},
+{
+  slug:"kostellow", nome:"Elementos do Design Tridimensional", tipo:"caso", area:"design",
+  fonte:"Cap. 3.2 · Hannah",
+  curto:"O método de Rowena Reed Kostellow: da forma simples à complexa, em quatro etapas.",
+  resumo:"Durante 50 anos no Pratt Institute, Rowena Reed Kostellow elaborou exercícios de complexidades crescentes para desenvolver a percepção das relações visuais. O método espelha a evolução dos próprios conceitos da dissertação: partindo de modelos simples, a forma vai recebendo informação, dimensão e relação com o espaço.",
+  pontos:[
+    {h:"Etapa 1 — Fundamentos", p:"Volumes retilíneos e curvilíneos, fragmentos de sólidos, planos flexíveis e linhas no espaço: o aluno aprende a ver relações visuais elementares antes de projetar."},
+    {h:"Etapa 2 — Estudos avançados da forma", p:"Construção e organização de formas contrastantes, convexidades e cavidades: exercícios para explorar formas orgânicas e relações de volume."},
+    {h:"Etapa 3 — Estudos do espaço", p:"Como os planos interagem uns com os outros e projeto de espaço: criar espaços próprios em três dimensões, com critérios de interação."},
+    {h:"Etapa 4 — Desenvolvimento", p:"Exploração continuada das formas abstratas com critérios mais práticos — aproximação do exercício ao projeto real."},
+    {h:"Por que funciona", p:"A gradualidade é didática e epistemológica: como os conceitos de forma ganham complexidade ao longo do capítulo 1, os exercícios adicionam camadas progressivamente — do volume isolado ao espaço habitado."}
+  ],
+  limite:"Um método de ensino não é um método universal de projeto: seus exercícios treinam percepção, mas o contexto de cada problema de design continua exigindo descrição e escolha próprias.",
+  relacionados:["forma-estrutura-composicao","forma-design","forma-arte"]
+},
+{
+  slug:"metadesign", nome:"Metadesign e Metaprojeto", tipo:"conceito", area:"design",
+  fonte:"Introdução · Vassão, Moraes",
+  curto:"O design do design: níveis de abstração que contêm todas as potências de forma.",
+  resumo:"Dijon de Moraes propõe o metaprojeto: ampliar os horizontes do projeto analisando demanda e prospectando cenários — mercadológicos, ambientais, socioculturais, tipológico-formais. Caio Vassão propõe o metadesign: o projeto do projeto, níveis de abstração trazidos ao mundo físico — nele, a forma é o que pode ser reconhecido, nomeado e criado.",
+  pontos:[
+    {h:"Metaprojeto (Moraes)", p:"Considerar o projeto analisando a demanda e prospectando cenário existente ou futuro possível, com tópicos básicos: aspectos mercadológicos, de sistema produto/design, ambientais, socioculturais, tipológico-formais e ergonômicos, tecnologia e materiais."},
+    {h:"Metadesign (Vassão)", p:"Ampliar os limites do processo projetual: o design do design. Contém todas as possibilidades de fazer design e uma programação trazida, a cada projeto, para um nível de abstração que possa ser aprendido — como um ambiente de decisões."},
+    {h:"Design como sistema", p:"Da teoria geral dos sistemas (Bertalanffy): o todo é mais que a soma das partes, e as qualidades do todo retroagem sobre elas. O Design é exatamente isso — teorias, ferramentas, processos, princípios e prática integrados."}
+  ],
+  limite:"Abstração sem aterrissagem vira paralisia: metadesign e metaprojeto são estruturas de decisão, não desculpa para adiar o projeto concreto e suas restrições.",
+  relacionados:["forma-design","forma-filosofia","forma-estrutura-composicao"]
+}
+];
+
+const GLOSSARIO = [
+  {t:"forma", d:"Do latim forma, molde. Configuração física característica dos seres e das coisas; também maneira, sistema e tipo. No Design, a solução de um problema situado num contexto."},
+  {t:"affordance", d:"Termo de Gibson: o potencial de ação que o ambiente oferece a um indivíduo, dependente da relação entre ambiente e observador. Norman a adaptou ao design de objetos."},
+  {t:"pregnância", d:"Lei básica da percepção da Gestalt: todo padrão tende a ser visto de modo que a estrutura resultante seja tão simples quanto as condições permitem."},
+  {t:"gestalt", d:"Psicologia da forma: impressões simultâneas não são independentes, mas uma unidade de ordem definível. O todo se organiza segundo leis de percepção."},
+  {t:"fractal", d:"Geometria de formas complexas geradas por iteração de uma regra, com autossimilaridade em qualquer escala — “nuvens não são esferas” (Mandelbrot)."},
+  {t:"autossimilaridade", d:"Repetição de uma forma em microescala: cada parte guarda a estrutura do todo, como nos fractais e no brócolis Romanesco."},
+  {t:"cristalografia", d:"Ciência da classificação e interpretação das estruturas geométricas dos sólidos: geométrica, química, física e estrutural."},
+  {t:"metamorfose", d:"Transformação brutal da forma no desenvolvimento do ser vivo — potência criativa e poética que inspira invenção no Design."},
+  {t:"bionia", d:"Apropriação de formas vivas pelo projeto: funcionamento, material ou configuração da natureza como base de invenção."},
+  {t:"modulor", d:"Aparato de medida de Le Corbusier, fundamentado na estatura humana e na matemática: seções áureas de Fibonacci aplicadas a comprimentos, superfícies e volumes."},
+  {t:"grid", d:"Sistema ortogonal que divide a informação em partes mensuráveis: um “fichário visual” que sinaliza onde localizar cada elemento."},
+  {t:"entropia", d:"Na teoria da informação, medida de redução de incerteza; na termodinâmica, grau de desorganização de um sistema."},
+  {t:"negentropia", d:"Informação que organiza: um sistema recebe informação e se reorganiza, em oposição à entropia."},
+  {t:"homeostase", d:"Equilíbrio de um sistema que troca informação sem se organizar nem desorganizar."},
+  {t:"redundância", d:"Repetição que confere segurança à comunicação: mensagem é redundância mais informação; sinal redundante é sinal previsível (Pignatari)."},
+  {t:"metadesign", d:"O design do design: níveis de abstração que contêm todas as potências de fazer design, trazidos ao mundo físico a cada projeto (Vassão)."},
+  {t:"metaprojeto", d:"Ampliar o projeto analisando demanda e prospectando cenários — mercadológicos, ambientais, socioculturais, tipológico-formais, tecnológicos (Moraes)."},
+  {t:"simetria", d:"Do grego symmetria, justa proporção: regularidade na distribuição de partes em torno de linha, plano ou centro."},
+  {t:"morfogênese", d:"Desenvolvimento e origem das formas — no crescimento de cristais, no desenvolvimento de organismos ou na formação de planetas."},
+  {t:"heurística", d:"Ciência das constantes do pensamento criador e da elaboração de métodos para dirigir processos de descoberta — como os modelos atômicos, imagens que orientam a investigação."}
+];
+
+const REFERENCIAS = [
+  "ABBAGNANO, N. Dicionário de filosofia.","AGAMBEN, G. O aberto, o homem e o animal.",
+  "BERTALANFFY, L. V. General System Theory.","BONSIEPE, G. Design, Cultura e Sociedade.",
+  "BOYER, C. B. História da matemática.","BÜRDEK, B. E. História, teoria e prática do design de produto.",
+  "CARDOSO, R. Design para um mundo complexo.","CONTADOR, P. R. M. A matemática na arte e na vida.",
+  "DEWEY, J. Art as Experience.","ELAM, K. Geometria do design.",
+  "ERNEST, B. O espelho mágico de M. C. Escher.","FLUSSER, V. O mundo codificado.",
+  "FRUTIGER, A. Sinais & símbolos.","GIBSON, J. J. The ecological approach of visual perception.",
+  "GOMBRICH, E. H. A história da arte.","GOMES FILHO, J. Gestalt do objeto.",
+  "LÖBACH, B. Design industrial.","LOGAN, K. R. O que é informação.",
+  "MANDELBROT, B. (apud Carvalho, 2005) Geometria fractal.","MARCONI, M. A.; LAKATOS, E. M. Fundamentos da metodologia científica.",
+  "MORAES, D. Metaprojeto: o design do design.","MORIN, E. Introdução ao pensamento complexo.",
+  "MUNARI, B. Fantasia.","NOËL, É. As ciências da forma hoje.",
+  "NORMAN, D. A. O design do dia-a-dia.","PIGNATARI, D. Informação, linguagem, comunicação.",
+  "PINHEIRO, C. B. Fragmentos de cristalografia.","SAMARA, T. Grid: construção e desconstrução.",
+  "SANTAELLA, L. O que é semiótica.","SCHAFER, R. M. A afinação do mundo.",
+  "SUASSUNA, A. Iniciação à estética.","VASSÃO, C. A. Metadesign."
+];
+
+/* ================================================================
+   UTILIDADES
+   ================================================================ */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+const porSlug = Object.fromEntries(VERBETES.map(v => [v.slug, v]));
+
+/* Wikilinks: envolve termos do glossário encontrados no texto já escapado */
+const TERMOS = GLOSSARIO.map(g => norm(g.t)).sort((a,b) => b.length - a.length);
+const RE_TERMOS = new RegExp(`\\b(${TERMOS.map(t => t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')})\\b`, 'gi');
+function linkifica(html){
+  return html.replace(RE_TERMOS, m => {
+    const g = GLOSSARIO.find(x => norm(x.t) === norm(m));
+    return g ? `<a href="#/glossario?termo=${encodeURIComponent(g.t)}">${m}</a>` : m;
+  });
+}
+
+/* Tema */
+function iniciarTema(){
+  let salvo = null;
+  try{ salvo = localStorage.getItem('forma-tema'); }catch(e){}
+  if(salvo) document.documentElement.dataset.theme = salvo;
+  $('#tema').addEventListener('click', () => {
+    const cur = document.documentElement.dataset.theme ||
+      (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    const novo = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = novo;
+    try{ localStorage.setItem('forma-tema', novo); }catch(e){}
+  });
+}
+
+/* ================================================================
+   BUSCA — índice simples com normalização de acentos
+   ================================================================ */
+const INDICE = VERBETES.map(v => ({
+  v, texto: norm([v.nome, v.tipo, v.area, v.curto, v.resumo, v.pontos.map(p => p.h + ' ' + p.p).join(' '), v.limite].join(' '))
+}));
+function buscar(q){
+  const tokens = norm(q).split(/\s+/).filter(Boolean);
+  if(!tokens.length) return [];
+  return INDICE.map(e => {
+    let score = 0;
+    for(const t of tokens){
+      const n = e.texto.split(t).length - 1;
+      if(!n) return {e, score:-1};
+      score += n + (norm(e.v.nome).includes(t) ? 3 : 0);
+    }
+    return {e, score};
+  }).filter(r => r.score >= 0).sort((a,b) => b.score - a.score).slice(0, 12);
+}
+function iniciarBusca(){
+  const overlay = $('#overlayBusca'), campo = $('#campoBusca'), res = $('#resultadosBusca'), status = $('#statusBusca');
+  let ultimoFoco = null;
+  function abrir(){
+    ultimoFoco = document.activeElement;
+    overlay.classList.add('aberto');
+    document.body.style.overflow = 'hidden';
+    campo.value = ''; res.innerHTML = '';
+    status.textContent = 'Digite para buscar. Esc fecha.';
+    campo.focus();
+  }
+  function fechar(){
+    overlay.classList.remove('aberto');
+    document.body.style.overflow = '';
+    if(ultimoFoco) ultimoFoco.focus();
+  }
+  function render(){
+    const r = buscar(campo.value);
+    status.textContent = campo.value.trim()
+      ? `${r.length} resultado${r.length === 1 ? '' : 's'} para “${campo.value.trim()}”`
+      : 'Digite para buscar. Esc fecha.';
+    res.innerHTML = r.map(({e}) => {
+      const v = e.v;
+      const idx = norm(v.curto).indexOf(norm(campo.value.trim()).split(/\s+/)[0] || '​');
+      const trecho = idx >= 0 ? `…${v.curto.slice(Math.max(0, idx - 30), idx + 90)}…` : v.curto;
+      return `<a href="#/verbete/${v.slug}">
+        <b>${esc(v.nome)}</b> <span class="tag">${esc(v.tipo)}</span>
+        <small>${esc(trecho)}</small>
+      </a>`;
+    }).join('');
+    res.querySelectorAll('a').forEach(a => a.addEventListener('click', fechar));
+  }
+  $('#abrirBusca').addEventListener('click', abrir);
+  campo.addEventListener('input', render);
+  overlay.addEventListener('click', e => { if(e.target === overlay) fechar(); });
+  document.addEventListener('keydown', e => {
+    if(e.key === '/' && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)){ e.preventDefault(); abrir(); }
+    if(e.key === 'Escape' && overlay.classList.contains('aberto')) fechar();
+  });
+}
+
+/* ================================================================
+   GRAFO — layout de forças determinístico (dados > código)
+   ================================================================ */
+function arestas(){
+  const vistos = new Set(), out = [];
+  for(const v of VERBETES)
+    for(const r of v.relacionados)
+      if(porSlug[r] && !vistos.has(r + '|' + v.slug)){ vistos.add(v.slug + '|' + r); out.push([v.slug, r]); }
+  return out;
+}
+function layoutGrafo(){
+  const nodes = VERBETES.map((v,i) => ({...v,
+    x: Math.cos(2*Math.PI*i/VERBETES.length) * 300,
+    y: Math.sin(2*Math.PI*i/VERBETES.length) * 300, vx:0, vy:0 }));
+  const by = Object.fromEntries(nodes.map(n => [n.slug, n]));
+  const ed = arestas().map(([a,b]) => [by[a], by[b]]);
+  const rep = 26000, mola = .008, desc = 190, centro = .012;
+  for(let it = 0; it < 320; it++){
+    for(let i = 0; i < nodes.length; i++) for(let j = i+1; j < nodes.length; j++){
+      const a = nodes[i], b = nodes[j];
+      let dx = b.x - a.x, dy = b.y - a.y;
+      let d2 = Math.max(dx*dx + dy*dy, 40);
+      const f = rep / d2, d = Math.sqrt(d2);
+      dx /= d; dy /= d;
+      a.vx -= dx*f; a.vy -= dy*f; b.vx += dx*f; b.vy += dy*f;
+    }
+    for(const [a,b] of ed){
+      const dx = b.x - a.x, dy = b.y - a.y;
+      const d = Math.max(Math.hypot(dx,dy), 1);
+      const f = (d - desc) * mola;
+      a.vx += dx/d*f; a.vy += dy/d*f; b.vx -= dx/d*f; b.vy -= dy/d*f;
+    }
+    for(const n of nodes){ n.vx -= n.x*centro; n.vy -= n.y*centro; n.x += n.vx; n.y += n.vy; n.vx *= .6; n.vy *= .6; }
+  }
+  return {nodes, ed};
+}
+function renderGrafo(alvo){
+  const {nodes, ed} = layoutGrafo();
+  let minX=1e9,maxX=-1e9,minY=1e9,maxY=-1e9;
+  nodes.forEach(n => { minX=Math.min(minX,n.x); maxX=Math.max(maxX,n.x); minY=Math.min(minY,n.y); maxY=Math.max(maxY,n.y); });
+  const pad = 60, W = maxX-minX+pad*2, H = maxY-minY+pad*2;
+  const viz = {}; nodes.forEach(n => viz[n.slug] = new Set([n.slug]));
+  ed.forEach(([a,b]) => { viz[a.slug].add(b.slug); viz[b.slug].add(a.slug); });
+  alvo.innerHTML = `
+    <div class="grafo-wrap">
+    <svg viewBox="${minX-pad} ${minY-pad} ${W} ${H}" role="img"
+      aria-label="Mapa de relações entre os conceitos, relações e casos da dissertação. Cada círculo é um verbete ligado aos seus relacionados.">
+      ${ed.map(([a,b]) => `<line class="gedge" data-a="${a.slug}" data-b="${b.slug}" x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}"/>`).join('')}
+      ${nodes.map(n => `<g class="gnode" data-slug="${n.slug}" tabindex="0" role="link" aria-label="${esc(n.nome)} — ${esc(n.tipo)}">
+          <title>${esc(n.nome)} (${esc(n.tipo)})</title>
+          <circle cx="${n.x}" cy="${n.y}" r="${n.tipo==='caso'?14:n.tipo==='relação'?11:9}"></circle>
+          <text x="${n.x}" y="${n.y - 18}" text-anchor="middle">${esc(n.nome.length > 26 ? n.nome.slice(0,24)+'…' : n.nome)}</text>
+        </g>`).join('')}
+    </svg></div>
+    <p class="faint" style="font-size:.85rem">Passe o cursor ou foque um nó para destacar sua vizinhança. Clique ou pressione Enter para abrir o verbete. Tamanho do círculo indica o tipo: casos são maiores, relações médios, conceitos menores.</p>`;
+  const svg = alvo.querySelector('svg');
+  function destacar(slug){
+    svg.querySelectorAll('.gnode').forEach(g => g.classList.toggle('dim', slug && !viz[slug].has(g.dataset.slug)));
+    svg.querySelectorAll('.gedge').forEach(l => l.classList.toggle('dim', slug && !(l.dataset.a === slug || l.dataset.b === slug)));
+  }
+  svg.querySelectorAll('.gnode').forEach(g => {
+    g.addEventListener('mouseenter', () => destacar(g.dataset.slug));
+    g.addEventListener('mouseleave', () => destacar(null));
+    g.addEventListener('focus', () => destacar(g.dataset.slug));
+    g.addEventListener('blur', () => destacar(null));
+    g.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); location.hash = '#/verbete/' + g.dataset.slug; }});
+    g.addEventListener('click', () => location.hash = '#/verbete/' + g.dataset.slug);
+  });
+}
+
+/* ================================================================
+   PÁGINAS
+   ================================================================ */
+function paginaHome(){
+  const nConceitos = VERBETES.filter(v => v.tipo==='conceito').length;
+  const nRel = VERBETES.filter(v => v.tipo==='relação').length;
+  const nCasos = VERBETES.filter(v => v.tipo==='caso').length;
+  return `
+  <section class="hero">
+    <p class="kicker">dissertação · mestrado em design · UnB · 2016</p>
+    <h1>A forma é o entrecruzamento<br>de todos esses conceitos.</h1>
+    <p class="lede">Leitura interativa de <em>A importância da forma para os projetos de design</em>, de Estéfano Pietragalla: uma travessia pela filosofia, matemática, física, química, biologia, música, arte e design — e pelas relações que o projeto faz entre eles.</p>
+    <div class="estat">
+      <div><b>${nConceitos}</b><span>conceitos de forma</span></div>
+      <div><b>${nRel}</b><span>relações com o design</span></div>
+      <div><b>${nCasos}</b><span>casos práticos</span></div>
+      <div><b>${GLOSSARIO.length}</b><span>termos no glossário</span></div>
+    </div>
+    <div class="intencoes">
+      <a class="card-int" href="#/conceitos"><strong>Entender</strong><span>Os oito conceitos de forma, de Platão ao grid — com fontes, limites e diálogos transdisciplinares.</span></a>
+      <a class="card-int" href="#/grafo"><strong>Navegar</strong><span>O mapa de relações: como filosofia, simetria, affordance e os casos de Escher e Kostellow se conectam.</span></a>
+      <a class="card-int" href="#/glossario"><strong>Consultar</strong><span>Glossário de affordance a pregnância, referências bibliográficas e notas sobre a obra.</span></a>
+    </div>
+  </section>
+  <section style="padding:3rem 0">
+    <h2 style="margin-top:0">A tese em uma frase</h2>
+    <div class="plate"><p style="font-size:1.15rem;margin:0">“O entendimento da forma pelo Design pressupõe um entrelaçamento entre diferentes áreas do conhecimento, sendo o Design um sistema da cultura configurado por várias linguagens — e a forma, a parte do contexto sobre a qual o designer tem controle.”</p></div>
+    <p class="faint">Síntese do problema de pesquisa e da conclusão da dissertação (Pietragalla, 2016).</p>
+  </section>`;
+}
+
+function paginaLista(params){
+  const area = params.get('area') || 'todas';
+  const tipo = params.get('tipo') || 'todos';
+  const areas = ['todas', ...new Set(VERBETES.map(v => v.area))];
+  const tipos = ['todos', 'conceito', 'relação', 'caso'];
+  const filtrados = VERBETES.filter(v => (area==='todas' || v.area===area) && (tipo==='todos' || v.tipo===tipo));
+  const chip = (val, atual, label, key) =>
+    `<button class="chip" aria-pressed="${val===atual}" data-f="${key}=${encodeURIComponent(val)}">${esc(label)}</button>`;
+  return `
+  <section style="padding:2.5rem 0 1rem">
+    <h1 style="font-size:2rem">Conceitos e relações</h1>
+    <p class="lede">Cada verbete cruza uma área do conhecimento com o Design: o que a área entende por forma, como o design se apropria, e onde o conceito tropeça.</p>
+    <div class="chips" role="group" aria-label="Filtrar por área">
+      <span class="lbl">área</span>${areas.map(a => chip(a, area, a === 'todas' ? 'todas' : a, 'area')).join('')}
+    </div>
+    <div class="chips" role="group" aria-label="Filtrar por tipo">
+      <span class="lbl">tipo</span>${tipos.map(t => chip(t, tipo, t, 'tipo')).join('')}
+    </div>
+    <p class="sr" role="status">${filtrados.length} verbetes exibidos</p>
+    <div class="grade">
+      ${filtrados.map(v => `<a class="card" href="#/verbete/${v.slug}">
+        <div class="topo"><span class="tag accent">${esc(v.area)}</span><span class="tag">${esc(v.tipo)}</span></div>
+        <h3>${esc(v.nome)}</h3><p>${esc(v.curto)}</p>
+      </a>`).join('') || `<p class="faint">Nenhum verbete com esses filtros.</p>`}
+    </div>
+  </section>`;
+}
+
+function paginaVerbete(v){
+  const i = VERBETES.indexOf(v);
+  const ant = VERBETES[(i - 1 + VERBETES.length) % VERBETES.length];
+  const prox = VERBETES[(i + 1) % VERBETES.length];
+  return `
+  <article>
+    <header class="cab">
+      <p class="kicker" style="font-family:ui-monospace,monospace;font-size:.8rem;color:hsl(var(--accent));margin:0 0 .6rem">${esc(v.fonte)}</p>
+      <h1>${esc(v.nome)}</h1>
+      <div class="meta"><span class="tag accent">${esc(v.area)}</span><span class="tag">${esc(v.tipo)}</span></div>
+      <p class="enunciado">${linkifica(esc(v.curto))}</p>
+    </header>
+    <div style="padding-top:.5rem">
+      <h2 style="margin-top:1.6rem">Em contexto</h2>
+      <p>${linkifica(esc(v.resumo))}</p>
+      <h2>Pontos-chave</h2>
+      ${v.pontos.map(p => `<div class="bloco"><h3>${esc(p.h)}</h3><p>${linkifica(esc(p.p))}</p></div>`).join('')}
+      <div class="bloco limite"><h3>Onde o conceito tropeça</h3><p>${linkifica(esc(v.limite))}</p></div>
+      <h2>Relacionados</h2>
+      <div class="rel">${v.relacionados.filter(s => porSlug[s]).map(s => `<a href="#/verbete/${s}">${esc(porSlug[s].nome)}</a>`).join('')}</div>
+      <nav class="orelhas" aria-label="Navegação entre verbetes">
+        <a href="#/verbete/${ant.slug}"><span class="d">← anterior</span>${esc(ant.nome)}</a>
+        <a href="#/verbete/${prox.slug}"><span class="d">próximo →</span>${esc(prox.nome)}</a>
+      </nav>
+    </div>
+  </article>`;
+}
+
+function paginaGlossario(params){
+  const termo = params.get('termo');
+  return `
+  <section class="gloss" style="padding:2.5rem 0">
+    <h1 style="font-size:2rem">Glossário</h1>
+    <p class="lede">Os termos aparecem com links dentro dos verbetes — os wikilinks resolvem para cá.</p>
+    <dl>
+      ${GLOSSARIO.map(g => `<article class="${termo === g.t ? 'ancora' : ''}" ${termo === g.t ? 'id="termo"' : ''}>
+        <dt>${esc(g.t)}</dt><dd>${esc(g.d)}</dd></article>`).join('')}
+    </dl>
+  </section>
+  ${termo ? `<script>addEventListener('load',()=>document.getElementById('termo')?.scrollIntoView({block:'center'}))<\/script>` : ''}`;
+}
+
+function paginaReferencias(){
+  return `
+  <section style="padding:2.5rem 0">
+    <h1 style="font-size:2rem">Referências bibliográficas</h1>
+    <p class="lede">Base de consulta da dissertação, na grafia original. A obra completa está disponível no repositório da UnB.</p>
+    <div class="refs">${REFERENCIAS.map(r => `<p>${esc(r)}</p>`).join('')}</div>
+    <hr class="divider">
+    <p class="faint">Pietragalla, E. <em>A importância da forma para os projetos de design: reconhecimento, conceitos e diálogos transdisciplinares</em>. Dissertação (Mestrado em Design) — Universidade de Brasília, Brasília, 2016. 85 p. Orientadora: Profa. Dra. Fátima Aparecida dos Santos.</p>
+  </section>`;
+}
+
+function paginaSobre(){
+  return `
+  <section class="prosa" style="padding:2.5rem 0">
+    <h1 style="font-size:2rem">Sobre este site</h1>
+    <p>Este é um site informativo de alta densidade derivado de uma dissertação de mestrado. Cada verbete resume, com fidelidade ao texto, um conceito de forma ou uma relação com o design, sempre indicando a origem (capítulo e seção) e explicitando os limites do conceito.</p>
+    <h2>Como navegar</h2>
+    <p>Use a <strong>busca</strong> (botão no topo ou a tecla <span class="mono">/</span>) para consultas diretas; os <strong>filtros</strong> na lista de conceitos refinam por área e tipo; o <strong>mapa</strong> mostra o grafo de relações; os <strong>wikilinks</strong> nos textos conectam os verbetes ao glossário.</p>
+    <h2>A dissertação</h2>
+    <p>Pietragalla percorre a forma na filosofia (Platão a Flusser), na matemática, física, química, biologia, música e arte, para então analisar suas relações com linguagem, simetria, estética, estrutura, função, informação e affordance — e exemplificar com Escher e o método de Rowena Reed Kostellow. A conclusão: a forma no design depende do problema proposto e busca, em cada contexto, métodos, ferramentas e requisitos apropriados — sob um olhar prático e poético do designer.</p>
+    <h2>Nota de fidelidade</h2>
+    <p>Este site é uma síntese didática, não substitui a leitura da obra original. Citações longas foram preservadas entre aspas com indicação de fonte.</p>
+  </section>`;
+}
+
+/* ================================================================
+   ROTEADOR
+   ================================================================ */
+function rota(){
+  const hash = location.hash.replace(/^#\/?/, '');
+  const [caminhoRaw, queryRaw] = hash.split('?');
+  const caminho = caminhoRaw || '';
+  const params = new URLSearchParams(queryRaw || '');
+  const main = $('#conteudo');
+  let html = '', titulo = 'FORMA — a forma no design';
+  let nav = '';
+
+  if(caminho === ''){ html = paginaHome(); }
+  else if(caminho === 'conceitos'){ html = paginaLista(params); nav = 'conceitos'; titulo = 'Conceitos e relações — FORMA'; }
+  else if(caminho.startsWith('verbete/')){
+    const v = porSlug[caminho.slice(8)];
+    if(v){ html = paginaVerbete(v); nav = 'conceitos'; titulo = v.nome + ' — FORMA'; }
+    else { html = `<p style="padding:3rem 0">Verbete não encontrado. <a href="#/conceitos">Ver todos</a>.</p>`; }
+  }
+  else if(caminho === 'grafo'){
+    html = `<section style="padding:2.5rem 0 1rem"><h1 style="font-size:2rem">Mapa de relações</h1>
+      <p class="lede">O grafo cruza os relacionados de cada verbete: a transdisciplinaridade da forma, desenhada.</p><div id="grafo"></div></section>`;
+    nav = 'grafo'; titulo = 'Mapa — FORMA';
+  }
+  else if(caminho === 'glossario'){ html = paginaGlossario(params); nav = 'glossario'; titulo = 'Glossário — FORMA'; }
+  else if(caminho === 'referencias'){ html = paginaReferencias(); nav = 'referencias'; titulo = 'Referências — FORMA'; }
+  else if(caminho === 'sobre'){ html = paginaSobre(); nav = 'sobre'; titulo = 'Sobre — FORMA'; }
+  else { html = `<p style="padding:3rem 0">Página não encontrada. <a href="#/">Voltar ao início</a>.</p>`; }
+
+  main.innerHTML = html;
+  document.title = titulo;
+  document.querySelectorAll('[data-nav]').forEach(a => {
+    if(a.dataset.nav === nav) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current');
+  });
+  if(caminho === 'grafo') renderGrafo($('#grafo'));
+  main.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
+    const p = new URLSearchParams(location.hash.split('?')[1] || '');
+    const [k, val] = c.dataset.f.split('=');
+    p.set(k, val);
+    location.hash = '#/conceitos?' + p.toString();
+  }));
+  window.scrollTo(0, 0);
+  main.focus({ preventScroll: true });
+}
+
+addEventListener('hashchange', rota);
+iniciarTema();
+iniciarBusca();
+rota();
+</script>
+</body>
+</html>
