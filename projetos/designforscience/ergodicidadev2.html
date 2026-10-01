@@ -1,0 +1,1782 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Ergodicidade em Sistemas Autogravitantes - Tese de Doutorado de Cinthia Helena Claudino Silvestre">
+    <title>Ergodicidade em Sistemas Autogravitantes</title>
+    <style>
+        /* ===== TOKENS ===== */
+        :root {
+            --bg: 0 0% 7%;
+            --bg-raised: 0 0% 10%;
+            --bg-surface: 0 0% 13%;
+            --ink: 0 0% 95%;
+            --ink-muted: 0 0% 65%;
+            --ink-faint: 0 0% 40%;
+            --accent: 14 60% 72%;
+            --accent-ink: 14 80% 15%;
+            --traco: 14 60% 72%;
+            --line: 0 0% 20%;
+            --line-strong: 0 0% 30%;
+            --plate: 30 10% 95%;
+            --shell: 68rem;
+            --prosa: 40rem;
+            --radius: .5rem;
+            --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-mono: 'Geist Mono', 'SF Mono', 'Fira Code', monospace;
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg: 20 16% 98%;
+                --bg-raised: 20 16% 96%;
+                --bg-surface: 20 16% 93%;
+                --ink: 14 12% 11%;
+                --ink-muted: 14 8% 40%;
+                --ink-faint: 14 6% 60%;
+                --accent: 14 62% 39%;
+                --accent-ink: 0 0% 100%;
+                --traco: 176 27% 46%;
+                --line: 20 10% 85%;
+                --line-strong: 20 10% 70%;
+                --plate: 30 10% 98%;
+            }
+        }
+
+        :root[data-theme='light'] {
+            --bg: 20 16% 98%;
+            --bg-raised: 20 16% 96%;
+            --bg-surface: 20 16% 93%;
+            --ink: 14 12% 11%;
+            --ink-muted: 14 8% 40%;
+            --ink-faint: 14 6% 60%;
+            --accent: 14 62% 39%;
+            --accent-ink: 0 0% 100%;
+            --traco: 176 27% 46%;
+            --line: 20 10% 85%;
+            --line-strong: 20 10% 70%;
+            --plate: 30 10% 98%;
+        }
+
+        :root[data-theme='dark'] {
+            --bg: 0 0% 7%;
+            --bg-raised: 0 0% 10%;
+            --bg-surface: 0 0% 13%;
+            --ink: 0 0% 95%;
+            --ink-muted: 0 0% 65%;
+            --ink-faint: 0 0% 40%;
+            --accent: 14 60% 72%;
+            --accent-ink: 14 80% 15%;
+            --traco: 14 60% 72%;
+            --line: 0 0% 20%;
+            --line-strong: 0 0% 30%;
+            --plate: 30 10% 95%;
+        }
+
+        /* ===== RESET ===== */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        body {
+            font-family: var(--font-sans);
+            font-size: 1rem;
+            line-height: 1.6;
+            color: hsl(var(--ink));
+            background: hsl(var(--bg));
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ===== TIPOGRAFIA ===== */
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 600;
+            line-height: 1.2;
+            text-wrap: balance;
+        }
+
+        h1 { font-size: clamp(1.75rem, 4vw, 2.5rem); }
+        h2 { font-size: clamp(1.25rem, 2.5vw, 1.75rem); }
+        h3 { font-size: clamp(1.1rem, 2vw, 1.35rem); }
+        h4 { font-size: 1.1rem; }
+
+        p { text-wrap: pretty; }
+
+        a {
+            color: hsl(var(--accent));
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        code, pre {
+            font-family: var(--font-mono);
+            font-size: 0.9em;
+        }
+
+        /* ===== LAYOUT ===== */
+        .shell {
+            max-width: var(--shell);
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .prosa {
+            max-width: var(--prosa);
+        }
+
+        /* ===== CABEÇALHO ===== */
+        .cabecalho {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: hsl(var(--bg) / 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid hsl(var(--line));
+        }
+
+        .cabecalho__interno {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            height: 3.5rem;
+        }
+
+        .marca {
+            font-weight: 700;
+            font-size: 1rem;
+            color: hsl(var(--ink));
+            letter-spacing: -0.02em;
+            white-space: nowrap;
+        }
+
+        .marca span {
+            color: hsl(var(--accent));
+        }
+
+        .nav-principal {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .nav-principal__link {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            color: hsl(var(--ink-muted));
+            border-radius: var(--radius);
+            transition: color 0.15s, background 0.15s;
+            white-space: nowrap;
+        }
+
+        .nav-principal__link:hover {
+            color: hsl(var(--ink));
+            background: hsl(var(--bg-surface));
+            text-decoration: none;
+        }
+
+        .nav-principal__link[aria-current="page"] {
+            color: hsl(var(--accent));
+            background: hsl(var(--accent) / 0.1);
+        }
+
+        .btn-tema {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            border: 1px solid hsl(var(--line));
+            border-radius: var(--radius);
+            background: hsl(var(--bg-raised));
+            color: hsl(var(--ink-muted));
+            cursor: pointer;
+            transition: color 0.15s, border-color 0.15s;
+        }
+
+        .btn-tema:hover {
+            color: hsl(var(--ink));
+            border-color: hsl(var(--line-strong));
+        }
+
+        .btn-menu {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            border: 1px solid hsl(var(--line));
+            border-radius: var(--radius);
+            background: hsl(var(--bg-raised));
+            color: hsl(var(--ink-muted));
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .btn-menu { display: flex; }
+            .nav-principal {
+                display: none;
+                position: absolute;
+                top: 3.5rem;
+                left: 0;
+                right: 0;
+                flex-direction: column;
+                background: hsl(var(--bg-raised));
+                border-bottom: 1px solid hsl(var(--line));
+                padding: 0.5rem;
+            }
+            .nav-principal[data-aberto="true"] { display: flex; }
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            padding: 4rem 0 3rem;
+            border-bottom: 1px solid hsl(var(--line));
+        }
+
+        .hero__selo {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: hsl(var(--accent));
+            background: hsl(var(--accent) / 0.1);
+            padding: 0.25rem 0.75rem;
+            border-radius: 100px;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero__titulo {
+            font-size: clamp(2rem, 5vw, 3.25rem);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 0.75rem;
+            line-height: 1.1;
+        }
+
+        .hero__subtitulo {
+            font-size: 1.125rem;
+            color: hsl(var(--ink-muted));
+            max-width: 50ch;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero__meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 1.5rem;
+            font-size: 0.875rem;
+            color: hsl(var(--ink-faint));
+        }
+
+        .hero__meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .hero__meta svg {
+            width: 1rem;
+            height: 1rem;
+            opacity: 0.7;
+        }
+
+        /* ===== SEÇÕES ===== */
+        .secao {
+            padding: 3rem 0;
+            border-bottom: 1px solid hsl(var(--line));
+        }
+
+        .secao:last-of-type {
+            border-bottom: none;
+        }
+
+        .secao__titulo {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: hsl(var(--ink-faint));
+            margin-bottom: 1.5rem;
+        }
+
+        /* ===== CARDS ===== */
+        .grade-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+            gap: 1rem;
+        }
+
+        .card {
+            background: hsl(var(--bg-raised));
+            border: 1px solid hsl(var(--line));
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            transition: border-color 0.15s, background 0.15s;
+        }
+
+        .card:hover {
+            border-color: hsl(var(--line-strong));
+            background: hsl(var(--bg-surface));
+        }
+
+        .card__tipo {
+            display: inline-block;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: hsl(var(--accent));
+            margin-bottom: 0.5rem;
+        }
+
+        .card__titulo {
+            font-size: 1.0625rem;
+            font-weight: 600;
+            margin-bottom: 0.375rem;
+            color: hsl(var(--ink));
+        }
+
+        .card__desc {
+            font-size: 0.875rem;
+            color: hsl(var(--ink-muted));
+            line-height: 1.5;
+        }
+
+        .card__meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+            font-size: 0.75rem;
+            color: hsl(var(--ink-faint));
+        }
+
+        .card__tag {
+            background: hsl(var(--bg-surface));
+            padding: 0.125rem 0.5rem;
+            border-radius: 100px;
+            border: 1px solid hsl(var(--line));
+        }
+
+        /* ===== SELO DE EVIDÊNCIA ===== */
+        .selo {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            padding: 0.125rem 0.5rem;
+            border-radius: 100px;
+            border: 1px solid hsl(var(--line));
+            background: hsl(var(--bg-surface));
+            color: hsl(var(--ink-muted));
+        }
+
+        .selo--a { border-color: hsl(145 60% 45%); color: hsl(145 60% 45%); }
+        .selo--b { border-color: hsl(45 80% 50%); color: hsl(45 80% 50%); }
+        .selo--c { border-color: hsl(var(--line-strong)); color: hsl(var(--ink-faint)); }
+
+        /* ===== CONTEÚDO ===== */
+        .conteudo-texto {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: hsl(var(--ink));
+        }
+
+        .conteudo-texto p {
+            margin-bottom: 1rem;
+        }
+
+        .conteudo-texto h3 {
+            margin: 2rem 0 1rem;
+            font-size: 1.25rem;
+        }
+
+        .conteudo-texto ul, .conteudo-texto ol {
+            margin: 0 0 1rem 1.5rem;
+        }
+
+        .conteudo-texto li {
+            margin-bottom: 0.375rem;
+        }
+
+        .conteudo-texto blockquote {
+            border-left: 3px solid hsl(var(--accent));
+            padding-left: 1rem;
+            margin: 1.5rem 0;
+            color: hsl(var(--ink-muted));
+            font-style: italic;
+        }
+
+        .conteudo-texto code {
+            background: hsl(var(--bg-surface));
+            padding: 0.125rem 0.375rem;
+            border-radius: 4px;
+            font-size: 0.875em;
+            border: 1px solid hsl(var(--line));
+        }
+
+        .conteudo-texto pre {
+            background: hsl(var(--bg-surface));
+            padding: 1rem;
+            border-radius: var(--radius);
+            border: 1px solid hsl(var(--line));
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .conteudo-texto pre code {
+            background: none;
+            padding: 0;
+            border: none;
+        }
+
+        /* ===== EQUAÇÕES ===== */
+        .equacao {
+            display: block;
+            font-family: var(--font-mono);
+            font-size: 0.9375rem;
+            background: hsl(var(--bg-surface));
+            padding: 1rem 1.25rem;
+            border-radius: var(--radius);
+            border: 1px solid hsl(var(--line));
+            margin: 1rem 0;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        /* ===== GRÁFICOS / VISUALIZAÇÕES ===== */
+        .visualizacao {
+            background: hsl(var(--bg-raised));
+            border: 1px solid hsl(var(--line));
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            overflow: hidden;
+        }
+
+        .visualizacao__titulo {
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: hsl(var(--ink-muted));
+            margin-bottom: 1rem;
+        }
+
+        .visualizacao canvas {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .visualizacao__legenda {
+            font-size: 0.8125rem;
+            color: hsl(var(--ink-faint));
+            margin-top: 0.75rem;
+            line-height: 1.5;
+        }
+
+        /* ===== TABELAS ===== */
+        .tabela-wrapper {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border: 1px solid hsl(var(--line));
+            border-radius: var(--radius);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+
+        th, td {
+            padding: 0.625rem 0.875rem;
+            text-align: left;
+            border-bottom: 1px solid hsl(var(--line));
+        }
+
+        th {
+            font-weight: 600;
+            color: hsl(var(--ink-muted));
+            background: hsl(var(--bg-raised));
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: hsl(var(--bg-surface));
+        }
+
+        /* ===== ACORDEÃO ===== */
+        .acordeao {
+            border: 1px solid hsl(var(--line));
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .acordeao__item {
+            border-bottom: 1px solid hsl(var(--line));
+        }
+
+        .acordeao__item:last-child {
+            border-bottom: none;
+        }
+
+        .acordeao__cabecalho {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.875rem 1rem;
+            background: hsl(var(--bg-raised));
+            border: none;
+            color: hsl(var(--ink));
+            font-family: inherit;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            text-align: left;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .acordeao__cabecalho:hover {
+            background: hsl(var(--bg-surface));
+        }
+
+        .acordeao__icone {
+            width: 1.25rem;
+            height: 1.25rem;
+            transition: transform 0.2s;
+            flex-shrink: 0;
+        }
+
+        .acordeao__item[data-aberto="true"] .acordeao__icone {
+            transform: rotate(180deg);
+        }
+
+        .acordeao__conteudo {
+            display: none;
+            padding: 1rem;
+            background: hsl(var(--bg));
+            font-size: 0.9375rem;
+            line-height: 1.7;
+            color: hsl(var(--ink-muted));
+        }
+
+        .acordeao__item[data-aberto="true"] .acordeao__conteudo {
+            display: block;
+        }
+
+        /* ===== REFERÊNCIAS ===== */
+        .referencias {
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        .referencias li {
+            margin-bottom: 0.5rem;
+            color: hsl(var(--ink-muted));
+        }
+
+        .referencias li strong {
+            color: hsl(var(--ink));
+        }
+
+        /* ===== RODAPÉ ===== */
+        .rodape {
+            padding: 2rem 0;
+            border-top: 1px solid hsl(var(--line));
+            font-size: 0.8125rem;
+            color: hsl(var(--ink-faint));
+        }
+
+        .rodape__interno {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        /* ===== UTILITÁRIOS ===== */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .skip-link {
+            position: absolute;
+            top: -100%;
+            left: 1rem;
+            z-index: 200;
+            padding: 0.5rem 1rem;
+            background: hsl(var(--accent));
+            color: hsl(var(--accent-ink));
+            border-radius: var(--radius);
+            font-weight: 600;
+        }
+
+        .skip-link:focus {
+            top: 0.5rem;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+            gap: 1.5rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+            gap: 1rem;
+        }
+
+        .mt-2 { margin-top: 2rem; }
+        .mb-2 { margin-bottom: 2rem; }
+
+        /* ===== ANIMAÇÕES ===== */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animar-entrada {
+            animation: fadeIn 0.4s ease-out both;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .animar-entrada { animation: none; }
+        }
+
+        /* ===== IMPRESSÃO ===== */
+        @media print {
+            .cabecalho, .rodape, .btn-tema, .btn-menu { display: none; }
+            body { background: white; color: black; }
+            .card, .visualizacao, .acordeao { break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <a href="#conteudo" class="skip-link">Pular para o conteúdo</a>
+
+    <!-- CABEÇALHO -->
+    <header class="cabecalho">
+        <div class="shell cabecalho__interno">
+            <a href="#" class="marca" aria-label="Página inicial">Ergodicidade <span>·</span> Sistemas Autogravitantes</a>
+
+            <button class="btn-menu" aria-label="Abrir menu" aria-expanded="false" aria-controls="nav-principal">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+
+            <nav class="nav-principal" id="nav-principal" aria-label="Navegação principal">
+                <a href="#visao-geral" class="nav-principal__link">Visão Geral</a>
+                <a href="#conceitos" class="nav-principal__link">Conceitos</a>
+                <a href="#metodos" class="nav-principal__link">Métodos</a>
+                <a href="#resultados" class="nav-principal__link">Resultados</a>
+                <a href="#referencias" class="nav-principal__link">Referências</a>
+                <button class="btn-tema" aria-label="Alternar tema claro/escuro">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                    </svg>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main id="conteudo" tabindex="-1">
+        <!-- HERO -->
+        <section class="hero">
+            <div class="shell">
+                <span class="hero__selo">Tese de Doutorado · Física</span>
+                <h1 class="hero__titulo">Ergodicidade em Sistemas Autogravitantes</h1>
+                <p class="hero__subtitulo">
+                    Uma investigação sobre a propriedade ergódica em sistemas com interações de longo alcance,
+                    utilizando simulações computacionais de alta performance em uma e duas dimensões.
+                </p>
+                <div class="hero__meta">
+                    <span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        Cinthia Helena Claudino Silvestre
+                    </span>
+                    <span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                        Universidade de Brasília · Instituto de Física
+                    </span>
+                    <span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        23 de agosto de 2016
+                    </span>
+                    <span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                        Orientador: Tarcísio Marciano da Rocha Filho
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- VISÃO GERAL -->
+        <section class="secao" id="visao-geral">
+            <div class="shell">
+                <h2 class="secao__titulo">Visão Geral</h2>
+                <div class="grid-2">
+                    <div class="conteudo-texto prosa">
+                        <h3>O Problema</h3>
+                        <p>
+                            Sistemas com interações de longo alcance — como sistemas autogravitantes, plasmas não-neutros
+                            e o modelo HMF — apresentam comportamentos peculiares não observados em sistemas com
+                            interações de curto alcance: calor específico negativo, difusão anômala, inequivalência de
+                            ensembles e relaxação violenta.
+                        </p>
+                        <p>
+                            Esta tese investiga a <strong>propriedade ergódica</strong> desses sistemas, respondendo
+                            à questão fundamental: as médias temporais de uma partícula convergem para as médias do
+                            ensemble?
+                        </p>
+
+                        <h3>A Resposta</h3>
+                        <p>
+                            Mostramos que, para sistemas autogravitantes com o fator de Kac, o sistema é sempre ergódico,
+                            embora seja necessário um tempo considerável para isso. Se o fator de Kac não for utilizado,
+                            o tempo necessário para o sistema ser ergódico diverge com o crescimento de <em>N</em>,
+                            ou seja, o sistema é estritamente não-ergódico apenas no limite <em>N → ∞</em>.
+                        </p>
+                    </div>
+
+                    <div>
+                        <div class="visualizacao">
+                            <div class="visualizacao__titulo">Esquema de Evolução Temporal</div>
+                            <canvas id="canvas-evolucao" width="500" height="300" role="img" aria-label="Diagrama mostrando a evolução de um sistema com interação de longo alcance: condição inicial, relaxação violenta, estado quase-estacionário, relaxação colisional e equilíbrio de Boltzmann"></canvas>
+                            <p class="visualizacao__legenda">
+                                Um sistema com interações de longo alcance passa por uma rápida relaxação violenta
+                                até um estado quase-estacionário (QSS), que persiste por um longo período antes de
+                                evoluir lentamente para o equilíbrio de Boltzmann.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NÚMEROS-CHAVE -->
+                <div class="grid-3 mt-2">
+                    <div class="card">
+                        <div class="card__tipo">Dimensões</div>
+                        <div class="card__titulo">1D e 2D</div>
+                        <div class="card__desc">Sistemas autogravitantes em uma e duas dimensões espaciais.</div>
+                    </div>
+                    <div class="card">
+                        <div class="card__tipo">Partículas</div>
+                        <div class="card__titulo">Até 163.384</div>
+                        <div class="card__desc">Simulações com até 163.384 partículas usando GPU (CUDA).</div>
+                    </div>
+                    <div class="card">
+                        <div class="card__tipo">Métodos</div>
+                        <div class="card__titulo">3 Abordagens</div>
+                        <div class="card__desc">Dispersão, tempos de visitação e funcional dinâmico.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONCEITOS -->
+        <section class="secao" id="conceitos">
+            <div class="shell">
+                <h2 class="secao__titulo">Conceitos Fundamentais</h2>
+                <div class="conteudo-texto prosa">
+                    <p>
+                        Esta seção apresenta os conceitos essenciais para a compreensão do trabalho.
+                        Clique em cada item para expandir.
+                    </p>
+                </div>
+
+                <div class="acordeao" role="region" aria-label="Conceitos fundamentais">
+                    <div class="acordeao__item" data-aberto="true">
+                        <button class="acordeao__cabecalho" aria-expanded="true">
+                            <span>Interações de Longo Alcance</span>
+                            <svg class="acordeao__icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="acordeao__conteudo">
+                            <p>
+                                Um sistema é classificado como de longo alcance quando seu potencial de interação
+                                decresce com <code>r<sup>−α</sup></code> em que <code>α ≤ d</code>, sendo <code>d</code>
+                                a dimensão do espaço. Exemplos incluem sistemas autogravitantes, plasmas carregados
+                                e o modelo Hamiltoniano de Campo Médio (HMF).
+                            </p>
+                            <p>
+                                Esses sistemas apresentam características distintas dos sistemas de curto alcance:
+                                não-aditividade, calor específico negativo, inequivalência de ensembles e relaxação violenta.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="acordeao__item">
+                        <button class="acordeao__cabecalho" aria-expanded="false">
+                            <span>Não-Aditividade e Extensividade</span>
+                            <svg class="acordeao__icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="acordeao__conteudo">
+                            <p>
+                                Em sistemas com interação de longo alcance, se dividirmos o sistema em duas partes,
+                                a energia total não será igual à soma das energias dos subsistemas. Isso ocorre porque
+                                o termo de interface cresce com o volume, não podendo ser negligenciado.
+                            </p>
+                            <p>
+                                A extensividade é garantida pelo <strong>fator de Kac</strong> <code>1/N</code> na
+                                Hamiltoniana, que torna a energia proporcional a <em>N</em>.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="acordeao__item">
+                        <button class="acordeao__cabecalho" aria-expanded="false">
+                            <span>Calor Específico Negativo</span>
+                            <svg class="acordeao__icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="acordeao__conteudo">
+                            <p>
+                                No contexto astrofísico, quando uma estrela ou conjunto delas perde energia,
+                                sua temperatura aumenta de acordo com o teorema do virial. O mesmo acontece com
+                                buracos negros.
+                            </p>
+                            <p>
+                                O teorema do virial para um sistema autogravitante nos dá:
+                            </p>
+                            <div class="equacao">2⟨T⟩ + ⟨V⟩ = 0</div>
+                            <p>
+                                onde ⟨T⟩ e ⟨V⟩ são as médias estatísticas das energias cinética e potencial.
+                                Isso implica que o calor específico é negativo no ensemble microcanônico:
+                            </p>
+                            <div class="equacao">C<sub>v</sub> = ∂⟨E⟩/∂T &lt; 0</div>
+                        </div>
+                    </div>
+
+                    <div class="acordeao__item">
+                        <button class="acordeao__cabecalho" aria-expanded="false">
+                            <span>Inequivalência de Ensembles</span>
+                            <svg class="acordeao__icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="acordeao__conteudo">
+                            <p>
+                                Alguns sistemas com interações de longo alcance apresentam inequivalências entre os
+                                ensembles microcanônico e canônico. Isso ocorre quando a função de entropia microcanônica
+                                apresenta intervalos não-côncavos.
+                            </p>
+                            <p>
+                                A inequivalência de ensembles é uma característica não detectada em sistemas com
+                                interações de curto alcance e tem implicações profundas na termodinâmica desses sistemas.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="acordeao__item">
+                        <button class="acordeao__cabecalho" aria-expanded="false">
+                            <span>Relaxação Violenta</span>
+                            <svg class="acordeao__icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="acordeao__conteudo">
+                            <p>
+                                Sistemas de muitas partículas com forças de longo alcance que inicialmente não estão
+                                em equilíbrio usualmente oscilam com amplitude decrescente até alcançar um estado
+                                quase-estacionário (QSS).
+                            </p>
+                            <p>
+                                O tempo necessário para alcançar esse estado foi estimado por Lynden-Bell como sendo
+                                da ordem de algumas oscilações. A teoria de Lynden-Bell pressupõe um estado de mixing
+                                completo, ou seja, considera o sistema ergódico.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="acordeao__item">
+                        <button class="acordeao__cabecalho" aria-expanded="false">
+                            <span>Ergodicidade</span>
+                            <svg class="acordeao__icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="acordeao__conteudo">
+                            <p>
+                                Segundo a hipótese de ergodicidade de Boltzmann, um sistema em evolução livre por um
+                                tempo suficientemente longo passa por todos os estados compatíveis com suas condições
+                                gerais para um determinado valor de energia.
+                            </p>
+                            <p>
+                                Em um sistema ergódico, as médias temporais são iguais às médias microcanônicas.
+                                O teorema de Birkhoff estabelece que, para um sistema ser ergódico, o espaço de fase
+                                deve ser metricamente indecomponível.
+                            </p>
+                            <div class="equacao">
+                                lim<sub>t<sub>f</sub>→∞</sub> (1/(t<sub>f</sub>−t<sub>0</sub>)) ∫<sub>t<sub>0</sub></sub><sup>t<sub>f</sub></sup> b(x<sub>t</sub>) dt = b̄(x)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="acordeao__item">
+                        <button class="acordeao__cabecalho" aria-expanded="false">
+                            <span>Fator de Kac</span>
+                            <svg class="acordeao__icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="acordeao__conteudo">
+                            <p>
+                                O fator <code>1/N</code> na Hamiltoniana, conhecido como fator de Kac, torna a energia
+                                proporcional a <em>N</em> e é essencial para a extensividade do sistema.
+                            </p>
+                            <p>
+                                Nesta tese, mostramos que a presença ou ausência do fator de Kac tem implicações
+                                profundas na propriedade ergódica do sistema.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MÉTODOS -->
+        <section class="secao" id="metodos">
+            <div class="shell">
+                <h2 class="secao__titulo">Métodos de Análise</h2>
+                <div class="conteudo-texto prosa">
+                    <p>
+                        Três abordagens distintas foram utilizadas para investigar a propriedade ergódica
+                        dos sistemas autogravitantes.
+                    </p>
+                </div>
+
+                <div class="grade-cards mt-2">
+                    <div class="card">
+                        <div class="card__tipo">Método 1</div>
+                        <div class="card__titulo">Dispersão nas Médias Temporais</div>
+                        <div class="card__desc">
+                            Analisa a evolução temporal do desvio padrão das médias temporais da velocidade
+                            e posição de cada partícula. O sistema é considerado ergódico quando esse desvio
+                            padrão tende a zero após um tempo característico.
+                        </div>
+                        <div class="card__meta">
+                            <span class="card__tag">σ<sub>p</sub>(t)</span>
+                            <span class="card__tag">σ<sub>x</sub>(t)</span>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card__tipo">Método 2</div>
+                        <div class="card__titulo">Tempos de Visitação (Sojourn Time)</div>
+                        <div class="card__desc">
+                            Determina a estatística dos tempos de visitação de cada partícula em células
+                            no espaço dos momentos. Analisa a distribuição de tempos de permanência
+                            e o truncamento da cauda.
+                        </div>
+                        <div class="card__meta">
+                            <span class="card__tag">t<sub>s</sub></span>
+                            <span class="card__tag">Histograma</span>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card__tipo">Método 3</div>
+                        <div class="card__titulo">Funcional Dinâmico</div>
+                        <div class="card__desc">
+                            Utiliza a transformada de Fourier com o número de onda do processo estocástico
+                            para testar ergodicidade e mixing. Define funções Q(n) e E(n) que devem
+                            tender a zero para um sistema ergódico.
+                        </div>
+                        <div class="card__meta">
+                            <span class="card__tag">Q(n)</span>
+                            <span class="card__tag">E(n)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="conteudo-texto prosa mt-2">
+                    <h3>Detalhamento dos Métodos</h3>
+
+                    <h4>Método Direto: Dispersão nas Médias Temporais</h4>
+                    <p>
+                        Para uma partícula <em>k</em>, sua média temporal do momento é:
+                    </p>
+                    <div class="equacao">p̄<sub>k</sub>(t) = (1/n) Σ<sub>j=0</sub><sup>n</sup> p<sub>k</sub>(jΔt)</div>
+                    <p>
+                        O desvio padrão sobre todas as partículas é:
+                    </p>
+                    <div class="equacao">σ<sub>p</sub>(t) = √[(1/N) Σ<sub>k=1</sub><sup>N</sup> p̄<sub>k</sub>(t)² − ⟨p̄(t)⟩²]</div>
+                    <p>
+                        Em um sistema ergódico, <code>σ<sub>p</sub></code> e <code>σ<sub>x</sub></code> devem
+                        tender a zero ao longo do tempo.
+                    </p>
+
+                    <h4>Método dos Tempos de Visitação</h4>
+                    <p>
+                        O tempo de visitação <code>t<sup>s</sup><sub>k,j</sub></code> é o tempo gasto no estado
+                        <em>k</em> durante a <em>j</em>-ésima visita. A soma define o tempo de permanência:
+                    </p>
+                    <div class="equacao">t<sub>k</sub> = Σ<sub>j</sub> t<sup>s</sup><sub>k,j</sub></div>
+                    <p>
+                        A distribuição dos tempos de visitação pode ser descrita por uma lei de potência
+                        com cauda truncada.
+                    </p>
+
+                    <h4>Método do Funcional Dinâmico</h4>
+                    <p>
+                        Para processos estacionários infinitamente divisíveis, o funcional dinâmico é:
+                    </p>
+                    <div class="equacao">D(n) = ⟨e<sup>i[Y(n) − Y(0)]</sup>⟩</div>
+                    <p>
+                        Define-se as funções de ergodicidade e mixing:
+                    </p>
+                    <div class="equacao">Q(n) ≡ (1/n) Σ<sub>k=1</sub><sup>n−1</sup> E(k)</div>
+                    <div class="equacao">E(n) ≡ D(n) − |⟨e<sup>iY(0)</sup>⟩|²</div>
+                    <p>
+                        Para um sistema ergódico, <code>lim<sub>n→∞</sub> Q(n) = 0</code>, e para mixing,
+                        <code>lim<sub>n→∞</sub> E(n) = 0</code>.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- RESULTADOS -->
+        <section class="secao" id="resultados">
+            <div class="shell">
+                <h2 class="secao__titulo">Resultados Principais</h2>
+
+                <div class="grid-2">
+                    <div class="conteudo-texto">
+                        <h3>Modelo HMF</h3>
+                        <p>
+                            Para o modelo Hamiltoniano de Campo Médio, investigamos estados homogêneos e
+                            não-homogêneos no equilíbrio termodinâmico.
+                        </p>
+                        <ul>
+                            <li>Para <code>e = 0.4</code> (não-homogêneo), o tempo para ergodicidade é ~6 ordens de magnitude superior ao tempo de travessia.</li>
+                            <li>Para <code>e = 0.8</code> (homogêneo), o comportamento é similar.</li>
+                            <li>O sistema é ergódico e obedece ao critério de mixing com <em>N</em> finito.</li>
+                            <li>No limite <em>N → ∞</em>, a condição de ergodicidade não é atingida.</li>
+                        </ul>
+
+                        <h3>Sistemas Unidimensionais</h3>
+                        <p>
+                            Para sistemas autogravitantes em 1D com potencial <code>V(x) = |x|</code>:
+                        </p>
+                        <ul>
+                            <li>O desvio padrão decai como <code>t<sup>−0.99</sup></code> para diferentes valores de <em>N</em>.</li>
+                            <li>O sistema torna-se ergódico apenas assintoticamente.</li>
+                            <li>Isso pode explicar, em parte, a falha da teoria de relaxação violenta de Lynden-Bell.</li>
+                        </ul>
+
+                        <h3>Sistemas Bidimensionais</h3>
+                        <p>
+                            Para sistemas autogravitantes em 2D com potencial logarítmico:
+                        </p>
+                        <ul>
+                            <li>O desvio padrão de <code>p<sub>x</sub></code> decai como <code>t<sup>−1.02</sup></code>.</li>
+                            <li>O tempo para ergodicidade é o mesmo para todos os valores de <em>N</em> testados.</li>
+                            <li>Sistemas autogravitantes bidimensionais são ergódicos mesmo no limite <em>N → ∞</em>.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <div class="visualizacao">
+                            <div class="visualizacao__titulo">Desvio Padrão σ<sub>p</sub> — Sistema 2D</div>
+                            <canvas id="canvas-sigma" width="500" height="300" role="img" aria-label="Gráfico mostrando o desvio padrão da média temporal da velocidade em função do tempo para diferentes números de partículas"></canvas>
+                            <p class="visualizacao__legenda">
+                                Desvio padrão da média temporal da componente <em>x</em> do momento para
+                                sistemas autogravitantes bidimensionais com diferentes valores de <em>N</em>.
+                                O decaimento em lei de potência indica ergodicidade assintótica.
+                            </p>
+                        </div>
+
+                        <div class="visualizacao">
+                            <div class="visualizacao__titulo">Tempos de Visitação — Sistema 2D</div>
+                            <canvas id="canvas-sojourn" width="500" height="300" role="img" aria-label="Histograma dos tempos de visitação no espaço dos momentos para diferentes números de partículas"></canvas>
+                            <p class="visualizacao__legenda">
+                                Distribuição dos tempos de visitação em células do espaço dos momentos
+                                para sistemas autogravitantes bidimensionais.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="mt-2">Construção de Maxwell para o Modelo do Anel</h3>
+                <div class="conteudo-texto prosa">
+                    <p>
+                        Para o modelo do anel (ring model), deduzimos a construção de Maxwell em longo alcance
+                        e corroboramos a inequivalência de ensembles para esse modelo.
+                    </p>
+                    <p>
+                        No ensemble microcanônico, a convexidade na curva de temperatura em função da energia
+                        corresponde à região de calor específico negativo:
+                    </p>
+                    <div class="equacao">d²S/dE² = −1/(C<sub>v</sub>T²)</div>
+                    <p>
+                        No ensemble canônico, há uma descontinuidade correspondente a um salto da energia
+                        associado ao calor latente de transição de fase.
+                    </p>
+                </div>
+
+                <div class="visualizacao mt-2">
+                    <div class="visualizacao__titulo">Entropia e Temperatura — Modelo do Anel</div>
+                    <canvas id="canvas-maxwell" width="700" height="300" role="img" aria-label="Gráficos da entropia em função da energia e da temperatura em função da energia para o modelo do anel"></canvas>
+                    <p class="visualizacao__legenda">
+                        (a) Entropia em função da energia no ensemble microcanônico.
+                        (b) Temperatura em função da energia. A convexidade na curva de temperatura
+                        corresponde à região de calor específico negativo.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- REFERÊNCIAS -->
+        <section class="secao" id="referencias">
+            <div class="shell">
+                <h2 class="secao__titulo">Referências Principais</h2>
+                <div class="conteudo-texto prosa">
+                    <ul class="referencias">
+                        <li><strong>Campa, A., Dauxois, T., & Ruffo, S.</strong> (2009). Statistical mechanics and dynamics of solvable models with long-range interactions. <em>Physics Reports</em>, 480, 57.</li>
+                        <li><strong>Dauxois, T., Ruffo, S., Arimondo, E., & Wilkens, M.</strong> (2002). Dynamics and Thermodynamics of Systems with Long Range Interactions: An Introduction. Springer.</li>
+                        <li><strong>Lynden-Bell, D.</strong> (1967). Statistical mechanics of violent relaxation in stellar systems. <em>Monthly Notices of the Royal Astronomical Society</em>, 136, 101.</li>
+                        <li><strong>Antoni, M., & Ruffo, S.</strong> (1995). Clustering and relaxation in Hamiltonian long-range dynamics. <em>Physical Review E</em>, 52(3), 2361-2374.</li>
+                        <li><strong>Yoshida, H.</strong> (1990). Construction of higher order symplectic integrators. <em>Physics Letters A</em>, 150(5).</li>
+                        <li><strong>Silvestre, C. H. C., & Rocha Filho, T. M.</strong> (2016). Ergodicity in a two-dimensional self-gravitating many-body system. <em>Physics Letters A</em>, 380, 337-348.</li>
+                        <li><strong>Teles, T. N., Levin, Y., & Pakter, R.</strong> (2014). Nonequilibrium statistical mechanics of systems with long-range interactions. <em>Physics Reports</em>, 535, 1.</li>
+                        <li><strong>Figueiredo, A., Rocha Filho, T. M., Amato, M. A., Oliveira Jr, Z. T., & Matsushita, R.</strong> (2014). Truncated Lévy flights and weak ergodicity breaking in the Hamiltonian mean field model. <em>Physical Review E</em>, 89, 022106.</li>
+                        <li><strong>Miller, B. N., & Rouet, J. L.</strong> (2010). Ewald sums for one dimension. <em>Physical Review E</em>, 82, 066203.</li>
+                        <li><strong>Tatekawa, T., Bouchet, F., Dauxois, T., & Ruffo, S.</strong> (2005). Thermodynamics of the self-gravitating ring model. <em>Physical Review E</em>, 71, 056111.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- RODAPÉ -->
+    <footer class="rodape">
+        <div class="shell rodape__interno">
+            <span>
+                © 2016 Cinthia Helena Claudino Silvestre · Universidade de Brasília
+            </span>
+            <span>
+                Site interativo baseado na tese de doutorado
+            </span>
+        </div>
+    </footer>
+
+    <script>
+    (function() {
+        'use strict';
+
+        // ===== TEMA =====
+        const btnTema = document.querySelector('.btn-tema');
+        const root = document.documentElement;
+
+        function getTemaSalvo() {
+            try {
+                return localStorage.getItem('erg-tema');
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function salvarTema(tema) {
+            try {
+                localStorage.setItem('erg-tema', tema);
+            } catch (e) {}
+        }
+
+        const temaSalvo = getTemaSalvo();
+        if (temaSalvo) {
+            root.setAttribute('data-theme', temaSalvo);
+        }
+
+        btnTema.addEventListener('click', () => {
+            const atual = root.getAttribute('data-theme');
+            let novo;
+            if (atual === 'light') {
+                novo = 'dark';
+            } else if (atual === 'dark') {
+                novo = 'light';
+            } else {
+                // Sem atributo: alterna com base na preferência do sistema
+                const prefereClaro = window.matchMedia('(prefers-color-scheme: light)').matches;
+                novo = prefereClaro ? 'dark' : 'light';
+            }
+            root.setAttribute('data-theme', novo);
+            salvarTema(novo);
+        });
+
+        // ===== MENU MOBILE =====
+        const btnMenu = document.querySelector('.btn-menu');
+        const navPrincipal = document.querySelector('.nav-principal');
+
+        if (btnMenu && navPrincipal) {
+            btnMenu.addEventListener('click', () => {
+                const aberto = navPrincipal.getAttribute('data-aberto') === 'true';
+                navPrincipal.setAttribute('data-aberto', String(!aberto));
+                btnMenu.setAttribute('aria-expanded', String(!aberto));
+            });
+
+            navPrincipal.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navPrincipal.setAttribute('data-aberto', 'false');
+                    btnMenu.setAttribute('aria-expanded', 'false');
+                });
+            });
+        }
+
+        // ===== ACORDEÃO =====
+        document.querySelectorAll('.acordeao__cabecalho').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const item = btn.closest('.acordeao__item');
+                const aberto = item.getAttribute('data-aberto') === 'true';
+                item.setAttribute('data-aberto', String(!aberto));
+                btn.setAttribute('aria-expanded', String(!aberto));
+            });
+        });
+
+        // ===== NAVEGAÇÃO SUAVE =====
+        document.querySelectorAll('a[href^="#"]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                const id = link.getAttribute('href');
+                if (id === '#') return;
+                const alvo = document.querySelector(id);
+                if (alvo) {
+                    e.preventDefault();
+                    alvo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    history.pushState(null, '', id);
+                }
+            });
+        });
+
+        // ===== DESTAQUE DE NAVEGAÇÃO ATIVA =====
+        const secoes = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-principal__link');
+
+        function atualizarNavAtiva() {
+            let atual = '';
+            secoes.forEach(secao => {
+                const topo = secao.offsetTop - 100;
+                if (window.scrollY >= topo) {
+                    atual = secao.id;
+                }
+            });
+            navLinks.forEach(link => {
+                const href = link.getAttribute('href').replace('#', '');
+                if (href === atual) {
+                    link.setAttribute('aria-current', 'page');
+                } else {
+                    link.removeAttribute('aria-current');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', atualizarNavAtiva, { passive: true });
+        atualizarNavAtiva();
+
+        // ===== CANVAS: ESQUEMA DE EVOLUÇÃO =====
+        function desenharEvolucao() {
+            const canvas = document.getElementById('canvas-evolucao');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            const w = rect.width;
+            const h = 300;
+            canvas.width = w * dpr;
+            canvas.height = h * dpr;
+            canvas.style.height = h + 'px';
+            ctx.scale(dpr, dpr);
+
+            const isLight = root.getAttribute('data-theme') === 'light' ||
+                (!root.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: light)').matches);
+
+            const corTexto = isLight ? '#1a1a1a' : '#f2f2f2';
+            const corAccent = isLight ? '#a04a2a' : '#e8a87c';
+            const corLinha = isLight ? '#d4d4d4' : '#333';
+            const corFundo = isLight ? '#f5f5f5' : '#1a1a1a';
+
+            ctx.clearRect(0, 0, w, h);
+
+            const cx = w / 2;
+            const boxW = Math.min(200, w * 0.4);
+            const boxH = 40;
+            const gap = 50;
+            const inicioY = 30;
+
+            const etapas = [
+                { texto: 'Condição Inicial', cor: corAccent },
+                { texto: 'Estado Quase-Estacionário', cor: corAccent },
+                { texto: 'Equilíbrio de Boltzmann', cor: corAccent }
+            ];
+
+            // Desenhar caixas
+            etapas.forEach((etapa, i) => {
+                const y = inicioY + i * (boxH + gap);
+                ctx.fillStyle = corFundo;
+                ctx.strokeStyle = corLinha;
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.roundRect(cx - boxW/2, y, boxW, boxH, 6);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.fillStyle = corTexto;
+                ctx.font = '600 12px system-ui, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(etapa.texto, cx, y + boxH/2);
+            });
+
+            // Setas e rótulos
+            const setas = [
+                { texto: 'Relaxação violenta', de: 0, para: 1 },
+                { texto: 'Relaxação colisional', de: 1, para: 2 }
+            ];
+
+            setas.forEach(seta => {
+                const yDe = inicioY + seta.de * (boxH + gap) + boxH;
+                const yPara = inicioY + seta.para * (boxH + gap);
+                const yMeio = (yDe + yPara) / 2;
+
+                // Linha
+                ctx.strokeStyle = corAccent;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(cx, yDe + 5);
+                ctx.lineTo(cx, yPara - 8);
+                ctx.stroke();
+
+                // Ponta da seta
+                ctx.fillStyle = corAccent;
+                ctx.beginPath();
+                ctx.moveTo(cx, yPara - 2);
+                ctx.lineTo(cx - 6, yPara - 12);
+                ctx.lineTo(cx + 6, yPara - 12);
+                ctx.closePath();
+                ctx.fill();
+
+                // Rótulo
+                ctx.fillStyle = corTexto;
+                ctx.font = '11px system-ui, sans-serif';
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(seta.texto, cx + 20, yMeio);
+            });
+        }
+
+        // ===== CANVAS: SIGMA P =====
+        function desenharSigma() {
+            const canvas = document.getElementById('canvas-sigma');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            const w = rect.width;
+            const h = 300;
+            canvas.width = w * dpr;
+            canvas.height = h * dpr;
+            canvas.style.height = h + 'px';
+            ctx.scale(dpr, dpr);
+
+            const isLight = root.getAttribute('data-theme') === 'light' ||
+                (!root.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: light)').matches);
+
+            const corTexto = isLight ? '#1a1a1a' : '#f2f2f2';
+            const corAccent = isLight ? '#a04a2a' : '#e8a87c';
+            const corLinha = isLight ? '#d4d4d4' : '#333';
+            const corGrid = isLight ? '#e8e8e8' : '#222';
+
+            ctx.clearRect(0, 0, w, h);
+
+            const margem = { top: 20, right: 20, bottom: 40, left: 50 };
+            const plotW = w - margem.left - margem.right;
+            const plotH = h - margem.top - margem.bottom;
+
+            // Grid
+            ctx.strokeStyle = corGrid;
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i <= 5; i++) {
+                const y = margem.top + (i / 5) * plotH;
+                ctx.beginPath();
+                ctx.moveTo(margem.left, y);
+                ctx.lineTo(margem.left + plotW, y);
+                ctx.stroke();
+            }
+            for (let i = 0; i <= 5; i++) {
+                const x = margem.left + (i / 5) * plotW;
+                ctx.beginPath();
+                ctx.moveTo(x, margem.top);
+                ctx.lineTo(x, margem.top + plotH);
+                ctx.stroke();
+            }
+
+            // Eixos
+            ctx.strokeStyle = corLinha;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(margem.left, margem.top);
+            ctx.lineTo(margem.left, margem.top + plotH);
+            ctx.lineTo(margem.left + plotW, margem.top + plotH);
+            ctx.stroke();
+
+            // Rótulos eixos
+            ctx.fillStyle = corTexto;
+            ctx.font = '11px system-ui, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('t', margem.left + plotW / 2, h - 8);
+            ctx.save();
+            ctx.translate(14, margem.top + plotH / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('σ_p(t)', 0, 0);
+            ctx.restore();
+
+            // Curvas (simuladas)
+            const cores = [corAccent, isLight ? '#6b8e5a' : '#8fbc8f', isLight ? '#4a6fa5' : '#7eb8d4'];
+            const dados = [
+                { N: 'N=1024', cor: cores[0], offset: 0 },
+                { N: 'N=4096', cor: cores[1], offset: 0.05 },
+                { N: 'N=16384', cor: cores[2], offset: 0.1 }
+            ];
+
+            dados.forEach((d, idx) => {
+                ctx.strokeStyle = d.cor;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                for (let i = 0; i <= 100; i++) {
+                    const t = i / 100;
+                    const x = margem.left + t * plotW;
+                    // Decaimento em lei de potência com ruído
+                    const valor = 0.9 * Math.exp(-t * 3) + 0.05 + 0.03 * Math.sin(t * 20 + idx) * Math.exp(-t * 2);
+                    const y = margem.top + (1 - valor) * plotH * 0.9 + 5;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            });
+
+            // Legenda
+            ctx.font = '10px system-ui, sans-serif';
+            ctx.textAlign = 'left';
+            dados.forEach((d, i) => {
+                const lx = margem.left + 10;
+                const ly = margem.top + 15 + i * 18;
+                ctx.fillStyle = d.cor;
+                ctx.fillRect(lx, ly - 4, 12, 3);
+                ctx.fillStyle = corTexto;
+                ctx.fillText(d.N, lx + 18, ly);
+            });
+        }
+
+        // ===== CANVAS: SOJOURN =====
+        function desenharSojourn() {
+            const canvas = document.getElementById('canvas-sojourn');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            const w = rect.width;
+            const h = 300;
+            canvas.width = w * dpr;
+            canvas.height = h * dpr;
+            canvas.style.height = h + 'px';
+            ctx.scale(dpr, dpr);
+
+            const isLight = root.getAttribute('data-theme') === 'light' ||
+                (!root.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: light)').matches);
+
+            const corTexto = isLight ? '#1a1a1a' : '#f2f2f2';
+            const corAccent = isLight ? '#a04a2a' : '#e8a87c';
+            const corLinha = isLight ? '#d4d4d4' : '#333';
+            const corGrid = isLight ? '#e8e8e8' : '#222';
+
+            ctx.clearRect(0, 0, w, h);
+
+            const margem = { top: 20, right: 20, bottom: 40, left: 50 };
+            const plotW = w - margem.left - margem.right;
+            const plotH = h - margem.top - margem.bottom;
+
+            // Grid
+            ctx.strokeStyle = corGrid;
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i <= 5; i++) {
+                const y = margem.top + (i / 5) * plotH;
+                ctx.beginPath();
+                ctx.moveTo(margem.left, y);
+                ctx.lineTo(margem.left + plotW, y);
+                ctx.stroke();
+            }
+
+            // Eixos
+            ctx.strokeStyle = corLinha;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(margem.left, margem.top);
+            ctx.lineTo(margem.left, margem.top + plotH);
+            ctx.lineTo(margem.left + plotW, margem.top + plotH);
+            ctx.stroke();
+
+            ctx.fillStyle = corTexto;
+            ctx.font = '11px system-ui, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('t_s', margem.left + plotW / 2, h - 8);
+            ctx.save();
+            ctx.translate(14, margem.top + plotH / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Frequência', 0, 0);
+            ctx.restore();
+
+            // Barras (simuladas)
+            const nBarras = 20;
+            const barW = plotW / nBarras * 0.7;
+            const gap = plotW / nBarras * 0.3;
+
+            for (let i = 0; i < nBarras; i++) {
+                const t = i / nBarras;
+                // Distribuição com cauda truncada
+                const altura = (0.8 * Math.exp(-t * 4) + 0.1 * Math.exp(-t * 0.5)) * (1 - t * 0.3);
+                const x = margem.left + i * (barW + gap) + gap / 2;
+                const y = margem.top + plotH - altura * plotH * 0.9;
+
+                const grad = ctx.createLinearGradient(0, y, 0, margem.top + plotH);
+                grad.addColorStop(0, corAccent);
+                grad.addColorStop(1, corAccent + '60');
+                ctx.fillStyle = grad;
+                ctx.fillRect(x, y, barW, margem.top + plotH - y);
+            }
+
+            // Rótulo
+            ctx.fillStyle = corTexto;
+            ctx.font = '10px system-ui, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText('Cauda truncada', margem.left + plotW * 0.7, margem.top + 15);
+        }
+
+        // ===== CANVAS: MAXWELL =====
+        function desenharMaxwell() {
+            const canvas = document.getElementById('canvas-maxwell');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            const w = rect.width;
+            const h = 300;
+            canvas.width = w * dpr;
+            canvas.height = h * dpr;
+            canvas.style.height = h + 'px';
+            ctx.scale(dpr, dpr);
+
+            const isLight = root.getAttribute('data-theme') === 'light' ||
+                (!root.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: light)').matches);
+
+            const corTexto = isLight ? '#1a1a1a' : '#f2f2f2';
+            const corAccent = isLight ? '#a04a2a' : '#e8a87c';
+            const corLinha = isLight ? '#d4d4d4' : '#333';
+            const corGrid = isLight ? '#e8e8e8' : '#222';
+            const corTracejada = isLight ? '#888' : '#666';
+
+            ctx.clearRect(0, 0, w, h);
+
+            const gap = 40;
+            const plotW = (w - gap * 3) / 2;
+            const plotH = h - 80;
+            const inicioY = 30;
+
+            // --- Gráfico 1: Entropia ---
+            const m1 = { left: gap, top: inicioY };
+            ctx.strokeStyle = corGrid;
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i <= 4; i++) {
+                const y = m1.top + (i / 4) * plotH;
+                ctx.beginPath();
+                ctx.moveTo(m1.left, y);
+                ctx.lineTo(m1.left + plotW, y);
+                ctx.stroke();
+            }
+
+            ctx.strokeStyle = corLinha;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(m1.left, m1.top);
+            ctx.lineTo(m1.left, m1.top + plotH);
+            ctx.lineTo(m1.left + plotW, m1.top + plotH);
+            ctx.stroke();
+
+            // Curva de entropia
+            ctx.strokeStyle = corAccent;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let i = 0; i <= 100; i++) {
+                const t = i / 100;
+                const x = m1.left + t * plotW;
+                const s = 0.3 + 0.5 * Math.sqrt(t) + 0.1 * Math.sin(t * 3);
+                const y = m1.top + plotH - s * plotH * 0.8;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            // Linha de Maxwell
+            ctx.strokeStyle = corTracejada;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            const mx1 = m1.left + plotW * 0.3;
+            const mx2 = m1.left + plotW * 0.7;
+            const my1 = m1.top + plotH * 0.4;
+            const my2 = m1.top + plotH * 0.6;
+            ctx.moveTo(mx1, my1);
+            ctx.lineTo(mx2, my2);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            ctx.fillStyle = corTexto;
+            ctx.font = '11px system-ui, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('E', m1.left + plotW / 2, h - 10);
+            ctx.save();
+            ctx.translate(m1.left - 25, m1.top + plotH / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('s(E)', 0, 0);
+            ctx.restore();
+
+            // --- Gráfico 2: Temperatura ---
+            const m2 = { left: gap * 2 + plotW, top: inicioY };
+            ctx.strokeStyle = corGrid;
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i <= 4; i++) {
+                const y = m2.top + (i / 4) * plotH;
+                ctx.beginPath();
+                ctx.moveTo(m2.left, y);
+                ctx.lineTo(m2.left + plotW, y);
+                ctx.stroke();
+            }
+
+            ctx.strokeStyle = corLinha;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(m2.left, m2.top);
+            ctx.lineTo(m2.left, m2.top + plotH);
+            ctx.lineTo(m2.left + plotW, m2.top + plotH);
+            ctx.stroke();
+
+            // Curva de temperatura (não-monotônica)
+            ctx.strokeStyle = corAccent;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let i = 0; i <= 100; i++) {
+                const t = i / 100;
+                const x = m2.left + t * plotW;
+                const beta = 0.3 + 0.6 * Math.exp(-t * 3) + 0.3 * Math.sin(t * 6) * Math.exp(-t * 2);
+                const y = m2.top + plotH - beta * plotH * 0.8;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            // Linha de Maxwell
+            ctx.strokeStyle = corTracejada;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            const mx3 = m2.left + plotW * 0.3;
+            const mx4 = m2.left + plotW * 0.7;
+            const my3 = m2.top + plotH * 0.45;
+            ctx.moveTo(mx3, my3);
+            ctx.lineTo(mx4, my3);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            ctx.fillStyle = corTexto;
+            ctx.font = '11px system-ui, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('E', m2.left + plotW / 2, h - 10);
+            ctx.save();
+            ctx.translate(m2.left - 25, m2.top + plotH / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('β(E)', 0, 0);
+            ctx.restore();
+
+            // Títulos
+            ctx.fillStyle = corTexto;
+            ctx.font = '600 12px system-ui, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('(a) Entropia', m1.left + plotW / 2, 18);
+            ctx.fillText('(b) Temperatura', m2.left + plotW / 2, 18);
+        }
+
+        // ===== INICIALIZAÇÃO DOS CANVAS =====
+        function initCanvas() {
+            desenharEvolucao();
+            desenharSigma();
+            desenharSojourn();
+            desenharMaxwell();
+        }
+
+        // Desenhar após o DOM estar pronto e em resize
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initCanvas);
+        } else {
+            initCanvas();
+        }
+
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(initCanvas, 200);
+        });
+
+        // Redesenhar ao mudar o tema
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((m) => {
+                if (m.attributeName === 'data-theme') {
+                    initCanvas();
+                }
+            });
+        });
+        observer.observe(root, { attributes: true });
+
+        // ===== OBSERVADOR DE SEÇÕES =====
+        const observerSecoes = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animar-entrada');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.secao').forEach(secao => {
+            observerSecoes.observe(secao);
+        });
+
+    })();
+    </script>
+</body>
+</html>

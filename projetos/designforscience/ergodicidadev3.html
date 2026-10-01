@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ergodicidade em sistemas autogravitantes — tese de Cínthia H. C. Silvestre</title>
+<meta name="description" content="Guia interativo da tese de doutorado (UnB, 2016): quando um sistema de partículas que se atraem de longe esquece sua condição inicial? Três métodos, simulações e resultados.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ergodicidade em sistemas autogravitantes">
+<meta property="og:description" content="Guia interativo da tese de doutorado de Cínthia H. C. Silvestre (UnB, 2016).">
+<meta property="og:locale" content="pt_BR">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0d1119">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f7fa">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Thesis","name":"Ergodicidade em sistemas autogravitantes","author":{"@type":"Person","name":"Cínthia Helena Claudino Silvestre"},"inLanguage":"pt-BR","datePublished":"2016-08-23","publisher":{"@type":"CollegeOrUniversity","name":"Universidade de Brasília, Instituto de Física"}}</script>
+<style>
+:root{--bg:222 30% 8%;--raised:222 24% 12%;--ink:220 25% 94%;--muted:220 14% 72%;--accent:214 90% 72%;--warm:38 90% 62%;--line:222 16% 26%;--on:222 30% 8%;color-scheme:dark;--serif:Charter,"Iowan Old Style",Georgia,serif;--sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+@media(prefers-color-scheme:light){:root{--bg:210 25% 97%;--raised:0 0% 100%;--ink:222 40% 10%;--muted:222 14% 32%;--accent:226 78% 40%;--warm:28 90% 30%;--line:214 16% 80%;--on:0 0% 100%;color-scheme:light}}
+:root[data-theme=light]{--bg:210 25% 97%;--raised:0 0% 100%;--ink:222 40% 10%;--muted:222 14% 32%;--accent:226 78% 40%;--warm:28 90% 30%;--line:214 16% 80%;--on:0 0% 100%;color-scheme:light}
+:root[data-theme=dark]{--bg:222 30% 8%;--raised:222 24% 12%;--ink:220 25% 94%;--muted:220 14% 72%;--accent:214 90% 72%;--warm:38 90% 62%;--line:222 16% 26%;--on:222 30% 8%;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:4.5rem;padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:hsl(var(--bg));color:hsl(var(--ink));font:1.0625rem/1.65 var(--serif);padding-bottom:env(safe-area-inset-bottom,0px)}
+a{color:hsl(var(--accent));text-underline-offset:.2em}
+:focus-visible{outline:2px solid hsl(var(--accent));outline-offset:3px}
+.skip{position:absolute;left:-99rem;top:.5rem;background:hsl(var(--accent));color:hsl(var(--on));padding:.5rem 1rem;z-index:9}.skip:focus{left:.5rem}
+.w{max-width:68rem;margin:0 auto;padding:0 1.25rem}
+header.top{position:sticky;top:0;z-index:5;background:hsl(var(--bg));border-bottom:1px solid hsl(var(--line))}
+header.top .w{display:flex;align-items:center;gap:1rem;min-height:3.5rem;font:.9375rem var(--sans)}
+.brand{font:700 1rem var(--serif);color:inherit;text-decoration:none;margin-right:auto}
+nav a{color:hsl(var(--muted));text-decoration:none;margin-left:1rem}nav a:hover{color:hsl(var(--ink))}
+@media(max-width:44rem){nav{display:none}}
+button{font:inherit;font-family:var(--sans);font-size:.9375rem;color:hsl(var(--ink));background:hsl(var(--raised));border:1px solid hsl(var(--line-strong,var(--line)));border-radius:.5rem;padding:.55rem .9rem;min-height:2.75rem;cursor:pointer}
+button[aria-pressed=true],button[aria-selected=true]{background:hsl(var(--accent));color:hsl(var(--on));border-color:hsl(var(--accent));font-weight:700}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:2rem;align-items:center;padding:3.5rem 0 2.5rem}
+@media(max-width:52rem){.hero{grid-template-columns:1fr}}
+h1{font:700 clamp(2.2rem,5.5vw,3.8rem)/1.08 var(--serif);margin:0 0 1rem;letter-spacing:-.01em}
+h2{font:700 1.75rem/1.2 var(--serif);margin:0 0 .75rem}
+h3{font:700 1.125rem/1.3 var(--sans);margin:0 0 .35rem}
+.lead{font-size:1.25rem;color:hsl(var(--muted));max-width:36rem;margin:0 0 1.25rem}
+.meta{font:.9375rem var(--sans);color:hsl(var(--muted))}
+.actions{display:flex;gap:.75rem;flex-wrap:wrap;margin:1.25rem 0}
+.stage{border:1px solid hsl(var(--line));border-radius:.5rem;background:hsl(var(--raised));padding:.5rem}
+canvas{display:block;width:100%;aspect-ratio:1;max-width:100%}
+.cap{font:.9375rem/1.5 var(--sans);color:hsl(var(--muted));margin:.5rem .25rem .25rem}
+section{padding:2.5rem 0;border-top:1px solid hsl(var(--line))}
+.prose{max-width:40rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:1rem;margin-top:1rem}
+.card{border:1px solid hsl(var(--line));border-radius:.5rem;padding:1rem 1.1rem;background:hsl(var(--raised))}
+.card p{margin:.25rem 0 0;font-size:1rem}
+.card .n{font:700 1.6rem var(--serif);color:hsl(var(--accent))}
+.t{background:none;border:0;border-bottom:1px dashed hsl(var(--accent));border-radius:0;padding:0;min-height:0;font:inherit;color:inherit;display:inline;cursor:help}
+[popover]{max-width:min(26rem,90vw);background:hsl(var(--raised));color:hsl(var(--ink));border:1px solid hsl(var(--accent));border-radius:.5rem;padding:1rem 1.25rem;font:1rem/1.55 var(--serif)}
+[popover]::backdrop{background:hsl(var(--bg)/.6)}
+.tabs{display:flex;gap:.5rem;flex-wrap:wrap;margin:1rem 0}
+.panel{border-left:3px solid hsl(var(--accent));padding:.25rem 0 .25rem 1.1rem;max-width:44rem}
+.eq{font:italic 1.2rem var(--serif);margin:.75rem 0;overflow-x:auto;white-space:nowrap}
+.verdict{font:.9375rem var(--sans)}
+.lab{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:1.5rem;margin-top:1rem}
+@media(max-width:52rem){.lab{grid-template-columns:1fr}}
+.ctl{display:grid;gap:.9rem;font:.9375rem var(--sans);align-content:start}
+.ctl label{display:grid;gap:.3rem}
+select{font:inherit;color:inherit;background:hsl(var(--raised));border:1px solid hsl(var(--line));border-radius:.5rem;padding:.55rem;min-height:2.75rem}
+.out{font:700 1.5rem var(--serif);color:hsl(var(--warm))}
+.chips{display:flex;gap:.5rem;flex-wrap:wrap;margin:.5rem 0}
+input[type=search]{font:inherit;font-family:var(--sans);width:100%;max-width:26rem;padding:.65rem .8rem;border-radius:.5rem;border:1px solid hsl(var(--line));background:hsl(var(--raised));color:inherit;min-height:2.75rem}
+ul.idx{list-style:none;margin:1rem 0 0;padding:0}
+ul.idx li{display:grid;grid-template-columns:3.5rem 1fr auto;gap:.25rem 1rem;padding:.8rem 0;border-top:1px solid hsl(var(--line))}
+ul.idx .n{font:700 .9375rem var(--sans);color:hsl(var(--muted))}
+ul.idx p{margin:.15rem 0 0;font-size:1rem;color:hsl(var(--muted))}
+ul.idx .pg{font:.875rem var(--sans);color:hsl(var(--muted));white-space:nowrap}
+.tag{font:.875rem var(--sans);color:hsl(var(--warm));margin-left:.5rem}
+#sal{font:.9375rem var(--sans);color:hsl(var(--muted));min-height:1.5rem}
+footer{border-top:1px solid hsl(var(--line));padding:2rem 0 3rem;font:.9375rem/1.6 var(--sans);color:hsl(var(--muted))}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Pular para o conteúdo</a>
+<header class="top"><div class="w">
+  <a class="brand" href="#topo">Ergodicidade</a>
+  <nav aria-label="Seções"><a href="#metodos">Métodos</a><a href="#lab">Simulação</a><a href="#resultados">Resultados</a><a href="#indice">Índice da tese</a></nav>
+  <button id="tema" type="button" aria-label="Alternar tema claro e escuro">Tema</button>
+</div></header>
+
+<main id="main" tabindex="-1"><div class="w">
+<div class="hero" id="topo">
+  <div>
+    <h1>Quando um sistema autogravitante esquece de onde partiu?</h1>
+    <p class="lead">Guia interativo da tese que testa a <button class="t" data-t="erg">hipótese ergódica</button> em partículas que se atraem a longa distância, em uma e duas dimensões.</p>
+    <p class="meta">Cínthia Helena Claudino Silvestre · orientador Tarcísio Marciano da Rocha Filho · Instituto de Física, Universidade de Brasília · 23 de agosto de 2016 · apoio CAPES</p>
+    <div class="actions"><button type="button" id="rein">Reiniciar a simulação</button><button type="button" id="pausa" aria-pressed="false">Pausar</button></div>
+  </div>
+  <div>
+    <div class="stage"><canvas id="sim" role="img" aria-label="Simulação ao vivo: 150 partículas que se atraem colapsam e formam um núcleo denso com um halo. Uma partícula destacada deixa um rastro."></canvas></div>
+    <p class="cap">150 partículas num potencial logarítmico 2D com fator de Kac. Começam frias e relaxam para um estado quase estacionário. Uma partícula (âmbar) deixa rastro. Ilustração didática, não os dados da tese.</p>
+  </div>
+</div>
+
+<section aria-labelledby="h-res">
+  <h2 id="h-res">A tese em três achados</h2>
+  <div class="grid">
+    <div class="card"><div class="n">Com fator de Kac</div><p>O sistema autogravitante é sempre ergódico, embora o tempo necessário seja considerável (cap. 6).</p></div>
+    <div class="card"><div class="n">Sem fator de Kac</div><p>O tempo para a ergodicidade diverge com o crescimento de N; só no limite N → ∞ o sistema é estritamente não ergódico.</p></div>
+    <div class="card"><div class="n">Construção de Maxwell</div><p>Deduzida para o modelo do anel, o que corrobora a <button class="t" data-t="ineq">inequivalência de ensembles</button>.</p></div>
+  </div>
+</section>
+
+<section id="metodos" aria-labelledby="h-met">
+  <h2 id="h-met">Três maneiras de medir ergodicidade</h2>
+  <p class="prose">Um sistema é ergódico quando a média temporal de cada partícula coincide com a média sobre o conjunto de partículas. A tese ataca isso por três caminhos (seção 3.6).</p>
+  <div class="tabs" role="tablist" aria-label="Métodos"></div>
+  <div class="panel" id="painel" role="tabpanel" tabindex="0"></div>
+</section>
+
+<section id="lab" aria-labelledby="h-lab">
+  <h2 id="h-lab">Teste o método direto você mesmo</h2>
+  <p class="prose">Simulação de folhas gravitantes em 1D, calculada no seu navegador. O gráfico mostra σp(t), a dispersão, entre as partículas, da média temporal do momento. Se cai como 1/t, o sistema se torna ergódico no momento.</p>
+  <div class="lab">
+    <div class="stage"><canvas id="plot" style="aspect-ratio:16/10" role="img" aria-label="Gráfico log-log de σp em função do tempo, descendo com inclinação próxima de menos um."></canvas></div>
+    <div class="ctl">
+      <label>Número de partículas N<select id="nN"><option>256</option><option selected>1024</option><option>2048</option></select></label>
+      <label>Momento inicial p₀<select id="p0"><option value="10">10 (quente)</option><option value="3.14" selected>3,14 (perto do virial)</option></select></label>
+      <button type="button" id="rodar">Rodar simulação</button>
+      <p id="sal" role="status">Pronto. Escolha os parâmetros e rode.</p>
+      <p>Inclinação ajustada na cauda: <span class="out" id="slope">—</span></p>
+      <p class="cap" style="margin:0">Na tese, a cauda de σp ajusta-se a t<sup>−0,99</sup> para N = 2048, 4096 e 8192. Este modelo é didático e usa unidades próprias.</p>
+    </div>
+  </div>
+</section>
+
+<section id="resultados" aria-labelledby="h-r2">
+  <h2 id="h-r2">Resultados por sistema</h2>
+  <div class="grid" id="resgrid"></div>
+</section>
+
+<section id="indice" aria-labelledby="h-ind">
+  <h2 id="h-ind">Índice navegável da tese</h2>
+  <p class="prose">Filtre por sistema estudado e por tipo de conteúdo. Páginas são as impressas no PDF.</p>
+  <input type="search" id="q" placeholder="Buscar: Kac, Maxwell, virial…" aria-label="Buscar no índice">
+  <div class="chips" role="group" aria-label="Sistema" id="fsis"></div>
+  <div class="chips" role="group" aria-label="Tipo" id="ftip"></div>
+  <p id="cont" role="status" style="font:.9375rem var(--sans);color:hsl(var(--muted))"></p>
+  <ul class="idx" id="lista"></ul>
+</section>
+
+<section aria-labelledby="h-lim">
+  <h2 id="h-lim">Limites e próximos passos</h2>
+  <div class="prose">
+    <p>O método dos tempos de visitação produziu resultados ambíguos: a cauda da distribuição é curta e exigiria estatística maior, com custo computacional mais alto. Os sistemas autogravitantes em 3D ficam como trabalho futuro, porque o potencial não confinante faz partículas evaporarem.</p>
+  </div>
+</section>
+</div></main>
+
+<footer><div class="w">
+  <p>Site interpretativo construído a partir da tese. O texto de referência é o PDF original. Cite como: SILVESTRE, C. H. C. <em>Ergodicidade em sistemas autogravitantes</em>. Tese (Doutorado em Física), Universidade de Brasília, 2016.</p>
+</div></footer>
+<div id="gl" popover></div>
+
+<script>
+const $=(s,e=document)=>e.querySelector(s),$$=(s,e=document)=>[...e.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const R=document.documentElement,rm=matchMedia('(prefers-reduced-motion: reduce)');
+const col=(n,a)=>`hsl(${getComputedStyle(R).getPropertyValue(n).trim()}${a!=null?' / '+a:''})`;
+const repaint=[];
+/* tema */
+try{const s=localStorage.getItem('sb-tema');if(s)R.dataset.theme=s}catch(e){}
+$('#tema').onclick=()=>{const cur=R.dataset.theme||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');const n=cur==='dark'?'light':'dark';R.dataset.theme=n;try{localStorage.setItem('sb-tema',n)}catch(e){}repaint.forEach(f=>f())};
+matchMedia('(prefers-color-scheme: light)').addEventListener('change',()=>repaint.forEach(f=>f()));
+/* glossário */
+const GL={erg:['Hipótese ergódica','Um sistema livre, por tempo suficientemente longo, passa por todos os estados compatíveis com sua energia. A média temporal se aproxima da média sobre o conjunto de partículas.'],
+ineq:['Inequivalência de ensembles','Em sistemas de longo alcance, os ensembles canônico e microcanônico podem dar descrições termodinâmicas diferentes.'],
+kac:['Fator de Kac','Divisão do potencial por N, que torna a energia extensiva (embora não aditiva) e reescala o tempo.'],
+qss:['Estado quase estacionário (QSS)','Estado que o sistema alcança após a relaxação violenta e no qual permanece por um tempo que diverge com N.'],
+mix:['Mixing','Critério mais forte que a ergodicidade: toda ergodicidade é compatível com não haver mixing, mas o mixing implica ergodicidade.']};
+document.addEventListener('click',e=>{const b=e.target.closest('.t');if(!b)return;const g=GL[b.dataset.t];$('#gl').innerHTML=`<h3>${esc(g[0])}</h3><p style="margin:0">${esc(g[1])}</p>`;$('#gl').showPopover()});
+/* métodos */
+const MET=[
+{id:'dir',nome:'Método direto',eq:'σp(t) = √( ⟨p̄k(t)²⟩ − ⟨p̄k(t)⟩² )   →   σp ∝ t^(µ/2 − 1)',sec:'3.6.1, p. 51',
+ txt:'Calcula-se a média temporal do momento de cada partícula e, depois, o desvio padrão dessas médias entre as N partículas. Em sistema ergódico, ele tende a zero. Com difusão anômala de expoente µ < 2, o sistema é sempre ergódico no momento, mas o tempo de observação pode ser muito longo quando µ está perto de 2.',
+ v:'Veredito da tese: ferramenta importante para os autogravitantes.'},
+{id:'soj',nome:'Tempos de visitação',eq:'t_k = Σ_j t^s_{k,j}   (tempo total na célula k)',sec:'3.6.2, p. 53',
+ txt:'Divide-se o espaço dos momentos em células e estuda-se a estatística do tempo que cada partícula passa em cada uma (sojourn time). Classifica o sistema como fortemente não ergódico, quando uma região é inacessível, ou fracamente, quando todas são acessíveis com probabilidades diferentes.',
+ v:'Veredito da tese: resultados ambíguos; a cauda curta pede mais estatística e mais custo computacional.'},
+{id:'fun',nome:'Funcional dinâmico',eq:'D(n) = ⟨ e^{i[Y(n) − Y(0)]} ⟩',sec:'3.6.3, p. 55',
+ txt:'Usa a transformada de Fourier do processo estocástico Y(n). Para um sistema ergódico, a média do funcional ao longo do tempo converge para |⟨e^{iY}⟩|², a condição que expressa média temporal igual à média do ensemble.',
+ v:'Veredito da tese: ferramenta importante para os autogravitantes.'}];
+const tl=$('.tabs'),pn=$('#painel');
+function mostra(i){$$('.tabs button').forEach((b,j)=>{b.setAttribute('aria-selected',j===i);b.tabIndex=j===i?0:-1});const m=MET[i];pn.innerHTML=`<h3>${esc(m.nome)} <span class="tag">seção ${esc(m.sec)}</span></h3><p class="eq">${esc(m.eq)}</p><p>${esc(m.txt)}</p><p class="verdict"><strong>${esc(m.v)}</strong></p>`;pn.setAttribute('aria-labelledby','tab'+i)}
+MET.forEach((m,i)=>{const b=document.createElement('button');b.type='button';b.role='tab';b.id='tab'+i;b.textContent=m.nome;b.onclick=()=>mostra(i);b.onkeydown=e=>{const k={ArrowRight:1,ArrowLeft:-1}[e.key];if(k){const n=(i+k+MET.length)%MET.length;mostra(n);$('#tab'+n).focus()}};tl.append(b)});mostra(0);
+/* resultados */
+const RES=[
+['Anel (Maxwell)','Construção de Maxwell deduzida para longo alcance; inequivalência de ensembles corroborada. Simulações Monte Carlo com N = 5000 no canônico e energias em [−0,99; 0,2] (seção 5.1).'],
+['HMF (comparação)','Estado homogêneo (e = 0,8) e não homogêneo (e = 0,4). Ergódico e com mixing só para N finito, pois o tempo diverge com N (seção 5.2).'],
+['Autogravitante 1D','N = 2048, 4096 e 8192; cauda de σp ≈ 26 × t^−0,99, independente de N. Ergodicidade só assintótica, o que ajuda a explicar a falha da teoria de Lynden-Bell, que pressupõe mixing completo (seção 5.3).'],
+['Autogravitante 2D','N = 1024, 4096 e 16384; tempo de travessia ≈ 200, com núcleo e halo de extensão ≈ 200. σp ∝ 1/t e independente de N com fator de Kac; sem ele, o tempo diverge com √N (seção 5.4).']];
+$('#resgrid').innerHTML=RES.map(r=>`<div class="card"><h3>${esc(r[0])}</h3><p>${esc(r[1])}</p></div>`).join('');
+/* índice */
+const IDX=[
+[1,'Introdução',17,'geral','conceito','Definição de longo alcance (decai como r^−α com α ≤ d), relaxação violenta e a hipótese de Boltzmann.'],
+[2.1,'Interações de longo alcance: visão geral',21,'geral','conceito','Plasmas, autogravitantes e HMF; limites N → ∞ e t → ∞ não comutam.'],
+[2.2,'Propriedades: não aditividade, calor específico negativo, inequivalência',25,'geral','conceito','Comportamentos sem análogo em interações de curto alcance.'],
+[3.1,'Espaço de fase',31,'geral','conceito','Base para os teoremas e para o estudo da dinâmica.'],
+[3.2,'Estado quase estacionário (QSS)',32,'geral','conceito','Tempo de vida diverge com N.'],
+[3.3,'Relaxação violenta',33,'geral','conceito','Teoria de Lynden-Bell (1967) e suas limitações.'],
+[3.4,'Teorema do virial',36,'geral','conceito','Condição de virialização usada ao escolher p₀ nas simulações 1D.'],
+[3.5,'Teorema de Liouville',39,'geral','conceito','O volume no espaço de fase é invariante sob transformação canônica (J = ±1).'],
+[3.6,'Ergodicidade',41,'geral','conceito','Hipótese de Boltzmann e Maxwell; ergodicidade e mixing.'],
+['3.6.1','Método direto: dispersão das médias temporais',51,'geral','método','σp(t) e relação com difusão anômala.'],
+['3.6.2','Método sojourn time',53,'geral','método','Estatística dos tempos de visitação em células do espaço dos momentos.'],
+['3.6.3','Método do funcional dinâmico',55,'geral','método','Transformada de Fourier do processo estocástico.'],
+['4.1.1','Soma de Ewald em 1D',58,'1d','método','Usada nas simulações dos autogravitantes unidimensionais.'],
+['4.1.2','Modelo do anel',59,'anel','conceito','Potencial regularizado por ε; com ε grande reduz-se ao HMF.'],
+[4.2,'Método Monte Carlo',61,'anel','método','Ensembles microcanônico e canônico do anel.'],
+['4.3.1','Integrador simplético',62,'2d','método','Integrador de Yoshida usado no sistema 2D.'],
+[5.1,'Construção de Maxwell no modelo do anel',67,'anel','resultado','Dedução em longo alcance e inequivalência de ensembles.'],
+[5.2,'Ergodicidade no modelo HMF',74,'hmf','resultado','Ergódico e mixing apenas para N finito.'],
+[5.3,'Ergodicidade em sistemas 1D',79,'1d','resultado','Três métodos; σp ≈ t^−0,99.'],
+[5.4,'Ergodicidade em sistemas 2D',91,'2d','resultado','Três métodos; escala de tempo independente de N com fator de Kac.'],
+[6,'Conclusão',99,'geral','resultado','Resumo dos resultados e perspectivas.'],
+['A','Apêndice: algoritmos numéricos',101,'geral','método','Integrador simplético e Monte Carlo (código-fonte).']];
+const SIS={todos:'Todos',geral:'Geral',hmf:'HMF',anel:'Anel','1d':'1D','2d':'2D'},TIP={todos:'Todos',conceito:'Conceito','método':'Método',resultado:'Resultado'};
+const st={s:'todos',t:'todos',q:''};
+const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+function chips(el,obj,k){el.innerHTML='';for(const v in obj){const b=document.createElement('button');b.type='button';b.textContent=obj[v];b.setAttribute('aria-pressed',st[k]===v);b.onclick=()=>{st[k]=v;chips(el,obj,k);lista();hash()};el.append(b)}}
+function lista(){const q=norm(st.q);const r=IDX.filter(i=>(st.s==='todos'||i[3]===st.s)&&(st.t==='todos'||i[4]===st.t)&&(!q||norm(i[1]+' '+i[5]).includes(q)));$('#lista').innerHTML=r.map(i=>`<li><span class="n">${esc(i[0])}</span><div><strong>${esc(i[1])}</strong><span class="tag">${esc(SIS[i[3]])} · ${esc(TIP[i[4]])}</span><p>${esc(i[5])}</p></div><span class="pg">p. ${i[2]}</span></li>`).join('');$('#cont').textContent=r.length?`${r.length} de ${IDX.length} entradas`:'Nenhuma entrada encontrada. Limpe a busca ou escolha "Todos".'}
+function hash(){const p=new URLSearchParams();if(st.s!=='todos')p.set('sistema',st.s);if(st.t!=='todos')p.set('tipo',st.t);if(st.q)p.set('q',st.q);history.replaceState(null,'',p.toString()?'#indice?'+p:'#indice')}
+try{const h=location.hash.split('?')[1];if(h){const p=new URLSearchParams(h);if(SIS[p.get('sistema')])st.s=p.get('sistema');if(TIP[p.get('tipo')])st.t=p.get('tipo');st.q=(p.get('q')||'').slice(0,60);$('#q').value=st.q}}catch(e){}
+$('#q').oninput=e=>{st.q=e.target.value;lista();hash()};chips($('#fsis'),SIS,'s');chips($('#ftip'),TIP,'t');lista();
+
+/* simulação hero: 2D, potencial logarítmico confinante, fator de Kac */
+(function(){const cv=$('#sim'),cx=cv.getContext('2d'),N=150,G=1.2,E2=.0025,dt=.02;let x,y,u,v,ax,ay,tr,t,raf=0,vis=true,pause=false,W;
+function rf(){ax.fill(0);ay.fill(0);for(let i=0;i<N;i++)for(let j=i+1;j<N;j++){const dx=x[i]-x[j],dy=y[i]-y[j],f=-G/N/(dx*dx+dy*dy+E2);ax[i]+=f*dx;ay[i]+=f*dy;ax[j]-=f*dx;ay[j]-=f*dy}}
+function init(){x=new Float64Array(N);y=new Float64Array(N);u=new Float64Array(N);v=new Float64Array(N);ax=new Float64Array(N);ay=new Float64Array(N);tr=[];t=0;for(let i=0;i<N;i++){const a=Math.random()*6.2832,r=.7+.2*Math.random();x[i]=r*Math.cos(a);y[i]=r*Math.sin(a);u[i]=(Math.random()-.5)*.1;v[i]=(Math.random()-.5)*.1}rf()}
+function step(){for(let i=0;i<N;i++){u[i]+=ax[i]*dt/2;v[i]+=ay[i]*dt/2;x[i]+=u[i]*dt;y[i]+=v[i]*dt}rf();for(let i=0;i<N;i++){u[i]+=ax[i]*dt/2;v[i]+=ay[i]*dt/2}t+=dt;tr.push([x[0],y[0]]);if(tr.length>140)tr.shift()}
+function size(){const d=devicePixelRatio||1;W=cv.clientWidth;cv.width=cv.height=Math.round(W*d);cx.setTransform(d,0,0,d,0,0)}
+function draw(){const s=W/3,c=W/2;cx.clearRect(0,0,W,W);cx.fillStyle=col('--accent',.8);for(let i=1;i<N;i++){cx.beginPath();cx.arc(c+x[i]*s,c+y[i]*s,2,0,6.2832);cx.fill()}cx.strokeStyle=col('--warm',.9);cx.lineWidth=1.5;cx.beginPath();tr.forEach((p,k)=>k?cx.lineTo(c+p[0]*s,c+p[1]*s):cx.moveTo(c+p[0]*s,c+p[1]*s));cx.stroke();cx.fillStyle=col('--warm');cx.beginPath();cx.arc(c+x[0]*s,c+y[0]*s,4,0,6.2832);cx.fill();cx.fillStyle=col('--muted');cx.font='13px '+getComputedStyle(R).getPropertyValue('--sans');cx.fillText('t = '+t.toFixed(1),10,20)}
+function loop(){raf=0;if(!vis||pause)return;step();step();draw();raf=requestAnimationFrame(loop)}
+function go(){if(!raf&&vis&&!pause&&!rm.matches)raf=requestAnimationFrame(loop)}
+function reset(){init();size();if(rm.matches){for(let k=0;k<500;k++)step();draw()}else{draw();go()}}
+new IntersectionObserver(([e])=>{vis=e.isIntersecting;go()}).observe(cv);
+addEventListener('resize',()=>{size();draw()},{passive:true});repaint.push(draw);
+$('#rein').onclick=reset;$('#pausa').onclick=e=>{pause=!pause;e.target.setAttribute('aria-pressed',pause);e.target.textContent=pause?'Retomar':'Pausar';go()};reset()})();
+
+/* laboratório: folhas gravitantes 1D, método direto */
+(function(){const cv=$('#plot'),cx=cv.getContext('2d'),btn=$('#rodar'),sal=$('#sal');let pts=[],raf=0,W,H,tmax=400;
+function size(){const d=devicePixelRatio||1;W=cv.clientWidth;H=cv.clientHeight;cv.width=Math.round(W*d);cv.height=Math.round(H*d);cx.setTransform(d,0,0,d,0,0)}
+function fit(){const L=pts.filter(p=>p[0]>=pts[pts.length-1][0]/10);if(L.length<4)return null;let a=0,b=0,c=0,d=0;const n=L.length;for(const p of L){const lx=Math.log10(p[0]),ly=Math.log10(p[1]);a+=lx;b+=ly;c+=lx*lx;d+=lx*ly}return(n*d-a*b)/(n*c-a*a)}
+function plot(){size();cx.clearRect(0,0,W,H);const m={l:48,r:12,t:12,b:34};cx.font='12px '+getComputedStyle(R).getPropertyValue('--sans');cx.lineWidth=1;
+const X0=-1,X1=Math.log10(tmax);let Y0=-3,Y1=1;if(pts.length>1){Y0=Math.floor(Math.log10(Math.min(...pts.map(p=>p[1])))-.2);Y1=Math.ceil(Math.log10(Math.max(...pts.map(p=>p[1])))+.1)}
+const px=v=>m.l+(v-X0)/(X1-X0)*(W-m.l-m.r),py=v=>H-m.b-(v-Y0)/(Y1-Y0)*(H-m.t-m.b);
+cx.strokeStyle=col('--line');cx.fillStyle=col('--muted');cx.textAlign='center';for(let k=X0;k<=X1;k++){cx.beginPath();cx.moveTo(px(k),m.t);cx.lineTo(px(k),H-m.b);cx.stroke();cx.fillText('10^'+k,px(k),H-14)}
+cx.textAlign='right';for(let k=Y0;k<=Y1;k++){cx.beginPath();cx.moveTo(m.l,py(k));cx.lineTo(W-m.r,py(k));cx.stroke();cx.fillText('10^'+k,m.l-6,py(k)+4)}
+cx.textAlign='left';cx.fillText('tempo t',W-m.r-50,H-m.b-6);cx.fillText('σp',m.l+6,m.t+12);
+if(pts.length>1){const a=pts[pts.length>>1];cx.setLineDash([5,4]);cx.strokeStyle=col('--muted');cx.beginPath();cx.moveTo(px(X0),py(Math.log10(a[1])+Math.log10(a[0])-X0));cx.lineTo(px(X1),py(Math.log10(a[1])+Math.log10(a[0])-X1));cx.stroke();cx.setLineDash([]);cx.fillStyle=col('--muted');cx.fillText('referência ∝ 1/t',px(X0)+8,py(Math.log10(a[1])+Math.log10(a[0])-X0)-6);
+cx.strokeStyle=col('--warm');cx.lineWidth=2;cx.beginPath();pts.forEach((p,k)=>{const X=px(Math.log10(p[0])),Y=py(Math.log10(p[1]));k?cx.lineTo(X,Y):cx.moveTo(X,Y)});cx.stroke()}}
+repaint.push(plot);
+function rodar(){cancelAnimationFrame(raf);const N=+$('#nN').value,p0=+$('#p0').value,g=1/N,dt=.05,x=new Float64Array(N),p=new Float64Array(N),S=new Float64Array(N),ord=Array.from({length:N},(_,i)=>i),rk=new Int32Array(N);
+for(let i=0;i<N;i++){x[i]=(Math.random()*2-1)*10;p[i]=(Math.random()*2-1)*p0}
+let n=0,next=1;pts=[];btn.disabled=true;
+function force(i){return g*(N-1-2*rk[i])}
+function sort(){for(let a=1;a<N;a++){const k=ord[a];let b=a-1;while(b>=0&&x[ord[b]]>x[k]){ord[b+1]=ord[b];b--}ord[b+1]=k}for(let a=0;a<N;a++)rk[ord[a]]=a}
+sort();
+function frame(){for(let s=0;s<25&&n*dt<tmax;s++){for(let i=0;i<N;i++){p[i]+=force(i)*dt/2;x[i]+=p[i]*dt}sort();for(let i=0;i<N;i++){p[i]+=force(i)*dt/2;S[i]+=p[i]}n++;if(n>=next){let m=0,q=0;for(let i=0;i<N;i++){const b=S[i]/n;m+=b;q+=b*b}m/=N;const sg=Math.sqrt(Math.max(q/N-m*m,1e-30));pts.push([n*dt,sg]);next=Math.ceil(next*1.08)+1}}
+plot();const sl=fit();$('#slope').textContent=sl==null?'—':sl.toFixed(2).replace('.',',');sal.textContent='Calculando… t = '+(n*dt).toFixed(0)+' de '+tmax;
+if(n*dt<tmax)raf=requestAnimationFrame(frame);else{btn.disabled=false;sal.textContent='Concluído: N = '+N+', p₀ = '+p0+'. Expoente ajustado na última década de tempo.'}}
+frame()}
+btn.onclick=rodar;addEventListener('resize',plot,{passive:true});plot()})();
+</script>
+</body>
+</html>
