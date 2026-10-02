@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDI Pro — Plano de Desenvolvimento Individual & Skill Mapping</title>
+<style>
+/* ===== Material Design 3 inspirado ===== */
+:root{
+  --primary:#1b3a5c; --primary-2:#274b73; --accent:#4fc3f7; --success:#2e7d5b;
+  --bg:#f4f6f9; --surface:#ffffff; --surface-2:#eef2f7; --text:#1c2430;
+  --text-2:#5b6b7d; --border:#dfe6ee; --danger:#c0392b; --warning:#b8860b;
+  --chip-hard:#e3f2fd; --chip-soft:#fce4ec; --chip-domain:#e8f5e9;
+  --shadow:0 2px 8px rgba(20,40,70,.08),0 8px 24px rgba(20,40,70,.06);
+  --radius:16px;
+}
+[data-theme="dark"]{
+  --bg:#0f1620; --surface:#1a2432; --surface-2:#223044; --text:#e6edf5;
+  --text-2:#9fb0c3; --border:#2c3a4e; --primary:#3d6ea5; --primary-2:#4d80bb;
+  --chip-hard:#12324a; --chip-soft:#4a1f2c; --chip-domain:#17351f;
+  --shadow:0 2px 10px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);transition:background .3s,color .3s}
+button{font:inherit;cursor:pointer;border:none;border-radius:10px;padding:.55rem 1rem;font-weight:600;transition:.2s}
+.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-2)}
+.btn-ghost{background:transparent;color:var(--text-2);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--surface-2)}
+.btn-danger{background:transparent;color:var(--danger);border:1px solid var(--danger)}
+.btn-accent{background:var(--accent);color:#06283d}
+input,select,textarea{width:100%;padding:.55rem .7rem;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);font:inherit}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:-1px}
+label{font-size:.8rem;font-weight:700;color:var(--text-2);display:block;margin:.6rem 0 .25rem;text-transform:uppercase;letter-spacing:.4px}
+
+/* ===== Layout ===== */
+.app{display:flex;min-height:100vh}
+.sidebar{width:248px;background:var(--primary);color:#e8f0f8;padding:1.4rem 1rem;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:.4rem;flex-shrink:0}
+.sidebar h1{font-size:1.15rem;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.sidebar nav button{display:flex;gap:.7rem;align-items:center;width:100%;text-align:left;background:transparent;color:#c8d8ea;padding:.7rem .9rem;border-radius:12px;font-weight:600}
+.sidebar nav button:hover{background:rgba(255,255,255,.08);color:#fff}
+.sidebar nav button.active{background:var(--accent);color:#06283d}
+.main{flex:1;padding:1.6rem 2rem;max-width:1200px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:1.4rem;flex-wrap:wrap}
+.topbar h2{font-size:1.5rem}
+.topbar .actions{display:flex;gap:.5rem;flex-wrap:wrap}
+.view{display:none;animation:fade .25s}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ===== Cards & grids ===== */
+.card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.3rem;margin-bottom:1.2rem}
+.card h3{font-size:1.05rem;margin-bottom:.9rem;display:flex;align-items:center;gap:.5rem}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+.grid-4{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem}
+.stat{background:var(--surface-2);border-radius:14px;padding:1rem}
+.stat .num{font-size:1.9rem;font-weight:800;color:var(--primary-2)}
+.stat .lbl{font-size:.78rem;color:var(--text-2);text-transform:uppercase;letter-spacing:.5px}
+.progress{height:10px;background:var(--surface-2);border-radius:99px;overflow:hidden;margin-top:.4rem}
+.progress>div{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--success));transition:width .4s}
+.tag{display:inline-block;padding:.15rem .6rem;border-radius:99px;font-size:.72rem;font-weight:700}
+.tag-hard{background:var(--chip-hard);color:#1565c0}.tag-soft{background:var(--chip-soft);color:#ad1457}.tag-domain{background:var(--chip-domain);color:#2e7d32}
+.status-nao{background:#eceff1;color:#546e7a}.status-and{background:#fff3e0;color:#e65100}.status-ok{background:#e8f5e9;color:#2e7d32}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th,td{padding:.6rem .5rem;text-align:left;border-bottom:1px solid var(--border)}
+th{font-size:.75rem;text-transform:uppercase;color:var(--text-2);letter-spacing:.4px}
+.row-actions{display:flex;gap:.3rem}
+.icon-btn{background:transparent;border:1px solid var(--border);border-radius:8px;padding:.3rem .55rem;color:var(--text-2)}
+.icon-btn:hover{background:var(--surface-2);color:var(--text)}
+.icon-btn.del:hover{color:var(--danger);border-color:var(--danger)}
+
+/* ===== Matriz 4x4 ===== */
+.matrix{display:grid;grid-template-columns:110px repeat(4,1fr);gap:6px;margin-top:1rem}
+.mx-head{font-size:.72rem;font-weight:800;text-transform:uppercase;color:var(--text-2);display:flex;align-items:center;justify-content:center;text-align:center;padding:.3rem}
+.mx-rowlbl{writing-mode:vertical-rl;transform:rotate(180deg);font-size:.72rem;font-weight:800;text-transform:uppercase;color:var(--text-2);display:flex;align-items:center;justify-content:center;padding:.3rem}
+.mx-cell{border-radius:12px;padding:.6rem;min-height:92px;display:flex;flex-direction:column;gap:.35rem;border:2px solid transparent}
+.mx-prior{background:#fdecea;border-color:#e74c3c55}
+.mx-manter{background:#e8f5e9;border-color:#2e7d3255}
+.mx-fort{background:#e3f2fd;border-color:#1565c055}
+.mx-deleg{background:#f2f3f5;border-color:#90a4ae55}
+[data-theme="dark"] .mx-prior{background:#4a1f1f}[data-theme="dark"] .mx-manter{background:#17351f}
+[data-theme="dark"] .mx-fort{background:#12324a}[data-theme="dark"] .mx-deleg{background:#242c36}
+.mx-cell .q{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.4px;opacity:.75}
+.chip{background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:.25rem .6rem;font-size:.78rem;display:flex;justify-content:space-between;gap:.4rem;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.chip button{background:none;border:none;color:var(--text-2);padding:0;font-size:.85rem}
+.chip button:hover{color:var(--danger)}
+.legend{display:flex;gap:1rem;flex-wrap:wrap;margin-top:.8rem;font-size:.8rem;color:var(--text-2)}
+.legend span{display:flex;align-items:center;gap:.35rem}
+.dot{width:12px;height:12px;border-radius:4px;display:inline-block}
+
+/* ===== Wizard PDI ===== */
+.steps-bar{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.2rem}
+.step-dot{flex:1;min-width:90px;text-align:center;font-size:.7rem;font-weight:700;padding:.5rem .3rem;border-radius:10px;background:var(--surface-2);color:var(--text-2);cursor:pointer}
+.step-dot.active{background:var(--accent);color:#06283d}
+.step-dot.done{background:var(--primary);color:#fff}
+.wiz-nav{display:flex;justify-content:space-between;margin-top:1.2rem}
+
+/* ===== Modal ===== */
+.modal-bg{position:fixed;inset:0;background:rgba(8,15,25,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:1rem}
+.modal-bg.open{display:flex}
+.modal{background:var(--surface);border-radius:18px;padding:1.5rem;width:100%;max-width:560px;max-height:90vh;overflow:auto;box-shadow:var(--shadow)}
+.modal h3{margin-bottom:1rem}
+
+.toast{position:fixed;bottom:1.4rem;right:1.4rem;background:var(--primary);color:#fff;padding:.8rem 1.2rem;border-radius:12px;box-shadow:var(--shadow);opacity:0;transform:translateY(12px);transition:.3s;z-index:99;font-weight:600}
+.toast.show{opacity:1;transform:none}
+
+@media(max-width:860px){.sidebar{display:none}.grid-2{grid-template-columns:1fr}.main{padding:1rem}}
+
+/* ===== Impressão ===== */
+@media print{
+  .sidebar,.topbar .actions,.wiz-nav,.row-actions,.no-print,.modal-bg,.toast,.chip button{display:none!important}
+  body{background:#fff;color:#000}
+  .card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}
+  .view{display:block!important}
+  .main{padding:0;max-width:none}
+  .matrix{grid-template-columns:90px repeat(4,1fr)}
+}
+</style>
+<base target="_blank">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <h1>🎯 PDI Pro</h1>
+    <nav id="nav">
+      <button data-view="dashboard" class="active">📊 Dashboard</button>
+      <button data-view="skills">🧩 Skill Mapping</button>
+      <button data-view="pdi">🗺️ Meu PDI — 7 Passos</button>
+      <button data-view="goals">🎯 Metas & Ações 70/20/10</button>
+      <button data-view="checkins">📝 Check-ins</button>
+      <button data-view="report">🖨️ Relatório / Impressão</button>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <h2 id="viewTitle">Dashboard</h2>
+      <div class="actions">
+        <button class="btn-ghost" id="themeBtn">🌙 Tema</button>
+        <button class="btn-ghost" onclick="exportJSON()">⬇ Exportar JSON</button>
+        <button class="btn-ghost" onclick="document.getElementById('importFile').click()">⬆ Importar</button>
+        <button class="btn-ghost" onclick="window.print()">🖨️ Imprimir</button>
+        <input type="file" id="importFile" accept=".json" style="display:none">
+      </div>
+    </div>
+
+    <!-- ================= DASHBOARD ================= -->
+    <section id="view-dashboard" class="view active">
+      <div class="grid-4" id="statsRow"></div>
+      <div class="grid-2">
+        <div class="card">
+          <h3>📈 Progresso Geral do PDI</h3>
+          <p style="font-size:.85rem;color:var(--text-2)">Média de conclusão das metas (ponderada por ações 70/20/10)</p>
+          <div class="progress" style="height:16px"><div id="overallBar" style="width:0%"></div></div>
+          <p style="margin-top:.6rem;font-weight:800" id="overallPct">0%</p>
+        </div>
+        <div class="card">
+          <h3>⚖️ Distribuição 70 / 20 / 10</h3>
+          <div id="distBars"></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>🔥 Habilidades Prioritárias (Desenvolver com Prioridade)</h3>
+        <div id="dashPriority"></div>
+      </div>
+      <div class="card">
+        <h3>🎯 Metas em Andamento</h3>
+        <div id="dashGoals"></div>
+      </div>
+    </section>
+
+    <!-- ================= SKILL MAPPING ================= -->
+    <section id="view-skills" class="view">
+      <div class="card">
+        <h3>➕ Adicionar Habilidade</h3>
+        <div class="grid-4">
+          <div><label>Nome</label><input id="skName" placeholder="Ex.: Gestão de Projetos"></div>
+          <div><label>Categoria</label>
+            <select id="skCat"><option value="hard">Hard Skill</option><option value="soft">Soft Skill</option><option value="domain">Domain/Business</option></select></div>
+          <div><label>Proficiência atual</label>
+            <select id="skProf"><option value="1">Iniciante</option><option value="2">Intermediário</option><option value="3">Avançado</option><option value="4">Especialista</option></select></div>
+          <div><label>Relevância p/ função</label>
+            <select id="skRel"><option value="1">Baixa</option><option value="2">Média</option><option value="3">Alta</option><option value="4">Crítica</option></select></div>
+        </div>
+        <div style="margin-top:1rem"><button class="btn-primary" onclick="addSkill()">Adicionar à Matriz</button></div>
+      </div>
+      <div class="card">
+        <h3>🧭 Matriz Proficiência × Relevância <small style="font-weight:400;color:var(--text-2)">(clique num quadrante para pré-selecionar)</small></h3>
+        <div class="matrix" id="matrix"></div>
+        <div class="legend">
+          <span><i class="dot" style="background:#e74c3c"></i> Desenvolver com Prioridade</span>
+          <span><i class="dot" style="background:#2e7d32"></i> Manter / Referência</span>
+          <span><i class="dot" style="background:#1565c0"></i> Fortalecer / Realocar</span>
+          <span><i class="dot" style="background:#90a4ae"></i> Delegar / Baixa prioridade</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3>📋 Lista Completa de Habilidades</h3>
+        <table><thead><tr><th>Habilidade</th><th>Categoria</th><th>Proficiência</th><th>Relevância</th><th>Quadrante</th><th></th></tr></thead>
+        <tbody id="skillTable"></tbody></table>
+      </div>
+    </section>
+
+    <!-- ================= PDI WIZARD ================= -->
+    <section id="view-pdi" class="view">
+      <div class="steps-bar" id="stepsBar"></div>
+      <div class="card" id="wizPanel"></div>
+      <div class="wiz-nav no-print">
+        <button class="btn-ghost" id="wizPrev" onclick="wizNav(-1)">← Anterior</button>
+        <button class="btn-primary" id="wizNext" onclick="wizNav(1)">Próximo →</button>
+      </div>
+    </section>
+
+    <!-- ================= METAS & AÇÕES ================= -->
+    <section id="view-goals" class="view">
+      <div class="card">
+        <h3>🎯 Nova Meta SMART</h3>
+        <div class="grid-2">
+          <div><label>Título</label><input id="gTitle" placeholder="Ex.: Liderar projeto X até dez/2026"></div>
+          <div><label>Prazo (Temporal)</label><input id="gDate" type="date"></div>
+        </div>
+        <div class="grid-2">
+          <div><label>Específica — o que exatamente?</label><textarea id="gSpec" rows="2"></textarea></div>
+          <div><label>Mensurável — como medir sucesso?</label><textarea id="gMeas" rows="2"></textarea></div>
+        </div>
+        <div class="grid-2">
+          <div><label>Atingível — recursos/plano</label><textarea id="gAtt" rows="2"></textarea></div>
+          <div><label>Relevante — por que importa p/ carreira?</label><textarea id="gRel" rows="2"></textarea></div>
+        </div>
+        <div style="margin-top:1rem"><button class="btn-primary" onclick="addGoal()">Salvar Meta</button></div>
+      </div>
+
+      <div class="card">
+        <h3>🧰 Nova Ação (Plano 70/20/10)</h3>
+        <div class="grid-4">
+          <div><label>Título da ação</label><input id="aTitle" placeholder="Ex.: Liderar sprint de migração"></div>
+          <div><label>Meta vinculada</label><select id="aGoal"></select></div>
+          <div><label>Tipo</label>
+            <select id="aType"><option value="70">70% — Experiência Prática</option><option value="20">20% — Aprender c/ Outros</option><option value="10">10% — Educação Formal</option></select></div>
+          <div><label>Status</label>
+            <select id="aStatus"><option>Não iniciada</option><option>Em andamento</option><option>Concluída</option></select></div>
+        </div>
+        <div class="grid-4">
+          <div><label>Início</label><input id="aStart" type="date"></div>
+          <div><label>Fim</label><input id="aEnd" type="date"></div>
+          <div><label>Orçamento (R$)</label><input id="aBudget" type="number" min="0" placeholder="0"></div>
+          <div><label>Ferramentas / Recursos</label><input id="aRes" placeholder="Ex.: Udemy, mentor interno"></div>
+        </div>
+        <div style="margin-top:1rem"><button class="btn-primary" onclick="addAction()">Salvar Ação</button></div>
+      </div>
+
+      <div class="card">
+        <h3>🎯 Metas</h3>
+        <div id="goalList"></div>
+      </div>
+      <div class="card">
+        <h3>🧰 Plano de Ação 70/20/10</h3>
+        <table><thead><tr><th>Ação</th><th>Tipo</th><th>Meta</th><th>Prazo</th><th>Orçamento</th><th>Status</th><th></th></tr></thead>
+        <tbody id="actionTable"></tbody></table>
+      </div>
+    </section>
+
+    <!-- ================= CHECK-INS ================= -->
+    <section id="view-checkins" class="view">
+      <div class="card">
+        <h3>📝 Registrar Check-in (1-on-1)</h3>
+        <div class="grid-4">
+          <div><label>Data</label><input id="cDate" type="date"></div>
+          <div><label>Meta relacionada</label><select id="cGoal"><option value="">— Geral —</option></select></div>
+          <div style="grid-column:span 2"><label>Anotações / Feedback recebido</label><input id="cNotes" placeholder="Pontos discutidos, feedback, próximos passos..."></div>
+        </div>
+        <div style="margin-top:1rem"><button class="btn-primary" onclick="addCheckin()">Salvar Check-in</button></div>
+      </div>
+      <div class="card"><h3>📖 Histórico de Reuniões</h3><div id="checkinList"></div></div>
+    </section>
+
+    <!-- ================= RELATÓRIO ================= -->
+    <section id="view-report" class="view">
+      <div class="card"><h3>🖨️ Relatório do PDI & Skill Map</h3>
+        <p style="color:var(--text-2);font-size:.9rem">Use o botão <b>Imprimir</b> no topo para gerar um PDF limpo (Ctrl+P → "Salvar como PDF"). O modo de impressão inclui todos os módulos.</p>
+      </div>
+      <div class="card"><h3>👤 Visão & Diagnóstico</h3><div id="repVision"></div></div>
+      <div class="card"><h3>🧩 Skill Map</h3><div class="matrix" id="repMatrix"></div></div>
+      <div class="card"><h3>🎯 Metas & Ações</h3><div id="repGoals"></div></div>
+      <div class="card"><h3>📝 Check-ins</h3><div id="repCheckins"></div></div>
+    </section>
+  </main>
+</div>
+
+<!-- Modal de edição -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h3 id="modalTitle">Editar</h3>
+    <div id="modalBody"></div>
+    <div style="display:flex;justify-content:flex-end;gap:.5rem;margin-top:1.2rem">
+      <button class="btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn-primary" onclick="saveModal()">Salvar</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================== ESTADO & PERSISTÊNCIA ================== */
+const LS_KEY='pdi_pro_v1';
+const profNames=['','Iniciante','Intermediário','Avançado','Especialista'];
+const relNames=['','Baixa','Média','Alta','Crítica'];
+const catNames={hard:'Hard Skill',soft:'Soft Skill',domain:'Domain/Business'};
+const stepNames=['1. Diagnóstico','2. Competências','3. Metas SMART','4. Plano 70/20/10','5. Prazos & Recursos','6. Check-ins','7. Mensuração'];
+let state=load();
+let wizStep=0;
+let modalCtx=null;
+
+function defaultState(){return{skills:[],vision:{current:'',short:'',mid:'',long:''},focus:[],goals:[],actions:[],checkins:[]};}
+function load(){try{const s=localStorage.getItem(LS_KEY);return s?JSON.parse(s):defaultState();}catch(e){return defaultState();}}
+function save(){localStorage.setItem(LS_KEY,JSON.stringify(state));}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+
+/* ================== NAVEGAÇÃO ================== */
+const titles={dashboard:'Dashboard',skills:'Skill Mapping',pdi:'Meu PDI — 7 Passos',goals:'Metas & Ações 70/20/10',checkins:'Check-ins',report:'Relatório'};
+document.getElementById('nav').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  document.querySelectorAll('#nav button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+b.dataset.view).classList.add('active');
+  document.getElementById('viewTitle').textContent=titles[b.dataset.view];
+  renderAll();
+});
+
+/* ================== TEMA ================== */
+const themeBtn=document.getElementById('themeBtn');
+function applyTheme(t){document.documentElement.dataset.theme=t;themeBtn.textContent=t==='dark'?'☀️ Tema':'🌙 Tema';localStorage.setItem('pdi_theme',t);}
+themeBtn.onclick=()=>applyTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');
+applyTheme(localStorage.getItem('pdi_theme')||'light');
+
+/* ================== SKILL MAPPING ================== */
+function quadrant(p,r){ // p,r de 1..4
+  if(r>=3&&p<=2)return{p:'Desenvolver com Prioridade',c:'mx-prior'};
+  if(r>=3&&p>=3)return{p:'Manter / Referência',c:'mx-manter'};
+  if(r<=2&&p>=3)return{p:'Fortalecer / Realocar',c:'mx-fort'};
+  return{p:'Delegar / Baixa prioridade',c:'mx-deleg'};
+}
+function addSkill(){
+  const name=document.getElementById('skName').value.trim();
+  if(!name)return toast('Informe o nome da habilidade.');
+  state.skills.push({id:uid(),name,cat:document.getElementById('skCat').value,prof:+document.getElementById('skProf').value,rel:+document.getElementById('skRel').value});
+  document.getElementById('skName').value='';
+  save();renderAll();toast('Habilidade adicionada!');
+}
+function delSkill(id){state.skills=state.skills.filter(s=>s.id!==id);state.focus=state.focus.filter(f=>f!==id);save();renderAll();}
+function renderMatrix(elId){
+  const el=document.getElementById(elId);if(!el)return;
+  let h='<div class="mx-head"></div>';
+  for(let p=1;p<=4;p++)h+=`<div class="mx-head">${profNames[p]}</div>`;
+  for(let r=4;r>=1;r--){
+    h+=`<div class="mx-rowlbl">${relNames[r]}</div>`;
+    for(let p=1;p<=4;p++){
+      const q=quadrant(p,r);
+      const sks=state.skills.filter(s=>s.prof===p&&s.rel===r);
+      h+=`<div class="mx-cell ${q.c}" onclick="prefillSkill(${p},${r})"><span class="q">${q.p} (${sks.length})</span>`;
+      sks.forEach(s=>{h+=`<div class="chip"><span>${s.name} <span class="tag tag-${s.cat}">${catNames[s.cat].split(' ')[0]}</span></span>${elId==='matrix'?`<button onclick="event.stopPropagation();delSkill('${s.id}')" title="Excluir">✕</button>`:''}</div>`;});
+      h+='</div>';
+    }
+  }
+  el.innerHTML=h;
+}
+function prefillSkill(p,r){
+  document.getElementById('skProf').value=p;document.getElementById('skRel').value=r;
+  document.getElementById('skName').focus();toast(`Quadrante selecionado: ${profNames[p]} × ${relNames[r]}`);
+}
+function renderSkillTable(){
+  const tb=document.getElementById('skillTable');
+  tb.innerHTML=state.skills.length?state.skills.map(s=>{
+    const q=quadrant(s.prof,s.rel);
+    return`<tr><td><b>${s.name}</b></td><td><span class="tag tag-${s.cat}">${catNames[s.cat]}</span></td>
+    <td>${profNames[s.prof]}</td><td>${relNames[s.rel]}</td><td>${q.p}</td>
+    <td class="row-actions"><button class="icon-btn" onclick="openEditSkill('${s.id}')">✏️</button><button class="icon-btn del" onclick="delSkill('${s.id}')">🗑️</button></td></tr>`;
+  }).join(''):'<tr><td colspan="6" style="color:var(--text-2)">Nenhuma habilidade cadastrada ainda.</td></tr>';
+}
+
+/* ================== MODAL ================== */
+function openModal(title,bodyHTML,ctx){document.getElementById('modalTitle').textContent=title;document.getElementById('modalBody').innerHTML=bodyHTML;modalCtx=ctx;document.getElementById('modalBg').classList.add('open');}
+function closeModal(){document.getElementById('modalBg').classList.remove('open');modalCtx=null;}
+document.getElementById('modalBg').addEventListener('click',e=>{if(e.target.id==='modalBg')closeModal();});
+function saveModal(){
+  if(!modalCtx)return;
+  const g=id=>document.getElementById('m_'+id).value;
+  if(modalCtx.type==='skill'){
+    const s=state.skills.find(x=>x.id===modalCtx.id);
+    s.name=g('name');s.cat=g('cat');s.prof=+g('prof');s.rel=+g('rel');
+  }else if(modalCtx.type==='goal'){
+    const o=state.goals.find(x=>x.id===modalCtx.id);
+    o.title=g('title');o.date=g('date');o.spec=g('spec');o.meas=g('meas');o.att=g('att');o.rel=g('rel');o.status=g('status');
+  }else if(modalCtx.type==='action'){
+    const o=state.actions.find(x=>x.id===modalCtx.id);
+    o.title=g('title');o.goalId=g('goalId');o.type=g('type');o.start=g('start');o.end=g('end');o.budget=g('budget');o.res=g('res');o.status=g('status');
+  }else if(modalCtx.type==='checkin'){
+    const o=state.checkins.find(x=>x.id===modalCtx.id);
+    o.date=g('date');o.goalId=g('goalId');o.notes=g('notes');
+  }
+  save();closeModal();renderAll();toast('Alterações salvas!');
+}
+function openEditSkill(id){const s=state.skills.find(x=>x.id===id);
+  openModal('Editar Habilidade',`
+    <label>Nome</label><input id="m_name" value="${s.name}">
+    <label>Categoria</label><select id="m_cat"><option value="hard"${s.cat==='hard'?' selected':''}>Hard Skill</option><option value="soft"${s.cat==='soft'?' selected':''}>Soft Skill</option><option value="domain"${s.cat==='domain'?' selected':''}>Domain/Business</option></select>
+    <label>Proficiência</label><select id="m_prof">${[1,2,3,4].map(i=>`<option value="${i}"${s.prof===i?' selected':''}>${profNames[i]}</option>`).join('')}</select>
+    <label>Relevância</label><select id="m_rel">${[1,2,3,4].map(i=>`<option value="${i}"${s.rel===i?' selected':''}>${relNames[i]}</option>`).join('')}</select>`,{type:'skill',id});}
+
+/* ================== METAS & AÇÕES ================== */
+function addGoal(){
+  const title=document.getElementById('gTitle').value.trim();
+  if(!title)return toast('Informe o título da meta.');
+  state.goals.push({id:uid(),title,date:document.getElementById('gDate').value,spec:gSpec.value,meas:gMeas.value,att:gAtt.value,rel:gRel.value,status:'Não iniciada'});
+  ['gTitle','gDate','gSpec','gMeas','gAtt','gRel'].forEach(i=>document.getElementById(i).value='');
+  save();renderAll();toast('Meta SMART criada!');
+}
+function delGoal(id){state.goals=state.goals.filter(g=>g.id!==id);state.actions=state.actions.filter(a=>a.goalId!==id);save();renderAll();}
+function goalProgress(gid){
+  const acts=state.actions.filter(a=>a.goalId===gid);
+  if(!acts.length)return 0;
+  return Math.round(acts.reduce((t,a)=>t+(a.status==='Concluída'?100:a.status==='Em andamento'?50:0),0)/acts.length);
+}
+function addAction(){
+  const title=document.getElementById('aTitle').value.trim();
+  if(!title)return toast('Informe o título da ação.');
+  state.actions.push({id:uid(),title,goalId:aGoal.value,type:aType.value,start:aStart.value,end:aEnd.value,budget:aBudget.value,res:aRes.value,status:aStatus.value});
+  ['aTitle','aStart','aEnd','aBudget','aRes'].forEach(i=>document.getElementById(i).value='');
+  save();renderAll();toast('Ação adicionada ao plano!');
+}
+function delAction(id){state.actions=state.actions.filter(a=>a.id!==id);save();renderAll();}
+function openEditGoal(id){const o=state.goals.find(x=>x.id===id);
+  openModal('Editar Meta',`
+    <label>Título</label><input id="m_title" value="${o.title}">
+    <label>Prazo</label><input id="m_date" type="date" value="${o.date||''}">
+    <label>Específica</label><textarea id="m_spec" rows="2">${o.spec||''}</textarea>
+    <label>Mensurável</label><textarea id="m_meas" rows="2">${o.meas||''}</textarea>
+    <label>Atingível</label><textarea id="m_att" rows="2">${o.att||''}</textarea>
+    <label>Relevante</label><textarea id="m_rel" rows="2">${o.rel||''}</textarea>
+    <label>Status</label><select id="m_status">${['Não iniciada','Em andamento','Concluída'].map(s=>`<option${o.status===s?' selected':''}>${s}</option>`).join('')}</select>`,{type:'goal',id});}
+function openEditAction(id){const o=state.actions.find(x=>x.id===id);
+  openModal('Editar Ação',`
+    <label>Título</label><input id="m_title" value="${o.title}">
+    <label>Meta</label><select id="m_goalId">${state.goals.map(g=>`<option value="${g.id}"${o.goalId===g.id?' selected':''}>${g.title}</option>`).join('')}</select>
+    <label>Tipo</label><select id="m_type"><option value="70"${o.type==='70'?' selected':''}>70% Experiência Prática</option><option value="20"${o.type==='20'?' selected':''}>20% Aprender com Outros</option><option value="10"${o.type==='10'?' selected':''}>10% Educação Formal</option></select>
+    <div class="grid-2"><div><label>Início</label><input id="m_start" type="date" value="${o.start||''}"></div><div><label>Fim</label><input id="m_end" type="date" value="${o.end||''}"></div></div>
+    <div class="grid-2"><div><label>Orçamento</label><input id="m_budget" type="number" value="${o.budget||''}"></div><div><label>Recursos</label><input id="m_res" value="${o.res||''}"></div></div>
+    <label>Status</label><select id="m_status">${['Não iniciada','Em andamento','Concluída'].map(s=>`<option${o.status===s?' selected':''}>${s}</option>`).join('')}</select>`,{type:'action',id});}
+
+/* ================== CHECK-INS ================== */
+function addCheckin(){
+  const notes=document.getElementById('cNotes').value.trim();
+  if(!notes)return toast('Escreva uma anotação.');
+  state.checkins.push({id:uid(),date:cDate.value,goalId:cGoal.value,notes});
+  document.getElementById('cNotes').value='';save();renderAll();toast('Check-in registrado!');
+}
+function delCheckin(id){state.checkins=state.checkins.filter(c=>c.id!==id);save();renderAll();}
+function openEditCheckin(id){const o=state.checkins.find(x=>x.id===id);
+  openModal('Editar Check-in',`
+    <label>Data</label><input id="m_date" type="date" value="${o.date||''}">
+    <label>Meta</label><select id="m_goalId"><option value="">— Geral —</option>${state.goals.map(g=>`<option value="${g.id}"${o.goalId===g.id?' selected':''}>${g.title}</option>`).join('')}</select>
+    <label>Anotações</label><textarea id="m_notes" rows="3">${o.notes}</textarea>`,{type:'checkin',id});}
+
+/* ================== WIZARD 7 PASSOS ================== */
+function renderStepsBar(){
+  document.getElementById('stepsBar').innerHTML=stepNames.map((n,i)=>
+    `<div class="step-dot${i===wizStep?' active':i<wizStep?' done':''}" onclick="wizStep=${i};renderAll()">${i<wizStep?'✓ ':''}${n}</div>`).join('');
+}
+function wizNav(d){wizStep=Math.max(0,Math.min(6,wizStep+d));renderAll();}
+function renderWizard(){
+  renderStepsBar();
+  document.getElementById('wizPrev').style.visibility=wizStep===0?'hidden':'visible';
+  document.getElementById('wizNext').textContent=wizStep===6?'Concluir ✓':'Próximo →';
+  const p=document.getElementById('wizPanel');
+  const v=state.vision;
+  const bind=(id,key)=>`oninput="state.vision.${key}=this.value;save()"`;
+  if(wizStep===0){
+    p.innerHTML=`<h3>1️⃣ Diagnóstico e Visão do Futuro</h3>
+      <label>Estado atual da carreira (diagnóstico)</label><textarea rows="4" ${bind('v0','current')}>${v.current}</textarea>
+      <div class="grid-3 grid-2">
+        <div><label>Meta de curto prazo (até 6 meses)</label><textarea rows="2" ${bind('v1','short')}>${v.short}</textarea></div>
+        <div><label>Meta de médio prazo (6–18 meses)</label><textarea rows="2" ${bind('v2','mid')}>${v.mid}</textarea></div>
+        <div><label>Meta de longo prazo (18+ meses)</label><textarea rows="2" ${bind('v3','long')}>${v.long}</textarea></div>
+      </div>`;
+  }else if(wizStep===1){
+    const prior=state.skills.filter(s=>quadrant(s.prof,s.rel).c==='mx-prior');
+    p.innerHTML=`<h3>2️⃣ Seleção de Competências Prioritárias</h3>
+      <p style="color:var(--text-2);font-size:.9rem;margin-bottom:1rem">Habilidades do quadrante <b>Desenvolver com Prioridade</b>. Marque as que serão foco deste PDI:</p>`+
+      (prior.length?prior.map(s=>`<label style="display:flex;gap:.6rem;align-items:center;text-transform:none;font-size:.95rem;margin:.4rem 0">
+        <input type="checkbox" style="width:auto" ${state.focus.includes(s.id)?'checked':''} onchange="toggleFocus('${s.id}')"> ${s.name} <span class="tag tag-${s.cat}">${catNames[s.cat]}</span></label>`).join('')
+      :'<p style="color:var(--text-2)">Nenhuma habilidade no quadrante prioritário ainda. Cadastre no Skill Mapping.</p>');
+  }else if(wizStep===2){
+    p.innerHTML=`<h3>3️⃣ Definição de Metas SMART</h3>
+      <p style="color:var(--text-2);font-size:.9rem;margin-bottom:1rem">Crie metas na aba <b>Metas & Ações</b>. Você tem <b>${state.goals.length}</b> meta(s) cadastrada(s). Resumo:</p>
+      <table><thead><tr><th>Meta</th><th>Prazo</th><th>Status</th><th>Progresso</th></tr></thead><tbody>
+      ${state.goals.map(g=>`<tr><td><b>${g.title}</b></td><td>${g.date||'—'}</td><td><span class="tag status-${g.status==='Concluída'?'ok':g.status==='Em andamento'?'and':'nao'}">${g.status}</span></td>
+      <td style="min-width:110px"><div class="progress"><div style="width:${goalProgress(g.id)}%"></div></div></td></tr>`).join('')||'<tr><td colspan="4" style="color:var(--text-2)">Sem metas ainda.</td></tr>'}</tbody></table>`;
+  }else if(wizStep===3){
+    const c={70:0,20:0,10:0};state.actions.forEach(a=>c[a.type]++);
+    p.innerHTML=`<h3>4️⃣ Plano de Ação — Estrutura 70/20/10</h3>
+      <div class="grid-4">
+        <div class="stat"><div class="num">${c[70]}</div><div class="lbl">70% Experiências Práticas</div></div>
+        <div class="stat"><div class="num">${c[20]}</div><div class="lbl">20% Aprender c/ Outros</div></div>
+        <div class="stat"><div class="num">${c[10]}</div><div class="lbl">10% Educação Formal</div></div>
+        <div class="stat"><div class="num">${state.actions.length}</div><div class="lbl">Total de ações</div></div>
+      </div>
+      <p style="margin-top:1rem;color:var(--text-2);font-size:.9rem">💡 Dica: para cada ação formal (curso), planeje ~7 experiências práticas e ~2 de aprendizado social.</p>`;
+  }else if(wizStep===4){
+    p.innerHTML=`<h3>5️⃣ Prazos e Recursos</h3>
+      <table><thead><tr><th>Ação</th><th>Início</th><th>Fim</th><th>Orçamento</th><th>Recursos</th></tr></thead><tbody>
+      ${state.actions.map(a=>`<tr><td>${a.title}</td><td>${a.start||'—'}</td><td>${a.end||'—'}</td><td>${a.budget?'R$ '+a.budget:'—'}</td><td>${a.res||'—'}</td></tr>`).join('')||'<tr><td colspan="5" style="color:var(--text-2)">Sem ações ainda.</td></tr>'}</tbody></table>`;
+  }else if(wizStep===5){
+    p.innerHTML=`<h3>6️⃣ Acompanhamento e Check-ins</h3>
+      <p style="color:var(--text-2);font-size:.9rem;margin-bottom:1rem">Últimos registros de 1-on-1 (cadastre na aba Check-ins):</p>
+      ${state.checkins.slice(-5).reverse().map(c=>`<div class="stat" style="margin-bottom:.5rem"><b>${c.date||'sem data'}</b> — ${c.notes}</div>`).join('')||'<p style="color:var(--text-2)">Nenhum check-in registrado.</p>'}`;
+  }else{
+    const overall=state.goals.length?Math.round(state.goals.reduce((t,g)=>t+goalProgress(g.id),0)/state.goals.length):0;
+    p.innerHTML=`<h3>7️⃣ Mensuração de Resultados</h3>
+      <div class="stat" style="text-align:center;padding:1.6rem">
+        <div class="num" style="font-size:2.6rem">${overall}%</div><div class="lbl">Progresso geral do PDI</div>
+        <div class="progress" style="height:14px;margin-top:.8rem"><div style="width:${overall}%"></div></div>
+      </div>
+      <p style="margin-top:1rem;color:var(--text-2);font-size:.9rem">✅ PDI estruturado! Revise mensalmente, atualize status e registre check-ins para manter o plano vivo.</p>`;
+  }
+}
+function toggleFocus(id){
+  state.focus=state.focus.includes(id)?state.focus.filter(f=>f!==id):[...state.focus,id];
+  save();renderAll();
+}
+
+/* ================== DASHBOARD & RELATÓRIO ================== */
+function renderDashboard(){
+  const done=state.goals.filter(g=>g.status==='Concluída').length;
+  const acts=state.actions;
+  const budget=acts.reduce((t,a)=>t+(+a.budget||0),0);
+  const overall=state.goals.length?Math.round(state.goals.reduce((t,g)=>t+goalProgress(g.id),0)/state.goals.length):0;
+  document.getElementById('statsRow').innerHTML=`
+    <div class="stat"><div class="num">${state.skills.length}</div><div class="lbl">Habilidades mapeadas</div></div>
+    <div class="stat"><div class="num">${state.goals.length}</div><div class="lbl">Metas SMART</div></div>
+    <div class="stat"><div class="num">${done}/${state.goals.length}</div><div class="lbl">Metas concluídas</div></div>
+    <div class="stat"><div class="num">${acts.length}</div><div class="lbl">Ações 70/20/10</div></div>
+    <div class="stat"><div class="num">R$ ${budget.toLocaleString('pt-BR')}</div><div class="lbl">Orçamento previsto</div></div>`;
+  document.getElementById('overallBar').style.width=overall+'%';
+  document.getElementById('overallPct').textContent=overall+'% concluído';
+  const c={70:0,20:0,10:0};acts.forEach(a=>c[a.type]++);
+  const tot=acts.length||1;
+  document.getElementById('distBars').innerHTML=[['70% Experiência Prática',c[70],70,'#1b3a5c'],['20% Aprender com Outros',c[20],20,'#4fc3f7'],['10% Educação Formal',c[10],10,'#2e7d5b']].map(([l,n,ref,col])=>
+    `<div style="margin-bottom:.7rem"><div style="display:flex;justify-content:space-between;font-size:.85rem"><b>${l}</b><span>${n} ações (${Math.round(n/tot*100)}%)</span></div>
+    <div class="progress"><div style="width:${n/tot*100}%;background:${col}"></div></div>
+    <div style="font-size:.72rem;color:var(--text-2)">referência ideal: ${ref}%</div></div>`).join('');
+  const prior=state.skills.filter(s=>quadrant(s.prof,s.rel).c==='mx-prior');
+  document.getElementById('dashPriority').innerHTML=prior.length?prior.map(s=>
+    `<div class="chip" style="margin:.3rem;display:inline-flex"><span>${s.name} <span class="tag tag-${s.cat}">${catNames[s.cat]}</span></span></div>`).join('')
+    :'<p style="color:var(--text-2)">Nenhuma habilidade prioritária — mapeie suas skills!</p>';
+  document.getElementById('dashGoals').innerHTML=state.goals.filter(g=>g.status!=='Concluída').map(g=>{
+    const pr=goalProgress(g.id);
+    return`<div style="margin-bottom:.8rem"><div style="display:flex;justify-content:space-between;font-size:.9rem"><b>${g.title}</b><span>${pr}%</span></div>
+    <div class="progress"><div style="width:${pr}%"></div></div></div>`;}).join('')||'<p style="color:var(--text-2)">Todas as metas concluídas — parabéns! 🎉</p>';
+}
+function renderReport(){
+  const v=state.vision;
+  const lbl=(t,x)=>`<p style="margin-bottom:.6rem"><b style="color:var(--text-2)">${t}:</b> ${x||'—'}</p>`;
+  document.getElementById('repVision').innerHTML=lbl('Diagnóstico atual',v.current)+lbl('Curto prazo',v.short)+lbl('Médio prazo',v.mid)+lbl('Longo prazo',v.long);
+  renderMatrix('repMatrix');
+  document.getElementById('repGoals').innerHTML=state.goals.map(g=>{
+    const acts=state.actions.filter(a=>a.goalId===g.id);
+    return`<div style="margin-bottom:1rem"><b>${g.title}</b> <span class="tag status-${g.status==='Concluída'?'ok':g.status==='Em andamento'?'and':'nao'}">${g.status}</span>
+    <div style="font-size:.85rem;color:var(--text-2);margin:.3rem 0">Prazo: ${g.date||'—'} · Progresso: ${goalProgress(g.id)}%</div>
+    <div class="progress"><div style="width:${goalProgress(g.id)}%"></div></div>
+    <ul style="margin:.4rem 0 0 1.2rem;font-size:.85rem">${acts.map(a=>`<li>[${a.type}%] ${a.title} — ${a.status} (${a.start||'?' } → ${a.end||'?'})</li>`).join('')}</ul></div>`;
+  }).join('')||'<p style="color:var(--text-2)">Sem metas.</p>';
+  document.getElementById('repCheckins').innerHTML=state.checkins.map(c=>
+    `<div class="stat" style="margin-bottom:.5rem"><b>${c.date||'sem data'}</b> ${c.goalId?'· '+((state.goals.find(g=>g.id===c.goalId)||{}).title||''):''} — ${c.notes}</div>`).join('')||'<p style="color:var(--text-2)">Sem check-ins.</p>';
+}
+
+/* ================== RENDER GERAL ================== */
+function renderGoalsView(){
+  document.getElementById('goalList').innerHTML=state.goals.map(g=>{
+    const pr=goalProgress(g.id);
+    return`<div style="margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border)">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem">
+        <b>${g.title}</b>
+        <span class="row-actions"><button class="icon-btn" onclick="openEditGoal('${g.id}')">✏️</button><button class="icon-btn del" onclick="delGoal('${g.id}')">🗑️</button></span>
+      </div>
+      <div style="font-size:.8rem;color:var(--text-2);margin:.3rem 0">Prazo: ${g.date||'—'} · Status: <span class="tag status-${g.status==='Concluída'?'ok':g.status==='Em andamento'?'and':'nao'}">${g.status}</span></div>
+      <div class="progress"><div style="width:${pr}%"></div></div></div>`;}).join('')||'<p style="color:var(--text-2)">Nenhuma meta cadastrada.</p>';
+  document.getElementById('actionTable').innerHTML=state.actions.map(a=>{
+    const g=state.goals.find(x=>x.id===a.goalId);
+    return`<tr><td><b>${a.title}</b><br><small style="color:var(--text-2)">${a.res||''}</small></td>
+    <td><span class="tag" style="background:${a.type==='70'?'#e3f2fd':a.type==='20'?'#fce4ec':'#e8f5e9'}">${a.type}%</span></td>
+    <td>${g?g.title:'—'}</td><td>${a.start||'?'} → ${a.end||'?'}</td><td>${a.budget?'R$ '+a.budget:'—'}</td>
+    <td><span class="tag status-${a.status==='Concluída'?'ok':a.status==='Em andamento'?'and':'nao'}">${a.status}</span></td>
+    <td class="row-actions"><button class="icon-btn" onclick="openEditAction('${a.id}')">✏️</button><button class="icon-btn del" onclick="delAction('${a.id}')">🗑️</button></td></tr>`;
+  }).join('')||'<tr><td colspan="7" style="color:var(--text-2)">Nenhuma ação cadastrada.</td></tr>';
+  document.getElementById('aGoal').innerHTML=state.goals.map(g=>`<option value="${g.id}">${g.title}</option>`).join('');
+}
+function renderCheckins(){
+  document.getElementById('checkinList').innerHTML=state.checkins.slice().reverse().map(c=>{
+    const g=state.goals.find(x=>x.id===c.goalId);
+    return`<div class="stat" style="margin-bottom:.5rem;display:flex;justify-content:space-between;gap:.6rem;align-items:center">
+      <span><b>${c.date||'sem data'}</b>${g?` · 🎯 ${g.title}`:''}<br>${c.notes}</span>
+      <span class="row-actions"><button class="icon-btn" onclick="openEditCheckin('${c.id}')">✏️</button><button class="icon-btn del" onclick="delCheckin('${c.id}')">🗑️</button></span></div>`;
+  }).join('')||'<p style="color:var(--text-2)">Nenhum check-in registrado.</p>';
+  document.getElementById('cGoal').innerHTML='<option value="">— Geral —</option>'+state.goals.map(g=>`<option value="${g.id}">${g.title}</option>`).join('');
+}
+function renderAll(){
+  renderMatrix('matrix');renderSkillTable();renderWizard();renderGoalsView();
+  renderCheckins();renderDashboard();renderReport();
+}
+
+/* ================== EXPORT / IMPORT ================== */
+function exportJSON(){
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='pdi_backup_'+new Date().toISOString().slice(0,10)+'.json';a.click();
+  toast('Backup JSON exportado!');
+}
+document.getElementById('importFile').addEventListener('change',e=>{
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{try{
+    const d=JSON.parse(r.result);
+    if(!d.skills||!d.goals)throw 0;
+    state=d;save();renderAll();toast('Dados importados com sucesso!');
+  }catch(err){toast('Arquivo inválido.');}};
+  r.readAsText(f);e.target.value='';
+});
+
+renderAll();
+</script>
+</body>
+</html>

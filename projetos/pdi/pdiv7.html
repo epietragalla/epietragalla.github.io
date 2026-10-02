@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDI & Skill Mapping Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <style>
+        /* =========================================
+           MATERIAL DESIGN 3 TOKENS & VARIABLES
+           ========================================= */
+        :root {
+            --md-sys-color-primary: #0061A4;
+            --md-sys-color-on-primary: #FFFFFF;
+            --md-sys-color-primary-container: #D1E4FF;
+            --md-sys-color-on-primary-container: #001D36;
+            --md-sys-color-secondary: #535F70;
+            --md-sys-color-surface: #F8F9FF;
+            --md-sys-color-surface-container: #F0F4FA;
+            --md-sys-color-on-surface: #1A1C1E;
+            --md-sys-color-on-surface-variant: #43474E;
+            --md-sys-color-outline: #73777F;
+            --md-sys-color-error: #BA1A1A;
+            --md-sys-color-success: #2E7D32;
+            
+            --md-sys-elevation-1: 0px 1px 3px 1px rgba(0,0,0,0.15), 0px 1px 2px 0px rgba(0,0,0,0.3);
+            --md-sys-elevation-2: 0px 2px 6px 2px rgba(0,0,0,0.15), 0px 1px 2px 0px rgba(0,0,0,0.3);
+            
+            --border-radius: 12px;
+            --sidebar-width: 280px;
+        }
+
+        [data-theme="dark"] {
+            --md-sys-color-primary: #9ECAFF;
+            --md-sys-color-on-primary: #003258;
+            --md-sys-color-primary-container: #00497D;
+            --md-sys-color-on-primary-container: #D1E4FF;
+            --md-sys-color-secondary: #BBC7DB;
+            --md-sys-color-surface: #1A1C1E;
+            --md-sys-color-surface-container: #202428;
+            --md-sys-color-on-surface: #E2E2E6;
+            --md-sys-color-on-surface-variant: #C3C6CF;
+            --md-sys-color-outline: #8D9199;
+            --md-sys-color-error: #FFB4AB;
+            --md-sys-color-success: #4CAF50;
+            
+            --md-sys-elevation-1: 0px 1px 3px 1px rgba(0,0,0,0.5), 0px 1px 2px 0px rgba(0,0,0,0.6);
+            --md-sys-elevation-2: 0px 2px 6px 2px rgba(0,0,0,0.5), 0px 1px 2px 0px rgba(0,0,0,0.6);
+        }
+
+        /* =========================================
+           RESET & BASE STYLES
+           ========================================= */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--md-sys-color-surface);
+            color: var(--md-sys-color-on-surface);
+            display: flex;
+            min-height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* =========================================
+           LAYOUT: SIDEBAR & MAIN
+           ========================================= */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--md-sys-color-surface-container);
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--md-sys-color-outline);
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--md-sys-color-primary);
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 100px;
+            color: var(--md-sys-color-on-surface-variant);
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-item:hover { background-color: rgba(0, 97, 164, 0.08); }
+        .nav-item.active {
+            background-color: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 32px;
+            max-width: 1200px;
+        }
+
+        /* =========================================
+           COMPONENTS
+           ========================================= */
+        .card {
+            background-color: var(--md-sys-color-surface-container);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: var(--md-sys-elevation-1);
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        h2 { font-size: 1.5rem; font-weight: 500; color: var(--md-sys-color-on-surface); }
+        h3 { font-size: 1.25rem; font-weight: 500; margin-bottom: 12px; }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            border-radius: 100px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+
+        .btn-filled {
+            background-color: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+        }
+        .btn-filled:hover { box-shadow: var(--md-sys-elevation-2); opacity: 0.9; }
+
+        .btn-tonal {
+            background-color: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--md-sys-color-outline);
+            color: var(--md-sys-color-primary);
+        }
+
+        .form-group { margin-bottom: 16px; }
+        label { display: block; font-size: 0.875rem; color: var(--md-sys-color-on-surface-variant); margin-bottom: 6px; }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--md-sys-color-outline);
+            background-color: var(--md-sys-color-surface);
+            color: var(--md-sys-color-on-surface);
+            font-family: inherit;
+            font-size: 1rem;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: 2px solid var(--md-sys-color-primary);
+            border-color: transparent;
+        }
+
+        /* =========================================
+           SKILL MATRIX (NN/Group)
+           ========================================= */
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .quadrant {
+            padding: 20px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--md-sys-color-outline);
+            min-height: 200px;
+        }
+
+        .quadrant h4 { font-size: 1rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        
+        .q-priority { background-color: rgba(186, 26, 26, 0.08); border-color: var(--md-sys-color-error); }
+        .q-priority h4 { color: var(--md-sys-color-error); }
+        
+        .q-maintain { background-color: rgba(46, 125, 50, 0.08); border-color: var(--md-sys-color-success); }
+        .q-maintain h4 { color: var(--md-sys-color-success); }
+        
+        .q-delegate { background-color: rgba(0, 97, 164, 0.08); border-color: var(--md-sys-color-primary); }
+        .q-delegate h4 { color: var(--md-sys-color-primary); }
+        
+        .q-monitor { background-color: rgba(115, 119, 127, 0.08); border-color: var(--md-sys-color-outline); }
+        .q-monitor h4 { color: var(--md-sys-color-on-surface-variant); }
+
+        .skill-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            background-color: var(--md-sys-color-surface);
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: 16px;
+            font-size: 0.875rem;
+            margin: 4px;
+            cursor: pointer;
+        }
+        .skill-tag:hover { background-color: var(--md-sys-color-primary-container); }
+        .skill-tag .delete-skill { margin-left: 8px; color: var(--md-sys-color-error); cursor: pointer; }
+
+        /* =========================================
+           PDI & 70/20/10
+           ========================================= */
+        .pdi-steps { display: flex; flex-direction: column; gap: 24px; }
+        
+        .action-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background-color: var(--md-sys-color-surface);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-left: 4px solid var(--md-sys-color-outline);
+        }
+        
+        .action-item.type-70 { border-left-color: #2196F3; }
+        .action-item.type-20 { border-left-color: #FF9800; }
+        .action-item.type-10 { border-left-color: #9C27B0; }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: white;
+        }
+        .badge-70 { background-color: #2196F3; }
+        .badge-20 { background-color: #FF9800; }
+        .badge-10 { background-color: #9C27B0; }
+
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background-color: var(--md-sys-color-outline);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: var(--md-sys-color-primary);
+            transition: width 0.5s ease;
+        }
+
+        .checkin-log {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: 8px;
+            padding: 16px;
+        }
+        .checkin-entry {
+            padding: 12px;
+            border-bottom: 1px solid var(--md-sys-color-outline);
+        }
+        .checkin-entry:last-child { border-bottom: none; }
+        .checkin-date { font-size: 0.875rem; color: var(--md-sys-color-on-surface-variant); font-weight: 500; }
+
+        /* =========================================
+           UTILITIES & PRINT
+           ========================================= */
+        .hidden { display: none !important; }
+        .flex-row { display: flex; gap: 16px; }
+        .flex-col { display: flex; flex-direction: column; }
+        .w-50 { width: 50%; }
+
+        @media print {
+            .sidebar, .btn, .no-print { display: none !important; }
+            .main-content { margin-left: 0; padding: 0; max-width: 100%; }
+            body { background-color: white; color: black; }
+            .card { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
+            .quadrant { background-color: white !important; border: 1px solid #999; }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { width: 100%; height: auto; position: relative; }
+            .main-content { margin-left: 0; }
+            .matrix-grid { grid-template-columns: 1fr; }
+            .flex-row { flex-direction: column; }
+            .w-50 { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+        <div class="logo">
+            <span class="material-icons-round">psychology</span>
+            PDI & Skill Map
+        </div>
+        <a class="nav-item active" onclick="showSection('dashboard')">
+            <span class="material-icons-round">dashboard</span> Visão Geral
+        </a>
+        <a class="nav-item" onclick="showSection('skills')">
+            <span class="material-icons-round">radar</span> Skill Mapping
+        </a>
+        <a class="nav-item" onclick="showSection('pdi')">
+            <span class="material-icons-round">route</span> PDI (7 Passos)
+        </a>
+        <a class="nav-item" onclick="showSection('settings')">
+            <span class="material-icons-round">settings</span> Configurações
+        </a>
+        
+        <div style="margin-top: auto;">
+            <button class="btn btn-tonal" style="width: 100%;" onclick="toggleTheme()">
+                <span class="material-icons-round">dark_mode</span> Alternar Tema
+            </button>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        
+        <!-- SECTION: DASHBOARD -->
+        <section id="dashboard" class="section">
+            <h2>Visão Geral do Desenvolvimento</h2>
+            <p style="color: var(--md-sys-color-on-surface-variant); margin-bottom: 24px;">Acompanhe seu progresso e próximas ações.</p>
+            
+            <div class="flex-row">
+                <div class="card w-50">
+                    <h3>Progresso do PDI</h3>
+                    <div style="font-size: 2.5rem; font-weight: 700; color: var(--md-sys-color-primary);" id="dash-progress">0%</div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="dash-progress-bar" style="width: 0%"></div>
+                    </div>
+                    <p style="margin-top: 8px; font-size: 0.875rem;"><span id="dash-completed">0</span> de <span id="dash-total">0</span> ações concluídas</p>
+                </div>
+                <div class="card w-50">
+                    <h3>Próximo Check-in</h3>
+                    <div id="dash-next-checkin" style="font-size: 1.25rem; font-weight: 500; margin-top: 16px;">Nenhum agendado</div>
+                    <button class="btn btn-outline" style="margin-top: 16px;" onclick="showSection('pdi')">Registrar Nova Reunião</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Resumo do Skill Mapping</h3>
+                <div class="flex-row" style="margin-top: 16px; text-align: center;">
+                    <div class="w-50">
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--md-sys-color-error);" id="dash-priority-skills">0</div>
+                        <div style="font-size: 0.875rem;">Habilidades Prioritárias</div>
+                    </div>
+                    <div class="w-50">
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--md-sys-color-success);" id="dash-mastered-skills">0</div>
+                        <div style="font-size: 0.875rem;">Habilidades Consolidadas</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: SKILL MAPPING -->
+        <section id="skills" class="section hidden">
+            <div class="card-header">
+                <h2>Matriz de Mapeamento de Habilidades</h2>
+                <button class="btn btn-filled" onclick="openModal('skillModal')">
+                    <span class="material-icons-round">add</span> Nova Habilidade
+                </button>
+            </div>
+            
+            <p style="margin-bottom: 16px; color: var(--md-sys-color-on-surface-variant);">
+                Baseado na metodologia NN/Group: Classifique suas habilidades por <strong>Relevância</strong> para o cargo e <strong>Proficiência</strong> atual.
+            </p>
+
+            <div class="matrix-grid">
+                <div class="quadrant q-priority">
+                    <h4><span class="material-icons-round">priority_high</span> Desenvolver com Prioridade</h4>
+                    <p style="font-size: 0.875rem; margin-bottom: 12px;">Alta Relevância / Baixa Proficiência</p>
+                    <div id="q-priority-list"></div>
+                </div>
+                <div class="quadrant q-maintain">
+                    <h4><span class="material-icons-round">verified</span> Manter e Liderar</h4>
+                    <p style="font-size: 0.875rem; margin-bottom: 12px;">Alta Relevância / Alta Proficiência</p>
+                    <div id="q-maintain-list"></div>
+                </div>
+                <div class="quadrant q-delegate">
+                    <h4><span class="material-icons-round">group</span> Delegar / Apoio</h4>
+                    <p style="font-size: 0.875rem; margin-bottom: 12px;">Baixa Relevância / Alta Proficiência</p>
+                    <div id="q-delegate-list"></div>
+                </div>
+                <div class="quadrant q-monitor">
+                    <h4><span class="material-icons-round">visibility</span> Monitorar / Fortalecer</h4>
+                    <p style="font-size: 0.875rem; margin-bottom: 12px;">Baixa Relevância / Baixa Proficiência</p>
+                    <div id="q-monitor-list"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: PDI (7 PASSOS) -->
+        <section id="pdi" class="section hidden">
+            <h2>Plano de Desenvolvimento Individual (7 Passos)</h2>
+            
+            <div class="pdi-steps">
+                <!-- Passos 1 e 2 -->
+                <div class="card">
+                    <h3>Passos 1 & 2: Diagnóstico, Visão e Competências Alvo</h3>
+                    <div class="form-group">
+                        <label>Estado Atual da Carreira (Onde estou?)</label>
+                        <textarea id="pdi-current" rows="3" placeholder="Descreva sua situação profissional atual..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Visão de Futuro (Onde quero chegar em 1-3 anos?)</label>
+                        <textarea id="pdi-future" rows="3" placeholder="Descreva seus objetivos de curto, médio e longo prazo..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Competências Alvo (Selecionadas do Skill Map)</label>
+                        <select id="pdi-target-skills" multiple style="height: 100px;">
+                            <!-- Populated by JS -->
+                        </select>
+                        <small style="color: var(--md-sys-color-on-surface-variant);">Segure Ctrl/Cmd para selecionar múltiplas habilidades prioritárias.</small>
+                    </div>
+                </div>
+
+                <!-- Passos 3, 4 e 5 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Passos 3, 4 & 5: Metas SMART e Plano de Ação (70/20/10)</h3>
+                        <button class="btn btn-tonal" onclick="openModal('actionModal')">
+                            <span class="material-icons-round">add_task</span> Nova Ação
+                        </button>
+                    </div>
+                    
+                    <div class="flex-row" style="margin-bottom: 16px;">
+                        <div class="w-50">
+                            <div class="badge badge-70" style="margin-bottom: 8px; display: inline-block;">70% Experiência Prática</div>
+                            <p style="font-size: 0.875rem;">Projetos, desafios, liderança, tarefas estendidas.</p>
+                        </div>
+                        <div class="w-50">
+                            <div class="badge badge-20" style="margin-bottom: 8px; display: inline-block;">20% Aprendizado com Outros</div>
+                            <p style="font-size: 0.875rem;">Mentoria, feedback, shadowing, networking.</p>
+                        </div>
+                    </div>
+                    <div class="badge badge-10" style="margin-bottom: 8px; display: inline-block;">10% Educação Formal</div>
+                    <p style="font-size: 0.875rem; margin-bottom: 16px;">Cursos, livros, certificações, workshops.</p>
+
+                    <div id="pdi-actions-list">
+                        <!-- Actions populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Passos 6 e 7 -->
+                <div class="card">
+                    <h3>Passos 6 & 7: Acompanhamento, Check-ins e Resultados</h3>
+                    <div class="flex-row">
+                        <div class="w-50">
+                            <div class="form-group">
+                                <label>Data do Check-in</label>
+                                <input type="date" id="checkin-date">
+                            </div>
+                            <div class="form-group">
+                                <label>Notas da Reunião 1-on-1 / Evolução</label>
+                                <textarea id="checkin-notes" rows="3" placeholder="O que foi discutido? Bloqueios? Conquistas?"></textarea>
+                            </div>
+                            <button class="btn btn-filled" onclick="addCheckIn()">Registrar Check-in</button>
+                        </div>
+                        <div class="w-50">
+                            <h4>Histórico de Check-ins</h4>
+                            <div class="checkin-log" id="checkin-log">
+                                <!-- Checkins populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: SETTINGS -->
+        <section id="settings" class="section hidden">
+            <h2>Configurações e Dados</h2>
+            <div class="card">
+                <h3>Gerenciamento de Dados</h3>
+                <p style="margin-bottom: 16px; color: var(--md-sys-color-on-surface-variant);">Seus dados são salvos automaticamente no navegador (localStorage). Use as opções abaixo para fazer backup ou restaurar.</p>
+                <div class="flex-row">
+                    <button class="btn btn-filled" onclick="exportData()">
+                        <span class="material-icons-round">download</span> Exportar JSON
+                    </button>
+                    <button class="btn btn-outline" onclick="document.getElementById('import-file').click()">
+                        <span class="material-icons-round">upload</span> Importar JSON
+                    </button>
+                    <input type="file" id="import-file" class="hidden" accept=".json" onchange="importData(this)">
+                    <button class="btn btn-outline" style="color: var(--md-sys-color-error); border-color: var(--md-sys-color-error);" onclick="clearData()">
+                        <span class="material-icons-round">delete</span> Limpar Tudo
+                    </button>
+                </div>
+            </div>
+            <div class="card no-print">
+                <h3>Impressão do Relatório</h3>
+                <p style="margin-bottom: 16px;">Gere uma versão limpa do seu PDI e Skill Map para levar à sua reunião de avaliação.</p>
+                <button class="btn btn-tonal" onclick="window.print()">
+                    <span class="material-icons-round">print</span> Imprimir / Salvar como PDF
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL: ADD SKILL -->
+    <div id="skillModal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; display: flex; align-items: center; justify-content: center;">
+        <div class="card" style="width: 90%; max-width: 500px; margin: 0;">
+            <h3>Adicionar Habilidade</h3>
+            <div class="form-group">
+                <label>Nome da Habilidade</label>
+                <input type="text" id="skill-name" placeholder="Ex: Gestão de Conflitos, Python, Scrum">
+            </div>
+            <div class="form-group">
+                <label>Categoria</label>
+                <select id="skill-category">
+                    <option value="Hard Skill">Hard Skill (Técnica)</option>
+                    <option value="Soft Skill">Soft Skill (Comportamental)</option>
+                    <option value="Domain">Domain/Business (Negócio)</option>
+                </select>
+            </div>
+            <div class="flex-row">
+                <div class="form-group w-50">
+                    <label>Relevância para a Função</label>
+                    <select id="skill-relevance">
+                        <option value="high">Alta</option>
+                        <option value="low">Baixa</option>
+                    </select>
+                </div>
+                <div class="form-group w-50">
+                    <label>Proficiência Atual</label>
+                    <select id="skill-proficiency">
+                        <option value="high">Alta (Avançado/Especialista)</option>
+                        <option value="low">Baixa (Iniciante/Intermediário)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex-row" style="justify-content: flex-end; margin-top: 24px;">
+                <button class="btn btn-outline" onclick="closeModal('skillModal')">Cancelar</button>
+                <button class="btn btn-filled" onclick="saveSkill()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD PDI ACTION -->
+    <div id="actionModal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; display: flex; align-items: center; justify-content: center;">
+        <div class="card" style="width: 90%; max-width: 600px; margin: 0;">
+            <h3>Nova Ação do PDI (Meta SMART)</h3>
+            <div class="form-group">
+                <label>Descrição da Ação (Específica e Atingível)</label>
+                <input type="text" id="action-desc" placeholder="Ex: Liderar o projeto X até o Q3">
+            </div>
+            <div class="form-group">
+                <label>Tipo de Aprendizado (Regra 70/20/10)</label>
+                <select id="action-type">
+                    <option value="70">70% - Experiência Prática (Desafio/Projeto)</option>
+                    <option value="20">20% - Aprendizado com Outros (Mentoria/Feedback)</option>
+                    <option value="10">10% - Educação Formal (Curso/Livro)</option>
+                </select>
+            </div>
+            <div class="flex-row">
+                <div class="form-group w-50">
+                    <label>Data Início</label>
+                    <input type="date" id="action-start">
+                </div>
+                <div class="form-group w-50">
+                    <label>Data Fim (Temporal)</label>
+                    <input type="date" id="action-end">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Recursos Necessários (Orçamento, Ferramentas, Pessoas)</label>
+                <input type="text" id="action-resources" placeholder="Ex: Budget de R$500, aprovação do gestor">
+            </div>
+            <div class="flex-row" style="justify-content: flex-end; margin-top: 24px;">
+                <button class="btn btn-outline" onclick="closeModal('actionModal')">Cancelar</button>
+                <button class="btn btn-filled" onclick="saveAction()">Salvar Ação</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =========================================
+        // STATE MANAGEMENT
+        // =========================================
+        const defaultData = {
+            skills: [
+                { id: 1, name: "Comunicação Assertiva", category: "Soft Skill", relevance: "high", proficiency: "low" },
+                { id: 2, name: "Análise de Dados (SQL)", category: "Hard Skill", relevance: "high", proficiency: "high" },
+                { id: 3, name: "Gestão de Orçamento", category: "Domain", relevance: "low", proficiency: "high" }
+            ],
+            pdi: {
+                current: "Analista Pleno buscando transição para liderança técnica.",
+                future: "Tornar-se Tech Lead em 2 anos, gerenciando squads ágeis.",
+                targetSkills: [1],
+                actions: [
+                    { id: 1, desc: "Mentoria mensal com o Diretor de Engenharia", type: "20", start: "2023-11-01", end: "2024-05-01", resources: "1h/mês na agenda do diretor", completed: false },
+                    { id: 2, desc: "Curso de Gestão de Pessoas para Tech Leads", type: "10", start: "2023-11-15", end: "2024-01-15", resources: "Budget de treinamento", completed: true }
+                ],
+                checkins: [
+                    { date: "2023-10-15", notes: "Definido foco em comunicação. Gestor irá incluir em reuniões de diretoria como observador." }
+                ]
+            }
+        };
+
+        let appData = JSON.parse(localStorage.getItem('pdiAppData')) || defaultData;
+
+        // =========================================
+        // INITIALIZATION & NAVIGATION
+        // =========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTheme();
+            renderAll();
+        });
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(sectionId).classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active'); // Note: requires event context, simplified here
+            
+            // Update active state manually if called without event
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                if(item.getAttribute('onclick').includes(sectionId)) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            if(sectionId === 'dashboard') updateDashboard();
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // =========================================
+        // SKILL MAPPING LOGIC
+        // =========================================
+        function saveSkill() {
+            const name = document.getElementById('skill-name').value;
+            if(!name) return alert("Nome da habilidade é obrigatório");
+
+            const newSkill = {
+                id: Date.now(),
+                name: name,
+                category: document.getElementById('skill-category').value,
+                relevance: document.getElementById('skill-relevance').value,
+                proficiency: document.getElementById('skill-proficiency').value
+            };
+
+            appData.skills.push(newSkill);
+            saveData();
+            closeModal('skillModal');
+            document.getElementById('skill-name').value = '';
+            renderSkills();
+        }
+
+        function deleteSkill(id) {
+            if(confirm("Remover esta habilidade?")) {
+                appData.skills = appData.skills.filter(s => s.id !== id);
+                appData.pdi.targetSkills = appData.pdi.targetSkills.filter(tid => tid !== id);
+                saveData();
+                renderSkills();
+            }
+        }
+
+        function renderSkills() {
+            const quadrants = {
+                priority: document.getElementById('q-priority-list'),
+                maintain: document.getElementById('q-maintain-list'),
+                delegate: document.getElementById('q-delegate-list'),
+                monitor: document.getElementById('q-monitor-list')
+            };
+
+            // Clear all
+            Object.values(quadrants).forEach(q => q.innerHTML = '');
+
+            appData.skills.forEach(skill => {
+                const tag = document.createElement('div');
+                tag.className = 'skill-tag';
+                tag.innerHTML = `
+                    <span>${skill.name} <small style="opacity:0.7">(${skill.category})</small></span>
+                    <span class="material-icons-round delete-skill" onclick="deleteSkill(${skill.id})" style="font-size: 16px;">close</span>
+                `;
+
+                if (skill.relevance === 'high' && skill.proficiency === 'low') {
+                    quadrants.priority.appendChild(tag);
+                } else if (skill.relevance === 'high' && skill.proficiency === 'high') {
+                    quadrants.maintain.appendChild(tag);
+                } else if (skill.relevance === 'low' && skill.proficiency === 'high') {
+                    quadrants.delegate.appendChild(tag);
+                } else {
+                    quadrants.monitor.appendChild(tag);
+                }
+            });
+
+            // Update PDI Target Skills Select
+            const select = document.getElementById('pdi-target-skills');
+            select.innerHTML = '';
+            appData.skills.forEach(skill => {
+                const option = document.createElement('option');
+                option.value = skill.id;
+                option.text = `${skill.name} (${skill.category})`;
+                if(appData.pdi.targetSkills.includes(skill.id)) option.selected = true;
+                select.appendChild(option);
+            });
+        }
+
+        // =========================================
+        // PDI LOGIC
+        // =========================================
+        function saveAction() {
+            const desc = document.getElementById('action-desc').value;
+            if(!desc) return alert("Descrição da ação é obrigatória");
+
+            const newAction = {
+                id: Date.now(),
+                desc: desc,
+                type: document.getElementById('action-type').value,
+                start: document.getElementById('action-start').value,
+                end: document.getElementById('action-end').value,
+                resources: document.getElementById('action-resources').value,
+                completed: false
+            };
+
+            appData.pdi.actions.push(newAction);
+            saveData();
+            closeModal('actionModal');
+            
+            // Clear form
+            document.getElementById('action-desc').value = '';
+            document.getElementById('action-resources').value = '';
+            
+            renderPDI();
+        }
+
+        function toggleAction(id) {
+            const action = appData.pdi.actions.find(a => a.id === id);
+            if(action) {
+                action.completed = !action.completed;
+                saveData();
+                renderPDI();
+            }
+        }
+
+        function deleteAction(id) {
+            if(confirm("Remover esta ação do PDI?")) {
+                appData.pdi.actions = appData.pdi.actions.filter(a => a.id !== id);
+                saveData();
+                renderPDI();
+            }
+        }
+
+        function renderPDI() {
+            // Text fields
+            document.getElementById('pdi-current').value = appData.pdi.current;
+            document.getElementById('pdi-future').value = appData.pdi.future;
+
+            // Actions List
+            const list = document.getElementById('pdi-actions-list');
+            list.innerHTML = '';
+            
+            if(appData.pdi.actions.length === 0) {
+                list.innerHTML = '<p style="color: var(--md-sys-color-on-surface-variant); text-align: center; padding: 20px;">Nenhuma ação definida ainda.</p>';
+            }
+
+            appData.pdi.actions.forEach(action => {
+                const item = document.createElement('div');
+                item.className = `action-item type-${action.type}`;
+                item.style.opacity = action.completed ? '0.6' : '1';
+                
+                const badgeText = action.type === '70' ? '70% Prática' : (action.type === '20' ? '20% Relacional' : '10% Formal');
+                const badgeClass = `badge-${action.type}`;
+
+                item.innerHTML = `
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                            <span class="badge ${badgeClass}">${badgeText}</span>
+                            <span style="font-weight: 500; text-decoration: ${action.completed ? 'line-through' : 'none'}">${action.desc}</span>
+                        </div>
+                        <div style="font-size: 0.875rem; color: var(--md-sys-color-on-surface-variant);">
+                            📅 ${formatDate(action.start)} até ${formatDate(action.end)} | 🛠️ ${action.resources || 'Nenhum recurso específico'}
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <input type="checkbox" ${action.completed ? 'checked' : ''} onchange="toggleAction(${action.id})" style="width: 20px; height: 20px; cursor: pointer;">
+                        <span class="material-icons-round" style="color: var(--md-sys-color-error); cursor: pointer;" onclick="deleteAction(${action.id})">delete</span>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+
+            // Check-ins
+            const log = document.getElementById('checkin-log');
+            log.innerHTML = '';
+            appData.pdi.checkins.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(checkin => {
+                const entry = document.createElement('div');
+                entry.className = 'checkin-entry';
+                entry.innerHTML = `
+                    <div class="checkin-date">${formatDate(checkin.date)}</div>
+                    <div style="margin-top: 4px;">${checkin.notes}</div>
+                `;
+                log.appendChild(entry);
+            });
+        }
+
+        function addCheckIn() {
+            const date = document.getElementById('checkin-date').value;
+            const notes = document.getElementById('checkin-notes').value;
+            
+            if(!date || !notes) return alert("Data e notas são obrigatórias");
+
+            appData.pdi.checkins.push({ date, notes });
+            saveData();
+            document.getElementById('checkin-notes').value = '';
+            renderPDI();
+        }
+
+        // Auto-save text areas
+        document.getElementById('pdi-current').addEventListener('change', (e) => {
+            appData.pdi.current = e.target.value;
+            saveData();
+        });
+        document.getElementById('pdi-future').addEventListener('change', (e) => {
+            appData.pdi.future = e.target.value;
+            saveData();
+        });
+        document.getElementById('pdi-target-skills').addEventListener('change', (e) => {
+            const selected = Array.from(e.target.selectedOptions).map(option => parseInt(option.value));
+            appData.pdi.targetSkills = selected;
+            saveData();
+        });
+
+        // =========================================
+        // DASHBOARD & UTILS
+        // =========================================
+        function updateDashboard() {
+            const total = appData.pdi.actions.length;
+            const completed = appData.pdi.actions.filter(a => a.completed).length;
+            const percentage = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+            document.getElementById('dash-progress').textContent = `${percentage}%`;
+            document.getElementById('dash-progress-bar').style.width = `${percentage}%`;
+            document.getElementById('dash-completed').textContent = completed;
+            document.getElementById('dash-total').textContent = total;
+
+            const priorityCount = appData.skills.filter(s => s.relevance === 'high' && s.proficiency === 'low').length;
+            const masteredCount = appData.skills.filter(s => s.relevance === 'high' && s.proficiency === 'high').length;
+            
+            document.getElementById('dash-priority-skills').textContent = priorityCount;
+            document.getElementById('dash-mastered-skills').textContent = masteredCount;
+
+            const lastCheckin = appData.pdi.checkins.sort((a,b) => new Date(b.date) - new Date(a.date))[0];
+            document.getElementById('dash-next-checkin').textContent = lastCheckin 
+                ? `Último registro: ${formatDate(lastCheckin.date)}` 
+                : 'Nenhum agendado';
+        }
+
+        function renderAll() {
+            renderSkills();
+            renderPDI();
+            updateDashboard();
+        }
+
+        function saveData() {
+            localStorage.setItem('pdiAppData', JSON.stringify(appData));
+            updateDashboard();
+        }
+
+        function formatDate(dateString) {
+            if(!dateString) return 'N/A';
+            const [year, month, day] = dateString.split('-');
+            return `${day}/${month}/${year}`;
+        }
+
+        // =========================================
+        // SETTINGS: EXPORT / IMPORT / THEME
+        // =========================================
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "pdi_backup_" + new Date().toISOString().slice(0,10) + ".json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        }
+
+        function importData(input) {
+            const file = input.files[0];
+            if(!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if(imported.skills && imported.pdi) {
+                        appData = imported;
+                        saveData();
+                        renderAll();
+                        alert("Dados importados com sucesso!");
+                    } else {
+                        alert("Arquivo JSON inválido.");
+                    }
+                } catch(err) {
+                    alert("Erro ao ler o arquivo JSON.");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function clearData() {
+            if(confirm("ATENÇÃO: Isso apagará todos os dados locais. Deseja continuar?")) {
+                localStorage.removeItem('pdiAppData');
+                appData = JSON.parse(JSON.stringify(defaultData)); // Reset to default
+                saveData();
+                renderAll();
+            }
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const current = html.getAttribute('data-theme');
+            const next = current === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('pdiTheme', next);
+        }
+
+        function loadTheme() {
+            const saved = localStorage.getItem('pdiTheme');
+            if(saved) {
+                document.documentElement.setAttribute('data-theme', saved);
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        }
+    </script>
+</body>
+</html>

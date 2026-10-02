@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de PDI & Skill Mapping | Lominger + McKinsey + Mindsight + NN/Group</title>
+    <style>
+        :root {
+            --primary: #1e293b;
+            --primary-light: #334155;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --radius: 8px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 260px;
+            background-color: var(--primary);
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem 1rem;
+            flex-shrink: 0;
+        }
+
+        .sidebar .brand {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #94a3b8;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background-color: var(--primary-light);
+            color: #ffffff;
+        }
+
+        .nav-item.active {
+            border-left: 4px solid var(--accent);
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--primary-light);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex-grow: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            max-width: 1400px;
+        }
+
+        .header-title {
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title h1 {
+            font-size: 1.75rem;
+            color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Buttons & Forms */
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: var(--radius);
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary { background-color: var(--accent); color: white; }
+        .btn-primary:hover { background-color: var(--accent-hover); }
+        .btn-secondary { background-color: #e2e8f0; color: var(--text-main); }
+        .btn-secondary:hover { background-color: #cbd5e1; }
+        .btn-danger { background-color: var(--danger); color: white; }
+        .btn-sm { padding: 0.3rem 0.6rem; font-size: 0.8rem; }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+
+        @media (max-width: 900px) {
+            .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+            body { flex-direction: column; }
+            .sidebar { width: 100%; }
+        }
+
+        /* Form elements */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--primary-light);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        /* NN/Group Skill Mapping Matrix (2x2 Grid) */
+        .matrix-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 1rem;
+            height: 480px;
+            position: relative;
+            background-color: #f1f5f9;
+            padding: 1rem;
+            border-radius: var(--radius);
+        }
+
+        .matrix-quadrant {
+            background: white;
+            border-radius: var(--radius);
+            padding: 1rem;
+            border: 2px dashed var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .quadrant-1 { border-color: var(--accent); } /* Alta Relevância, Baixa Proficiência (FOCO DE DESENVOLVIMENTO) */
+        .quadrant-2 { border-color: var(--success); } /* Alta Relevância, Alta Proficiência (FORTALEZAS) */
+        .quadrant-3 { border-color: #94a3b8; } /* Baixa Relevância, Baixa Proficiência (MONITORAR) */
+        .quadrant-4 { border-color: var(--warning); } /* Baixa Relevância, Alta Proficiência (MANTER/DELEGAR) */
+
+        .quadrant-header {
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.25rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .skill-tag {
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 0.4rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-bottom: 0.4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        .skill-tag .badge {
+            font-size: 0.7rem;
+            padding: 0.1rem 0.4rem;
+            border-radius: 3px;
+            background: #ffffff;
+        }
+
+        /* McKinsey 70/20/10 Indicators */
+        .badge-70 { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+        .badge-20 { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .badge-10 { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+
+        /* Progress Bar */
+        .progress-bar-bg {
+            background-color: #e2e8f0;
+            border-radius: 10px;
+            height: 10px;
+            width: 100%;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .progress-bar-fill {
+            background-color: var(--accent);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Check-in History Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: #f8fafc;
+            color: var(--primary-light);
+        }
+
+        /* Print Specific Styles */
+        @media print {
+            .sidebar, .btn, .no-print { display: none !important; }
+            body { background: white; }
+            .main-content { padding: 0; }
+            .card { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
+            .tab-content { display: block !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="brand">
+            🎯 PDI & Skill Map
+        </div>
+        <ul class="nav-list">
+            <li class="nav-item active" onclick="switchTab('dashboard')">📊 Dashboard Geral</li>
+            <li class="nav-item" onclick="switchTab('diagnostico')">🔍 1. Diagnóstico & Visão</li>
+            <li class="nav-item" onclick="switchTab('skillmap')">🗺️ 2. Skill Mapping (NNg)</li>
+            <li class="nav-item" onclick="switchTab('plano702010')">🚀 3. Plano 70/20/10</li>
+            <li class="nav-item" onclick="switchTab('checkins')">🤝 4. Check-ins & Evolução</li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <button class="btn btn-secondary btn-sm" onclick="exportData()">💾 Exportar Dados</button>
+            <button class="btn btn-secondary btn-sm" onclick="importData()">📂 Importar Backup</button>
+            <button class="btn btn-secondary btn-sm no-print" onclick="window.print()">🖨️ Imprimir / PDF</button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <!-- DASHBOARD GERAL -->
+        <section id="dashboard" class="tab-content active">
+            <div class="header-title">
+                <h1>Painel de Desenvolvimento de Carreira</h1>
+            </div>
+
+            <div class="grid-4" style="margin-bottom: 1.5rem;">
+                <div class="card" style="margin-bottom:0;">
+                    <div class="card-title" style="font-size:0.85rem; color: var(--text-muted);">META DA CARREIRA</div>
+                    <div id="dashGoal" style="font-size: 1.1rem; font-weight:700;">Não definida</div>
+                </div>
+                <div class="card" style="margin-bottom:0;">
+                    <div class="card-title" style="font-size:0.85rem; color: var(--text-muted);">SKILLS MAPEADAS</div>
+                    <div id="dashSkillsCount" style="font-size: 1.5rem; font-weight:700; color: var(--accent);">0</div>
+                </div>
+                <div class="card" style="margin-bottom:0;">
+                    <div class="card-title" style="font-size:0.85rem; color: var(--text-muted);">AÇÕES CADASTRADAS</div>
+                    <div id="dashActionsCount" style="font-size: 1.5rem; font-weight:700; color: var(--warning);">0</div>
+                </div>
+                <div class="card" style="margin-bottom:0;">
+                    <div class="card-title" style="font-size:0.85rem; color: var(--text-muted);">PROGRESSO GERAL</div>
+                    <div id="dashProgressPercent" style="font-size: 1.5rem; font-weight:700; color: var(--success);">0%</div>
+                    <div class="progress-bar-bg">
+                        <div id="dashProgressBar" class="progress-bar-fill"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title">Resumo do Plano 70/20/10 (McKinsey)</div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                        Distribuição ideal de ações para garantia de aprendizado prático e contínuo.
+                    </p>
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <div>
+                            <div style="display:flex; justify-between; font-size: 0.85rem; font-weight:600;">
+                                <span>70% Prática & Desafios de Trabalho</span>
+                                <span id="count70">0 ações</span>
+                            </div>
+                            <div class="progress-bar-bg"><div id="bar70" class="progress-bar-fill" style="background:#2563eb;"></div></div>
+                        </div>
+                        <div>
+                            <div style="display:flex; justify-between; font-size: 0.85rem; font-weight:600;">
+                                <span>20% Mentoria, Coaching & Feedback</span>
+                                <span id="count20">0 ações</span>
+                            </div>
+                            <div class="progress-bar-bg"><div id="bar20" class="progress-bar-fill" style="background:#f59e0b;"></div></div>
+                        </div>
+                        <div>
+                            <div style="display:flex; justify-between; font-size: 0.85rem; font-weight:600;">
+                                <span>10% Treinamentos & Cursos Formais</span>
+                                <span id="count10">0 ações</span>
+                            </div>
+                            <div class="progress-bar-bg"><div id="bar10" class="progress-bar-fill" style="background:#10b981;"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Gaps Prioritários de Desenvolvimento (Lominger)</div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                        Habilidades com alta relevância para sua meta, mas baixo nível de proficiência atual.
+                    </p>
+                    <div id="dashPriorityGaps" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <!-- Inserido dinamicamente -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 1. DIAGNÓSTICO E VISÃO (Mindsight) -->
+        <section id="diagnostico" class="tab-content">
+            <div class="header-title">
+                <h1>1. Diagnóstico & Visão de Carreira (Mindsight)</h1>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Estado Atual & Objetivo Futuro</div>
+                <div class="form-group">
+                    <label>Cargo Atual e Momento Profissional:</label>
+                    <input type="text" id="currentRole" class="form-control" placeholder="Ex: Desenvolvedor Front-end Pleno" onchange="saveData()">
+                </div>
+                <div class="form-group">
+                    <label>Objetivo de Curto/Médio Prazo (Visão de Futuro):</label>
+                    <input type="text" id="targetRole" class="form-control" placeholder="Ex: Tech Lead / Arquiteto de Software em 18 meses" onchange="saveData()">
+                </div>
+                <div class="form-group">
+                    <label>Resumo do Diagnóstico de Lacunas (Análise Pessoal / Feedback da Liderança):</label>
+                    <textarea id="diagSummary" class="form-control" rows="4" placeholder="Descreva seus pontos fortes e as principais competências que precisa desenvolver para alcançar sua meta..." onchange="saveData()"></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. SKILL MAPPING (NN/Group + Lominger) -->
+        <section id="skillmap" class="tab-content">
+            <div class="header-title">
+                <h1>2. Mapeamento de Habilidades (NN/Group)</h1>
+            </div>
+
+            <div class="grid-3">
+                <!-- Formulário de Adicionar Skill -->
+                <div class="card" style="height: fit-content;">
+                    <div class="card-title">Mapear Nova Habilidade</div>
+                    <form id="skillForm" onsubmit="addSkill(event)">
+                        <div class="form-group">
+                            <label>Nome da Habilidade:</label>
+                            <input type="text" id="skillName" class="form-control" placeholder="Ex: Liderança Técnica, React, SQL..." required>
+                        </div>
+                        <div class="form-group">
+                            <label>Categoria (Lominger):</label>
+                            <select id="skillCategory" class="form-control">
+                                <option value="Hard Skill">Hard Skill (Técnica)</option>
+                                <option value="Soft Skill">Soft Skill (Comportamental)</option>
+                                <option value="Business/Domain">Business / Domínio de Negócio</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Relevância para o Objetivo:</label>
+                            <select id="skillRelevance" class="form-control">
+                                <option value="Alta">Alta Relevância</option>
+                                <option value="Baixa">Baixa Relevância</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Proficiência Atual:</label>
+                            <select id="skillProficiency" class="form-control">
+                                <option value="Baixa">Baixa Proficiência (Aprender)</option>
+                                <option value="Alta">Alta Proficiência (Dominado)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Adicionar à Matriz</button>
+                    </form>
+                </div>
+
+                <!-- Matriz NN/Group 2x2 -->
+                <div style="grid-column: span 2;">
+                    <div class="card">
+                        <div class="card-title">Matriz Visual de Skills (Relevância x Proficiência)</div>
+                        <div class="matrix-container">
+                            <div class="matrix-quadrant quadrant-1">
+                                <div class="quadrant-header">
+                                    <span style="color: var(--accent);">🔥 FOCO DE DESENVOLVIMENTO (GAPs)</span>
+                                    <span style="font-size:0.7rem; color:var(--text-muted);">Alta Rel. / Baixa Prof.</span>
+                                </div>
+                                <div id="quadrant-1-items"></div>
+                            </div>
+
+                            <div class="matrix-quadrant quadrant-2">
+                                <div class="quadrant-header">
+                                    <span style="color: var(--success);">⭐ FORTALEZAS & ALAVANCAS</span>
+                                    <span style="font-size:0.7rem; color:var(--text-muted);">Alta Rel. / Alta Prof.</span>
+                                </div>
+                                <div id="quadrant-2-items"></div>
+                            </div>
+
+                            <div class="matrix-quadrant quadrant-3">
+                                <div class="quadrant-header">
+                                    <span style="color: #64748b;">⏳ MONITORAR / SECUNDÁRIO</span>
+                                    <span style="font-size:0.7rem; color:var(--text-muted);">Baixa Rel. / Baixa Prof.</span>
+                                </div>
+                                <div id="quadrant-3-items"></div>
+                            </div>
+
+                            <div class="matrix-quadrant quadrant-4">
+                                <div class="quadrant-header">
+                                    <span style="color: var(--warning);">🛡️ MANTER / DELEGAR</span>
+                                    <span style="font-size:0.7rem; color:var(--text-muted);">Baixa Rel. / Alta Prof.</span>
+                                </div>
+                                <div id="quadrant-4-items"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. PLANO DE AÇÃO 70/20/10 (McKinsey) -->
+        <section id="plano702010" class="tab-content">
+            <div class="header-title">
+                <h1>3. Plano de Ação SMART - Metodologia 70/20/10 (McKinsey)</h1>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Cadastrar Ação de Desenvolvimento</div>
+                <form id="actionForm" onsubmit="addAction(event)">
+                    <div class="grid-3">
+                        <div class="form-group">
+                            <label>Habilidade Alvo (Gap do Skill Mapping):</label>
+                            <select id="actionSkillSelect" class="form-control" required>
+                                <!-- Preenchido dinamicamente -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Tipo de Aprendizado (70/20/10):</label>
+                            <select id="actionType" class="form-control">
+                                <option value="70">70% - Prática / Projeto / Desafio real no trabalho</option>
+                                <option value="20">20% - Mentoria / Feedback / Troca com Pares</option>
+                                <option value="10">10% - Cursos Formais / Cursos / Leitura</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Prazo Limite (Meta SMART):</label>
+                            <input type="date" id="actionDeadline" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Descrição Detalhada da Ação:</label>
+                        <input type="text" id="actionDescription" class="form-control" placeholder="Ex: Liderar a refatoração do módulo X assumindo a responsabilidade da arquitetura..." required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Adicionar Ação ao PDI</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Plano de Ações Cadastradas</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Habilidade</th>
+                            <th>Tipo (70/20/10)</th>
+                            <th>Ação SMART</th>
+                            <th>Prazo</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="actionsTableBody">
+                        <!-- Preenchido via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 4. CHECK-INS & ACOMPANHAMENTO (Mindsight) -->
+        <section id="checkins" class="tab-content">
+            <div class="header-title">
+                <h1>4. Registros de Check-ins & Reuniões de 1-on-1</h1>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Novo Registro de Acompanhamento</div>
+                <form id="checkinForm" onsubmit="addCheckin(event)">
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Data da Reunião/Check-in:</label>
+                            <input type="date" id="checkinDate" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Mentor / Gestor / Par Responsável:</label>
+                            <input type="text" id="checkinPeople" class="form-control" placeholder="Ex: Carlos (Gestor de RH/Tech Lead)" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Notas da Reunião, Feedbacks e Combinados:</label>
+                        <textarea id="checkinNotes" class="form-control" rows="3" placeholder="Registre o progresso discutido, feedbacks recebidos e ajustes de rota..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Salvar Registro de Check-in</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Histórico de Reuniões de 1-on-1</div>
+                <div id="checkinHistory">
+                    <!-- Inserido dinamicamente -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Data Structure Initial State
+        let appData = {
+            currentRole: '',
+            targetRole: '',
+            diagSummary: '',
+            skills: [],
+            actions: [],
+            checkins: []
+        };
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            renderAll();
+        });
+
+        // Navigation Controller
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+            
+            renderAll();
+        }
+
+        // Skill Management (NN/Group + Lominger)
+        function addSkill(e) {
+            e.preventDefault();
+            const name = document.getElementById('skillName').value;
+            const category = document.getElementById('skillCategory').value;
+            const relevance = document.getElementById('skillRelevance').value;
+            const proficiency = document.getElementById('skillProficiency').value;
+
+            appData.skills.push({ id: Date.now(), name, category, relevance, proficiency });
+            saveData();
+            renderAll();
+            document.getElementById('skillForm').reset();
+        }
+
+        function removeSkill(id) {
+            appData.skills = appData.skills.filter(s => s.id !== id);
+            appData.actions = appData.actions.filter(a => a.skillId !== id);
+            saveData();
+            renderAll();
+        }
+
+        // Action Management (McKinsey 70/20/10)
+        function addAction(e) {
+            e.preventDefault();
+            const skillId = parseInt(document.getElementById('actionSkillSelect').value);
+            const type = document.getElementById('actionType').value;
+            const deadline = document.getElementById('actionDeadline').value;
+            const description = document.getElementById('actionDescription').value;
+
+            appData.actions.push({
+                id: Date.now(),
+                skillId,
+                type,
+                deadline,
+                description,
+                completed: false
+            });
+
+            saveData();
+            renderAll();
+            document.getElementById('actionForm').reset();
+        }
+
+        function toggleActionStatus(id) {
+            const action = appData.actions.find(a => a.id === id);
+            if (action) {
+                action.completed = !action.completed;
+                saveData();
+                renderAll();
+            }
+        }
+
+        function removeAction(id) {
+            appData.actions = appData.actions.filter(a => a.id !== id);
+            saveData();
+            renderAll();
+        }
+
+        // Check-in Management
+        function addCheckin(e) {
+            e.preventDefault();
+            const date = document.getElementById('checkinDate').value;
+            const people = document.getElementById('checkinPeople').value;
+            const notes = document.getElementById('checkinNotes').value;
+
+            appData.checkins.unshift({ id: Date.now(), date, people, notes });
+            saveData();
+            renderAll();
+            document.getElementById('checkinForm').reset();
+        }
+
+        // Render Functions
+        function renderAll() {
+            renderDiagnostico();
+            renderMatrix();
+            renderActionsSelect();
+            renderActionsTable();
+            renderCheckins();
+            renderDashboard();
+        }
+
+        function renderDiagnostico() {
+            document.getElementById('currentRole').value = appData.currentRole || '';
+            document.getElementById('targetRole').value = appData.targetRole || '';
+            document.getElementById('diagSummary').value = appData.diagSummary || '';
+        }
+
+        function renderMatrix() {
+            // Quadrantes NN/Group
+            const q1 = document.getElementById('quadrant-1-items');
+            const q2 = document.getElementById('quadrant-2-items');
+            const q3 = document.getElementById('quadrant-3-items');
+            const q4 = document.getElementById('quadrant-4-items');
+
+            q1.innerHTML = ''; q2.innerHTML = ''; q3.innerHTML = ''; q4.innerHTML = '';
+
+            appData.skills.forEach(skill => {
+                const tag = document.createElement('div');
+                tag.className = 'skill-tag';
+                tag.innerHTML = `
+                    <span>${skill.name} <br><small style="color:var(--text-muted); font-weight:normal;">${skill.category}</small></span>
+                    <button class="btn btn-danger btn-sm" onclick="removeSkill(${skill.id})">×</button>
+                `;
+
+                if (skill.relevance === 'Alta' && skill.proficiency === 'Baixa') q1.appendChild(tag);
+                else if (skill.relevance === 'Alta' && skill.proficiency === 'Alta') q2.appendChild(tag);
+                else if (skill.relevance === 'Baixa' && skill.proficiency === 'Baixa') q3.appendChild(tag);
+                else if (skill.relevance === 'Baixa' && skill.proficiency === 'Alta') q4.appendChild(tag);
+            });
+        }
+
+        function renderActionsSelect() {
+            const select = document.getElementById('actionSkillSelect');
+            select.innerHTML = '<option value="">Selecione uma habilidade...</option>';
+            appData.skills.forEach(s => {
+                select.innerHTML += `<option value="${s.id}">${s.name} (${s.category})</option>`;
+            });
+        }
+
+        function renderActionsTable() {
+            const tbody = document.getElementById('actionsTableBody');
+            tbody.innerHTML = '';
+
+            appData.actions.forEach(act => {
+                const skill = appData.skills.find(s => s.id === act.skillId);
+                const skillName = skill ? skill.name : 'Desconhecida';
+                const badgeClass = `badge-${act.type}`;
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${skillName}</strong></td>
+                        <td><span class="badge ${badgeClass}">${act.type}%</span></td>
+                        <td style="${act.completed ? 'text-decoration: line-through; color: var(--text-muted);' : ''}">${act.description}</td>
+                        <td>${act.deadline}</td>
+                        <td>
+                            <input type="checkbox" ${act.completed ? 'checked' : ''} onchange="toggleActionStatus(${act.id})">
+                            ${act.completed ? ' Concluído' : ' Em andamento'}
+                        </td>
+                        <td><button class="btn btn-danger btn-sm" onclick="removeAction(${act.id})">Excluir</button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderCheckins() {
+            const container = document.getElementById('checkinHistory');
+            container.innerHTML = '';
+
+            if (appData.checkins.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-muted); font-size:0.9rem;">Nenhum check-in registrado até o momento.</p>';
+                return;
+            }
+
+            appData.checkins.forEach(c => {
+                container.innerHTML += `
+                    <div style="border-left: 3px solid var(--accent); padding-left: 1rem; margin-bottom: 1rem;">
+                        <div style="font-size:0.85rem; color:var(--text-muted);">
+                            <strong>Data:</strong> ${c.date} | <strong>Participante(s):</strong> ${c.people}
+                        </div>
+                        <div style="margin-top:0.3rem; font-size:0.95rem;">${c.notes}</div>
+                    </div>
+                `;
+            });
+        }
+
+        function renderDashboard() {
+            // Meta
+            document.getElementById('dashGoal').innerText = appData.targetRole || 'Não definida';
+            
+            // Counts
+            document.getElementById('dashSkillsCount').innerText = appData.skills.length;
+            document.getElementById('dashActionsCount').innerText = appData.actions.length;
+
+            // Progresso
+            const totalActions = appData.actions.length;
+            const completedActions = appData.actions.filter(a => a.completed).length;
+            const percent = totalActions > 0 ? Math.round((completedActions / totalActions) * 100) : 0;
+
+            document.getElementById('dashProgressPercent').innerText = `${percent}%`;
+            document.getElementById('dashProgressBar').style.width = `${percent}%`;
+
+            // Proporção McKinsey 70/20/10
+            const count70 = appData.actions.filter(a => a.type === '70').length;
+            const count20 = appData.actions.filter(a => a.type === '20').length;
+            const count10 = appData.actions.filter(a => a.type === '10').length;
+
+            document.getElementById('count70').innerText = `${count70} ações`;
+            document.getElementById('count20').innerText = `${count20} ações`;
+            document.getElementById('count10').innerText = `${count10} ações`;
+
+            document.getElementById('bar70').style.width = totalActions ? `${(count70/totalActions)*100}%` : '0%';
+            document.getElementById('bar20').style.width = totalActions ? `${(count20/totalActions)*100}%` : '0%';
+            document.getElementById('bar10').style.width = totalActions ? `${(count10/totalActions)*100}%` : '0%';
+
+            // Gaps Prioritários
+            const gapsContainer = document.getElementById('dashPriorityGaps');
+            gapsContainer.innerHTML = '';
+            const priorityGaps = appData.skills.filter(s => s.relevance === 'Alta' && s.proficiency === 'Baixa');
+
+            if (priorityGaps.length === 0) {
+                gapsContainer.innerHTML = '<p style="font-size:0.85rem; color:var(--text-muted);">Nenhum gap prioritário mapeado no momento.</p>';
+            } else {
+                priorityGaps.forEach(g => {
+                    gapsContainer.innerHTML += `
+                        <div style="background:#fef2f2; border: 1px solid #fecaca; color:#991b1b; padding:0.5rem; border-radius:4px; font-size:0.85rem; font-weight:600;">
+                            ⚠️ ${g.name} <small>(${g.category})</small>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        // Local Storage & Data Handling
+        function saveData() {
+            appData.currentRole = document.getElementById('currentRole').value;
+            appData.targetRole = document.getElementById('targetRole').value;
+            appData.diagSummary = document.getElementById('diagSummary').value;
+
+            localStorage.setItem('pdi_app_data', JSON.stringify(appData));
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('pdi_app_data');
+            if (saved) {
+                appData = JSON.parse(saved);
+            }
+        }
+
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `pdi_backup_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = e => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.readAsText(file, 'UTF-8');
+                reader.onload = readerEvent => {
+                    const content = readerEvent.target.result;
+                    appData = JSON.parse(content);
+                    saveData();
+                    renderAll();
+                    alert('Dados importados com sucesso!');
+                }
+            }
+            input.click();
+        }
+    </script>
+</body>
+</html>

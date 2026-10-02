@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PDI + Skill Mapping</title>
+<style>
+:root,[data-theme=light]{--p:#1b4b8f;--op:#fff;--pc:#d8e2ff;--opc:#001a41;--s:#f8f9ff;--c1:#eef0f7;--c2:#e2e5ee;--on:#191c20;--onv:#44474f;--ol:#74777f;--ov:#c4c6d0;--t:#1b6b3a;--tc:#b1f1c2;--e:#ba1a1a;--ec:#ffdad6;--w:#7a5900;--wc:#ffdf9e;--sh:0 1px 3px rgba(0,0,0,.18)}
+[data-theme=dark]{--p:#acc7ff;--op:#002f67;--pc:#144686;--opc:#d8e2ff;--s:#111318;--c1:#1c1f26;--c2:#272a31;--on:#e1e2e9;--onv:#c4c6d0;--ol:#8e9099;--ov:#44474f;--t:#95d8a6;--tc:#0b5128;--e:#ffb4ab;--ec:#7a1c18;--w:#f4c14d;--wc:#5a4300;--sh:0 1px 3px rgba(0,0,0,.6)}
+*{box-sizing:border-box;margin:0}
+body{font:15px/1.5 Roboto,"Segoe UI",system-ui,sans-serif;background:var(--s);color:var(--on);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.app{display:grid;grid-template-columns:272px 1fr;min-height:100vh}
+aside{background:var(--c1);padding:20px 12px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:6px}
+aside h1{font-size:20px;font-weight:500;padding:8px 16px 16px;color:var(--p)}
+aside h1 small{display:block;font-size:12px;color:var(--onv);font-weight:400}
+.ni{display:flex;align-items:center;gap:12px;padding:0 16px;height:56px;border-radius:28px;border:0;background:none;color:var(--onv);font:inherit;font-weight:500;cursor:pointer;text-align:left}
+.ni:hover{background:var(--c2)}.ni.on{background:var(--pc);color:var(--opc)}
+.sp{flex:1}
+main{padding:28px 32px;max-width:1200px;width:100%}
+h2{font-size:28px;font-weight:400;margin-bottom:4px}h3{font-size:18px;font-weight:500;margin:20px 0 10px}
+.sub{color:var(--onv);margin-bottom:20px}
+.card{background:var(--c1);border-radius:16px;padding:18px;box-shadow:none}
+.card.o{background:var(--s);border:1px solid var(--ov)}
+.g{display:grid;gap:16px}.g4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}.g2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.end{justify-content:flex-end}.between{justify-content:space-between}
+.btn{height:40px;padding:0 22px;border-radius:20px;border:1px solid var(--ol);background:none;color:var(--p);font:inherit;font-weight:500;cursor:pointer}
+.btn.f{background:var(--p);color:var(--op);border:0}.btn.t{border:0;padding:0 12px}.btn.d{color:var(--e)}.btn.s{height:32px;padding:0 14px;font-size:13px}
+.btn:hover{filter:brightness(1.12)}.btn:focus-visible,.ni:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--p);outline-offset:2px}
+.num{font-size:36px;font-weight:400;color:var(--p)}.lbl{color:var(--onv);font-size:13px}
+.bar{height:8px;border-radius:4px;background:var(--c2);overflow:hidden;position:relative}.bar i{display:block;height:100%;background:var(--p);border-radius:4px}
+.bar.gr i{background:var(--t)}
+.mk{position:absolute;top:-2px;bottom:-2px;width:3px;background:var(--e)}
+.donut{--v:0;width:120px;height:120px;border-radius:50%;background:conic-gradient(var(--t) calc(var(--v)*1%),var(--c2) 0);display:grid;place-items:center}
+.donut span{width:92px;height:92px;border-radius:50%;background:var(--c1);display:grid;place-items:center;font-size:24px}
+.chip{display:inline-block;padding:2px 12px;border-radius:8px;font-size:12px;font-weight:500;background:var(--pc);color:var(--opc);margin:2px}
+.chip.g{background:var(--tc);color:var(--t)}.chip.r{background:var(--ec);color:var(--e)}.chip.n{background:var(--c2);color:var(--onv)}.chip.w{background:var(--wc);color:var(--w)}
+.chip[data-a]{cursor:pointer}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--ov);vertical-align:top}th{color:var(--onv);font-weight:500}
+.tw{overflow-x:auto}
+.mx{display:grid;grid-template-columns:70px repeat(4,1fr);gap:4px}
+.cell{min-height:78px;border-radius:10px;padding:4px}.cell.g{background:var(--tc);opacity:.85}.cell.r{background:var(--ec)}.cell.b{background:var(--pc)}.cell.n{background:var(--c2)}
+.ax{font-size:12px;color:var(--onv);display:flex;align-items:center}.ax.x{justify-content:center;text-align:center}
+.leg{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.steps{display:flex;gap:6px;overflow-x:auto;margin:12px 0 20px;padding-bottom:4px}
+.st{border:1px solid var(--ol);background:none;color:var(--onv);border-radius:8px;height:36px;padding:0 14px;font:inherit;font-size:13px;white-space:nowrap;cursor:pointer}
+.st.on{background:var(--pc);color:var(--opc);border-color:transparent}
+label{display:block;font-size:13px;color:var(--onv);margin-bottom:12px}
+input,select,textarea{display:block;width:100%;margin-top4px;margin-top:4px;padding:10px 12px;border-radius:6px;border:1px solid var(--ol);background:var(--s);color:var(--on);font:inherit}
+textarea{resize:vertical}
+dialog{border:0;border-radius:28px;padding:24px;background:var(--s);color:var(--on);width:min(560px,94vw);max-height:92vh;overflow:auto}
+dialog::backdrop{background:rgba(0,0,0,.45)}dialog h2{font-size:24px;margin-bottom:16px}
+.empty{padding:28px;text-align:center;color:var(--onv);border:1px dashed var(--ov);border-radius:12px}
+#report{display:none}
+@media(max-width:820px){.app{grid-template-columns:1fr}aside{position:static;height:auto;flex-direction:row;flex-wrap:wrap;padding:8px}aside h1,.sp{display:none}.ni{height:44px}main{padding:18px 14px}}
+@media print{.app,dialog{display:none!important}#report{display:block;padding:8px}body{background:#fff;color:#000;font-size:12px}#report .card{break-inside:avoid;border:1px solid #ccc}#report h3{break-after:avoid}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <h1>Meu PDI<small>Skill Mapping + 70/20/10</small></h1>
+    <div id="nav" style="display:contents"></div>
+    <div class="sp"></div>
+    <button class="ni" data-a="theme">🌓 Alternar tema</button>
+    <button class="ni" data-a="export">⬇️ Exportar JSON</button>
+    <button class="ni" data-a="import">⬆️ Importar JSON</button>
+    <button class="ni" data-a="print">🖨️ Imprimir / PDF</button>
+    <input type="file" id="file" accept=".json" hidden>
+  </aside>
+  <main id="main"></main>
+</div>
+<dialog id="dlg"></dialog>
+<div id="report"></div>
+
+<script>
+const K='pdi-skillmap-v1',TK='pdi-theme';
+const LV=['Iniciante','Intermediário','Avançado','Especialista'],RL=['Baixa','Média','Alta','Crítica'];
+const CATS=['Hard Skill','Soft Skill','Domain/Business'],ST=['Não iniciada','Em andamento','Concluída'];
+const TY={70:'70% · Experiência prática',20:'20% · Aprender com outros',10:'10% · Educação formal'};
+const TYH={70:'Projetos, desafios, liderança técnica',20:'Mentoria, feedback, shadowing',10:'Cursos, livros, certificações'};
+const STEPS=['1 Diagnóstico','2 Competências','3 Metas SMART','4 Plano 70/20/10','5 Prazos e recursos','6 Check-ins','7 Resultados'];
+const $=s=>document.querySelector(s),uid=()=>Math.random().toString(36).slice(2,9);
+const esc=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const avg=a=>a.length?Math.round(a.reduce((x,y)=>x+y,0)/a.length):0;
+const fd=d=>d?d.split('-').reverse().join('/'):'—';
+const def=()=>({skills:[{id:uid(),name:'JavaScript',cat:'Hard Skill',level:3,rel:4,target:4,pdi:false},{id:uid(),name:'Comunicação',cat:'Soft Skill',level:2,rel:4,target:3,pdi:true},{id:uid(),name:'Gestão de produto',cat:'Domain/Business',level:1,rel:3,target:2,pdi:false},{id:uid(),name:'Planilhas avançadas',cat:'Hard Skill',level:3,rel:1,target:3,pdi:false}],diag:{atual:'',curto:'',medio:'',longo:''},goals:[],actions:[],checkins:[]});
+let S;try{S=JSON.parse(localStorage.getItem(K))||def()}catch(e){S=def()}
+let V='dash',step=1;
+const save=(r=true)=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}if(r)render()};
+
+/* cálculos */
+const gp=g=>{if(g.status=='Concluída')return 100;const a=S.actions.filter(x=>x.goal==g.id);return a.length?avg(a.map(ap)):(g.status=='Em andamento'?25:0)};
+const ap=a=>a.status=='Concluída'?100:a.status=='Em andamento'?50:0;
+const q=s=>s.rel>=3?(s.level>=3?['Fortalecer','g']:['Desenvolver com prioridade','r']):(s.level>=3?['Manter','b']:['Delegar','n']);
+const sk=id=>S.skills.find(s=>s.id==id),gl=id=>S.goals.find(g=>g.id==id);
+const stc=s=>s=='Concluída'?'g':s=='Em andamento'?'w':'n';
+
+/* matriz */
+function matrix(){
+  let h='<div class="mx">';
+  for(let r=4;r>=1;r--){h+=`<div class="ax">${RL[r-1]}</div>`;
+    for(let l=1;l<=4;l++){const c=q({rel:r,level:l})[1];
+      h+=`<div class="cell ${c}">${S.skills.filter(s=>s.rel==r&&s.level==l).map(s=>`<span class="chip" data-a="editSkill" data-id="${s.id}" title="${esc(s.cat)}">${esc(s.name)}</span>`).join('')}</div>`}}
+  h+='<div></div>'+LV.map(l=>`<div class="ax x">${l}</div>`).join('')+'</div>';
+  h+='<div class="lbl" style="margin-top:6px">Vertical: relevância para a função · Horizontal: nível de proficiência</div>';
+  h+='<div class="leg"><span class="chip r">Desenvolver com prioridade (relevante, nível baixo)</span><span class="chip g">Fortalecer (relevante, nível alto)</span><span class="chip b">Manter (pouco relevante, nível alto)</span><span class="chip n">Delegar (pouco relevante, nível baixo)</span></div>';
+  return h}
+
+/* views */
+function dash(full){
+  const gPct=avg(S.goals.map(gp)),aPct=avg(S.actions.map(ap));
+  const prof=S.skills.filter(s=>s.pdi||s.target>s.level);
+  return `<div class="g g4">
+   <div class="card"><div class="lbl">Habilidades mapeadas</div><div class="num">${S.skills.length}</div></div>
+   <div class="card"><div class="lbl">Metas concluídas</div><div class="num">${S.goals.filter(g=>g.status=='Concluída').length}/${S.goals.length}</div></div>
+   <div class="card"><div class="lbl">Ações concluídas</div><div class="num">${S.actions.filter(a=>a.status=='Concluída').length}/${S.actions.length}</div></div>
+   <div class="card"><div class="lbl">Check-ins registrados</div><div class="num">${S.checkins.length}</div></div>
+  </div>
+  <div class="g g2" style="margin-top:16px">
+   <div class="card row" style="gap:20px"><div class="donut" style="--v:${gPct}"><span>${gPct}%</span></div><div><b>Progresso das metas</b><div class="lbl">Média considerando status e ações vinculadas</div><div class="lbl" style="margin-top:8px">Ações: ${aPct}% de execução</div></div></div>
+   <div class="card"><b>Distribuição do plano (alvo 70/20/10)</b>${[70,20,10].map(t=>{const n=S.actions.filter(a=>a.type==t).length,p=S.actions.length?Math.round(n/S.actions.length*100):0;return `<div style="margin-top:10px"><div class="row between lbl"><span>${TY[t]}</span><span>${p}% real · ${n} ações</span></div><div class="bar"><i style="width:${p}%"></i><span class="mk" style="left:${t}%"></span></div></div>`}).join('')}<div class="lbl" style="margin-top:8px">A marca vermelha indica o percentual ideal.</div></div>
+  </div>
+  <h3>Evolução de proficiência</h3>
+  <div class="card">${prof.length?prof.map(s=>`<div style="margin-bottom:14px"><div class="row between"><span>${esc(s.name)} <span class="chip n">${s.cat}</span></span><span class="lbl">${LV[s.level-1]} → meta ${LV[s.target-1]}</span></div><div class="bar gr"><i style="width:${s.level*25}%"></i><span class="mk" style="left:calc(${s.target*25}% - 3px)"></span></div></div>`).join(''):'<div class="empty">Defina uma meta de proficiência nas habilidades para acompanhar a evolução.</div>'}</div>`}
+
+function skills(){
+  return `<h2>Skill Mapping</h2><p class="sub">Posicione cada habilidade por proficiência e relevância para a função atual ou futura.</p>
+  <div class="row between" style="margin-bottom:12px"><span></span><button class="btn f" data-a="addSkill">+ Nova habilidade</button></div>
+  <div class="card tw">${matrix()}</div>
+  <h3>Todas as habilidades</h3>
+  <div class="card tw">${S.skills.length?`<table><tr><th>Habilidade</th><th>Categoria</th><th>Proficiência</th><th>Relevância</th><th>Meta</th><th>Quadrante</th><th></th></tr>${S.skills.map(s=>`<tr><td>${esc(s.name)}</td><td>${s.cat}</td><td>${LV[s.level-1]}</td><td>${RL[s.rel-1]}</td><td>${LV[s.target-1]}</td><td><span class="chip ${q(s)[1]}">${q(s)[0]}</span></td><td class="row"><button class="btn t s" data-a="editSkill" data-id="${s.id}">Editar</button><button class="btn t s d" data-a="delSkill" data-id="${s.id}">Excluir</button></td></tr>`).join('')}</table>`:'<div class="empty">Nenhuma habilidade ainda. Adicione a primeira.</div>'}</div>`}
+
+function pdi(){
+  const tabs=`<div class="steps">${STEPS.map((t,i)=>`<button class="st ${step==i+1?'on':''}" data-a="step" data-v="${i+1}">${t}</button>`).join('')}</div>`;
+  let b='';
+  if(step==1)b=`<p class="sub">Registre onde você está e para onde quer ir.</p><div class="card g g2">${[['atual','Estado atual da carreira'],['curto','Meta de curto prazo (até 1 ano)'],['medio','Meta de médio prazo (2–3 anos)'],['longo','Visão de longo prazo (5+ anos)']].map(([k,l])=>`<label>${l}<textarea rows="5" data-d="${k}">${esc(S.diag[k])}</textarea></label>`).join('')}</div><div class="lbl" style="margin-top:8px">Salvo automaticamente.</div>`;
+  if(step==2){const pr=S.skills.filter(s=>q(s)[1]=='r');b=`<p class="sub">Escolha as competências que o PDI vai desenvolver. Sugerimos as que estão em “Desenvolver com prioridade” no mapa.</p>
+    <div class="card">${S.skills.length?`<table><tr><th></th><th>Habilidade</th><th>Nível → meta</th><th>Quadrante</th></tr>${[...S.skills].sort((a,b)=>(q(a)[1]=='r'?0:1)-(q(b)[1]=='r'?0:1)).map(s=>`<tr><td><input type="checkbox" style="width:20px;margin:0" data-p="${s.id}" ${s.pdi?'checked':''}></td><td>${esc(s.name)}</td><td>${LV[s.level-1]} → ${LV[s.target-1]}</td><td><span class="chip ${q(s)[1]}">${q(s)[0]}</span></td></tr>`).join('')}</table>`:'<div class="empty">Mapeie habilidades primeiro.</div>'}</div>
+    <div class="lbl" style="margin-top:8px">${pr.length} habilidade(s) prioritária(s) · ${S.skills.filter(s=>s.pdi).length} selecionada(s)</div>`}
+  if(step==3)b=`<div class="row between"><p class="sub">Metas Específicas, Mensuráveis, Atingíveis, Relevantes e Temporais.</p><button class="btn f" data-a="addGoal">+ Nova meta</button></div>
+    ${S.goals.length?`<div class="g g2">${S.goals.map(g=>`<div class="card"><div class="row between"><b>${esc(g.title)}</b><button class="chip ${stc(g.status)}" style="border:0" data-a="cycleG" data-id="${g.id}" title="Clique para mudar status">${g.status}</button></div>
+    <div class="lbl">Competência: ${sk(g.skill)?esc(sk(g.skill).name):'—'} · Prazo: ${fd(g.deadline)}</div>
+    <div class="bar" style="margin:10px 0"><i style="width:${gp(g)}%"></i></div>
+    <div style="font-size:13px"><b>E</b> ${esc(g.s)}<br><b>M</b> ${esc(g.m)}<br><b>A</b> ${esc(g.a)}<br><b>R</b> ${esc(g.r)}</div>
+    <div class="row end"><button class="btn t s" data-a="editGoal" data-id="${g.id}">Editar</button><button class="btn t s d" data-a="delGoal" data-id="${g.id}">Excluir</button></div></div>`).join('')}</div>`:'<div class="empty">Nenhuma meta criada.</div>'}`;
+  if(step==4)b=`<div class="row between"><p class="sub">Distribua as ações entre prática, aprendizado com outros e educação formal.</p><button class="btn f" data-a="addAct">+ Nova ação</button></div>
+    <div class="g g2" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">${[70,20,10].map(t=>`<div class="card"><b>${TY[t]}</b><div class="lbl" style="margin-bottom:10px">${TYH[t]}</div>${S.actions.filter(a=>a.type==t).map(a=>`<div class="card o" style="margin-bottom:8px;padding:12px"><div class="row between"><span>${esc(a.title)}</span><button class="chip ${stc(a.status)}" style="border:0" data-a="cycleA" data-id="${a.id}">${a.status}</button></div><div class="lbl">Meta: ${gl(a.goal)?esc(gl(a.goal).title):'—'}</div><div class="row end"><button class="btn t s" data-a="editAct" data-id="${a.id}">Editar</button><button class="btn t s d" data-a="delAct" data-id="${a.id}">Excluir</button></div></div>`).join('')||'<div class="lbl">Sem ações.</div>'}</div>`).join('')}</div>`;
+  if(step==5)b=`<p class="sub">Datas e recursos de cada ação. Use “Editar” para ajustar.</p><div class="card tw">${S.actions.length?`<table><tr><th>Ação</th><th>Tipo</th><th>Início</th><th>Fim</th><th>Recursos</th><th></th></tr>${[...S.actions].sort((a,b)=>(a.end||'9').localeCompare(b.end||'9')).map(a=>`<tr><td>${esc(a.title)}</td><td>${a.type}%</td><td>${fd(a.start)}</td><td>${fd(a.end)}</td><td>${esc(a.res)||'—'}</td><td><button class="btn t s" data-a="editAct" data-id="${a.id}">Editar</button></td></tr>`).join('')}</table>`:'<div class="empty">Crie ações na etapa 4.</div>'}</div>`;
+  if(step==6)b=`<div class="row between"><p class="sub">Registre as conversas de 1-on-1 e a evolução.</p><button class="btn f" data-a="addChk">+ Novo check-in</button></div>
+    ${S.checkins.length?[...S.checkins].sort((a,b)=>b.date.localeCompare(a.date)).map(c=>`<div class="card" style="margin-bottom:12px"><div class="row between"><b>${fd(c.date)} · ${esc(c.who)}</b><span class="chip ${c.status=='No caminho'?'g':c.status=='Atenção'?'w':'r'}">${c.status}</span></div><p style="white-space:pre-wrap;margin-top:6px">${esc(c.notes)}</p><div class="row end"><button class="btn t s" data-a="editChk" data-id="${c.id}">Editar</button><button class="btn t s d" data-a="delChk" data-id="${c.id}">Excluir</button></div></div>`).join(''):'<div class="empty">Nenhum check-in registrado.</div>'}`;
+  if(step==7)b=dash();
+  return `<h2>Plano de Desenvolvimento Individual</h2>${tabs}${b}`}
+
+/* relatório de impressão */
+function report(){
+  return `<h2>PDI e Skill Map</h2><div class="lbl">Gerado em ${new Date().toLocaleDateString('pt-BR')}</div>
+  <h3>1. Diagnóstico e visão</h3><div class="card">${[['atual','Atual'],['curto','Curto prazo'],['medio','Médio prazo'],['longo','Longo prazo']].map(([k,l])=>`<p><b>${l}:</b> ${esc(S.diag[k])||'—'}</p>`).join('')}</div>
+  <h3>Skill Map</h3><div class="card">${matrix()}</div>
+  <h3>2. Competências selecionadas</h3><div class="card">${S.skills.filter(s=>s.pdi).map(s=>`<span class="chip">${esc(s.name)}: ${LV[s.level-1]} → ${LV[s.target-1]}</span>`).join('')||'—'}</div>
+  <h3>3. Metas SMART</h3>${S.goals.map(g=>`<div class="card" style="margin-bottom:8px"><b>${esc(g.title)}</b> (${g.status}, ${gp(g)}%) · prazo ${fd(g.deadline)}<br>E: ${esc(g.s)}<br>M: ${esc(g.m)}<br>A: ${esc(g.a)}<br>R: ${esc(g.r)}</div>`).join('')||'—'}
+  <h3>4–5. Plano de ação 70/20/10</h3><div class="card"><table><tr><th>Ação</th><th>Tipo</th><th>Período</th><th>Recursos</th><th>Status</th></tr>${S.actions.map(a=>`<tr><td>${esc(a.title)}</td><td>${a.type}%</td><td>${fd(a.start)} – ${fd(a.end)}</td><td>${esc(a.res)}</td><td>${a.status}</td></tr>`).join('')}</table></div>
+  <h3>6. Check-ins</h3>${S.checkins.map(c=>`<div class="card" style="margin-bottom:8px"><b>${fd(c.date)} · ${esc(c.who)} · ${c.status}</b><br>${esc(c.notes)}</div>`).join('')||'—'}
+  <h3>7. Resultados</h3>${dash()}`}
+
+/* render */
+function render(){
+  $('#nav').innerHTML=[['dash','📊','Dashboard'],['skills','🗺️','Skill Mapping'],['pdi','🎯','PDI (7 passos)']].map(([v,i,t])=>`<button class="ni ${V==v?'on':''}" data-a="nav" data-v="${v}">${i} ${t}</button>`).join('');
+  $('#main').innerHTML=V=='dash'?`<h2>Dashboard</h2><p class="sub">Visão geral do seu desenvolvimento.</p>`+dash():V=='skills'?skills():pdi()}
+
+/* modal genérico */
+function form(title,F,v,cb){
+  const d=$('#dlg');
+  d.innerHTML=`<form><h2>${title}</h2>${F.map(f=>`<label>${f.l}${f.t=='ta'?`<textarea name="${f.k}" rows="3" ${f.r?'required':''}>${esc(v[f.k])}</textarea>`:f.t=='sel'?`<select name="${f.k}">${f.o.map(o=>`<option value="${o[0]}" ${String(v[f.k])==String(o[0])?'selected':''}>${esc(o[1])}</option>`).join('')}</select>`:`<input name="${f.k}" type="${f.t||'text'}" value="${esc(v[f.k])}" ${f.r?'required':''}>`}</label>`).join('')}<div class="row end"><button type="button" class="btn t" data-a="close">Cancelar</button><button class="btn f">Salvar</button></div></form>`;
+  d.querySelector('form').onsubmit=e=>{e.preventDefault();const o={};F.forEach(f=>{const x=e.target[f.k].value;o[f.k]=f.n?+x:x});cb(o);d.close()};
+  d.showModal()}
+const up=(arr,id,o)=>{if(id)Object.assign(arr.find(x=>x.id==id),o);else arr.push({id:uid(),...o});save()};
+const opt=a=>a.map((x,i)=>[i+1,x]),so=a=>a.map(x=>[x,x]);
+const del=(k,id,m)=>{if(confirm(m)){S[k]=S[k].filter(x=>x.id!=id);save()}};
+const cyc=(a,i)=>{a.status=ST[(ST.indexOf(a.status)+1)%3];save()};
+
+const forms={
+  skill:id=>form(id?'Editar habilidade':'Nova habilidade',[{k:'name',l:'Nome',r:1},{k:'cat',l:'Categoria',t:'sel',o:so(CATS)},{k:'level',l:'Nível de proficiência',t:'sel',o:opt(LV),n:1},{k:'rel',l:'Relevância/frequência na função',t:'sel',o:opt(RL),n:1},{k:'target',l:'Nível desejado (meta)',t:'sel',o:opt(LV),n:1}],id?sk(id):{level:1,rel:3,target:2},o=>up(S.skills,id,o)),
+  goal:id=>form(id?'Editar meta':'Nova meta SMART',[{k:'title',l:'Título da meta',r:1},{k:'skill',l:'Competência relacionada',t:'sel',o:[['','—'],...S.skills.map(s=>[s.id,s.name])]},{k:'s',l:'Específica: o que exatamente será feito?',t:'ta'},{k:'m',l:'Mensurável: como medir o sucesso?',t:'ta'},{k:'a',l:'Atingível: por que é realista?',t:'ta'},{k:'r',l:'Relevante: qual o impacto na carreira?',t:'ta'},{k:'deadline',l:'Temporal: prazo final',t:'date'},{k:'status',l:'Status',t:'sel',o:so(ST)}],id?gl(id):{status:ST[0]},o=>up(S.goals,id,o)),
+  act:id=>form(id?'Editar ação':'Nova ação',[{k:'title',l:'Ação',r:1},{k:'goal',l:'Meta vinculada',t:'sel',o:[['','—'],...S.goals.map(g=>[g.id,g.title])]},{k:'type',l:'Categoria 70/20/10',t:'sel',o:[[70,TY[70]],[20,TY[20]],[10,TY[10]]],n:1},{k:'start',l:'Início',t:'date'},{k:'end',l:'Fim',t:'date'},{k:'res',l:'Recursos necessários (orçamento, ferramentas, tempo)',t:'ta'},{k:'status',l:'Status',t:'sel',o:so(ST)}],id?S.actions.find(a=>a.id==id):{type:70,status:ST[0]},o=>up(S.actions,id,o)),
+  chk:id=>form(id?'Editar check-in':'Novo check-in',[{k:'date',l:'Data',t:'date',r:1},{k:'who',l:'Participantes (ex.: gestor, mentor)'},{k:'status',l:'Evolução',t:'sel',o:so(['No caminho','Atenção','Atrasado'])},{k:'notes',l:'Notas da reunião 1-on-1',t:'ta',r:1}],id?S.checkins.find(c=>c.id==id):{date:new Date().toISOString().slice(0,10),status:'No caminho'},o=>up(S.checkins,id,o))
+};
+
+/* eventos */
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-a]');if(!t)return;const a=t.dataset.a,id=t.dataset.id;
+  const m={nav:()=>{V=t.dataset.v;render()},step:()=>{step=+t.dataset.v;render()},close:()=>$('#dlg').close(),
+  theme:()=>{const n=document.documentElement.dataset.theme=='dark'?'light':'dark';document.documentElement.dataset.theme=n;try{localStorage.setItem(TK,n)}catch(e){}},
+  addSkill:()=>forms.skill(),editSkill:()=>forms.skill(id),delSkill:()=>del('skills',id,'Excluir esta habilidade?'),
+  addGoal:()=>forms.goal(),editGoal:()=>forms.goal(id),delGoal:()=>del('goals',id,'Excluir esta meta?'),cycleG:()=>cyc(gl(id)),
+  addAct:()=>forms.act(),editAct:()=>forms.act(id),delAct:()=>del('actions',id,'Excluir esta ação?'),cycleA:()=>cyc(S.actions.find(x=>x.id==id)),
+  addChk:()=>forms.chk(),editChk:()=>forms.chk(id),delChk:()=>del('checkins',id,'Excluir este check-in?'),
+  export:()=>{const l=document.createElement('a');l.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,2)],{type:'application/json'}));l.download='pdi-backup-'+new Date().toISOString().slice(0,10)+'.json';l.click()},
+  import:()=>$('#file').click(),print:()=>{$('#report').innerHTML=report();window.print()}};
+  m[a]&&m[a]();
+});
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.dataset.d){S.diag[t.dataset.d]=t.value;save(false)}
+  if(t.dataset.p){sk(t.dataset.p).pdi=t.checked;save()}
+  if(t.id=='file'&&t.files[0]){const r=new FileReader();r.onload=()=>{try{const j=JSON.parse(r.result);if(!Array.isArray(j.skills))throw 0;S={...def(),...j};save();alert('Dados importados.')}catch(x){alert('Arquivo inválido. Use um JSON exportado por esta ferramenta.')}t.value=''};r.readAsText(t.files[0])}
+});
+window.addEventListener('beforeprint',()=>{$('#report').innerHTML=report()});
+
+/* init */
+try{document.documentElement.dataset.theme=localStorage.getItem(TK)||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}catch(e){}
+save();
+</script>
+</body>
+</html>
