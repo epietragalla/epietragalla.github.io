@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDI & Skill Mapping — Material Design 3 (GitHub Sync)</title>
+    <title>PDI & Skill Mapping — Material Design 3 (Auto Public Sync)</title>
 
     <!-- Google Fonts: Roboto & Material Symbols Outlined (M3 Iconography) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,7 +16,6 @@
            MATERIAL DESIGN 3 (M3) COLOR SYSTEM & DESIGN TOKENS
            ========================================================================== */
         
-        /* 1. LIGHT MODE (PADRÃO / DEFAULT) */
         :root, html[data-theme="light"] {
             --md-sys-color-primary: #4f56a6;
             --md-sys-color-on-primary: #ffffff;
@@ -78,7 +77,6 @@
             --md-font-family: 'Roboto', system-ui, -apple-system, sans-serif;
         }
 
-        /* 2. DARK MODE (TOGGLE OPTION) */
         html[data-theme="dark"] {
             --md-sys-color-primary: #bec2ff;
             --md-sys-color-on-primary: #1e2575;
@@ -118,7 +116,6 @@
             --m3-status-on-warning-container: #fde68a;
         }
 
-        /* Base Styles & Reset */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -148,7 +145,6 @@
             font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
 
-        /* M3 Navigation Drawer */
         .navigation-drawer {
             width: 320px;
             background-color: var(--md-sys-color-surface-container-low);
@@ -220,7 +216,6 @@
             gap: 0.5rem;
         }
 
-        /* Main Content Wrapper */
         .main-wrapper {
             flex-grow: 1;
             display: flex;
@@ -285,7 +280,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* M3 Buttons & FAB */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -386,7 +380,6 @@
             transform: translateY(-2px);
         }
 
-        /* Cards & Containers */
         .card {
             background-color: var(--md-sys-color-surface-container-lowest);
             border-radius: var(--md-shape-corner-medium);
@@ -434,7 +427,6 @@
             .main-wrapper { height: auto; }
         }
 
-        /* Form Controls */
         .form-group {
             margin-bottom: 1.25rem;
             display: flex;
@@ -471,7 +463,6 @@
             min-height: 90px;
         }
 
-        /* Chips & Badges */
         .chip {
             display: inline-flex;
             align-items: center;
@@ -514,7 +505,6 @@
             border: 1px solid var(--m3-status-success);
         }
 
-        /* Progress Bar */
         .linear-progress {
             height: 8px;
             width: 100%;
@@ -532,7 +522,6 @@
             transition: width 0.4s ease;
         }
 
-        /* Matrix */
         .matrix-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -580,7 +569,6 @@
             box-shadow: var(--md-elevation-1);
         }
 
-        /* Tables */
         .table-container {
             width: 100%;
             overflow-x: auto;
@@ -613,7 +601,6 @@
             background-color: var(--md-sys-color-surface-container-low);
         }
 
-        /* Dialogs */
         .dialog-backdrop {
             display: none;
             position: fixed;
@@ -730,7 +717,7 @@
 
         <div class="drawer-footer">
             <button class="btn btn-filled" onclick="openGithubConfig()">
-                <span class="material-symbols-outlined">cloud_sync</span> Sincronizar Nuvem
+                <span class="material-symbols-outlined">cloud_sync</span> Configurar GitHub Sync
             </button>
             <button class="btn btn-tonal" onclick="exportJSON()">
                 <span class="material-symbols-outlined">download</span> Exportar Backup
@@ -791,7 +778,6 @@
                 </div>
 
                 <div class="grid-2">
-                    <!-- Regra 70/20/10 McKinsey -->
                     <div class="card card-outlined">
                         <div class="card-title">
                             <span class="material-symbols-outlined" style="color:var(--md-sys-color-primary);">pie_chart</span>
@@ -831,7 +817,6 @@
                         </div>
                     </div>
 
-                    <!-- Gaps Prioritários -->
                     <div class="card card-outlined">
                         <div class="card-title">
                             <span class="material-symbols-outlined" style="color:var(--md-sys-color-error);">warning</span>
@@ -1149,7 +1134,7 @@
                 Configurar Sincronização no GitHub
             </div>
             <p style="font-size:0.85rem; color:var(--md-sys-color-on-surface-variant); margin-bottom:1rem;">
-                Insira seus dados para que o PDI salve as alterações diretamente no seu repositório no GitHub.
+                Insira o Usuário e Repositório para <strong>leitura pública automática</strong> em qualquer dispositivo. O Token só é necessário para autorizar salvar novas alterações.
             </p>
             <form onsubmit="saveGithubConfig(event)">
                 <div class="form-group">
@@ -1161,12 +1146,12 @@
                     <input type="text" id="ghRepo" class="input-outlined" placeholder="Ex: meu-pdi" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Caminho do Arquivo JSON no Repositório:</label>
+                    <label class="form-label">Caminho do Arquivo JSON:</label>
                     <input type="text" id="ghPath" class="input-outlined" value="pdi_data.json" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">GitHub Personal Access Token (PAT):</label>
-                    <input type="password" id="ghToken" class="input-outlined" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" required>
+                    <label class="form-label">GitHub Token (Opcional se apenas lendo em novo PC):</label>
+                    <input type="password" id="ghToken" class="input-outlined" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
                 </div>
 
                 <div class="dialog-actions">
@@ -1208,7 +1193,7 @@
             token: ''
         };
 
-        let currentFileSha = null; // Armazena a SHA necessária para atualizar arquivos na API do GitHub
+        let currentFileSha = null;
         let autoSaveTimer = null;
 
         const theoryData = {
@@ -1274,13 +1259,12 @@
             applyTheme(state.theme || 'light');
             renderAll();
 
-            if (isGithubConfigured()) {
-                fetchFromGithub();
-            }
+            // Tenta buscar da nuvem (por API autenticada ou via Raw público)
+            fetchFromGithub();
         });
 
         /* ==========================================================================
-           GITHUB API SYNC ENGINE
+           GITHUB API & PUBLIC RAW SYNC ENGINE
            ========================================================================== */
         
         function loadConfig() {
@@ -1288,10 +1272,6 @@
             if (savedConfig) {
                 try { githubConfig = JSON.parse(savedConfig); } catch(e) {}
             }
-        }
-
-        function isGithubConfigured() {
-            return githubConfig.username && githubConfig.repo && githubConfig.token;
         }
 
         function openGithubConfig() {
@@ -1318,64 +1298,85 @@
             fetchFromGithub();
         }
 
-        // Buscar dados do repositório no GitHub
-        // Buscar dados do repositório no GitHub sem cache
-async function fetchFromGithub() {
-    if (!isGithubConfigured()) return;
+        // Buscar dados do GitHub (Trata Autenticado e Leitura Pública Automática)
+        async function fetchFromGithub() {
+            if (!githubConfig.username || !githubConfig.repo) return;
 
-    updateSyncStatus('cloud_download', 'Buscando do GitHub...', 'var(--md-sys-color-primary)');
+            updateSyncStatus('cloud_download', 'Sincronizando com GitHub...', 'var(--md-sys-color-primary)');
 
-    // Adiciona timestamp (?t=...) para garantir que o navegador não use cache antigo
-    const url = `https://api.github.com/repos/${githubConfig.username}/${githubConfig.repo}/contents/${githubConfig.path}?t=${Date.now()}`;
+            // 1. Tentar via API Autenticada (se tiver Token)
+            if (githubConfig.token) {
+                const url = `https://api.github.com/repos/${githubConfig.username}/${githubConfig.repo}/contents/${githubConfig.path}?t=${Date.now()}`;
+                try {
+                    const response = await fetch(url, {
+                        cache: 'no-store',
+                        headers: {
+                            'Authorization': `Bearer ${githubConfig.token}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    });
 
-    try {
-        const response = await fetch(url, {
-            cache: 'no-store', // Força a requisição a buscar os dados mais recentes na nuvem
-            headers: {
-                'Authorization': `Bearer ${githubConfig.token}`,
-                'Accept': 'application/vnd.github.v3+json'
+                    if (response.ok) {
+                        const data = await response.json();
+                        currentFileSha = data.sha;
+                        
+                        const binaryString = atob(data.content.replace(/\n/g, ''));
+                        const bytes = new Uint8Array(binaryString.length);
+                        for (let i = 0; i < binaryString.length; i++) {
+                            bytes[i] = binaryString.charCodeAt(i);
+                        }
+                        const jsonText = new TextDecoder('utf-8').decode(bytes);
+
+                        if (jsonText && jsonText.trim() !== '{}') {
+                            state = JSON.parse(jsonText);
+                            localStorage.setItem('pdi_m3_state', JSON.stringify(state));
+                            applyTheme(state.theme || 'light');
+                            renderAll();
+                        }
+                        updateSyncStatus('cloud_done', 'Sincronizado na Nuvem', 'var(--m3-status-success)');
+                        return;
+                    }
+                } catch (err) {
+                    console.warn("Erro ao buscar por API autenticada, tentando modo público...", err);
+                }
             }
-        });
 
-        if (response.ok) {
-            const data = await response.json();
-            currentFileSha = data.sha;
-            
-            // Decodificar Base64 contendo caracteres UTF-8
-            const binaryString = atob(data.content.replace(/\n/g, ''));
-            const bytes = new Uint8Array(binaryString.length);
-            for (let i = 0; i < binaryString.length; i++) {
-                bytes[i] = binaryString.charCodeAt(i);
+            // 2. Fallback de Leitura Pública Automática (Sem precisar de Token no novo PC)
+            const rawUrl = `https://raw.githubusercontent.com/${githubConfig.username}/${githubConfig.repo}/main/${githubConfig.path}?t=${Date.now()}`;
+            try {
+                const rawResponse = await fetch(rawUrl, { cache: 'no-store' });
+                if (rawResponse.ok) {
+                    const rawText = await rawResponse.text();
+                    if (rawText && rawText.trim() !== '{}') {
+                        state = JSON.parse(rawText);
+                        localStorage.setItem('pdi_m3_state', JSON.stringify(state));
+                        applyTheme(state.theme || 'light');
+                        renderAll();
+                    }
+                    updateSyncStatus('cloud_done', 'Carregado do GitHub (Leitura Pública)', 'var(--m3-status-success)');
+                } else {
+                    updateSyncStatus('cloud_queue', 'Configure o Token para salvar alterações', 'var(--m3-status-warning)');
+                }
+            } catch (err) {
+                console.error("Erro na leitura pública do GitHub:", err);
+                updateSyncStatus('cloud_off', 'Modo offline (Dados locais)', 'var(--md-sys-color-error)');
             }
-            const jsonText = new TextDecoder('utf-8').decode(bytes);
-
-            if (jsonText && jsonText.trim() !== '{}') {
-                state = JSON.parse(jsonText);
-                localStorage.setItem('pdi_m3_state', JSON.stringify(state));
-                applyTheme(state.theme || 'light');
-                renderAll();
-            }
-            updateSyncStatus('cloud_done', 'Sincronizado via GitHub', 'var(--m3-status-success)');
-        } else if (response.status === 404) {
-            updateSyncStatus('cloud_queue', 'Arquivo será criado no GitHub', 'var(--m3-status-warning)');
-        } else {
-            throw new Error(`Status ${response.status}`);
         }
-    } catch (err) {
-        console.error("Erro ao buscar do GitHub:", err);
-        updateSyncStatus('cloud_off', 'Erro ao conectar no GitHub', 'var(--md-sys-color-error)');
-    }
-}
 
-        // Enviar/Salvar dados atualizados no repositório no GitHub
+        // Salvar dados na nuvem via API do GitHub
         async function saveToGithub() {
-            if (!isGithubConfigured()) return;
+            if (!githubConfig.username || !githubConfig.repo) return;
 
-            updateSyncStatus('cloud_upload', 'Salvando no GitHub...', 'var(--m3-status-warning)');
+            if (!githubConfig.token) {
+                updateSyncStatus('priority_high', 'Insira o Token do GitHub para salvar', 'var(--m3-status-warning)');
+                openGithubConfig();
+                return;
+            }
+
+            updateSyncStatus('cloud_upload', 'Enviando dados para o GitHub...', 'var(--m3-status-warning)');
 
             const url = `https://api.github.com/repos/${githubConfig.username}/${githubConfig.repo}/contents/${githubConfig.path}`;
             
-            // Codificar UTF-8 para Base64
             const jsonText = JSON.stringify(state, null, 2);
             const utf8Bytes = new TextEncoder().encode(jsonText);
             let binaryString = '';
@@ -1383,6 +1384,19 @@ async function fetchFromGithub() {
                 binaryString += String.fromCharCode(utf8Bytes[i]);
             }
             const base64Content = btoa(binaryString);
+
+            // Se ainda não temos a SHA do arquivo remoto, tentamos buscar antes de sobrescrever
+            if (!currentFileSha) {
+                try {
+                    const getRes = await fetch(`${url}?t=${Date.now()}`, {
+                        headers: { 'Authorization': `Bearer ${githubConfig.token}` }
+                    });
+                    if (getRes.ok) {
+                        const getData = await getRes.json();
+                        currentFileSha = getData.sha;
+                    }
+                } catch(e) {}
+            }
 
             const bodyData = {
                 message: `Atualização de PDI [${new Date().toLocaleString('pt-BR')}]`,
@@ -1407,13 +1421,13 @@ async function fetchFromGithub() {
                 if (response.ok) {
                     const resData = await response.json();
                     currentFileSha = resData.content.sha;
-                    updateSyncStatus('cloud_done', 'Sincronizado no GitHub', 'var(--m3-status-success)');
+                    updateSyncStatus('cloud_done', 'Salvo com sucesso na nuvem!', 'var(--m3-status-success)');
                 } else {
                     throw new Error(`Status ${response.status}`);
                 }
             } catch (err) {
                 console.error("Erro ao salvar no GitHub:", err);
-                updateSyncStatus('cloud_off', 'Erro ao salvar na nuvem', 'var(--md-sys-color-error)');
+                updateSyncStatus('cloud_off', 'Erro ao salvar no GitHub', 'var(--md-sys-color-error)');
             }
         }
 
@@ -1468,11 +1482,9 @@ async function fetchFromGithub() {
             state.targetRole = document.getElementById('targetRole').value;
             state.careerDiagnosis = document.getElementById('careerDiagnosis').value;
             
-            // Salvar localmente
             localStorage.setItem('pdi_m3_state', JSON.stringify(state));
 
-            // Disparar sincronização com o GitHub
-            if (isGithubConfigured()) {
+            if (githubConfig.username && githubConfig.repo) {
                 saveToGithub();
             } else {
                 updateSyncStatus('check_circle', 'Salvo localmente (sem nuvem)', 'var(--m3-status-success)');
