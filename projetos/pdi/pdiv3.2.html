@@ -1319,51 +1319,53 @@
         }
 
         // Buscar dados do repositório no GitHub
-        async function fetchFromGithub() {
-            if (!isGithubConfigured()) return;
+        // Buscar dados do repositório no GitHub sem cache
+async function fetchFromGithub() {
+    if (!isGithubConfigured()) return;
 
-            updateSyncStatus('cloud_download', 'Buscando do GitHub...', 'var(--md-sys-color-primary)');
+    updateSyncStatus('cloud_download', 'Buscando do GitHub...', 'var(--md-sys-color-primary)');
 
-            const url = `https://api.github.com/repos/${githubConfig.username}/${githubConfig.repo}/contents/${githubConfig.path}`;
+    // Adiciona timestamp (?t=...) para garantir que o navegador não use cache antigo
+    const url = `https://api.github.com/repos/${githubConfig.username}/${githubConfig.repo}/contents/${githubConfig.path}?t=${Date.now()}`;
 
-            try {
-                const response = await fetch(url, {
-                    headers: {
-                        'Authorization': `Bearer ${githubConfig.token}`,
-                        'Accept': 'application/vnd.github.v3+json'
-                    }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    currentFileSha = data.sha;
-                    
-                    // Decodificar Base64 contendo caracteres UTF-8
-                    const binaryString = atob(data.content.replace(/\n/g, ''));
-                    const bytes = new Uint8Array(binaryString.length);
-                    for (let i = 0; i < binaryString.length; i++) {
-                        bytes[i] = binaryString.charCodeAt(i);
-                    }
-                    const jsonText = new TextDecoder('utf-8').decode(bytes);
-
-                    if (jsonText && jsonText.trim() !== '{}') {
-                        state = JSON.parse(jsonText);
-                        localStorage.setItem('pdi_m3_state', JSON.stringify(state));
-                        applyTheme(state.theme || 'light');
-                        renderAll();
-                    }
-                    updateSyncStatus('cloud_done', 'Sincronizado via GitHub', 'var(--m3-status-success)');
-                } else if (response.status === 404) {
-                    // Arquivo ainda não existe, será criado no primeiro salvamento
-                    updateSyncStatus('cloud_queue', 'Arquivo será criado no GitHub', 'var(--m3-status-warning)');
-                } else {
-                    throw new Error(`Status ${response.status}`);
-                }
-            } catch (err) {
-                console.error("Erro ao buscar do GitHub:", err);
-                updateSyncStatus('cloud_off', 'Erro ao conectar no GitHub', 'var(--md-sys-color-error)');
+    try {
+        const response = await fetch(url, {
+            cache: 'no-store', // Força a requisição a buscar os dados mais recentes na nuvem
+            headers: {
+                'Authorization': `Bearer ${githubConfig.token}`,
+                'Accept': 'application/vnd.github.v3+json'
             }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            currentFileSha = data.sha;
+            
+            // Decodificar Base64 contendo caracteres UTF-8
+            const binaryString = atob(data.content.replace(/\n/g, ''));
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            const jsonText = new TextDecoder('utf-8').decode(bytes);
+
+            if (jsonText && jsonText.trim() !== '{}') {
+                state = JSON.parse(jsonText);
+                localStorage.setItem('pdi_m3_state', JSON.stringify(state));
+                applyTheme(state.theme || 'light');
+                renderAll();
+            }
+            updateSyncStatus('cloud_done', 'Sincronizado via GitHub', 'var(--m3-status-success)');
+        } else if (response.status === 404) {
+            updateSyncStatus('cloud_queue', 'Arquivo será criado no GitHub', 'var(--m3-status-warning)');
+        } else {
+            throw new Error(`Status ${response.status}`);
         }
+    } catch (err) {
+        console.error("Erro ao buscar do GitHub:", err);
+        updateSyncStatus('cloud_off', 'Erro ao conectar no GitHub', 'var(--md-sys-color-error)');
+    }
+}
 
         // Enviar/Salvar dados atualizados no repositório no GitHub
         async function saveToGithub() {
