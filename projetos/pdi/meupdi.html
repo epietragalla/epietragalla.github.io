@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDI & Skill Mapping — Material Design 3</title>
+    <title>PDI & Skill Mapping — Material Design 3 (Multi-Perfil Sync)</title>
 
     <!-- Google Fonts: Roboto & Material Symbols Outlined (M3 Iconography) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -685,7 +685,7 @@
     <nav class="navigation-drawer">
         <div class="drawer-header">
             <span class="material-symbols-outlined icon-filled" style="color: var(--md-sys-color-primary); font-size: 28px;">verified</span>
-            <div class="drawer-title">PDI</div>
+            <div class="drawer-title" id="drawerAppTitle">PDI</div>
         </div>
 
         <ul class="nav-list">
@@ -1175,6 +1175,16 @@
 
     <!-- JAVASCRIPT ENGINE -->
     <script>
+        /* ==========================================================================
+           CONFIGURAÇÃO DO PERFIL (Mude apenas esta variável em cada arquivo)
+           Opções sugeridas: 'trabalho', 'pessoal', ou qualquer identificador único.
+           ========================================================================== */
+        const PDI_PERFIL = 'pessoal'; // <-- Altere para 'pessoal' no outro arquivo!
+
+        // Chaves isoladas no LocalStorage baseadas no perfil definido acima
+        const STORAGE_STATE_KEY = `pdi_m3_state_${PDI_PERFIL}`;
+        const STORAGE_CONFIG_KEY = `pdi_gh_config_${PDI_PERFIL}`;
+
         let state = {
             theme: 'light',
             currentRole: '',
@@ -1189,7 +1199,7 @@
         let githubConfig = {
             username: '',
             repo: '',
-            path: 'pdi_data.json',
+            path: `pdi_${PDI_PERFIL}.json`, // Define pdi_trabalho.json ou pdi_pessoal.json por padrão
             token: ''
         };
 
@@ -1254,6 +1264,12 @@
         };
 
         document.addEventListener('DOMContentLoaded', () => {
+            // Atualiza o título no menu lateral com o nome do perfil
+            const drawerTitle = document.getElementById('drawerAppTitle');
+            if (drawerTitle && PDI_PERFIL !== 'default') {
+                drawerTitle.innerText = `PDI (${PDI_PERFIL.toUpperCase()})`;
+            }
+
             loadConfig();
             loadState();
             applyTheme(state.theme || 'light');
@@ -1269,7 +1285,7 @@
            ========================================================================== */
         
         function loadConfig() {
-            const savedConfig = localStorage.getItem('pdi_gh_config');
+            const savedConfig = localStorage.getItem(STORAGE_CONFIG_KEY);
             if (savedConfig) {
                 try { githubConfig = JSON.parse(savedConfig); } catch(e) {}
             }
@@ -1282,7 +1298,7 @@
         function openGithubConfig() {
             document.getElementById('ghUsername').value = githubConfig.username || '';
             document.getElementById('ghRepo').value = githubConfig.repo || '';
-            document.getElementById('ghPath').value = githubConfig.path || 'pdi_data.json';
+            document.getElementById('ghPath').value = githubConfig.path || `pdi_${PDI_PERFIL}.json`;
             document.getElementById('ghToken').value = githubConfig.token || '';
             document.getElementById('githubDialog').style.display = 'flex';
         }
@@ -1295,10 +1311,10 @@
             e.preventDefault();
             githubConfig.username = document.getElementById('ghUsername').value.trim();
             githubConfig.repo = document.getElementById('ghRepo').value.trim();
-            githubConfig.path = document.getElementById('ghPath').value.trim() || 'pdi_data.json';
+            githubConfig.path = document.getElementById('ghPath').value.trim() || `pdi_${PDI_PERFIL}.json`;
             githubConfig.token = document.getElementById('ghToken').value.trim();
 
-            localStorage.setItem('pdi_gh_config', JSON.stringify(githubConfig));
+            localStorage.setItem(STORAGE_CONFIG_KEY, JSON.stringify(githubConfig));
             closeGithubConfig();
             fetchFromGithub();
         }
@@ -1333,11 +1349,11 @@
 
                     if (jsonText && jsonText.trim() !== '{}') {
                         state = JSON.parse(jsonText);
-                        localStorage.setItem('pdi_m3_state', JSON.stringify(state));
+                        localStorage.setItem(STORAGE_STATE_KEY, JSON.stringify(state));
                         applyTheme(state.theme || 'light');
                         renderAll();
                     }
-                    updateSyncStatus('cloud_done', 'Sincronizado via GitHub', 'var(--m3-status-success)');
+                    updateSyncStatus('cloud_done', `Sincronizado via GitHub [${PDI_PERFIL}]`, 'var(--m3-status-success)');
                 } else if (response.status === 404) {
                     updateSyncStatus('cloud_queue', 'Arquivo será criado no primeiro salvamento', 'var(--m3-status-warning)');
                 } else {
@@ -1379,7 +1395,7 @@
             }
 
             const bodyData = {
-                message: `Atualização de PDI [${new Date().toLocaleString('pt-BR')}]`,
+                message: `Atualização de PDI [${PDI_PERFIL}] [${new Date().toLocaleString('pt-BR')}]`,
                 content: base64Content
             };
 
@@ -1462,12 +1478,12 @@
             state.targetRole = document.getElementById('targetRole').value;
             state.careerDiagnosis = document.getElementById('careerDiagnosis').value;
             
-            localStorage.setItem('pdi_m3_state', JSON.stringify(state));
+            localStorage.setItem(STORAGE_STATE_KEY, JSON.stringify(state));
 
             if (isGithubConfigured()) {
                 saveToGithub();
             } else {
-                updateSyncStatus('check_circle', 'Salvo localmente (sem nuvem)', 'var(--m3-status-success)');
+                updateSyncStatus('check_circle', `Salvo localmente [${PDI_PERFIL}]`, 'var(--m3-status-success)');
             }
         }
 
@@ -1479,7 +1495,7 @@
         }
 
         function loadState() {
-            const saved = localStorage.getItem('pdi_m3_state');
+            const saved = localStorage.getItem(STORAGE_STATE_KEY);
             if (saved) {
                 try { state = JSON.parse(saved); } catch(e) {}
             }
@@ -1871,7 +1887,7 @@
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
             const dlAnchor = document.createElement('a');
             dlAnchor.setAttribute("href", dataStr);
-            dlAnchor.setAttribute("download", `pdi_m3_backup_${new Date().toISOString().slice(0,10)}.json`);
+            dlAnchor.setAttribute("download", `pdi_${PDI_PERFIL}_backup_${new Date().toISOString().slice(0,10)}.json`);
             document.body.appendChild(dlAnchor);
             dlAnchor.click();
             dlAnchor.remove();
