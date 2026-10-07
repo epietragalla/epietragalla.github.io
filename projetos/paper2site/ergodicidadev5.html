@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ergodicidade em Sistemas Autogravitantes | Tese Interativa</title>
+  <meta name="description" content="Exploração interativa da tese de doutorado de Cínthia Helena Claudino Silvestre (2016, UnB) sobre ergodicidade, relaxação violenta e sistemas de longo alcance.">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="Ergodicidade em Sistemas Autogravitantes">
+  <meta property="og:description" content="Atlas interativo dos conceitos de sistemas com interações de longo alcance.">
+  <meta property="og:type" content="website">
+
+  <style>
+    /* =========================================
+       DESIGN SYSTEM (Protocolo Same Brain)
+       ========================================= */
+    :root {
+      /* Tokens HSL (Escuro padrão) */
+      --bg: 0 0% 7%;
+      --bg-raised: 0 0% 11%;
+      --ink: 0 0% 95%;
+      --ink-muted: 0 0% 70%;
+      --ink-faint: 0 0% 50%;
+      --accent: 14 60% 72%;
+      --traco: 14 60% 72%; /* Baixo alfa aplicado via CSS */
+      --line: 0 0% 20%;
+      --line-strong: 0 0% 40%;
+      --radius: 0.5rem;
+      --shell: 68rem;
+      --prosa: 40rem;
+      
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-size: 16px; /* Piso de 14px respeitado, base 16px para acessibilidade */
+      line-height: 1.6;
+      color: hsl(var(--ink));
+      background-color: hsl(var(--bg));
+      color-scheme: dark;
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: 20 16% 98%;
+        --bg-raised: 0 0% 100%;
+        --ink: 14 12% 11%;
+        --ink-muted: 14 12% 40%;
+        --ink-faint: 14 12% 60%;
+        --accent: 14 62% 39%;
+        --traco: 176 27% 46%;
+        --line: 14 12% 90%;
+        --line-strong: 14 12% 80%;
+        color-scheme: light;
+      }
+    }
+
+    :root[data-theme='light'] {
+      --bg: 20 16% 98%;
+      --bg-raised: 0 0% 100%;
+      --ink: 14 12% 11%;
+      --ink-muted: 14 12% 40%;
+      --ink-faint: 14 12% 60%;
+      --accent: 14 62% 39%;
+      --traco: 176 27% 46%;
+      --line: 14 12% 90%;
+      --line-strong: 14 12% 80%;
+      color-scheme: light;
+    }
+
+    :root[data-theme='dark'] {
+      --bg: 0 0% 7%;
+      --bg-raised: 0 0% 11%;
+      --ink: 0 0% 95%;
+      --ink-muted: 0 0% 70%;
+      --ink-faint: 0 0% 50%;
+      --accent: 14 60% 72%;
+      --traco: 14 60% 72%;
+      --line: 0 0% 20%;
+      --line-strong: 0 0% 40%;
+      color-scheme: dark;
+    }
+
+    /* Regras Invioláveis */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { min-height: 100vh; display: flex; flex-direction: column; }
+    
+    /* Tipografia */
+    h1, h2, h3, h4 { font-weight: 600; line-height: 1.2; margin-bottom: 1rem; color: hsl(var(--ink)); }
+    h1 { font-size: 2.5rem; letter-spacing: -0.02em; }
+    h2 { font-size: 1.75rem; margin-top: 2rem; border-bottom: 1px solid hsl(var(--line)); padding-bottom: 0.5rem; }
+    h3 { font-size: 1.25rem; }
+    p { margin-bottom: 1rem; max-width: var(--prosa); }
+    a { color: hsl(var(--accent)); text-decoration: none; border-bottom: 1px solid hsl(var(--traco) / 0.3); transition: border-color 0.2s; }
+    a:hover { border-bottom-color: hsl(var(--accent)); }
+    a:focus-visible { outline: 2px solid hsl(var(--accent)); outline-offset: 2px; border-radius: 2px; }
+
+    /* Layout */
+    .shell { max-width: var(--shell); margin: 0 auto; padding: 0 1.5rem; width: 100%; }
+    .prosa { max-width: var(--prosa); }
+
+    /* Componentes */
+    .header { border-bottom: 1px solid hsl(var(--line)); padding: 1.5rem 0; position: sticky; top: 0; background: hsl(var(--bg) / 0.9); backdrop-filter: blur(8px); z-index: 100; }
+    .header-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+    .logo { font-weight: 700; font-size: 1.1rem; color: hsl(var(--ink)); border: none; }
+    
+    .nav { display: flex; gap: 1.5rem; }
+    .nav a { border: none; color: hsl(var(--ink-muted)); font-size: 0.9rem; font-weight: 500; }
+    .nav a:hover, .nav a[aria-current="page"] { color: hsl(var(--accent)); }
+
+    .btn-theme { background: none; border: 1px solid hsl(var(--line)); color: hsl(var(--ink)); padding: 0.4rem 0.8rem; border-radius: var(--radius); cursor: pointer; font-size: 0.85rem; }
+    .btn-theme:hover { border-color: hsl(var(--accent)); }
+
+    .search-pill { display: flex; align-items: center; gap: 0.5rem; background: hsl(var(--bg-raised)); border: 1px solid hsl(var(--line)); padding: 0.5rem 1rem; border-radius: 99px; cursor: pointer; color: hsl(var(--ink-muted)); font-size: 0.9rem; width: 100%; max-width: 300px; }
+    .search-pill:hover { border-color: hsl(var(--accent)); color: hsl(var(--ink)); }
+
+    .chip { display: inline-flex; align-items: center; padding: 0.25rem 0.75rem; border-radius: 99px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid hsl(var(--line)); color: hsl(var(--ink-muted)); background: transparent; }
+    .chip.evidencia-A { border-color: hsl(120 60% 40%); color: hsl(120 60% 50%); }
+    .chip.evidencia-B { border-color: hsl(40 80% 50%); color: hsl(40 80% 60%); }
+    .chip.tipo { background: hsl(var(--bg-raised)); }
+
+    .card { background: hsl(var(--bg-raised)); border: 1px solid hsl(var(--line)); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1rem; transition: border-color 0.2s; }
+    .card:hover { border-color: hsl(var(--traco)); }
+    .card h3 { margin-bottom: 0.5rem; }
+    .card-meta { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+
+    .grafo-container { width: 100%; height: 60vh; border: 1px solid hsl(var(--line)); border-radius: var(--radius); background: hsl(var(--bg-raised)); position: relative; overflow: hidden; }
+    canvas { display: block; width: 100%; height: 100%; }
+
+    .overlay { position: fixed; inset: 0; background: hsl(var(--bg) / 0.95); z-index: 200; display: none; padding: 2rem; }
+    .overlay.ativo { display: flex; flex-direction: column; align-items: center; }
+    .search-input { width: 100%; max-width: 40rem; background: transparent; border: none; border-bottom: 2px solid hsl(var(--accent)); color: hsl(var(--ink)); font-size: 2rem; padding: 1rem 0; outline: none; }
+    .search-results { width: 100%; max-width: 40rem; margin-top: 2rem; max-height: 60vh; overflow-y: auto; }
+    
+    .footer { border-top: 1px solid hsl(var(--line)); padding: 3rem 0; margin-top: auto; color: hsl(var(--ink-faint)); font-size: 0.85rem; }
+
+    /* Utilitários */
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
+    .mt-2 { margin-top: 2rem; }
+    .mb-1 { margin-bottom: 1rem; }
+    
+    /* Redução de movimento */
+    @media (prefers-reduced-motion: reduce) {
+      * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="shell header-inner">
+      <a href="#/" class="logo">Ergodicidade <span style="color: hsl(var(--accent))">UnB 2016</span></a>
+      
+      <nav class="nav" aria-label="Navegação principal">
+        <a href="#/">Início</a>
+        <a href="#/conceitos">Conceitos</a>
+        <a href="#/grafo">Mapa</a>
+        <a href="#/metodos">Métodos</a>
+      </nav>
+
+      <div style="display: flex; gap: 1rem; align-items: center;">
+        <button class="search-pill" id="btn-busca" aria-label="Abrir busca global">
+          <span>Buscar conceitos...</span>
+          <span style="margin-left: auto; font-size: 0.75rem; border: 1px solid hsl(var(--line)); padding: 0.1rem 0.4rem; border-radius: 4px;">Ctrl+K</span>
+        </button>
+        <button class="btn-theme" id="btn-tema" aria-label="Alternar tema claro/escuro">Tema</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content" class="shell mt-2" tabindex="-1">
+    <!-- O conteúdo será injetado aqui pelo roteador -->
+  </main>
+
+  <footer class="footer">
+    <div class="shell">
+      <p>Baseado na tese de doutorado de <strong>Cínthia Helena Claudino Silvestre</strong> (Instituto de Física, UnB, 2016). Orientador: Prof. Tarcísio Marciano da Rocha Filho.</p>
+      <p>Desenvolvido seguindo o Protocolo de Sites Informativos de Alta Densidade. Código monolítico, sem dependências externas.</p>
+    </div>
+  </footer>
+
+  <!-- Overlay de Busca -->
+  <div class="overlay" id="overlay-busca" role="dialog" aria-modal="true" aria-label="Busca global">
+    <input type="text" class="search-input" id="input-busca" placeholder="Digite um conceito (ex: relaxação, Kac, Vlasov)..." autocomplete="off">
+    <div class="search-results" id="resultados-busca" role="status"></div>
+    <button class="btn-theme mt-2" id="btn-fechar-busca">Fechar (Esc)</button>
+  </div>
+
+  <script type="module">
+    /* =========================================
+       1. DADOS (Extraídos e estruturados da Tese)
+       ========================================= */
+    const DADOS = [
+      {
+        slug: 'ergodicidade',
+        nome: 'Ergodicidade',
+        tipo: 'propriedade',
+        eixo: 'estatistica',
+        evidencia: 'A',
+        fonte: 'Boltzmann, Birkhoff, Silvestre (2016)',
+        enunciado: 'Propriedade de um sistema dinâmico em que a média temporal de uma observável ao longo de uma única trajetória é igual à média de ensemble sobre o espaço de fases.',
+        curto: 'Igualdade entre média temporal e média de ensemble.',
+        intro: 'Na tese, a ergodicidade é investigada em sistemas autogravitantes 1D e 2D. Um sistema é considerado ergódico quando o desvio padrão das médias temporais das velocidades das partículas tende a zero após um tempo suficientemente longo.',
+        substrato: 'Espaço de fases, Teorema de Liouville, Superfície de energia constante.',
+        metodos: ['Funcional Dinâmico', 'Sojourn Time', 'Dispersão de velocidades'],
+        quebra: 'Sem o fator de Kac, o tempo para atingir a ergodicidade diverge com N. O sistema é estritamente não-ergódico no limite N → ∞.',
+        mitos: ['Sistemas quase-ergódicos são suficientes para igualdade de médias (falso, não garantem a igualdade).'],
+        risco: 'Assumir ergodicidade em simulações de tempo finito pode levar a conclusões termodinâmicas incorretas sobre o estado de equilíbrio.',
+        relacionados: ['fator-de-kac', 'qss', 'mixing']
+      },
+      {
+        slug: 'fator-de-kac',
+        nome: 'Fator de Kac',
+        tipo: 'conceito',
+        eixo: 'termodinamica',
+        evidencia: 'A',
+        fonte: 'Kac, Silvestre (2016)',
+        enunciado: 'Um fator de escala (1/N) aplicado à Hamiltoniana de sistemas de longo alcance para tornar a energia extensiva, embora o sistema permaneça não-aditivo.',
+        curto: 'Escala 1/N que garante extensividade da energia.',
+        intro: 'Em sistemas com interações de longo alcance, a energia não é aditiva. O fator de Kac reescala a energia e o tempo (t → t/√N), permitindo um limite termodinâmico bem definido e a ocorrência de transições de fase.',
+        substrato: 'Hamiltoniana do sistema, Limite termodinâmico.',
+        metodos: ['Dinâmica Molecular', 'Reescala temporal'],
+        quebra: 'A extensividade não implica aditividade. A não-aditividade é a raiz da inequivalência de ensembles.',
+        relacionados: ['inequivalencia-de-ensembles', 'ergodicidade']
+      },
+      {
+        slug: 'relaxacao-violenta',
+        nome: 'Relaxação Violenta',
+        tipo: 'processo',
+        eixo: 'dinamica',
+        evidencia: 'A',
+        fonte: 'Lynden-Bell (1967)',
+        enunciado: 'Processo rápido e coletivo de evolução de um sistema fora do equilíbrio gravitacional para um Estado Quase Estacionário (QSS), mediado por flutuações do potencial de campo médio.',
+        curto: 'Relaxação rápida para um QSS via flutuações de campo médio.',
+        intro: 'Diferente da relaxação colisional (que é lenta), a relaxação violenta ocorre em poucas oscilações dinâmicas. A teoria de Lynden-Bell tenta prever o estado final maximizando uma entropia de "grão-grosso" no espaço de fases.',
+        substrato: 'Equação de Vlasov, Espaço de fases, Mixing incompleto.',
+        metodos: ['Simulação N-corpos', 'Teoria cinética'],
+        quebra: 'A teoria de Lynden-Bell pressupõe mixing completo, o que raramente ocorre na prática (mixing incompleto), levando a discrepâncias entre a teoria e simulações numéricas.',
+        mitos: ['A relaxação violenta leva sempre ao equilíbrio termodinâmico de Boltzmann-Gibbs (falso, leva ao QSS).'],
+        relacionados: ['qss', 'vlasov', 'mixing']
+      },
+      {
+        slug: 'qss',
+        nome: 'Estado Quase Estacionário (QSS)',
+        tipo: 'estado',
+        eixo: 'dinamica',
+        evidencia: 'A',
+        fonte: 'Yamaguchi et al., Silvestre (2016)',
+        enunciado: 'Estado dinâmico de longa duração em sistemas de longo alcance, onde as quantidades macroscópicas parecem estáveis, mas não correspondem ao equilíbrio termodinâmico de Boltzmann-Gibbs.',
+        curto: 'Estado metastável de longa duração fora do equilíbrio térmico.',
+        intro: 'O tempo de vida do QSS diverge com o número de partículas N. No limite N → ∞, o sistema pode permanecer indefinidamente no QSS, sem nunca atingir o equilíbrio térmico verdadeiro.',
+        substrato: 'Soluções estacionárias da equação de Vlasov.',
+        metodos: ['Simulação de Dinâmica Molecular', 'Monitoramento de Kurtose'],
+        quebra: 'Para N finito, flutuações colisionais eventualmente destroem o QSS, levando ao equilíbrio termodinâmico em um tempo que escala com N.',
+        relacionados: ['relaxacao-violenta', 'vlasov', 'ergodicidade']
+      },
+      {
+        slug: 'inequivalencia-de-ensembles',
+        nome: 'Inequivalência de Ensembles',
+        tipo: 'propriedade',
+        eixo: 'termodinamica',
+        evidencia: 'A',
+        fonte: 'Thirring, Lynden-Bell, Barré',
+        enunciado: 'Fenômeno em que as descrições microcanônica (energia fixa) e canônica (temperatura fixa) de um sistema produzem previsões termodinâmicas diferentes, como a presença de calor específico negativo.',
+        curto: 'Divergência entre previsões dos ensembles microcanônico e canônico.',
+        intro: 'Devido à não-aditividade, a entropia microcanônica pode apresentar regiões convexas. Isso resulta em calor específico negativo no ensemble microcanônico, algo impossível no ensemble canônico, onde a energia livre é minimizada via Construção de Maxwell.',
+        substrato: 'Entropia não-côncava, Teorema do Virial.',
+        metodos: ['Monte Carlo (Microcanônico e Canônico)', 'Construção de Maxwell'],
+        quebra: 'A Construção de Maxwell padrão (separação de fases) não se aplica diretamente da mesma forma que em sistemas de curto alcance devido à não-aditividade.',
+        relacionados: ['fator-de-kac', 'modelo-do-anel']
+      },
+      {
+        slug: 'modelo-do-anel',
+        nome: 'Modelo do Anel (Ring Model)',
+        tipo: 'modelo',
+        eixo: 'simulacao',
+        evidencia: 'B',
+        fonte: 'Tatekawa, Dauxois, Ruffo',
+        enunciado: 'Modelo de N massas iguais confinadas em um anel unidimensional, interagindo via potencial gravitacional tridimensional regularizado.',
+        curto: 'Sistema autogravitante 1D regularizado em um anel.',
+        intro: 'Utilizado na tese para estudar a construção de Maxwell e a inequivalência de ensembles. O parâmetro de amortecimento (ε) evita a divergência do potencial em curtas distâncias.',
+        substrato: 'Potencial regularizado V(θ) = -1/√(2(1 - cos(θ) + ε)).',
+        metodos: ['Monte Carlo', 'Dinâmica Molecular'],
+        quebra: 'Para ε grande, o modelo se reduz ao modelo HMF (Hamiltonian Mean Field).',
+        relacionados: ['inequivalencia-de-ensembles', 'hmf']
+      }
+    ];
+
+    /* =========================================
+       2. UTILITÁRIOS E SEGURANÇA
+       ========================================= */
+    function esc(str) {
+      if (typeof str !== 'string') return str;
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
+    function parseWikilinks(text) {
+      // Converte [[#slug|Texto]] em links HTML
+      return text.replace(/\[\[(#[^\|]+)\|([^\]]+)\]\]/g, (match, href, label) => {
+        return `<a href="${esc(href)}">${esc(label)}</a>`;
+      });
+    }
+
+    /* =========================================
+       3. ROTEAMENTO E RENDERIZAÇÃO
+       ========================================= */
+    const main = document.getElementById('main-content');
+
+    function renderHome() {
+      document.title = 'Início | Ergodicidade em Sistemas Autogravitantes';
+      main.innerHTML = `
+        <section style="padding: 4rem 0; border-bottom: 1px solid hsl(var(--line));">
+          <span class="chip tipo mb-1">Tese de Doutorado · UnB 2016</span>
+          <h1 style="max-width: 50rem;">Ergodicidade em Sistemas Autogravitantes</h1>
+          <p class="prosa" style="font-size: 1.1rem; color: hsl(var(--ink-muted));">
+            Uma exploração interativa dos conceitos, métodos e resultados da tese de Cínthia Helena Claudino Silvestre. 
+            Navegue por propriedades como a ${'[[#/conceito/ergodicidade|ergodicidade]]'}, a ${'[[#/conceito/relaxacao-violenta|relaxação violenta]]'} e a ${'[[#/conceito/inequivalencia-de-ensembles|inequivalência de ensembles]]'} em sistemas com interações de longo alcance.
+          </p>
+          <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+            <a href="#/conceitos" class="btn-theme" style="text-decoration: none; padding: 0.75rem 1.5rem;">Explorar Conceitos</a>
+            <a href="#/grafo" class="btn-theme" style="text-decoration: none; padding: 0.75rem 1.5rem; background: hsl(var(--bg-raised));">Ver Mapa de Relações</a>
+          </div>
+        </section>
+        
+        <section style="padding: 3rem 0;">
+          <h2>Destaques da Pesquisa</h2>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+            ${DADOS.slice(0, 3).map(d => renderCard(d)).join('')}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderCard(d) {
+      return `
+        <article class="card">
+          <div class="card-meta">
+            <span class="chip tipo">${esc(d.tipo)}</span>
+            <span class="chip evidencia-${d.evidencia}">Evidência ${d.evidencia}</span>
+          </div>
+          <h3><a href="#/conceito/${esc(d.slug)}">${esc(d.nome)}</a></h3>
+          <p style="color: hsl(var(--ink-muted)); font-size: 0.95rem;">${esc(d.curto)}</p>
+        </article>
+      `;
+    }
+
+    function renderLista() {
+      document.title = 'Conceitos | Ergodicidade';
+      const eixos = [...new Set(DADOS.map(d => d.eixo))];
+      
+      main.innerHTML = `
+        <section>
+          <h1>Conceitos e Propriedades</h1>
+          <p class="prosa" style="color: hsl(var(--ink-muted)); margin-bottom: 2rem;">
+            Filtre por eixo temático ou explore a lista completa de conceitos fundamentais da tese.
+          </p>
+          
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2rem;" role="group" aria-label="Filtros por eixo">
+            <button class="chip" onclick="window.location.hash='#/conceitos'" style="cursor: pointer;">Todos</button>
+            ${eixos.map(e => `<button class="chip" style="cursor: pointer;" onclick="filtrarEixo('${esc(e)}')">${esc(e)}</button>`).join('')}
+          </div>
+
+          <div id="lista-conceitos">
+            ${DADOS.map(d => renderCard(d)).join('')}
+          </div>
+        </section>
+      `;
+    }
+
+    window.filtrarEixo = (eixo) => {
+      const filtrados = DADOS.filter(d => d.eixo === eixo);
+      document.getElementById('lista-conceitos').innerHTML = filtrados.map(d => renderCard(d)).join('') || '<p>Nenhum conceito encontrado para este eixo.</p>';
+    };
+
+    function renderConceito(slug) {
+      const d = DADOS.find(x => x.slug === slug);
+      if (!d) {
+        main.innerHTML = `<h1>Conceito não encontrado</h1><p><a href="#/conceitos">Voltar para a lista</a></p>`;
+        return;
+      }
+
+      document.title = `${d.nome} | Ergodicidade`;
+      main.innerHTML = `
+        <article>
+          <nav aria-label="Breadcrumb" style="margin-bottom: 1rem; font-size: 0.9rem; color: hsl(var(--ink-muted));">
+            <a href="#/conceitos">Conceitos</a> / <span aria-current="page">${esc(d.nome)}</span>
+          </nav>
+
+          <div class="card-meta">
+            <span class="chip tipo">${esc(d.tipo)}</span>
+            <span class="chip evidencia-${d.evidencia}">Evidência ${d.evidencia}</span>
+            <span class="chip" style="border-color: hsl(var(--accent)); color: hsl(var(--accent));">${esc(d.eixo)}</span>
+          </div>
+
+          <h1>${esc(d.nome)}</h1>
+          <p style="font-size: 1.25rem; color: hsl(var(--ink-muted)); border-left: 3px solid hsl(var(--accent)); padding-left: 1rem; margin: 1.5rem 0;">
+            ${esc(d.enunciado)}
+          </p>
+
+          <div class="prosa">
+            <h2>Introdução</h2>
+            <p>${parseWikilinks(d.intro)}</p>
+
+            <h2>Substrato e Fundamentação</h2>
+            <p>${esc(d.substrato)}</p>
+            <p><strong>Fonte principal:</strong> ${esc(d.fonte)}</p>
+
+            <h2>Metodologia de Análise</h2>
+            <ul style="margin-left: 1.5rem; margin-bottom: 1.5rem; color: hsl(var(--ink-muted));">
+              ${d.metodos.map(m => `<li>${esc(m)}</li>`).join('')}
+            </ul>
+
+            ${d.quebra ? `
+              <div style="background: hsl(var(--bg-raised)); border: 1px solid hsl(var(--line)); border-radius: var(--radius); padding: 1.5rem; margin: 2rem 0;">
+                <h3 style="margin-top: 0; color: hsl(var(--accent));">Limites e Quebras</h3>
+                <p>${esc(d.quebra)}</p>
+                ${d.mitos ? `<p><strong>Mitos comuns:</strong> ${esc(d.mitos.join('; '))}</p>` : ''}
+              </div>
+            ` : ''}
+
+            ${d.risco ? `
+              <h2>Risco e Implicações</h2>
+              <p>${esc(d.risco)}</p>
+            ` : ''}
+
+            <h2>Conceitos Relacionados</h2>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              ${d.relacionados.map(relSlug => {
+                const rel = DADOS.find(x => x.slug === relSlug);
+                return rel ? `<a href="#/conceito/${rel.slug}" class="chip" style="text-decoration: none; border-color: hsl(var(--line-strong));">${esc(rel.nome)}</a>` : '';
+              }).join('')}
+            </div>
+          </div>
+        </article>
+      `;
+      main.focus();
+    }
+
+    function renderGrafo() {
+      document.title = 'Mapa de Relações | Ergodicidade';
+      main.innerHTML = `
+        <section>
+          <h1>Mapa de Relações Conceituais</h1>
+          <p class="prosa" style="color: hsl(var(--ink-muted)); margin-bottom: 1.5rem;">
+            Visualização de forças dos conceitos da tese. Arraste os nós para explorar. 
+            <span style="font-size: 0.85rem;">(Respeita a preferência de movimento reduzido do sistema)</span>
+          </p>
+          <div class="grafo-container" id="grafo-canvas-container">
+            <canvas id="grafo-canvas" role="img" aria-label="Grafo interativo dos conceitos da tese"></canvas>
+          </div>
+        </section>
+      `;
+      setTimeout(iniciarGrafo, 100); // Aguardar DOM
+    }
+
+    /* =========================================
+       4. BUSCA LOCAL
+       ========================================= */
+    const overlay = document.getElementById('overlay-busca');
+    const inputBusca = document.getElementById('input-busca');
+    const resultados = document.getElementById('resultados-busca');
+
+    document.getElementById('btn-busca').addEventListener('click', () => {
+      overlay.classList.add('ativo');
+      inputBusca.focus();
+      document.body.style.overflow = 'hidden';
+    });
+
+    document.getElementById('btn-fechar-busca').addEventListener('click', fecharBusca);
+
+    function fecharBusca() {
+      overlay.classList.remove('ativo');
+      document.body.style.overflow = '';
+      inputBusca.value = '';
+      resultados.innerHTML = '';
+    }
+
+    inputBusca.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      if (query.length < 2) {
+        resultados.innerHTML = '';
+        return;
+      }
+
+      const matches = DADOS.filter(d => 
+        d.nome.toLowerCase().includes(query) || 
+        d.enunciado.toLowerCase().includes(query) ||
+        d.intro.toLowerCase().includes(query)
+      );
+
+      if (matches.length === 0) {
+        resultados.innerHTML = '<p style="color: hsl(var(--ink-muted));">Nenhum conceito encontrado.</p>';
+        return;
+      }
+
+      resultados.innerHTML = matches.map(d => `
+        <a href="#/conceito/${d.slug}" class="card" style="display: block; text-decoration: none; color: inherit;" onclick="fecharBusca()">
+          <div class="card-meta">
+            <span class="chip tipo">${esc(d.tipo)}</span>
+          </div>
+          <h3 style="margin-bottom: 0.25rem;">${esc(d.nome)}</h3>
+          <p style="font-size: 0.9rem; color: hsl(var(--ink-muted)); margin: 0;">${esc(d.curto)}</p>
+        </a>
+      `).join('');
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        overlay.classList.add('ativo');
+        inputBusca.focus();
+      }
+      if (e.key === 'Escape' && overlay.classList.contains('ativo')) {
+        fecharBusca();
+      }
+    });
+
+    /* =========================================
+       5. VISUALIZAÇÃO DE GRAFO (Canvas 2D)
+       ========================================= */
+    function iniciarGrafo() {
+      const canvas = document.getElementById('grafo-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const container = document.getElementById('grafo-canvas-container');
+      
+      // Redução de movimento
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      let width = container.clientWidth;
+      let height = container.clientHeight;
+      canvas.width = width;
+      canvas.height = height;
+
+      // Criar nós
+      const nodes = DADOS.map((d, i) => ({
+        id: d.slug,
+        label: d.nome,
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: 0, vy: 0,
+        radius: 20 + (d.relacionados.length * 5)
+      }));
+
+      // Criar arestas
+      const edges = [];
+      DADOS.forEach(d => {
+        d.relacionados.forEach(rel => {
+          if (d.slug < rel) { // Evitar duplicatas
+            edges.push({ source: d.slug, target: rel });
+          }
+        });
+      });
+
+      let animationId;
+      let isDragging = false;
+      let dragNode = null;
+
+      function step() {
+        if (prefersReducedMotion) {
+          draw();
+          return; // Não animar se o usuário preferir
+        }
+
+        // Forças simples
+        nodes.forEach(node => {
+          // Repulsão
+          nodes.forEach(other => {
+            if (node === other) return;
+            const dx = node.x - other.x;
+            const dy = node.y - other.y;
+            const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+            if (dist < 200) {
+              const force = 500 / (dist * dist);
+              node.vx += (dx / dist) * force;
+              node.vy += (dy / dist) * force;
+            }
+          });
+
+          // Atração das arestas
+          edges.forEach(edge => {
+            if (edge.source === node.id || edge.target === node.id) {
+              const otherId = edge.source === node.id ? edge.target : edge.source;
+              const other = nodes.find(n => n.id === otherId);
+              const dx = other.x - node.x;
+              const dy = other.y - node.y;
+              const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+              const force = (dist - 150) * 0.005;
+              node.vx += (dx / dist) * force;
+              node.vy += (dy / dist) * force;
+            }
+          });
+
+          // Centro de gravidade
+          node.vx += (width / 2 - node.x) * 0.001;
+          node.vy += (height / 2 - node.y) * 0.001;
+
+          // Amortecimento
+          node.vx *= 0.9;
+          node.vy *= 0.9;
+
+          if (!isDragging || dragNode !== node) {
+            node.x += node.vx;
+            node.y += node.vy;
+          }
+
+          // Limites
+          node.x = Math.max(node.radius, Math.min(width - node.radius, node.x));
+          node.y = Math.max(node.radius, Math.min(height - node.radius, node.y));
+        });
+
+        draw();
+        animationId = requestAnimationFrame(step);
+      }
+
+      function draw() {
+        // Obter cores do CSS
+        const style = getComputedStyle(document.documentElement);
+        const bg = style.getPropertyValue('--bg-raised').trim();
+        const ink = style.getPropertyValue('--ink').trim();
+        const accent = style.getPropertyValue('--accent').trim();
+        const traco = style.getPropertyValue('--traco').trim();
+
+        ctx.fillStyle = `hsl(${bg})`;
+        ctx.fillRect(0, 0, width, height);
+
+        // Desenhar arestas
+        ctx.strokeStyle = `hsl(${traco} / 0.4)`;
+        ctx.lineWidth = 1.5;
+        edges.forEach(edge => {
+          const s = nodes.find(n => n.id === edge.source);
+          const t = nodes.find(n => n.id === edge.target);
+          ctx.beginPath();
+          ctx.moveTo(s.x, s.y);
+          ctx.lineTo(t.x, t.y);
+          ctx.stroke();
+        });
+
+        // Desenhar nós
+        nodes.forEach(node => {
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+          ctx.fillStyle = `hsl(${bg})`;
+          ctx.fill();
+          ctx.strokeStyle = `hsl(${accent})`;
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          ctx.fillStyle = `hsl(${ink})`;
+          ctx.font = '14px Inter, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          
+          // Quebra de linha simples para nomes longos
+          const words = node.label.split(' ');
+          if (words.length > 1 && node.label.length > 12) {
+            ctx.fillText(words.slice(0, Math.ceil(words.length/2)).join(' '), node.x, node.y - 8);
+            ctx.fillText(words.slice(Math.ceil(words.length/2)).join(' '), node.x, node.y + 8);
+          } else {
+            ctx.fillText(node.label, node.x, node.y);
+          }
+        });
+      }
+
+      // Interação
+      canvas.addEventListener('mousedown', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const mx = e.clientX - rect.left;
+        const my = e.clientY - rect.top;
+        
+        dragNode = nodes.find(n => {
+          const dx = mx - n.x;
+          const dy = my - n.y;
+          return Math.sqrt(dx*dx + dy*dy) < n.radius + 5;
+        });
+        
+        if (dragNode) isDragging = true;
+      });
+
+      canvas.addEventListener('mousemove', (e) => {
+        if (isDragging && dragNode) {
+          const rect = canvas.getBoundingClientRect();
+          dragNode.x = e.clientX - rect.left;
+          dragNode.y = e.clientY - rect.top;
+          dragNode.vx = 0;
+          dragNode.vy = 0;
+        }
+      });
+
+      canvas.addEventListener('mouseup', () => {
+        isDragging = false;
+        dragNode = null;
+      });
+
+      canvas.addEventListener('click', (e) => {
+        if (!isDragging && dragNode) { // Foi um clique, não um arrasto
+           window.location.hash = `#/conceito/${dragNode.id}`;
+        }
+      });
+
+      window.addEventListener('resize', () => {
+        width = container.clientWidth;
+        height = container.clientHeight;
+        canvas.width = width;
+        canvas.height = height;
+        if (!prefersReducedMotion) draw();
+      });
+
+      step();
+    }
+
+    /* =========================================
+       6. TEMA E INICIALIZAÇÃO
+       ========================================= */
+    const btnTema = document.getElementById('btn-tema');
+    const html = document.documentElement;
+    
+    // Carregar tema salvo ou preferido
+    const savedTheme = localStorage.getItem('tema');
+    if (savedTheme) {
+      html.setAttribute('data-theme', savedTheme);
+    }
+
+    btnTema.addEventListener('click', () => {
+      const current = html.getAttribute('data-theme');
+      const next = current === 'light' ? 'dark' : 'light';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('tema', next);
+    });
+
+    function rota() {
+      const hash = window.location.hash || '#/';
+      window.scrollTo(0, 0);
+      
+      if (hash === '#/' || hash === '') {
+        renderHome();
+      } else if (hash === '#/conceitos') {
+        renderLista();
+      } else if (hash.startsWith('#/conceito/')) {
+        const slug = hash.split('/')[2];
+        renderConceito(slug);
+      } else if (hash === '#/grafo') {
+        renderGrafo();
+      } else if (hash === '#/metodos') {
+        document.title = 'Métodos | Ergodicidade';
+        main.innerHTML = `<h1>Métodos Computacionais</h1><p class="prosa">Conteúdo sobre Integrador Simplético (Yoshida), Método Monte Carlo e Funcional Dinâmico em desenvolvimento nesta demonstração.</p>`;
+      } else {
+        main.innerHTML = `<h1>404</h1><p>Página não encontrada. <a href="#/">Voltar ao início</a>.</p>`;
+      }
+    }
+
+    window.addEventListener('hashchange', rota);
+    window.addEventListener('DOMContentLoaded', rota);
+
+  </script>
+</body>
+</html>
