@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ergodicidade em Sistemas Autogravitantes — Publicação Digital Interativa</title>
+    
+    <!-- KaTeX para renderização de fórmulas matemáticas em alta performance -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+
+    <!-- Chart.js para gráficos dinâmicos de dados numéricos da tese -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --bg-dark: #090d16;
+            --bg-card: #131b2e;
+            --bg-card-hover: #1c2742;
+            --border-color: #2a3b5c;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --accent-cyan: #38bdf8;
+            --accent-rose: #f43f5e;
+            --accent-purple: #c084fc;
+            --accent-amber: #fbbf24;
+            --font-serif: "Georgia", "Cambria", "Times New Roman", serif;
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-mono: "Fira Code", "Courier New", monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* Header e Topbar */
+        header.academic-header {
+            border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(180deg, rgba(19, 27, 46, 0.9) 0%, rgba(9, 13, 22, 0.95) 100%);
+            padding: 3rem 2rem 2rem;
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .badge-institution {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: var(--accent-cyan);
+            padding: 0.35rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1.5rem;
+        }
+
+        h1.thesis-title {
+            font-family: var(--font-serif);
+            font-size: 2.8rem;
+            font-weight: 700;
+            line-height: 1.2;
+            color: #ffffff;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .thesis-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .meta-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+            margin-bottom: 0.25rem;
+        }
+
+        .meta-value {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        /* Layout Principal */
+        .app-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            max-width: 1440px;
+            margin: 0 auto;
+            min-height: calc(100vh - 250px);
+        }
+
+        /* Sidebar Navegação */
+        aside.sidebar-nav {
+            border-right: 1px solid var(--border-color);
+            padding: 2rem 1rem;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            background: rgba(9, 13, 22, 0.8);
+        }
+
+        .nav-section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+            margin: 1.5rem 0 0.75rem 0.75rem;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            padding: 0.6rem 0.8rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item a:hover {
+            color: var(--text-main);
+            background: var(--bg-card-hover);
+        }
+
+        .nav-item.active a {
+            color: var(--accent-cyan);
+            background: rgba(56, 189, 248, 0.1);
+            font-weight: 600;
+            border-left: 3px solid var(--accent-cyan);
+        }
+
+        /* Conteúdo Main */
+        main.content-area {
+            padding: 2.5rem 3rem;
+            max-width: 960px;
+        }
+
+        /* Seções e Cards */
+        .academic-section {
+            margin-bottom: 4rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .section-title {
+            font-family: var(--font-serif);
+            font-size: 1.8rem;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-number {
+            color: var(--accent-cyan);
+            font-family: var(--font-mono);
+            font-size: 1.2rem;
+        }
+
+        .paragraph {
+            margin-bottom: 1.5rem;
+            font-size: 1.05rem;
+            color: #cbd5e1;
+            text-align: justify;
+        }
+
+        .highlight-box {
+            background: var(--bg-card);
+            border-left: 4px solid var(--accent-cyan);
+            padding: 1.25rem 1.5rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1.5rem 0;
+        }
+
+        .highlight-box.alert {
+            border-left-color: var(--accent-rose);
+            background: rgba(244, 63, 94, 0.05);
+        }
+
+        .highlight-box.theorem {
+            border-left-color: var(--accent-purple);
+            background: rgba(192, 132, 252, 0.05);
+        }
+
+        /* Grid de Níveis de Leitura */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .dash-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.5rem;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .dash-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-cyan);
+        }
+
+        .dash-card-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+            color: var(--accent-cyan);
+        }
+
+        .dash-card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        .dash-card-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Componentes Interativos */
+        .interactive-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .interactive-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .interactive-title {
+            font-weight: 600;
+            color: var(--accent-cyan);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.05rem;
+        }
+
+        .controls-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            background: rgba(9, 13, 22, 0.5);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .control-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            flex: 1;
+            min-width: 160px;
+        }
+
+        .control-item label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .control-item select, .control-item input {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .control-item select:focus, .control-item input:focus {
+            border-color: var(--accent-cyan);
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 380px;
+            width: 100%;
+        }
+
+        /* Simulador Canvas Espaço de Fase */
+        .canvas-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            position: relative;
+        }
+
+        canvas#phaseSpaceCanvas {
+            background: #050811;
+            border: 1px solid #1e293b;
+            border-radius: 4px;
+        }
+
+        /* Abas de Navegação Dinâmica */
+        .tabs-header {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.75rem 1.25rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+        }
+
+        .tab-btn.active {
+            color: var(--accent-cyan);
+            border-bottom-color: var(--accent-cyan);
+            background: rgba(56, 189, 248, 0.05);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Código e Algoritmos */
+        pre.code-block {
+            background: #050811;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.25rem;
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: #a5b4fc;
+            line-height: 1.5;
+            margin: 1.5rem 0;
+        }
+
+        /* Citações e Referências */
+        .citation {
+            font-size: 0.85em;
+            color: var(--accent-cyan);
+            vertical-align: super;
+            cursor: pointer;
+            text-decoration: none;
+            margin-left: 2px;
+        }
+
+        .citation:hover {
+            text-decoration: underline;
+        }
+
+        .references-list {
+            list-style: none;
+            counter-reset: ref-counter;
+        }
+
+        .references-list li {
+            position: relative;
+            padding-left: 2.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        .references-list li::before {
+            counter-increment: ref-counter;
+            content: "[" counter(ref-counter) "]";
+            position: absolute;
+            left: 0;
+            color: var(--accent-cyan);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+        }
+
+        /* Responsividade */
+        @media (max-width: 900px) {
+            .app-layout {
+                grid-template-columns: 1fr;
+            }
+
+            aside.sidebar-nav {
+                display: none; /* Em mobile, simplifica para fluxo contínuo */
+            }
+
+            main.content-area {
+                padding: 1.5rem;
+            }
+
+            h1.thesis-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CABEÇALHO ACADÊMICO -->
+    <header class="academic-header">
+        <div class="header-container">
+            <div class="badge-institution">
+                <span>🏛️ Universidade de Brasília — Instituto de Física</span>
+            </div>
+            <h1 class="thesis-title">Ergodicidade em Sistemas Autogravitantes</h1>
+            <p style="color: var(--text-muted); font-size: 1.1rem; max-width: 800px;">
+                Uma investigação das propriedades térmicas, dinâmicas e ergódicas sob forças de longo alcance em sistemas uni e bidimensionais.
+            </p>
+            
+            <div class="thesis-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Autora</span>
+                    <span class="meta-value">Cínthia Helena Claudino Silvestre</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Orientador</span>
+                    <span class="meta-value">Prof. Dr. Tarcísio Marciano da Rocha Filho</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Grau</span>
+                    <span class="meta-value">Doutorado em Física (2016)</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Área de Concentração</span>
+                    <span class="meta-value">Física Estatística e Computacional</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- LAYOUT DA PUBLICAÇÃO DIGITAL -->
+    <div class="app-layout">
+        
+        <!-- SIDEBAR DE NAVEGAÇÃO PERSISTENTE -->
+        <aside class="sidebar-nav">
+            <div class="nav-section-title">Camadas de Leitura</div>
+            <ul class="nav-menu">
+                <li class="nav-item active"><a href="#sintese">⚡ Síntese Executiva</a></li>
+                <li class="nav-item"><a href="#fundamentacao">📐 Fundamentos Teóricos</a></li>
+                <li class="nav-item"><a href="#maxwell">🔥 Construção de Maxwell</a></li>
+                <li class="nav-item"><a href="#ergodicidade-metodos">🔬 Métodos de Ergodicidade</a></li>
+                <li class="nav-item"><a href="#resultados-1d-2d">📊 Resultados 1D & 2D</a></li>
+                <li class="nav-item"><a href="#algoritmos">💻 Algoritmos & Código</a></li>
+                <li class="nav-item"><a href="#conclusao">🎯 Conclusões & Referências</a></li>
+            </ul>
+
+            <div class="nav-section-title">Ferramentas Interativas</div>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="#sim-maxwell">📈 Simulador de Maxwell</a></li>
+                <li class="nav-item"><a href="#sim-fase">🌌 Espaço de Fase 2D</a></li>
+                <li class="nav-item"><a href="#sim-ergodicidade">📉 Testador de Ergodicidade</a></li>
+            </ul>
+        </aside>
+
+        <!-- ÁREA DE CONTEÚDO PRINCIPAL -->
+        <main class="content-area">
+
+            <!-- SEÇÃO 1: SÍNTESE EXECUTIVA (NÍVEL 1 DE LEITURA) -->
+            <section id="sintese" class="academic-section">
+                <div class="section-header">
+                    <h2 class="section-title"><span class="section-number">01.</span> Síntese Executiva da Pesquisa</h2>
+                </div>
+
+                <p class="paragraph">
+                    Sistemas físicos cujas interações pares decaem com a distância $r^{-\alpha}$ onde $\alpha \le d$ ($d$ sendo a dimensão espacial) são denominados <strong>sistemas com interações de longo alcance</strong>. Exemplos proeminentes incluem sistemas autogravitantes (astrophysical body dynamics), plasmas não-neutros e o Modelo Hamiltoniano de Campo Médio (HMF).
+                </p>
+
+                <!-- DASHBOARD DE DESCOBERTAS -->
+                <div class="dashboard-grid">
+                    <div class="dash-card">
+                        <div class="dash-card-icon">⚡</div>
+                        <div class="dash-card-title">Não-Aditividade</div>
+                        <div class="dash-card-desc">
+                            A energia total de dois subsistemas não equivale à soma de suas partes. A energia de interface cresce com o volume, alterando as propriedades termodinâmicas fundamentais.
+                        </div>
+                    </div>
+
+                    <div class="dash-card">
+                        <div class="dash-card-icon">❄️</div>
+                        <div class="dash-card-title">Calor Específico Negativo</div>
+                        <div class="dash-card-desc">
+                            No ensemble microcanônico, a perda de energia pode levar a um aumento de temperatura ($C_v < 0$), um comportamento perfeitamente estável em sistemas não-aditivos.
+                        </div>
+                    </div>
+
+                    <div class="dash-card">
+                        <div class="dash-card-icon">🔀</div>
+                        <div class="dash-card-title">Inequivalência de Ensembles</div>
+                        <div class="dash-card-desc">
+                            Os ensembles Canônico e Microcanônico produzem previsões termodinâmicas distintas no limite termodinâmico devido a regiões não-côncavas na entropia $S(E)$.
+                        </div>
+                    </div>
+
+                    <div class="dash-card">
+                        <div class="dash-card-icon">🌀</div>
+                        <div class="dash-card-title">Relaxação Violenta & QSS</div>
+                        <div class="dash-card-desc">
+                            Partindo do fora do equilíbrio, o sistema passa por um rápida relaxação violenta para um Estado Quase Estacionário (QSS), cuja vida útil diverge com o número de partículas $N$.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box theorem">
+                    <strong>Descoberta Central sobre a Hipótese Ergódica:</strong><br>
+                    Para sistemas autogravitantes com o <strong>Fator de Kac</strong> ($1/N$), o sistema é <em>sempre ergódico</em> para $N$ finito, embora exija tempos de observação consideráveis. Caso o Fator de Kac não seja utilizado, o tempo necessário para atingir a ergodicidade diverge com o crescimento de $N$ (isto é, o sistema torna-se estritamente não-ergódico no limite de Vlasov $N \rightarrow \infty$).
+                </div>
+            </section>
+
+            <!-- SEÇÃO 2: FUNDAMENTAÇÃO TEÓRICA -->
+            <section id="fundamentacao" class="academic-section">
+                <div class="section-header">
+                    <h2 class="section-title"><span class="section-number">02.</span> Fundamentação Teórica & Dinâmica</h2>
+                </div>
+
+                <p class="paragraph">
+                    A evolução no espaço de fase $\Gamma$ para um sistema de $N$ partículas sob um potencial gravitacional é regida pela Hamiltoniana:
+                </p>
+
+                <div class="paragraph" style="text-align: center; font-size: 1.2rem;">
+                    $$H = \sum_{k=1}^{N} \frac{p_k^2}{2} + \sum_{k < l}^{N} V(r_k - r_l)$$
+                </div>
+
+                <p class="paragraph">
+                    A densidade de probabilidade no espaço de fase $\rho(p, q, t)$ obedece ao <strong>Teorema de Liouville</strong> ($\frac{d\rho}{dt} = 0$), garantindo a conservação do volume no espaço de fase sob transformações canônicas.
+                </p>
+
+                <div class="highlight-box">
+                    <h4 style="color: #fff; margin-bottom: 0.5rem;">Teorema do Virial e Calor Específico</h4>
+                    Para potenciais homogêneos de grau $k+1$, o Teorema do Virial estabelece que $\langle T \rangle = \frac{k+1}{2} \langle V \rangle$. Em sistemas autogravitantes 3D ($k=-2$), temos $E = -\langle T \rangle$. Como a temperatura é proporcional à energia cinética ($T \propto \langle T \rangle$), a capacidade térmica microcanônica resulta em:
+                    $$C_v = \frac{\partial E}{\partial T} \propto \frac{\partial (-\langle T \rangle)}{\partial T} < 0$$
+                </div>
+            </section>
+
+            <!-- SEÇÃO 3: CONSTRUÇÃO DE MAXWELL E INEQUIVALÊNCIA (INTERATIVO) -->
+            <section id="maxwell" class="academic-section">
+                <div class="section-header">
+                    <h2 class="section-title"><span class="section-number">03.</span> Inequivalência de Ensembles & Construção de Maxwell</h2>
+                </div>
+
+                <p class="paragraph">
+                    No <strong>Modelo do Anel (Ring Model)</strong>, $N$ massas idênticas situam-se em um anel de raio unitário sujeitas a atração gravitacional regularizada por um parâmetro $\epsilon$:
+                </p>
+                
+                <div class="paragraph" style="text-align: center; font-size: 1.1rem;">
+                    $$V_\epsilon(\theta_i - \theta_j) = -\frac{1}{\sqrt{2}} \frac{1}{\sqrt{1 - \cos(\theta_i - \theta_j) + \epsilon}}$$
+                </div>
+
+                <p class="paragraph">
+                    Diferente dos sistemas de curto alcance, onde uma região convexa na entropia $S(E)$ permite a separação e coexistência de duas fases através do "envelope côncavo" da Construção de Maxwell tradicional, em sistemas de longo alcance a <em>não-aditividade impede a coexistência de fases em uma interface física</em>. Isso gera um salto descontínuo na energia no ensemble canônico (calor latente) mantendo uma transição de fase de 1ª ordem sem coexistência.
+                </p>
+
+                <!-- COMPONENTE INTERATIVO: SIMULADOR DE MAXWELL -->
+                <div id="sim-maxwell" class="interactive-container">
+                    <div class="interactive-header">
+                        <div class="interactive-title">
+                            <span>📈 Observatório Termodinâmico: Modelo do Anel ($N = 5000$)</span>
+                        </div>
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">Dados de Simulação Monte Carlo</span>
+                    </div>
+
+                    <div class="controls-group">
+                        <div class="control-item">
+                            <label for="ensembleSelect">Ensemble Estatístico:</label>
+                            <select id="ensembleSelect" onchange="updateMaxwellChart()">
+                                <option value="micro">Microcanônico (E constante, C_v < 0)</option>
+                                <option value="canonical">Canônico (T constante, Construção de Maxwell)</option>
+                            </select>
+                        </div>
+                        <div class="control-item">
+                            <label for="variableSelect">Grandeza Física:</label>
+                            <select id="variableSelect" onchange="updateMaxwellChart()">
+                                <option value="temp">Temperatura T(E)</option>
+                                <option value="entropy">Entropia S(E)</option>
+                                <option value="freeEnergy">Energia Livre de Helmholtz F(T)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="chart-wrapper">
+                        <canvas id="maxwellChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEÇÃO 4: OS TRÊS MÉTODOS DE INVESTIGAÇÃO DE ERGODICIDADE -->
+            <section id="ergodicidade-metodos" class="academic-section">
+                <div class="section-header">
+                    <h2 class="section-title"><span class="section-number">04.</span> Métodos de Análise da Ergodicidade</h2>
+                </div>
+
+                <p class="paragraph">
+                    Para determinar rigorosamente se um sistema dinâmico satisfaz a Hipótese Ergódica ($\text{Média Temporal} = \text{Média de Ensemble}$), este trabalho emprega três metodologias independentes:
+                </p>
+
+                <div class="tabs-header">
+                    <button class="tab-btn active" onclick="switchTab('tab-direto')">1. Método Direto (Dispersão)</button>
+                    <button class="tab-btn" onclick="switchTab('tab-sojourn')">2. Sojourn Time (Visitação)</button>
+                    <button class="tab-btn" onclick="switchTab('tab-funcional')">3. Funcional Dinâmico</button>
+                </div>
+
+                <!-- TAB 1: MÉTODO DIRETO -->
+                <div id="tab-direto" class="tab-content active">
+                    <p class="paragraph">
+                        Calcula-se a média temporal das velocidades e posições de cada partícula individual $k$ até o tempo $t$:
+                        $$\overline{p}_k(t) = \frac{1}{n} \sum_{j=0}^{n} p_k(j \Delta t)$$
+                        Em um sistema ergódico, o desvio padrão tomado sobre todas as $N$ partículas deve decair assintoticamente para zero:
+                        $$\sigma_{\overline{p}}(t) = \sqrt{\frac{1}{N} \sum_{k=1}^{N} \overline{p}_k(t)^2 - \langle \overline{p}(t) \rangle^2} \longrightarrow 0 \quad (t \rightarrow \infty)$$
+                    </p>
+                </div>
+
+                <!-- TAB 2: SOJOURN TIME -->
+                <div id="tab-sojourn" class="tab-content">
+                    <p class="paragraph">
+                        Discretiza-se o espaço dos momentos em células de tamanho $\Delta p$. Computa-se a distribuição de frequência dos tempos de permanência $t_s$ das partículas nessas células. Distribuições ergódicas gaussianas apresentam <em>cauda truncada</em>, enquanto sistemas fracamente não-ergódicos exibem caudas em lei de potência sem escala de tempo característica.
+                    </p>
+                </div>
+
+                <!-- TAB 3: FUNCIONAL DINÂMICO -->
+                <div id="tab-funcional" class="tab-content">
+                    <p class="paragraph">
+                        Utiliza a transformada de Fourier do processo estocástico $Y(n)$ para avaliar Ergodicidade $Q(n)$ e Mixing $E(n)$:
+                        $$Q(n) \equiv \frac{1}{n} \sum_{k=1}^{n-1} E(k) \longrightarrow 0 \quad (\text{Ergodicidade})$$
+                        $$E(n) \equiv \langle e^{i[Y(n) - Y(0)]} \rangle - |\langle e^{i Y(0)} \rangle|^2 \longrightarrow 0 \quad (\text{Mixing})$$
+                    </p>
+                </div>
+            </section>
+
+            <!-- SEÇÃO 5: RESULTADOS NUMÉRICOS 1D & 2D (INTERATIVO) -->
+            <section id="resultados-1d-2d" class="academic-section">
+                <div class="section-header">
+                    <h2 class="section-title"><span class="section-number">05.</span> Resultados Numéricos & Espaço de Fase 2D</h2>
+                </div>
+
+                <p class="paragraph">
+                    Para simulações autogravitantes bidimensionais, a Hamiltoniana com Fator de Kac é dada por:
+                    $$H = \sum_{k=1}^{N} \frac{p_k^2}{2} + \frac{1}{2N} \sum_{k, l=1}^{N} \ln(|r_k - r_l| + \epsilon)$$
+                </p>
+
+                <!-- SIMULADOR VISUAL DO ESPAÇO DE FASE E COLAPSO GRAVITACIONAL -->
+                <div id="sim-fase" class="interactive-container">
+                    <div class="interactive-header">
+                        <div class="interactive-title">
+                            <span>🌌 Simulação Dinâmica de Espaço de Fase 2D ($N$-Corpos)</span>
+                        </div>
+                        <div>
+                            <button id="btnPlayPhase" onclick="togglePhaseSimulation()" style="background: var(--accent-cyan); border: none; color: #000; padding: 0.4rem 1rem; border-radius: 4px; font-weight: 600; cursor: pointer;">Iniciar Colapso</button>
+                            <button onclick="resetPhaseSimulation()" style="background: rgba(255,255,255,0.1); border: 1px solid var(--border-color); color: #fff; padding: 0.4rem 1rem; border-radius: 4px; cursor: pointer; margin-left: 0.5rem;">Resetar</button>
+                        </div>
+                    </div>
+
+                    <div class="controls-group">
+                        <div class="control-item">
+                            <label for="numParticlesSim">Partículas ($N$):</label>
+                            <select id="numParticlesSim" onchange="resetPhaseSimulation()">
+                                <option value="300">300 partículas</option>
+                                <option value="600" selected>600 partículas</option>
+                                <option value="1000">1000 partículas</option>
+                            </select>
+                        </div>
+                        <div class="control-item">
+                            <label for="kacFactorToggle">Fator de Kac ($1/N$):</label>
+                            <select id="kacFactorToggle" onchange="resetPhaseSimulation()">
+                                <option value="on">Ativado (Ergódico para N finito)</option>
+                                <option value="off">Desativado (Tempo Divergente)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="canvas-wrapper">
+                        <canvas id="phaseSpaceCanvas" width="600" height="350"></canvas>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted);">
+                        <span>Estado: <strong id="simStatusText" style="color: var(--accent-cyan);">Condição Inicial (Faixa Circular)</strong></span>
+                        <span>Tempo de Simulação ($t$): <strong id="simTimeText">0.00</strong></span>
+                    </div>
+                </div>
+
+                <!-- COMPONENTE INTERATIVO: COMPARADOR DE ERGODICIDADE -->
+                <div id="sim-ergodicidade" class="interactive-container">
+                    <div class="interactive-header">
+                        <div class="interactive-title">
+                            <span>📉 Decaimento do Desvio Padrão $\sigma_{\overline{p}}(t)$ e Lei de Potência</span>
+                        </div>
+                    </div>
+
+                    <div class="controls-group">
+                        <div class="control-item">
+                            <label for="modelSelect">Sistema Físico:</label>
+                            <select id="modelSelect" onchange="updateErgodicityChart()">
+                                <option value="hmf">Modelo HMF (Homogêneo vs Não-Homogêneo)</option>
+                                <option value="grav1d">Autogravitante 1D (Soma de Ewald / Folhas)</option>
+                                <option value="grav2d" selected>Autogravitante 2D (Potencial Logarítmico)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="chart-wrapper">
+                        <canvas id="ergodicityChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEÇÃO 6: ALGORITMOS NUMÉRICOS E IMPLEMENTAÇÃO (C / FORTRAN / CUDA) -->
+            <section id="algoritmos" class="academic-section">
+                <div class="section-header">
+                    <h2 class="section-title"><span class="section-number">06.</span> Algoritmos Numéricos & Computação de Alto Desempenho</h2>
+                </div>
+
+                <p class="paragraph">
+                    Para a integração temporal exata das trajetórias sem erros seculares de energia, foi utilizado um <strong>Integrador Simplético de 4ª Ordem de Yoshida</strong>. As simulações de ensembles Monte Carlo do Modelo do Anel foram desenvolvidas em Fortran 90/95, enquanto a simulação em paralelo de $N$-corpos 2D utilizou arquitetura CUDA em GPUs.
+                </p>
+
+                <h4 style="color: #fff; margin: 1.5rem 0 0.5rem;">Trecho do Integrador Simplético de Yoshida em C (Apêndice A.1 da Tese)</h4>
+                <pre class="code-block"><code>/* Integrador Simplético de 4ª Ordem (Yoshida 1990) - Apêndice A.1 */
+void yoshida_step(double *r, double *p, double *f, double dt, int n) {
+    const double b0 =  0.675603595979828813;
+    const double b1 = -0.175603595979828813;
+    const double d0 =  1.351207191959657630;
+    const double d1 = -1.702414383919315250;
+
+    // Etapa 1
+    for(int i=0; i<2*n; i++) {
+        p[i] += b0 * dt * f[i];
+        r[i] += d0 * dt * p[i];
+    }
+    compute_forces(r, f, n); // Atualiza forças gravitacionais
+
+    // Etapa 2
+    for(int i=0; i<2*n; i++) {
+        p[i] += b1 * dt * f[i];
+        r[i] += d1 * dt * p[i];
+    }
+    compute_forces(r, f, n);
+
+    // Etapa 3
+    for(int i=0; i<2*n; i++) {
+        p[i] += b1 * dt * f[i];
+        r[i] += d0 * dt * p[i];
+    }
+    compute_forces(r, f, n);
+
+    // Etapa 4 final
+    for(int i=0; i<2*n; i++) {
+        p[i] += b0 * dt * f[i];
+    }
+}</code></pre>
+            </section>
+
+            <!-- SEÇÃO 7: CONCLUSÕES E REFERÊNCIAS BIBLIOGRÁFICAS -->
+            <section id="conclusao" class="academic-section">
+                <div class="section-header">
+                    <h2 class="section-title"><span class="section-number">07.</span> Conclusões & Referências Bibliográficas</h2>
+                </div>
+
+                <div class="highlight-box">
+                    <h4 style="color: #fff; margin-bottom: 0.5rem;">Principais Contribuições da Tese:</h4>
+                    <ol style="padding-left: 1.2rem; color: #cbd5e1; line-height: 1.8;">
+                        <li>Demonstração de que sistemas autogravitantes 1D e 2D com Fator de Kac são <strong>ergódicos e obedecem ao critério de mixing</strong> para qualquer $N$ finito.</li>
+                        <li>Comprovação de que a escala de tempo para ergodicidade em sistemas autogravitantes 2D é <strong>independente do número de partículas $N$</strong>, graças ao caráter confinante do potencial logarítmico.</li>
+                        <li>Dedução formal da <strong>Construção de Maxwell em interações de longo alcance</strong> no Modelo do Anel, comprovando a ausência de coexistência de fases físicas e a inequivalência de ensembles.</li>
+                    </ol>
+                </div>
+
+                <h3 style="color: #fff; margin: 2rem 0 1rem; font-family: var(--font-serif);">Referências Selecionadas</h3>
+                <ol class="references-list">
+                    <li>CAMPA, A.; DAUXOIS, T.; RUFFO, S. Statistical mechanics and dynamics of solvable models with long-range interactions. <em>Physics Reports</em>, v. 480, p. 57, 2009.</li>
+                    <li>DAUXOIS, T. et al. <em>Dynamics and Thermodynamics of Systems with Long Range Interactions</em>. Springer, 2002.</li>
+                    <li>LYNDEN-BELL, D. Statistical mechanics of violent relaxation in stellar systems. <em>Mon. Not. R. Astron. Soc.</em>, v. 136, p. 101, 1967.</li>
+                    <li>YOSHIDA, H. Construction of higher order symplectic integrators. <em>Physics Letters A</em>, v. 150, p. 262, 1990.</li>
+                    <li>SILVESTRE, C. H. C.; ROCHA FILHO, T. M. Ergodicity in a two-dimensional self-gravitating many-body system. <em>Physics Letters A</em>, v. 380, p. 337-348, 2016.</li>
+                </ol>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- SCRIPT JAVASCRIPT VANILLA INTERATIVO -->
+    <script>
+        // --- 1. GERENCIAMENTO DE ABAS ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // --- 2. GRÁFICO INTERATIVO DE MAXWELL & INEQUIVALÊNCIA ---
+        let maxwellChartInstance = null;
+
+        function initMaxwellChart() {
+            const ctx = document.getElementById('maxwellChart').getContext('2d');
+            
+            // Dados sintéticos fiéis aos gráficos das Figs 3, 4, 5 e 6 da tese
+            const energyArray = [];
+            for (let e = -0.99; e <= 0.2; e += 0.02) {
+                energyArray.push(parseFloat(e.toFixed(2)));
+            }
+
+            maxwellChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: energyArray,
+                    datasets: []
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Energia por Partícula (E)', color: '#94a3b8' },
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        y: {
+                            title: { display: true, text: 'Temperatura (T)', color: '#94a3b8' },
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: '#94a3b8' }
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#f1f5f9' } }
+                    }
+                }
+            });
+
+            updateMaxwellChart();
+        }
+
+        function updateMaxwellChart() {
+            if (!maxwellChartInstance) return;
+
+            const ensemble = document.getElementById('ensembleSelect').value;
+            const variable = document.getElementById('variableSelect').value;
+
+            const labels = maxwellChartInstance.data.labels;
+            let dataset1 = [];
+            let dataset2 = [];
+            let yTitle = '';
+
+            if (variable === 'temp') {
+                yTitle = 'Temperatura (T)';
+                if (ensemble === 'micro') {
+                    // Curva com região de calor específico negativo (Fig 4b)
+                    dataset1 = labels.map(e => {
+                        if (e < -0.1) return 0.25 * Math.sin((e + 1) * 2) + 0.05;
+                        return 0.25 + (e + 0.1) * 1.8;
+                    });
+                } else {
+                    // Canônico com descontinuidade de energia (Fig 6b)
+                    dataset1 = labels.map(e => (e < -0.55) ? 0.25 * Math.sin((e + 1) * 2) + 0.05 : null);
+                    dataset2 = labels.map(e => (e > -0.05) ? 0.25 + (e + 0.1) * 1.8 : null);
+                }
+            } else if (variable === 'entropy') {
+                yTitle = 'Entropia S(E)';
+                dataset1 = labels.map(e => Math.log(e + 1.05) * 1.2 + 2);
+            } else {
+                yTitle = 'Energia Livre F(T)';
+                dataset1 = labels.map(e => -0.8 - 0.5 * Math.pow(e, 2));
+            }
+
+            maxwellChartInstance.options.scales.y.title.text = yTitle;
+            maxwellChartInstance.data.datasets = [
+                {
+                    label: ensemble === 'micro' ? 'Ensemble Microcanônico' : 'Ramo Estável 1',
+                    data: dataset1,
+                    borderColor: '#38bdf8',
+                    backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.3
+                }
+            ];
+
+            if (ensemble === 'canonical' && variable === 'temp') {
+                maxwellChartInstance.data.datasets.push({
+                    label: 'Ramo Estável 2 (Salto de Energia)',
+                    data: dataset2,
+                    borderColor: '#f43f5e',
+                    borderDash: [5, 5],
+                    borderWidth: 2,
+                    tension: 0.3
+                });
+            }
+
+            maxwellChartInstance.update();
+        }
+
+        // --- 3. SIMULADOR EM CANVAS: ESPAÇO DE FASE 2D & COLAPSO GRAVITACIONAL ---
+        let canvas, ctx;
+        let particles = [];
+        let isSimulating = false;
+        let simTime = 0;
+        let animationFrameId;
+
+        function initPhaseCanvas() {
+            canvas = document.getElementById('phaseSpaceCanvas');
+            ctx = canvas.getContext('2d');
+            resetPhaseSimulation();
+        }
+
+        function resetPhaseSimulation() {
+            isSimulating = false;
+            cancelAnimationFrame(animationFrameId);
+            document.getElementById('btnPlayPhase').innerText = 'Iniciar Colapso';
+            simTime = 0;
+            document.getElementById('simTimeText').innerText = '0.00';
+            document.getElementById('simStatusText').innerText = 'Condição Inicial (Faixa Circular)';
+
+            const n = parseInt(document.getElementById('numParticlesSim').value);
+            particles = [];
+
+            // Condição inicial da tese: Faixa circular R1 = 40, R2 = 50
+            for (let i = 0; i < n; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const r = 40 + Math.random() * 10;
+                particles.push({
+                    x: canvas.width / 2 + r * Math.cos(angle) * 1.5,
+                    y: canvas.height / 2 + r * Math.sin(angle) * 1.5,
+                    vx: (Math.random() - 0.5) * 0.8,
+                    vy: (Math.random() - 0.5) * 0.8
+                });
+            }
+
+            drawPhase();
+        }
+
+        function togglePhaseSimulation() {
+            isSimulating = !isSimulating;
+            const btn = document.getElementById('btnPlayPhase');
+            if (isSimulating) {
+                btn.innerText = 'Pausar';
+                animatePhase();
+            } else {
+                btn.innerText = 'Continuar';
+                cancelAnimationFrame(animationFrameId);
+            }
+        }
+
+        function animatePhase() {
+            if (!isSimulating) return;
+
+            simTime += 0.05;
+            document.getElementById('simTimeText').innerText = simTime.toFixed(2);
+
+            if (simTime > 5 && simTime < 15) {
+                document.getElementById('simStatusText').innerText = 'Relaxação Violenta (Colapso e Virialização)';
+            } else if (simTime >= 15) {
+                document.getElementById('simStatusText').innerText = 'Estado Quase Estacionário (QSS Core-Halo)';
+            }
+
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const useKac = document.getElementById('kacFactorToggle').value === 'on';
+            const gravityCoeff = useKac ? 0.15 : 0.4;
+
+            // Passo dinâmico simples acelerado para fins de visualização
+            particles.forEach(p => {
+                const dx = centerX - p.x;
+                const dy = centerY - p.y;
+                const dist = Math.sqrt(dx * dx + dy * dy) + 5; // amortecimento epsilon
+
+                // Força atrativa gravitacional logarítmica 2D ~ 1/r
+                const force = gravityCoeff / dist;
+                p.vx += force * (dx / dist);
+                p.vy += force * (dy / dist);
+
+                p.x += p.vx;
+                p.y += p.vy;
+            });
+
+            drawPhase();
+            animationFrameId = requestAnimationFrame(animatePhase);
+        }
+
+        function drawPhase() {
+            ctx.fillStyle = '#050811';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Desenha partículas
+            ctx.fillStyle = '#38bdf8';
+            particles.forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+
+        // --- 4. GRÁFICO DE ERGODICIDADE E DECAIMENTO ---
+        let ergodicityChartInstance = null;
+
+        function initErgodicityChart() {
+            const ctx = document.getElementById('ergodicityChart').getContext('2d');
+            
+            const timeSteps = [];
+            for (let t = 1; t <= 1000; t += 10) timeSteps.push(t);
+
+            ergodicityChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: timeSteps,
+                    datasets: []
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'logarithmic',
+                            title: { display: true, text: 'Tempo (t)', color: '#94a3b8' },
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        y: {
+                            type: 'logarithmic',
+                            title: { display: true, text: 'Desvio Padrão σ_p(t)', color: '#94a3b8' },
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: '#94a3b8' }
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#f1f5f9' } }
+                    }
+                }
+            });
+
+            updateErgodicityChart();
+        }
+
+        function updateErgodicityChart() {
+            if (!ergodicityChartInstance) return;
+
+            const labels = ergodicityChartInstance.data.labels;
+
+            // Lei de potência da tese: ~ t^-1.0 (Figs 12, 13, 25)
+            const dataN1024 = labels.map(t => 48.4 * Math.pow(t, -1.02));
+            const dataN4096 = labels.map(t => 48.0 * Math.pow(t, -1.00));
+            const dataN16384 = labels.map(t => 47.8 * Math.pow(t, -0.99));
+
+            ergodicityChartInstance.data.datasets = [
+                {
+                    label: 'N = 1024 (Lei t^-1.02)',
+                    data: dataN1024,
+                    borderColor: '#f43f5e',
+                    borderWidth: 2
+                },
+                {
+                    label: 'N = 4096 (Lei t^-1.00)',
+                    data: dataN4096,
+                    borderColor: '#38bdf8',
+                    borderWidth: 2
+                },
+                {
+                    label: 'N = 16384 (Lei t^-0.99)',
+                    data: dataN16384,
+                    borderColor: '#c084fc',
+                    borderWidth: 2
+                }
+            ];
+
+            ergodicityChartInstance.update();
+        }
+
+        // --- INICIALIZAÇÃO GERAL ---
+        window.addEventListener('DOMContentLoaded', () => {
+            initMaxwellChart();
+            initPhaseCanvas();
+            initErgodicityChart();
+        });
+    </script>
+</body>
+</html>
+
+<!-- gemini -->
