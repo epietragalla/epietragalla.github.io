@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Importância da Forma para os Projetos de Design — Estéfano Pietragalla</title>
+    <style>
+        /* ===== RESET E CONFIGURAÇÕES GERAIS ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #f7f5f0;
+            --surface: #ffffff;
+            --text: #1a1a1a;
+            --text-secondary: #4a4a4a;
+            --text-muted: #6b6b6b;
+            --accent: #b45309;
+            --accent-light: #fef3c7;
+            --border: #e5e0d8;
+            --shadow: 0 1px 3px rgba(0,0,0,0.06);
+            --radius: 4px;
+            --font-serif: 'Georgia', 'Times New Roman', serif;
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-mono: 'SF Mono', 'Fira Code', monospace;
+            --max-width: 820px;
+            --nav-height: 56px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: var(--font-serif);
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+            padding-top: var(--nav-height);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+            * {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* ===== TIPOGRAFIA ===== */
+        h1, h2, h3, h4 {
+            font-family: var(--font-sans);
+            font-weight: 600;
+            line-height: 1.25;
+            color: var(--text);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            font-size: 1.6rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        h4 {
+            font-size: 1rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        p {
+            margin-bottom: 1.2rem;
+            text-align: justify;
+            hyphens: auto;
+        }
+
+        p + p {
+            text-indent: 1.5em;
+        }
+
+        blockquote {
+            margin: 1.5rem 0;
+            padding: 1rem 1.5rem;
+            border-left: 3px solid var(--accent);
+            background: var(--accent-light);
+            font-style: italic;
+            color: var(--text-secondary);
+            border-radius: 0 var(--radius) var(--radius) 0;
+        }
+
+        blockquote p {
+            margin-bottom: 0.5rem;
+            text-indent: 0;
+        }
+
+        blockquote p:last-child {
+            margin-bottom: 0;
+        }
+
+        blockquote cite {
+            display: block;
+            margin-top: 0.5rem;
+            font-style: normal;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        ul, ol {
+            margin-bottom: 1.2rem;
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.4rem;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        a:hover {
+            border-bottom-color: var(--accent);
+        }
+
+        a:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+            border-radius: 2px;
+        }
+
+        /* ===== NAVEGAÇÃO ===== */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--nav-height);
+            background: rgba(247, 245, 240, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+        }
+
+        .nav-brand {
+            font-family: var(--font-sans);
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 0.25rem;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-links a {
+            font-family: var(--font-sans);
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            padding: 0.4rem 0.75rem;
+            border-radius: var(--radius);
+            border: none;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .nav-links a:hover {
+            background: var(--border);
+            color: var(--text);
+            border: none;
+        }
+
+        .nav-links a:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        .nav-progress {
+            position: fixed;
+            top: var(--nav-height);
+            left: 0;
+            height: 2px;
+            background: var(--accent);
+            z-index: 101;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        /* ===== LAYOUT ===== */
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .container-wide {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        section {
+            padding: 3rem 0;
+        }
+
+        section:first-of-type {
+            padding-top: 2rem;
+        }
+
+        /* ===== CAPA ===== */
+        .cover {
+            min-height: calc(100vh - var(--nav-height));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 4rem 1.5rem;
+            background: linear-gradient(180deg, var(--bg) 0%, #f0ece4 100%);
+            position: relative;
+        }
+
+        .cover-label {
+            font-family: var(--font-sans);
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 2rem;
+        }
+
+        .cover h1 {
+            font-size: clamp(1.8rem, 5vw, 3rem);
+            max-width: 700px;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+
+        .cover .subtitle {
+            font-family: var(--font-serif);
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+
+        .cover-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 2rem;
+            justify-content: center;
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .cover-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .cover-meta .label {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .cover-scroll {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: var(--font-sans);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-8px); }
+            60% { transform: translateX(-50%) translateY(-4px); }
+        }
+
+        /* ===== CARDS DE RESUMO ===== */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+            margin: 2rem 0;
+        }
+
+        .summary-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+
+        .summary-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+        }
+
+        .summary-card h3 {
+            font-family: var(--font-sans);
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-top: 0;
+            margin-bottom: 0.75rem;
+        }
+
+        .summary-card p {
+            font-size: 0.95rem;
+            margin-bottom: 0;
+            text-align: left;
+            text-indent: 0;
+            color: var(--text-secondary);
+        }
+
+        /* ===== MAPA CONCEITUAL ===== */
+        .concept-map {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin: 2rem 0;
+            overflow: hidden;
+        }
+
+        .concept-map-title {
+            font-family: var(--font-sans);
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .concept-map-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .concept-item {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 0.75rem 1rem;
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-align: center;
+            color: var(--text-secondary);
+            cursor: default;
+            transition: background 0.2s, border-color 0.2s, color 0.2s;
+        }
+
+        .concept-item:hover {
+            background: var(--accent-light);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .concept-item.highlight {
+            background: var(--accent-light);
+            border-color: var(--accent);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* ===== TIMELINE ===== */
+        .timeline {
+            position: relative;
+            padding: 1rem 0;
+            margin: 2rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 14px;
+            top: 0.5rem;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--surface);
+            border: 2px solid var(--accent);
+        }
+
+        .timeline-item h4 {
+            font-family: var(--font-sans);
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 0.25rem;
+            color: var(--text);
+        }
+
+        .timeline-item p {
+            font-size: 0.9rem;
+            margin-bottom: 0;
+            text-indent: 0;
+            text-align: left;
+            color: var(--text-secondary);
+        }
+
+        /* ===== CITAÇÕES DESTACADAS ===== */
+        .quote-highlight {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--accent);
+            border-radius: 0 var(--radius) var(--radius) 0;
+            padding: 1.5rem 2rem;
+            margin: 2rem 0;
+            box-shadow: var(--shadow);
+        }
+
+        .quote-highlight p {
+            font-size: 1.1rem;
+            font-style: italic;
+            color: var(--text);
+            margin-bottom: 0.75rem;
+            text-indent: 0;
+        }
+
+        .quote-highlight cite {
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            font-style: normal;
+            color: var(--text-muted);
+        }
+
+        /* ===== TABELAS ===== */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: var(--font-sans);
+            font-size: 0.9rem;
+        }
+
+        thead {
+            background: var(--bg);
+        }
+
+        th {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            color: var(--text);
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: var(--bg);
+        }
+
+        /* ===== ACORDEÃO ===== */
+        .accordion {
+            margin: 1.5rem 0;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .accordion-item {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .accordion-item:last-child {
+            border-bottom: none;
+        }
+
+        .accordion-header {
+            width: 100%;
+            background: var(--surface);
+            border: none;
+            padding: 1rem 1.25rem;
+            font-family: var(--font-sans);
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text);
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .accordion-header:hover {
+            background: var(--bg);
+        }
+
+        .accordion-header:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: -2px;
+        }
+
+        .accordion-icon {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            transition: transform 0.3s;
+            flex-shrink: 0;
+            margin-left: 1rem;
+        }
+
+        .accordion-item.open .accordion-icon {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease;
+            background: var(--surface);
+        }
+
+        .accordion-content-inner {
+            padding: 0 1.25rem 1.25rem;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .accordion-content-inner p {
+            margin-bottom: 0.75rem;
+            text-indent: 0;
+            text-align: left;
+        }
+
+        .accordion-content-inner p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* ===== FILTROS ===== */
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .filter-btn {
+            font-family: var(--font-sans);
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 0.4rem 0.9rem;
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            background: var(--surface);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .filter-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        .filter-btn:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        /* ===== REFERÊNCIAS ===== */
+        .references-list {
+            list-style: none;
+            padding: 0;
+            margin: 2rem 0;
+        }
+
+        .references-list li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .references-list li:last-child {
+            border-bottom: none;
+        }
+
+        .references-list li strong {
+            color: var(--text);
+        }
+
+        /* ===== BOTÃO VOLTAR AO TOPO ===== */
+        .back-to-top {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s, transform 0.2s;
+            z-index: 99;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-2px);
+        }
+
+        .back-to-top:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        /* ===== NOTAS DE RODAPÉ ===== */
+        .footnote-ref {
+            font-size: 0.75em;
+            vertical-align: super;
+            color: var(--accent);
+            cursor: pointer;
+            font-family: var(--font-sans);
+            font-weight: 600;
+        }
+
+        .footnote-ref:hover {
+            text-decoration: underline;
+        }
+
+        .footnotes {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .footnotes ol {
+            padding-left: 1.2rem;
+        }
+
+        .footnotes li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* ===== RESPONSIVIDADE ===== */
+        @media (max-width: 768px) {
+            html {
+                font-size: 15px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .nav-brand {
+                max-width: none;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            h2 {
+                font-size: 1.3rem;
+            }
+
+            .cover {
+                min-height: 85vh;
+                padding: 3rem 1.25rem;
+            }
+
+            .cover-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .concept-map-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+
+            .quote-highlight {
+                padding: 1rem 1.25rem;
+            }
+
+            .quote-highlight p {
+                font-size: 1rem;
+            }
+
+            p {
+                text-align: left;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .container-wide {
+                padding: 0 1rem;
+            }
+
+            .cover h1 {
+                font-size: 1.5rem;
+            }
+
+            .concept-map-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .concept-map {
+                padding: 1.25rem;
+            }
+        }
+
+        /* ===== IMPRESSÃO ===== */
+        @media print {
+            .nav, .nav-progress, .back-to-top, .cover-scroll {
+                display: none !important;
+            }
+
+            body {
+                padding-top: 0;
+                background: #fff;
+            }
+
+            .cover {
+                min-height: auto;
+                page-break-after: always;
+            }
+
+            section {
+                page-break-inside: avoid;
+            }
+
+            .accordion-content {
+                max-height: none !important;
+                overflow: visible !important;
+            }
+
+            .accordion-icon {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== NAVEGAÇÃO ===== -->
+    <nav class="nav" role="navigation" aria-label="Navegação principal">
+        <span class="nav-brand">A Importância da Forma</span>
+        <ul class="nav-links">
+            <li><a href="#resumo">Resumo</a></li>
+            <li><a href="#conceitos">Conceitos</a></li>
+            <li><a href="#relacoes">Relações</a></li>
+            <li><a href="#obras">Obras</a></li>
+            <li><a href="#conclusao">Conclusão</a></li>
+            <li><a href="#referencias">Referências</a></li>
+        </ul>
+    </nav>
+    <div class="nav-progress" id="progressBar" role="progressbar" aria-label="Progresso de leitura"></div>
+
+    <!-- ===== CAPA ===== -->
+    <header class="cover" id="capa">
+        <div class="cover-label">Dissertação de Mestrado · Design</div>
+        <h1>A Importância da Forma para os Projetos de Design</h1>
+        <p class="subtitle">Reconhecimento, conceitos e diálogos transdisciplinares</p>
+        <div class="cover-meta">
+            <span><span class="label">Autor</span> Estéfano Pietragalla</span>
+            <span><span class="label">Orientadora</span> Prof.ª Dr.ª Fátima Aparecida dos Santos</span>
+            <span><span class="label">Instituição</span> Universidade de Brasília — UnB</span>
+            <span><span class="label">Ano</span> 2016</span>
+        </div>
+        <div class="cover-scroll">
+            <span>Explorar</span>
+            <span>↓</span>
+        </div>
+    </header>
+
+    <main>
+        <!-- ===== RESUMO ===== -->
+        <section id="resumo">
+            <div class="container">
+                <h2>Resumo</h2>
+                <p>O conceito de forma está presente em grande parte das ciências e das artes e também está relacionado com vários conceitos do design, como função, informação, reconhecimento e outros. Por meio dos estudos teóricos, passando por várias áreas do conhecimento, percebe-se uma evolução do conceito de forma ou um aumento da sua complexidade. Algumas relações do design refletem diretamente na forma e, portanto, devem ser entendidas de maneira objetiva para que se possa compreender como o design se apropria desses conceitos. Além disso, vários princípios encontrados nos conceitos de forma fazem parte também do universo do Design que reforçam essas relações. Na sua aplicação, a forma pode ser entendida de diversos modos, pelo processo de criação do autor, suas referências, contexto, necessidades do produto ou serviço. Hoje em dia, forma está contida também em sistemas de design de serviço e design estratégico, por exemplo, que compreendem conceitos mais completos do Design.</p>
+
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <h3>Problema</h3>
+                        <p>O que é forma no Design e de quais conceitos de outras áreas o Design se apropria?</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Objetivo Geral</h3>
+                        <p>Entender o que é a forma no campo do Design a partir de uma análise transdisciplinar.</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Metodologia</h3>
+                        <p>Pesquisa bibliográfica e teórica, com análise de conceitos de forma em diversas áreas do conhecimento.</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Hipótese</h3>
+                        <p>O entendimento da forma pelo Design pressupõe um entrelaçamento entre diferentes áreas do conhecimento.</p>
+                    </div>
+                </div>
+
+                <div class="quote-highlight">
+                    <p>“A informação tem um conteúdo e uma forma. As formas não são descobertas, nem invenções, nem ideias platônicas, nem ficções, antes recipientes para fenómenos (modelos). A ciência não é nem verdadeira nem falsa, mas sim formal, projeta modelos. Se a forma é o oposto da matéria, então não há nenhum design que se possa definir material.”</p>
+                    <cite>— Vilém Flusser, O Mundo Codificado (2008, p.38)</cite>
+                </div>
+
+                <p><strong>Palavras-chave:</strong> forma, design, transdisciplinaridade, projeto.</p>
+            </div>
+        </section>
+
+        <!-- ===== CONCEITOS DE FORMA ===== -->
+        <section id="conceitos">
+            <div class="container">
+                <h2>Os Conceitos de Forma</h2>
+                <p>A forma existe em todos os lugares e várias áreas do conhecimento lidam de algum modo com o conceito de forma. Este capítulo percorre as definições de forma na filosofia, matemática, física, química, biologia, música, arte e design.</p>
+
+                <div class="concept-map">
+                    <div class="concept-map-title">Áreas que se relacionam com o conceito de Forma</div>
+                    <div class="concept-map-grid">
+                        <div class="concept-item highlight">Filosofia</div>
+                        <div class="concept-item highlight">Matemática</div>
+                        <div class="concept-item highlight">Física</div>
+                        <div class="concept-item highlight">Química</div>
+                        <div class="concept-item highlight">Biologia</div>
+                        <div class="concept-item highlight">Música</div>
+                        <div class="concept-item highlight">Arte</div>
+                        <div class="concept-item highlight">Design</div>
+                        <div class="concept-item">Arquitetura</div>
+                        <div class="concept-item">Engenharia</div>
+                        <div class="concept-item">Psicologia</div>
+                        <div class="concept-item">Comunicação</div>
+                        <div class="concept-item">Linguagem</div>
+                        <div class="concept-item">Informação</div>
+                        <div class="concept-item">Estrutura</div>
+                        <div class="concept-item">Estética</div>
+                        <div class="concept-item">Simetria</div>
+                        <div class="concept-item">Ritmo</div>
+                        <div class="concept-item">Proporção</div>
+                        <div class="concept-item">Gestalt</div>
+                        <div class="concept-item">Affordance</div>
+                        <div class="concept-item">Composição</div>
+                    </div>
+                </div>
+
+                <div class="accordion" id="accordionConceitos">
+                    <div class="accordion-item">
+                        <button class="accordion-header" aria-expanded="false">
+                            <span>1.1 A Forma na Filosofia</span>
+                            <span class="accordion-icon">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="accordion-content-inner">
+                                <p>Para Platão, a forma é eterna e está no plano das ideias. Para Aristóteles, a forma é causa ou razão de ser da coisa, aquilo em virtude do que uma coisa é o que é. Francis Bacon entende forma igualmente a Aristóteles, mas distingue-se porque não pode ser aprendida pelo procedimento dedutivo, mas somente pela indução experimental.</p>
+                                <p>Na filosofia contemporânea, Vilém Flusser propõe um retorno à origem da palavra matéria (<em>hyle</em>, madeira em estado bruto). A forma é o “como” da matéria, e o design é um dos métodos para conferir forma à matéria e fazê-la parecer assim e não de outra forma.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-header" aria-expanded="false">
+                            <span>1.2 A Forma na Matemática</span>
+                            <span class="accordion-icon">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="accordion-content-inner">
+                                <p>A matemática trata de colocar tudo em números e traduzir funções. A forma tem um caráter dinâmico, expressa mutação, evolução e tempo. A geometria fractal descreve objetos complexos e acessa estruturas que antes não eram possíveis descrever de modo quantitativo.</p>
+                                <p>A principal característica da geometria fractal é a iteração, que consiste em repetir o mesmo princípio ou regra infinitamente.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-header" aria-expanded="false">
+                            <span>1.3 A Forma na Física</span>
+                            <span class="accordion-icon">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="accordion-content-inner">
+                                <p>A física reúne vários fenômenos (medidas, trajetórias, velocidades, densidade, formas) em um mesmo conjunto teórico. A geometria fractal descreve objetos complexos e acessa estruturas que antes não eram possíveis descrever de modo quantitativo.</p>
+                                <p>Na física quântica, o estudo de partículas permitiu compreender a forma espacial do núcleo atômico e sua extensão espacial. As interações, por motivo de simetria, geram elementos aproximadamente esféricos.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-header" aria-expanded="false">
+                            <span>1.4 A Forma na Química</span>
+                            <span class="accordion-icon">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="accordion-content-inner">
+                                <p>Em nível atômico, os átomos se ligam formando ângulos entre si e, consequentemente, formam moléculas que refletem diretamente na configuração da sua forma. As reações químicas dependem da forma como se apresenta a molécula.</p>
+                                <p>Na Cristalografia, estuda-se a classificação e a interpretação das estruturas geométricas dos sólidos. Os cristais são formados por blocos elementares ou células unitárias que se repetem nas três dimensões do espaço.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-header" aria-expanded="false">
+                            <span>1.5 A Forma na Biologia</span>
+                            <span class="accordion-icon">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="accordion-content-inner">
+                                <p>Para a embriologia, forma é memória, isto é, existe na célula a forma em potência. Por meio de diferenciações celulares é que se pode identificar as espécies, cada qual com suas particularidades desenvolvidas para um tipo de adaptação.</p>
+                                <p>A Biônica estuda e constrói projetos baseados no reconhecimento e inteligência de formas vivas e da natureza. Isso tem sido empregado em design automobilístico, design de utensílios e outros campos.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-header" aria-expanded="false">
+                            <span>1.6 A Forma na Música</span>
+                            <span class="accordion-icon">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="accordion-content-inner">
+                                <p>A forma na música é entendida como reconhecimento. Ela difere das outras ideias, pois sua natureza não é visível, mas sim por meio do som, que é identificado e reconhecido.</p>
+                                <p>O som é uma manifestação física, percebida pelo homem, associada a acontecimentos e que preenche de modo dinâmico a percepção do meio. A partitura musical é uma representação do som e pode variar de acordo com o momento cultural e contexto.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-header" aria-expanded="false">
+                            <span>1.7 A Forma nas Artes Visuais</span>
+                            <span class="accordion-icon">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="accordion-content-inner">
+                                <p>A forma do ponto de vista da arte pode ser interpretada como uma ressurreição da forma na qual o artista navega por territórios e processos não comuns. No Renascimento, buscava-se uma formalização da construção do objeto artístico com o uso da perspectiva, simetria e proporção.</p>
+                                <p>No século XX surge a arte não figurativa, como a de Kandinsky, em que não existe nenhum objeto reconhecível na pintura. Hoje, a forma na arte contemporânea esbarra em questões como: o que é arte? O que é formato?</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-header" aria-expanded="false">
+                            <span>1.8 A Forma no Design</span>
+                            <span class="accordion-icon">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="accordion-content-inner">
+                                <p>Entre as formas que respondem às exigências de determinação até as formas mais livres do universo da arte, está o Design, um campo extraordinário para a invenção das formas. O designer dá pluralidade às apresentações dos objetos, encontra para funções dos objetos e as necessidades humanas formas novas.</p>
+                                <p>O design pode ser analisado sob duas perspectivas: a análise subjetiva (significação, entendimentos e apreensões a partir de uma forma projetada) e a análise objetiva (design como produto, serviço ou processo).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== RELAÇÕES DA FORMA ===== -->
+        <section id="relacoes">
+            <div class="container">
+                <h2>Forma e suas Relações</h2>
+                <p>Este capítulo discute algumas relações da forma com conceitos que estão intrinsecamente ligados a ela e ao design: linguagem, simetria, ordem, estética, estrutura, composição, função, informação, comunicação, affordance e pregnância.</p>
+
+                <div class="filter-bar" id="filterBar">
+                    <button class="filter-btn active" data-filter="all">Todos</button>
+                    <button class="filter-btn" data-filter="linguagem">Linguagem</button>
+                    <button class="filter-btn" data-filter="simetria">Simetria</button>
+                    <button class="filter-btn" data-filter="funcao">Função</button>
+                    <button class="filter-btn" data-filter="informacao">Informação</button>
+                    <button class="filter-btn" data-filter="affordance">Affordance</button>
+                </div>
+
+                <div class="accordion" id="accordionRelacoes">
+                    <div class="accordion-item" data-category="linguagem">
+                        <button class="accordion-header" aria-expanded="false">
+                            <span>2.1 Forma e Linguagem</span>
+                            <span class="accordion-icon">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="accordion-content-inner">
+                                <p>A linguagem é um arranjo formal destinado a elaborar e veicular o sentido. A língua é uma manifestação particular e fundamental da linguagem. O Design é entendido como uma linguagem do produto do cotidiano, na medida em que os objetos de design não são apenas portadores de funções, mas são sempre portadores de informação.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item" data-category="simetria">
+                        <button class="accordion-header" aria-expanded="false">
+                            <span>2.2 Forma, Simetria e Ordem</span>
+                            <span class="accordion-icon">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="accordion-content-inner">
+                                <p>A simetria corresponde às partes situadas em lados opostos de uma linha, de um plano ou distribuídas em volta de um centro, de maneira a apresentar uma regularidade nessa distribuição. A simetria tem uma relação com ordem e equilíbrio dos sistemas orgânicos e não orgânicos.</p>
+                                <p>A ordem e a simetria são mais acessíveis e compreensíveis para o ser humano, pois se aproximam das estruturas do nosso corpo. Há uma tendência da mente humana em enxergar, procurar, identificar e reconhecer padrões.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item" data-category="funcao">
+                        <button class="accordion-header" aria-expanded="false">
+                            <span>2.5 Forma e Função</span>
+                            <span class="accordion-icon">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="accordion-content-inner">
+                                <p>A frase célebre de Louis Sullivan, “a forma segue a função”, não se refere apenas às funções práticas, mas especialmente às dimensões semióticas dos objetos. Löbach considera três dimensões na função do objeto: a função prática, a função simbólica e a função estética.</p>
+                                <p>A função simbólica é determinada por todos os aspectos espirituais, psíquicos e sociais do uso. A função estética é a relação do produto com o usuário no nível dos processos sensoriais.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item" data-category="informacao">
+                        <button class="accordion-header" aria-expanded="false">
+                            <span>2.6 Forma, Informação e Comunicação</span>
+                            <span class="accordion-icon">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="accordion-content-inner">
+                                <p>Claude Shannon define informação como uma medida de redução de incerteza em um sistema. MacKay questiona essa definição e diz que a informação possui significado (informação subjetiva), depende do contexto e causa mudança mental no receptor.</p>
+                                <p>Para o Design, a informação não é um mero sinal, mas possui um significado, principalmente quando se tem vários níveis de funções, como a estética, simbólica e prática do Design em que a forma comunica.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item" data-category="affordance">
+                        <button class="accordion-header" aria-expanded="false">
+                            <span>2.7 Forma, Affordance e Pregnância</span>
+                            <span class="accordion-icon">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="accordion-content-inner">
+                                <p>O reconhecimento da forma é tratado no design por Norman sob a ótica das <em>affordances</em>, termo proposto por Gibson. <em>Affordance</em> é o potencial de adaptação do objeto ou indivíduo em um ambiente apropriado ideal.</p>
+                                <p>A pregnância da forma é a lei básica da percepção visual da Gestalt e pode ser definida como as forças de organização da forma que tendem a se dirigir no sentido da harmonia e do equilíbrio visual.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== OBRAS E EXEMPLOS ===== -->
+        <section id="obras">
+            <div class="container">
+                <h2>As Formas da Forma</h2>
+                <p>Este capítulo exemplifica como a forma foi trabalhada e construída por M.C. Escher e o método da professora e designer Rowena Reed Kostellow.</p>
+
+                <h3>3.1 O Espelho Mágico de Escher</h3>
+                <p>Maurits Cornelis Escher, artista e arquiteto holandês, utilizou de maneira ímpar a geometria, relações de simetria e técnicas de gravura para criar suas obras. Escher descobriu posições geométricas: translação, rotação e translação refletida, as chamadas isometrias.</p>
+                <p>Uma das habilidades desenvolvidas por Escher foi sua precisão matemática, vistas nas obras que apresentam metamorfose, em que ocorre a transformação de uma forma para outra. Seu trabalho é dividido em quatro fases: gravuras de paisagens e cidades; utilização de geometria, transição de formas e simetria; perspectivas e sólidos geométricos; e o infinito como tema central.</p>
+
+                <div class="quote-highlight">
+                    <p>“Há uma satisfação em observar obras simétricas, ordenadas ou padronizadas como as de Escher. Uma das explicações para esse fato é que os seres humanos reconhecem esses elementos de um modo natural, pois o próprio corpo do homem é simétrico e proporcional.”</p>
+                    <cite>— Estéfano Pietragalla</cite>
+                </div>
+
+                <h3>3.2 Elementos do Design Tridimensional</h3>
+                <p>Rowena Reed Kostellow, professora do Pratt Institute em Nova Iorque, elaborou um método para desenvolver a percepção das relações visuais subjacentes à arte, ao design e à arquitetura. Seus estudos estão divididos em quatro etapas: fundamentos; estudos avançados da forma; estudos do espaço e desenvolvimento.</p>
+
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <h4>Fundamentos</h4>
+                        <p>Compreensão dos volumes retilíneos e curvelíneos, de fragmentos de sólidos tridimensionais, de linhas no espaço e de construção de planos.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4>Estudos Avançados da Forma</h4>
+                        <p>Exercícios baseados na construção, envolvendo projeto e organização de formas contrastantes e formas côncavas e convexas.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4>Estudos do Espaço</h4>
+                        <p>Análises de espaço e projeto de espaço, com o objetivo de fazer com que os alunos criassem seus próprios espaços em três dimensões.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4>Desenvolvimento</h4>
+                        <p>Exploração de formas abstratas com aplicação de critérios mais práticos.</p>
+                    </div>
+                </div>
+
+                <p>Nesse método, é clara a evolução do estudo da complexidade da forma, desde as mais simples e isoladas, até as mais detalhadas e inseridas com outros elementos.</p>
+            </div>
+        </section>
+
+        <!-- ===== CONCLUSÃO ===== -->
+        <section id="conclusao">
+            <div class="container">
+                <h2>Conclusão</h2>
+                <p>A dissertação se iniciou com as seguintes perguntas: o que é forma no Design e de quais conceitos ele se apropria? Além disso, trabalhou-se com a hipótese de que o Design possui um entrelaçamento de diferentes áreas do conhecimento e é composto por várias linguagens.</p>
+
+                <p>Em cada universo discutido, a forma se apresenta com definições muito particulares, em contextos diferentes e com características diferentes. Assim, o Design está atrelado a uma infinidade de disciplinas, conceitos, ferramentas e princípios, que variam de contexto para contexto e até de indivíduo para indivíduo. A forma no Design, portanto, irá depender do problema proposto, e irá buscar em cada contexto, métodos, ferramentas e requisitos apropriados.</p>
+
+                <p>Conforme se progrediu em cada seção, a natureza das abordagens se tornou mais complexa, mais elementos se agregaram ao contexto, mais atenções deveriam ser dadas para se entender o que era a forma em cada universo estudado. Essa é a evolução da forma, desde sua simples representação geométrica de fórmulas, até a mais rebuscada definição de memória utilizada na biologia e de reconhecimento na música.</p>
+
+                <div class="quote-highlight">
+                    <p>“A forma no Design, portanto, caminha sob um olhar prático e poético do designer. O olhar prático se refere ao rigor metodológico aplicado à forma que interfere nos princípios utilizados e nas funções práticas e dão a ela seu caráter pragmático. Já o olhar poético é influenciado pelas vivências e referências do designer, que são únicas e é desse modo que o objeto de Design é capaz de se tornar experiência.”</p>
+                    <cite>— Estéfano Pietragalla</cite>
+                </div>
+
+                <p>Os conceitos de metadesign e metaprojeto são evidentes na análise das relações dos princípios do Design com a forma. No processo de Design, esses princípios são requeridos à medida que o processo evolui, isto é, eles saem da camada de abstração e se tornam requisitos reais do produto.</p>
+            </div>
+        </section>
+
+        <!-- ===== REFERÊNCIAS ===== -->
+        <section id="referencias">
+            <div class="container">
+                <h2>Referências Bibliográficas</h2>
+                <ul class="references-list">
+                    <li>AGAMBEN, G. <strong>O aberto, o homem e o animal</strong>. Lisboa: Edições 70, 2002.</li>
+                    <li>AMOREIRA, J.; DE JESUS, M. <strong>Apontamentos de física do estado sólido</strong>. Covilhã, Portugal: Departamento de Física, Universidade da Beira Interior, 2001/2002.</li>
+                    <li>BERTALANFFY, L. V. <strong>General System Theory</strong>. New York: George Braziller, 1969.</li>
+                    <li>BERRO, R. T. <strong>Relações entre arte e matemática</strong>: Um Estudo da Obra de Maurits Cornelis Escher. 2008. 108p. Dissertação de Mestrado — Universidade São Francisco, São Paulo.</li>
+                    <li>BIRKHOFF, G. D. <strong>Aesthetic measure</strong>. Massachusetts: Harvard University Press, 1933.</li>
+                    <li>BONSIEPE, G. <strong>Design, Cultura e Sociedade</strong>. São Paulo: Blucher, 2013.</li>
+                    <li>BOYER, C. B.; MERZBACH, U. C. <strong>História da matemática</strong>. 5.ed. São Paulo: Blucher, 2012.</li>
+                    <li>BÜRDEK, B. E. <strong>História, teoria e prática do design de produto</strong>. São Paulo: Blucher, 2006.</li>
+                    <li>CARVALHO, H. C. <strong>Geometria fractal, perspectivas e possibilidades no ensino de matemática</strong>. 2005. 101p. Dissertação de Mestrado — Programa de Pós-graduação em Educação em Ciências e Matemática, Universidade Federal do Paraná.</li>
+                    <li>CONTADOR, P. R. M. <strong>A Matemática na arte e na vida</strong>. São Paulo: Livraria da Física, 2007.</li>
+                    <li>CUNHA, A. G. <strong>Dicionário etimológico da língua portuguesa</strong>. 2.ed. Rio de Janeiro: Nova Fronteira, 1998.</li>
+                    <li>CARDOSO, R. <strong>Design para um mundo complexo</strong>. São Paulo: Cosac Naify, 2012.</li>
+                    <li>DE MOZOTA, B. B.; DA COSTA, F. C. X.; KLOPSCH, C. <strong>Gestão do design</strong>. São Paulo: Bookman, 2010.</li>
+                    <li>DEWEY, J. <strong>Art as Experience</strong>. New York: Perigee Books, 1980.</li>
+                    <li>ELAM, K. <strong>Geometria do design</strong>. São Paulo: Cosac Naify, 2010.</li>
+                    <li>ERNEST, B. <strong>O espelho mágico de M.C. Escher</strong>. Coréia do Sul: Taschen, 2012.</li>
+                    <li>FLUSSER, V. <strong>O mundo codificado — por uma filosofia do design e da Comunicação</strong>. 2.ed. São Paulo: Cosac Naify, 2008.</li>
+                    <li>FRUTIGER, A. <strong>Sinais & símbolos</strong>. 2.ed. São Paulo: Martins Fontes, 2007.</li>
+                    <li>GIBSON, J. J. <strong>The ecological approach of visual perception</strong>. Missouri: Psycology Press, 1996.</li>
+                    <li>GOMBRICH, E. H. <strong>A história da arte</strong>. 16.ed. Rio de Janeiro: LTC, 2008.</li>
+                    <li>GOMES, E. M. C. <strong>Sebenta de mineralogia</strong>. 2004. 143p. Trabalho de Conclusão de Curso — Departamento de Ciências da Terra, Faculdade de Ciências e Tecnologia, Universidade de Coimbra, Coimbra.</li>
+                    <li>GOMES FILHO, J. <strong>Gestalt do objeto: sistema de leitura visual da forma</strong>. 8.ed. São Paulo: Escrituras Editora, 2008.</li>
+                    <li>LÖBACH, B. <strong>Design industrial</strong>. São Paulo: Blucher, 2001.</li>
+                    <li>LOGAN, K. R. <strong>O que é Informação</strong>. Rio de Janeiro: PUC-Rio, 2012.</li>
+                    <li>MARCONI, M. A.; LAKATOS, E. M. <strong>Fundamento da metodologia científica</strong>. São Paulo: Editora Atlas, 2003.</li>
+                    <li>MED, B. <strong>Teoria da Música</strong>. 4.ed. Brasília: Musimed, 1996.</li>
+                    <li>MORAES, D. <strong>Metaprojeto: o design do design</strong>. São Paulo: Blucher, 2010.</li>
+                    <li>MORIN, E. <strong>Educação e complexidade: Os Sete Saberes e outros Ensaios</strong>. 2.ed. São Paulo: Cortez Editora, 2007.</li>
+                    <li>______. <strong>Introdução ao pensamento complexo</strong>. 4.ed. Porto Alegre: Editora Sulina, 2011.</li>
+                    <li>MUNARI, B. <strong>Fantasia</strong>. Lisboa: 70, 2007.</li>
+                    <li>NICOLA, A. <strong>Dicionário de filosofia</strong>. São Paulo, 2007.</li>
+                    <li>NOËL, É. <strong>As ciências da forma hoje</strong>. Campinas: Papirus, 1996.</li>
+                    <li>NORMAN, D. A. <strong>O design do dia-a-dia</strong>. Rio de Janeiro: Rocco, 2002.</li>
+                    <li>PIGNATARI, D. <strong>Informação, linguagem, comunicação</strong>. 2.ed. São Paulo: Cultrix, 1984.</li>
+                    <li>PINHEIRO, C. B. <strong>Fragmentos de cristalografia</strong>. Universidade Federal de Minas Gerais, Departamento de Física, Minas Gerais, 2012.</li>
+                    <li>POSSEBON, E. O modulador de le corbusier: forma, proporção e medida da arquitetura. <strong>Cult</strong>. : R. IMAE, São Paulo, a.5, n. 11, p. 68-76, jan./jun. 2004.</li>
+                    <li>PUCHKIN, V. N. <strong>Heurística — a ciência do pensamento criador</strong>. 2.ed. Rio de Janeiro: Zahar Editores, 1976.</li>
+                    <li>RABAY, Y. S. F. <strong>Estudo e aplicações da geometria fractal</strong>. 2013. 89p. Trabalho de Conclusão de Curso — Departamento de Matemática, Universidade Federal da Paraíba, Paraíba.</li>
+                    <li>RUSSEL, J. B. <strong>Química geral, Volume 1</strong>. 2.ed. São Paulo: Makron Books, 1994.</li>
+                    <li>SANTAELLA, L. <strong>O que é Semiótica</strong>. São Paulo: Editora Brasiliense, 1983.</li>
+                    <li>SANTOS, F. A. D. Modelos teóricos da comunicação e da linguagem aplicados ao design gráfico. <strong>Projética Revista Científica de Design</strong>, Londrina, v. 3, p. 11, Julho 2012.</li>
+                    <li>SCHAFER, R. M. <strong>A afinação do mundo</strong>. São Paulo: Unesp, 1977.</li>
+                    <li>SUASSUNA, A. <strong>Iniciação à Estética</strong>. 9ª. ed. Rio de Janeiro: José Olympio Editora, 2008.</li>
+                    <li>VASSÃO, C. A. <strong>Metadesign — Ferramentas, Estratégias e Ética para a Complexidade</strong>. São Paulo: Blucher, 2010.</li>
+                    <li>VELOSO, P. Christopher Alexander e o dilema do espaço (in)formado. Trabalho apresentado ao <strong>XVI Congresso da Sociedade Iberoamericana de Gráfica Digital</strong>, Fortaleza, 2012.</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- ===== BOTÃO VOLTAR AO TOPO ===== -->
+    <button class="back-to-top" id="backToTop" aria-label="Voltar ao topo">↑</button>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ===== BARRA DE PROGRESSO =====
+            const progressBar = document.getElementById('progressBar');
+            function updateProgress() {
+                const scrollTop = window.scrollY;
+                const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+                progressBar.style.width = progress + '%';
+            }
+            window.addEventListener('scroll', updateProgress, { passive: true });
+            updateProgress();
+
+            // ===== BOTÃO VOLTAR AO TOPO =====
+            const backToTop = document.getElementById('backToTop');
+            function toggleBackToTop() {
+                if (window.scrollY > 600) {
+                    backToTop.classList.add('visible');
+                } else {
+                    backToTop.classList.remove('visible');
+                }
+            }
+            window.addEventListener('scroll', toggleBackToTop, { passive: true });
+            backToTop.addEventListener('click', function() {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            // ===== ACORDEÃO =====
+            const accordionHeaders = document.querySelectorAll('.accordion-header');
+            accordionHeaders.forEach(function(header) {
+                header.addEventListener('click', function() {
+                    const item = this.parentElement;
+                    const content = this.nextElementSibling;
+                    const isOpen = item.classList.contains('open');
+
+                    // Fecha todos os outros itens do mesmo acordeão
+                    const parentAccordion = item.parentElement;
+                    parentAccordion.querySelectorAll('.accordion-item.open').forEach(function(openItem) {
+                        if (openItem !== item) {
+                            openItem.classList.remove('open');
+                            openItem.querySelector('.accordion-header').setAttribute('aria-expanded', 'false');
+                            openItem.querySelector('.accordion-content').style.maxHeight = null;
+                        }
+                    });
+
+                    // Alterna o item atual
+                    if (isOpen) {
+                        item.classList.remove('open');
+                        this.setAttribute('aria-expanded', 'false');
+                        content.style.maxHeight = null;
+                    } else {
+                        item.classList.add('open');
+                        this.setAttribute('aria-expanded', 'true');
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                    }
+                });
+            });
+
+            // Abre o primeiro item de cada acordeão por padrão
+            document.querySelectorAll('.accordion').forEach(function(accordion) {
+                const firstItem = accordion.querySelector('.accordion-item');
+                if (firstItem) {
+                    firstItem.classList.add('open');
+                    const header = firstItem.querySelector('.accordion-header');
+                    header.setAttribute('aria-expanded', 'true');
+                    const content = firstItem.querySelector('.accordion-content');
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                }
+            });
+
+            // ===== FILTROS =====
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const accordionItems = document.querySelectorAll('#accordionRelacoes .accordion-item');
+
+            filterButtons.forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    const filter = this.dataset.filter;
+
+                    // Atualiza botões
+                    filterButtons.forEach(function(b) {
+                        b.classList.remove('active');
+                    });
+                    this.classList.add('active');
+
+                    // Filtra itens
+                    accordionItems.forEach(function(item) {
+                        const category = item.dataset.category;
+                        if (filter === 'all' || category === filter) {
+                            item.style.display = '';
+                        } else {
+                            item.style.display = 'none';
+                            // Fecha se estiver aberto
+                            item.classList.remove('open');
+                            const header = item.querySelector('.accordion-header');
+                            if (header) header.setAttribute('aria-expanded', 'false');
+                            const content = item.querySelector('.accordion-content');
+                            if (content) content.style.maxHeight = null;
+                        }
+                    });
+                });
+            });
+
+            // ===== RECALCULAR ALTURA DO ACORDEÃO EM RESIZE =====
+            let resizeTimeout;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(function() {
+                    document.querySelectorAll('.accordion-item.open .accordion-content').forEach(function(content) {
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                    });
+                }, 150);
+            });
+
+            // ===== NAVEGAÇÃO SUAVE =====
+            document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+                anchor.addEventListener('click', function(e) {
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    const target = document.querySelector(targetId);
+                    if (target) {
+                        e.preventDefault();
+                        const navHeight = document.querySelector('.nav').offsetHeight;
+                        const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navHeight - 16;
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            // ===== FOOTNOTES INTERATIVAS (se houver) =====
+            document.querySelectorAll('.footnote-ref').forEach(function(ref) {
+                ref.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('data-target');
+                    if (targetId) {
+                        const target = document.getElementById(targetId);
+                        if (target) {
+                            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            target.style.backgroundColor = '#fef3c7';
+                            setTimeout(function() {
+                                target.style.backgroundColor = '';
+                            }, 2000);
+                        }
+                    }
+                });
+            });
+
+        })();
+    </script>
+</body>
+</html>
+
+<!-- deepseek -->
