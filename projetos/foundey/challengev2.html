@@ -1,0 +1,2573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Amazon OPS - Fulfillment Control Center</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <style>
+    /* ===== MATERIAL DESIGN 3 TOKENS ===== */
+    :root {
+      /* Primary */
+      --md-primary: #00639b;
+      --md-on-primary: #ffffff;
+      --md-primary-container: #cfe5ff;
+      --md-on-primary-container: #001d33;
+
+      /* Surface */
+      --md-surface: #f8f9fa;
+      --md-on-surface: #191c1d;
+      --md-surface-variant: #dde3ea;
+      --md-on-surface-variant: #41474d;
+      --md-surface-container: #eceef0;
+      --md-surface-container-high: #e6e8ea;
+      --md-surface-container-highest: #e0e2e4;
+
+      /* Outline */
+      --md-outline: #71787e;
+      --md-outline-variant: #c1c7ce;
+
+      /* Error */
+      --md-error: #ba1a1a;
+      --md-on-error: #ffffff;
+      --md-error-container: #ffdad6;
+      --md-on-error-container: #410002;
+
+      /* Warning */
+      --md-warning: #7d5200;
+      --md-on-warning: #ffffff;
+      --md-warning-container: #ffdea8;
+      --md-on-warning-container: #271900;
+
+      /* Success */
+      --md-success: #006e1c;
+      --md-on-success: #ffffff;
+      --md-success-container: #94f990;
+      --md-on-success-container: #002204;
+
+      /* Amazon Dark Navy */
+      --amz-navy: #131921;
+      --amz-navy-light: #232f3e;
+      --amz-orange: #ff9900;
+
+      /* Elevation Shadows */
+      --md-shadow-1: 0 1px 2px rgba(0,0,0,0.3), 0 1px 3px 1px rgba(0,0,0,0.15);
+      --md-shadow-2: 0 1px 2px rgba(0,0,0,0.3), 0 2px 6px 2px rgba(0,0,0,0.15);
+      --md-shadow-3: 0 4px 8px 3px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.3);
+
+      /* Shape */
+      --md-radius-xs: 4px;
+      --md-radius-sm: 8px;
+      --md-radius-md: 12px;
+      --md-radius-lg: 16px;
+      --md-radius-xl: 28px;
+      --md-radius-full: 9999px;
+
+      /* Typography */
+      --md-font: 'Roboto', 'Noto Sans', system-ui, -apple-system, sans-serif;
+      --md-font-mono: 'Roboto Mono', 'SF Mono', monospace;
+
+      /* Transitions */
+      --md-transition: 0.2s cubic-bezier(0.2, 0, 0, 1);
+      --md-transition-slow: 0.35s cubic-bezier(0.2, 0, 0, 1);
+
+      /* Layout */
+      --nav-rail-width: 80px;
+      --top-bar-height: 64px;
+    }
+
+    /* ===== DARK MODE ===== */
+    [data-theme="dark"] {
+      --md-primary: #96ccff;
+      --md-on-primary: #003353;
+      --md-primary-container: #004a77;
+      --md-on-primary-container: #cfe5ff;
+
+      --md-surface: #111416;
+      --md-on-surface: #e1e3e5;
+      --md-surface-variant: #41474d;
+      --md-on-surface-variant: #c1c7ce;
+      --md-surface-container: #1d2022;
+      --md-surface-container-high: #272a2d;
+      --md-surface-container-highest: #323537;
+
+      --md-outline: #8b9198;
+      --md-outline-variant: #41474d;
+
+      --md-error: #ffb4ab;
+      --md-on-error: #690005;
+      --md-error-container: #93000a;
+      --md-on-error-container: #ffdad6;
+
+      --md-warning: #f5be48;
+      --md-on-warning: #412d00;
+      --md-warning-container: #5e4200;
+      --md-on-warning-container: #ffdea8;
+
+      --md-success: #78dc77;
+      --md-on-success: #00390a;
+      --md-success-container: #005313;
+      --md-on-success-container: #94f990;
+
+      --amz-navy: #0a0e14;
+      --amz-navy-light: #131921;
+
+      --md-shadow-1: 0 1px 2px rgba(0,0,0,0.5), 0 1px 3px 1px rgba(0,0,0,0.3);
+      --md-shadow-2: 0 1px 2px rgba(0,0,0,0.5), 0 2px 6px 2px rgba(0,0,0,0.3);
+      --md-shadow-3: 0 4px 8px 3px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.5);
+    }
+
+    /* ===== HIGH CONTRAST MODE (WCAG AAA) ===== */
+    [data-contrast="high"] {
+      --md-primary: #0055a5;
+      --md-on-primary: #ffffff;
+      --md-primary-container: #ffffff;
+      --md-on-primary-container: #000000;
+
+      --md-surface: #ffffff;
+      --md-on-surface: #000000;
+      --md-surface-variant: #ffffff;
+      --md-on-surface-variant: #000000;
+      --md-surface-container: #ffffff;
+      --md-surface-container-high: #ffffff;
+      --md-surface-container-highest: #ffffff;
+
+      --md-outline: #000000;
+      --md-outline-variant: #000000;
+
+      --md-error: #cc0000;
+      --md-on-error: #ffffff;
+      --md-error-container: #ffffff;
+      --md-on-error-container: #cc0000;
+
+      --md-warning: #7d5200;
+      --md-on-warning: #ffffff;
+      --md-warning-container: #ffffff;
+      --md-on-warning-container: #7d5200;
+
+      --md-success: #006e1c;
+      --md-on-success: #ffffff;
+      --md-success-container: #ffffff;
+      --md-on-success-container: #006e1c;
+
+      --amz-navy: #000000;
+      --amz-navy-light: #000000;
+
+      --md-shadow-1: none;
+      --md-shadow-2: none;
+      --md-shadow-3: none;
+    }
+
+    [data-contrast="high"] .card,
+    [data-contrast="high"] .chip,
+    [data-contrast="high"] .badge,
+    [data-contrast="high"] .nav-rail,
+    [data-contrast="high"] .top-bar,
+    [data-contrast="high"] .modal-content,
+    [data-contrast="high"] .metric-card,
+    [data-contrast="high"] .settings-card {
+      border: 2px solid #000000 !important;
+    }
+
+    [data-contrast="high"] .card:hover {
+      border-color: #0055a5 !important;
+    }
+
+    [data-contrast="high"] button:focus-visible,
+    [data-contrast="high"] a:focus-visible,
+    [data-contrast="high"] [tabindex]:focus-visible {
+      outline: 4px solid #0055a5 !important;
+      outline-offset: 2px !important;
+    }
+
+    /* ===== RESET ===== */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-text-size-adjust: 100%;
+      scroll-behavior: smooth;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    body {
+      font-family: var(--md-font);
+      background: var(--md-surface);
+      color: var(--md-on-surface);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background var(--md-transition), color var(--md-transition);
+    }
+
+    /* ===== SKIP LINK ===== */
+    .skip-link {
+      position: absolute;
+      top: -100%;
+      left: 8px;
+      background: var(--md-primary);
+      color: var(--md-on-primary);
+      padding: 12px 24px;
+      border-radius: var(--md-radius-sm);
+      font-weight: 500;
+      z-index: 10000;
+      transition: top var(--md-transition);
+    }
+
+    .skip-link:focus {
+      top: 8px;
+    }
+
+    /* ===== TOP APP BAR ===== */
+    .top-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--top-bar-height);
+      background: var(--amz-navy);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      z-index: 1000;
+      box-shadow: var(--md-shadow-2);
+      transition: background var(--md-transition);
+    }
+
+    .top-bar__left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .top-bar__logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+
+    .top-bar__logo .material-symbols-outlined {
+      font-size: 28px;
+      color: var(--amz-orange);
+    }
+
+    .top-bar__divider {
+      width: 1px;
+      height: 28px;
+      background: rgba(255,255,255,0.2);
+      margin: 0 4px;
+    }
+
+    .top-bar__context {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.7);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .top-bar__right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .role-switcher {
+      display: flex;
+      align-items: center;
+      background: var(--amz-navy-light);
+      border-radius: var(--md-radius-full);
+      padding: 4px;
+      gap: 2px;
+    }
+
+    .role-switcher__btn {
+      font-family: var(--md-font);
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 6px 14px;
+      border: none;
+      border-radius: var(--md-radius-full);
+      background: transparent;
+      color: rgba(255,255,255,0.7);
+      cursor: pointer;
+      transition: all var(--md-transition);
+      white-space: nowrap;
+    }
+
+    .role-switcher__btn:hover {
+      color: #ffffff;
+      background: rgba(255,255,255,0.1);
+    }
+
+    .role-switcher__btn[aria-pressed="true"] {
+      background: var(--amz-orange);
+      color: #131921;
+      font-weight: 600;
+    }
+
+    .role-switcher__btn:focus-visible {
+      outline: 3px solid var(--amz-orange);
+      outline-offset: 2px;
+    }
+
+    .top-bar__icon-btn {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: var(--md-radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background var(--md-transition);
+    }
+
+    .top-bar__icon-btn:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .top-bar__icon-btn:focus-visible {
+      outline: 3px solid var(--amz-orange);
+      outline-offset: 2px;
+    }
+
+    /* ===== LAYOUT ===== */
+    .app-layout {
+      display: flex;
+      padding-top: var(--top-bar-height);
+      min-height: 100vh;
+    }
+
+    /* ===== NAVIGATION RAIL ===== */
+    .nav-rail {
+      position: fixed;
+      top: var(--top-bar-height);
+      left: 0;
+      bottom: 0;
+      width: var(--nav-rail-width);
+      background: var(--md-surface-container);
+      border-right: 1px solid var(--md-outline-variant);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px 0;
+      gap: 4px;
+      z-index: 900;
+      transition: background var(--md-transition), border-color var(--md-transition);
+    }
+
+    .nav-rail__item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      width: 64px;
+      padding: 8px 0;
+      border: none;
+      background: transparent;
+      color: var(--md-on-surface-variant);
+      cursor: pointer;
+      border-radius: var(--md-radius-sm);
+      transition: all var(--md-transition);
+      font-family: var(--md-font);
+      font-size: 0.65rem;
+      font-weight: 500;
+      position: relative;
+    }
+
+    .nav-rail__item .material-symbols-outlined {
+      font-size: 24px;
+    }
+
+    .nav-rail__item:hover {
+      background: var(--md-surface-container-high);
+      color: var(--md-on-surface);
+    }
+
+    .nav-rail__item[aria-current="page"] {
+      color: var(--md-primary);
+      font-weight: 700;
+    }
+
+    .nav-rail__item[aria-current="page"]::before {
+      content: '';
+      position: absolute;
+      left: -12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 32px;
+      background: var(--md-primary);
+      border-radius: 0 4px 4px 0;
+    }
+
+    .nav-rail__item:focus-visible {
+      outline: 3px solid var(--md-primary);
+      outline-offset: 2px;
+    }
+
+    .nav-rail__spacer {
+      flex: 1;
+    }
+
+    /* ===== MAIN CONTENT ===== */
+    .main-content {
+      flex: 1;
+      margin-left: var(--nav-rail-width);
+      padding: 24px;
+      max-width: 1400px;
+      width: 100%;
+      transition: margin var(--md-transition);
+    }
+
+    /* ===== VIEW HEADER ===== */
+    .view-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .view-header__title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .view-header__title {
+      font-size: 1.75rem;
+      font-weight: 500;
+      color: var(--md-on-surface);
+      line-height: 1.2;
+    }
+
+    .view-header__subtitle {
+      font-size: 0.9rem;
+      color: var(--md-on-surface-variant);
+      margin-top: 4px;
+      width: 100%;
+    }
+
+    .hint-btn {
+      background: transparent;
+      border: 1px solid var(--md-outline-variant);
+      color: var(--md-primary);
+      cursor: pointer;
+      padding: 6px;
+      border-radius: var(--md-radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--md-transition);
+    }
+
+    .hint-btn:hover {
+      background: var(--md-primary-container);
+      border-color: var(--md-primary);
+    }
+
+    .hint-btn:focus-visible {
+      outline: 3px solid var(--md-primary);
+      outline-offset: 2px;
+    }
+
+    .hint-btn .material-symbols-outlined {
+      font-size: 20px;
+    }
+
+    /* ===== FILTER CHIPS ===== */
+    .filter-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: var(--md-radius-sm);
+      border: 1px solid var(--md-outline);
+      background: transparent;
+      color: var(--md-on-surface-variant);
+      font-family: var(--md-font);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--md-transition);
+      white-space: nowrap;
+    }
+
+    .chip:hover {
+      background: var(--md-surface-container-high);
+      border-color: var(--md-on-surface);
+    }
+
+    .chip[aria-pressed="true"] {
+      background: var(--md-primary-container);
+      border-color: var(--md-primary);
+      color: var(--md-on-primary-container);
+      font-weight: 600;
+    }
+
+    .chip:focus-visible {
+      outline: 3px solid var(--md-primary);
+      outline-offset: 2px;
+    }
+
+    /* ===== TASK QUEUE ===== */
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      list-style: none;
+    }
+
+    .task-card {
+      background: var(--md-surface-container);
+      border: 1px solid var(--md-outline-variant);
+      border-radius: var(--md-radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: all var(--md-transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .task-card:hover {
+      background: var(--md-surface-container-high);
+      border-color: var(--md-outline);
+    }
+
+    .task-card[data-priority="critical"] {
+      border-left: 4px solid var(--md-error);
+    }
+
+    .task-card[data-priority="warning"] {
+      border-left: 4px solid var(--md-warning);
+    }
+
+    .task-card[data-priority="success"] {
+      border-left: 4px solid var(--md-success);
+    }
+
+    .task-card__header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .task-card__id {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--md-on-surface-variant);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .task-card__title {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--md-on-surface);
+      margin-top: 2px;
+    }
+
+    .task-card__meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 0.8rem;
+      color: var(--md-on-surface-variant);
+    }
+
+    .task-card__meta-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .task-card__meta-item .material-symbols-outlined {
+      font-size: 16px;
+    }
+
+    .task-card__badges {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: var(--md-radius-full);
+      font-size: 0.75rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge--critical {
+      background: var(--md-error-container);
+      color: var(--md-on-error-container);
+    }
+
+    .badge--warning {
+      background: var(--md-warning-container);
+      color: var(--md-on-warning-container);
+    }
+
+    .badge--success {
+      background: var(--md-success-container);
+      color: var(--md-on-success-container);
+    }
+
+    .badge--info {
+      background: var(--md-primary-container);
+      color: var(--md-on-primary-container);
+    }
+
+    .badge .material-symbols-outlined {
+      font-size: 14px;
+    }
+
+    .task-card__footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding-top: 8px;
+      border-top: 1px solid var(--md-outline-variant);
+    }
+
+    .task-card__sla {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .task-card__sla[data-state="critical"] {
+      color: var(--md-error);
+    }
+
+    .task-card__sla[data-state="warning"] {
+      color: var(--md-warning);
+    }
+
+    .task-card__sla[data-state="success"] {
+      color: var(--md-success);
+    }
+
+    .task-card__actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: var(--md-radius-sm);
+      border: none;
+      font-family: var(--md-font);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--md-transition);
+      white-space: nowrap;
+      text-decoration: none;
+    }
+
+    .btn .material-symbols-outlined {
+      font-size: 18px;
+    }
+
+    .btn--filled {
+      background: var(--md-primary);
+      color: var(--md-on-primary);
+      box-shadow: var(--md-shadow-1);
+    }
+
+    .btn--filled:hover {
+      box-shadow: var(--md-shadow-2);
+      filter: brightness(1.1);
+    }
+
+    .btn--filled:active {
+      filter: brightness(0.95);
+    }
+
+    .btn--outlined {
+      background: transparent;
+      color: var(--md-primary);
+      border: 1px solid var(--md-outline);
+    }
+
+    .btn--outlined:hover {
+      background: var(--md-primary-container);
+      border-color: var(--md-primary);
+    }
+
+    .btn--text {
+      background: transparent;
+      color: var(--md-primary);
+      padding: 10px 12px;
+    }
+
+    .btn--text:hover {
+      background: var(--md-primary-container);
+    }
+
+    .btn:focus-visible {
+      outline: 3px solid var(--md-primary);
+      outline-offset: 2px;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn--small {
+      padding: 6px 14px;
+      font-size: 0.8rem;
+    }
+
+    /* ===== MANAGER VIEW ===== */
+    .manager-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+
+    .worker-card {
+      background: var(--md-surface-container);
+      border: 1px solid var(--md-outline-variant);
+      border-radius: var(--md-radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: all var(--md-transition);
+    }
+
+    .worker-card:hover {
+      background: var(--md-surface-container-high);
+    }
+
+    .worker-card__header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .worker-card__avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--md-radius-full);
+      background: var(--md-primary-container);
+      color: var(--md-on-primary-container);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .worker-card__name {
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--md-on-surface);
+    }
+
+    .worker-card__status {
+      font-size: 0.8rem;
+      color: var(--md-on-surface-variant);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .worker-card__status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--md-success);
+    }
+
+    .worker-card__status-dot--busy {
+      background: var(--md-warning);
+    }
+
+    .worker-card__status-dot--offline {
+      background: var(--md-outline);
+    }
+
+    .worker-card__task {
+      background: var(--md-surface-container-high);
+      border-radius: var(--md-radius-sm);
+      padding: 10px 12px;
+      font-size: 0.85rem;
+      color: var(--md-on-surface);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .worker-card__task .material-symbols-outlined {
+      font-size: 18px;
+      color: var(--md-primary);
+    }
+
+    .worker-card__stats {
+      display: flex;
+      gap: 16px;
+      font-size: 0.8rem;
+      color: var(--md-on-surface-variant);
+    }
+
+    .worker-card__stat {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .worker-card__stat-value {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--md-on-surface);
+    }
+
+    /* ===== REPORTS ===== */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .metric-card {
+      background: var(--md-surface-container);
+      border: 1px solid var(--md-outline-variant);
+      border-radius: var(--md-radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: all var(--md-transition);
+    }
+
+    .metric-card:hover {
+      background: var(--md-surface-container-high);
+    }
+
+    .metric-card__label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--md-on-surface-variant);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .metric-card__value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--md-on-surface);
+      line-height: 1.1;
+    }
+
+    .metric-card__value--success {
+      color: var(--md-success);
+    }
+
+    .metric-card__value--warning {
+      color: var(--md-warning);
+    }
+
+    .metric-card__value--error {
+      color: var(--md-error);
+    }
+
+    .metric-card__trend {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .metric-card__trend--up {
+      color: var(--md-success);
+    }
+
+    .metric-card__trend--down {
+      color: var(--md-error);
+    }
+
+    .metric-card__trend .material-symbols-outlined {
+      font-size: 16px;
+    }
+
+    /* ===== PROGRESS BARS ===== */
+    .progress-section {
+      margin-bottom: 32px;
+    }
+
+    .progress-section__title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--md-on-surface);
+      margin-bottom: 16px;
+    }
+
+    .progress-item {
+      margin-bottom: 16px;
+    }
+
+    .progress-item__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 0.85rem;
+    }
+
+    .progress-item__label {
+      color: var(--md-on-surface);
+      font-weight: 500;
+    }
+
+    .progress-item__value {
+      color: var(--md-on-surface-variant);
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: var(--md-surface-container-highest);
+      border-radius: var(--md-radius-full);
+      overflow: hidden;
+    }
+
+    .progress-bar__fill {
+      height: 100%;
+      border-radius: var(--md-radius-full);
+      transition: width var(--md-transition-slow);
+      background: var(--md-primary);
+    }
+
+    .progress-bar__fill--warning {
+      background: var(--md-warning);
+    }
+
+    .progress-bar__fill--error {
+      background: var(--md-error);
+    }
+
+    .progress-bar__fill--success {
+      background: var(--md-success);
+    }
+
+    /* ===== SETTINGS ===== */
+    .settings-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 640px;
+    }
+
+    .settings-card {
+      background: var(--md-surface-container);
+      border: 1px solid var(--md-outline-variant);
+      border-radius: var(--md-radius-md);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      transition: all var(--md-transition);
+    }
+
+    .settings-card:hover {
+      background: var(--md-surface-container-high);
+    }
+
+    .settings-card__info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .settings-card__title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--md-on-surface);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .settings-card__title .material-symbols-outlined {
+      font-size: 20px;
+      color: var(--md-primary);
+    }
+
+    .settings-card__description {
+      font-size: 0.85rem;
+      color: var(--md-on-surface-variant);
+      margin-top: 4px;
+    }
+
+    /* ===== TOGGLE SWITCH ===== */
+    .toggle {
+      position: relative;
+      width: 52px;
+      height: 32px;
+      flex-shrink: 0;
+    }
+
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+
+    .toggle__slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--md-surface-container-highest);
+      border: 2px solid var(--md-outline);
+      border-radius: var(--md-radius-full);
+      transition: all var(--md-transition);
+    }
+
+    .toggle__slider::before {
+      content: '';
+      position: absolute;
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background: var(--md-outline);
+      border-radius: 50%;
+      transition: all var(--md-transition);
+    }
+
+    .toggle input:checked + .toggle__slider {
+      background: var(--md-primary);
+      border-color: var(--md-primary);
+    }
+
+    .toggle input:checked + .toggle__slider::before {
+      transform: translateX(20px);
+      background: var(--md-on-primary);
+    }
+
+    .toggle input:focus-visible + .toggle__slider {
+      outline: 3px solid var(--md-primary);
+      outline-offset: 2px;
+    }
+
+    /* ===== CHALLENGE / DOCUMENTATION ===== */
+    .challenge-content {
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .challenge-card {
+      background: var(--md-surface-container);
+      border: 1px solid var(--md-outline-variant);
+      border-radius: var(--md-radius-md);
+      padding: 24px;
+      transition: all var(--md-transition);
+    }
+
+    .challenge-card:hover {
+      background: var(--md-surface-container-high);
+    }
+
+    .challenge-card__number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: var(--md-radius-full);
+      background: var(--md-primary);
+      color: var(--md-on-primary);
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+    }
+
+    .challenge-card__title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--md-on-surface);
+      margin-bottom: 12px;
+    }
+
+    .challenge-card__body {
+      font-size: 0.95rem;
+      color: var(--md-on-surface-variant);
+      line-height: 1.7;
+    }
+
+    .challenge-card__body p {
+      margin-bottom: 12px;
+    }
+
+    .challenge-card__body p:last-child {
+      margin-bottom: 0;
+    }
+
+    .challenge-card__body ul {
+      margin: 8px 0 12px 20px;
+    }
+
+    .challenge-card__body li {
+      margin-bottom: 6px;
+    }
+
+    /* ===== MODAL ===== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 16px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity var(--md-transition), visibility var(--md-transition);
+    }
+
+    .modal-overlay[aria-hidden="false"] {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      background: var(--md-surface-container);
+      border-radius: var(--md-radius-lg);
+      max-width: 560px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: var(--md-shadow-3);
+      padding: 24px;
+      position: relative;
+      transform: scale(0.95);
+      transition: transform var(--md-transition);
+    }
+
+    .modal-overlay[aria-hidden="false"] .modal-content {
+      transform: scale(1);
+    }
+
+    .modal-content__header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .modal-content__title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--md-on-surface);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-content__title .material-symbols-outlined {
+      color: var(--md-primary);
+    }
+
+    .modal-content__close {
+      background: transparent;
+      border: none;
+      color: var(--md-on-surface-variant);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: var(--md-radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background var(--md-transition);
+      flex-shrink: 0;
+    }
+
+    .modal-content__close:hover {
+      background: var(--md-surface-container-high);
+    }
+
+    .modal-content__close:focus-visible {
+      outline: 3px solid var(--md-primary);
+      outline-offset: 2px;
+    }
+
+    .modal-content__body {
+      font-size: 0.95rem;
+      color: var(--md-on-surface-variant);
+      line-height: 1.7;
+    }
+
+    .modal-content__body p {
+      margin-bottom: 12px;
+    }
+
+    .modal-content__body p:last-child {
+      margin-bottom: 0;
+    }
+
+    .modal-content__body ul {
+      margin: 8px 0 12px 20px;
+    }
+
+    .modal-content__body li {
+      margin-bottom: 6px;
+    }
+
+    /* ===== TOAST ===== */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3000;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: var(--md-surface-container-highest);
+      color: var(--md-on-surface);
+      padding: 12px 20px;
+      border-radius: var(--md-radius-sm);
+      box-shadow: var(--md-shadow-3);
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      pointer-events: auto;
+      animation: toast-in 0.3s ease;
+    }
+
+    @keyframes toast-in {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px;
+      text-align: center;
+      color: var(--md-on-surface-variant);
+      gap: 12px;
+    }
+
+    .empty-state .material-symbols-outlined {
+      font-size: 48px;
+      opacity: 0.5;
+    }
+
+    .empty-state__title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--md-on-surface);
+    }
+
+    .empty-state__description {
+      font-size: 0.9rem;
+      max-width: 360px;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 900px) {
+      .main-content {
+        padding: 16px;
+      }
+
+      .view-header__title {
+        font-size: 1.4rem;
+      }
+
+      .metrics-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      }
+    }
+
+    @media (max-width: 768px) {
+      :root {
+        --nav-rail-width: 0px;
+      }
+
+      .nav-rail {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 64px;
+        flex-direction: row;
+        justify-content: space-around;
+        padding: 0 8px;
+        border-right: none;
+        border-top: 1px solid var(--md-outline-variant);
+      }
+
+      .nav-rail__item {
+        width: auto;
+        flex: 1;
+        padding: 6px 0;
+      }
+
+      .nav-rail__item[aria-current="page"]::before {
+        left: 50%;
+        top: -1px;
+        transform: translateX(-50%);
+        width: 32px;
+        height: 3px;
+        border-radius: 0 0 4px 4px;
+      }
+
+      .nav-rail__spacer {
+        display: none;
+      }
+
+      .main-content {
+        margin-left: 0;
+        padding-bottom: 80px;
+      }
+
+      .top-bar__context {
+        display: none;
+      }
+
+      .role-switcher__btn {
+        font-size: 0.7rem;
+        padding: 5px 10px;
+      }
+
+      .view-header {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .task-card__footer {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .task-card__actions {
+        justify-content: flex-end;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .top-bar {
+        padding: 0 8px;
+      }
+
+      .top-bar__logo span:last-child {
+        display: none;
+      }
+
+      .metrics-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .manager-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .modal-content {
+        padding: 16px;
+      }
+    }
+
+    /* ===== PRINT ===== */
+    @media print {
+      .top-bar,
+      .nav-rail,
+      .toast-container,
+      .modal-overlay,
+      .hint-btn,
+      .btn {
+        display: none !important;
+      }
+
+      .main-content {
+        margin-left: 0;
+        padding: 0;
+      }
+
+      body {
+        background: #ffffff;
+        color: #000000;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== SKIP LINK ===== -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- ===== TOP APP BAR ===== -->
+  <header class="top-bar" role="banner">
+    <div class="top-bar__left">
+      <div class="top-bar__logo">
+        <span class="material-symbols-outlined" aria-hidden="true">package_2</span>
+        <span>Amazon OPS</span>
+      </div>
+      <div class="top-bar__divider" aria-hidden="true"></div>
+      <span class="top-bar__context" id="topBarContext">Fulfillment Control Center</span>
+    </div>
+    <div class="top-bar__right">
+      <div class="role-switcher" role="group" aria-label="View mode switcher">
+        <button class="role-switcher__btn" id="btnOperatorView" aria-pressed="true" type="button">
+          Operator View
+        </button>
+        <button class="role-switcher__btn" id="btnManagerView" aria-pressed="false" type="button">
+          Manager View
+        </button>
+      </div>
+      <button class="top-bar__icon-btn" id="btnThemeToggle" aria-label="Toggle dark mode" type="button">
+        <span class="material-symbols-outlined" id="themeIcon" aria-hidden="true">dark_mode</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== APP LAYOUT ===== -->
+  <div class="app-layout">
+
+    <!-- ===== NAVIGATION RAIL ===== -->
+    <nav class="nav-rail" role="navigation" aria-label="Main navigation">
+      <button class="nav-rail__item" data-view="queue" aria-current="page" type="button">
+        <span class="material-symbols-outlined" aria-hidden="true">format_list_bulleted</span>
+        <span>Queue</span>
+      </button>
+      <button class="nav-rail__item" data-view="reports" type="button">
+        <span class="material-symbols-outlined" aria-hidden="true">analytics</span>
+        <span>Reports</span>
+      </button>
+      <button class="nav-rail__item" data-view="settings" type="button">
+        <span class="material-symbols-outlined" aria-hidden="true">settings</span>
+        <span>Settings</span>
+      </button>
+      <button class="nav-rail__item" data-view="challenge" type="button">
+        <span class="material-symbols-outlined" aria-hidden="true">assignment_turned_in</span>
+        <span>Challenge</span>
+      </button>
+      <div class="nav-rail__spacer"></div>
+    </nav>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content" id="main-content" role="main" tabindex="-1">
+      <!-- Content loaded dynamically via JS -->
+    </main>
+  </div>
+
+  <!-- ===== MODAL ===== -->
+  <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="modalTitle">
+    <div class="modal-content">
+      <div class="modal-content__header">
+        <h2 class="modal-content__title" id="modalTitle">
+          <span class="material-symbols-outlined" aria-hidden="true">lightbulb</span>
+          <span id="modalTitleText">UX Decision Hint</span>
+        </h2>
+        <button class="modal-content__close" id="modalClose" aria-label="Close dialog" type="button">
+          <span class="material-symbols-outlined" aria-hidden="true">close</span>
+        </button>
+      </div>
+      <div class="modal-content__body" id="modalBody">
+        <!-- Content injected via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TOAST CONTAINER ===== -->
+  <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+  <script>
+    'use strict';
+
+    // ===== STATE =====
+    const state = {
+      currentView: 'queue',
+      role: 'operator', // 'operator' | 'manager'
+      theme: 'light',
+      contrast: 'normal',
+      filters: {
+        queue: 'all' // 'all' | 'critical' | 'warning' | 'success' | 'unassigned'
+      },
+      settings: {
+        darkMode: false,
+        highContrast: false,
+        autoDispatch: true,
+        soundAlerts: true
+      },
+      tasks: [
+        {
+          id: 'ORD-4821',
+          title: 'Payment Mismatch - Order #4821',
+          type: 'Payment Mismatch',
+          priority: 'critical',
+          slaMinutes: 12,
+          slaState: 'critical',
+          assignee: null,
+          status: 'unassigned',
+          location: 'Aisle B-12',
+          createdAt: '09:42',
+          category: 'payment'
+        },
+        {
+          id: 'ORD-4835',
+          title: 'Compliance Hold - Order #4835',
+          type: 'Compliance',
+          priority: 'critical',
+          slaMinutes: 8,
+          slaState: 'critical',
+          assignee: null,
+          status: 'unassigned',
+          location: 'Aisle C-04',
+          createdAt: '09:48',
+          category: 'compliance'
+        },
+        {
+          id: 'ORD-4810',
+          title: 'Address Validation - Order #4810',
+          type: 'Address Issue',
+          priority: 'warning',
+          slaMinutes: 34,
+          slaState: 'warning',
+          assignee: null,
+          status: 'unassigned',
+          location: 'Aisle A-07',
+          createdAt: '09:15',
+          category: 'address'
+        },
+        {
+          id: 'ORD-4799',
+          title: 'Inventory Discrepancy - Order #4799',
+          type: 'Inventory',
+          priority: 'warning',
+          slaMinutes: 45,
+          slaState: 'warning',
+          assignee: 'João Pereira',
+          status: 'in-progress',
+          location: 'Aisle D-22',
+          createdAt: '08:55',
+          category: 'inventory'
+        },
+        {
+          id: 'ORD-4788',
+          title: 'Payment Mismatch - Order #4788',
+          type: 'Payment Mismatch',
+          priority: 'success',
+          slaMinutes: 120,
+          slaState: 'success',
+          assignee: null,
+          status: 'unassigned',
+          location: 'Aisle B-03',
+          createdAt: '08:30',
+          category: 'payment'
+        },
+        {
+          id: 'ORD-4776',
+          title: 'Compliance Review - Order #4776',
+          type: 'Compliance',
+          priority: 'success',
+          slaMinutes: 180,
+          slaState: 'success',
+          assignee: 'Maria Silva',
+          status: 'in-progress',
+          location: 'Aisle E-11',
+          createdAt: '08:12',
+          category: 'compliance'
+        }
+      ],
+      workers: [
+        {
+          id: 'w1',
+          name: 'João Pereira',
+          initials: 'JP',
+          status: 'busy',
+          currentTask: 'Order #4799',
+          tasksCompleted: 14,
+          slaAdherence: 92
+        },
+        {
+          id: 'w2',
+          name: 'Maria Silva',
+          initials: 'MS',
+          status: 'busy',
+          currentTask: 'Order #4776',
+          tasksCompleted: 11,
+          slaAdherence: 88
+        },
+        {
+          id: 'w3',
+          name: 'Carlos Mendes',
+          initials: 'CM',
+          status: 'available',
+          currentTask: null,
+          tasksCompleted: 9,
+          slaAdherence: 95
+        },
+        {
+          id: 'w4',
+          name: 'Ana Costa',
+          initials: 'AC',
+          status: 'busy',
+          currentTask: 'Order #4801',
+          tasksCompleted: 16,
+          slaAdherence: 90
+        },
+        {
+          id: 'w5',
+          name: 'Rafael Lima',
+          initials: 'RL',
+          status: 'offline',
+          currentTask: null,
+          tasksCompleted: 7,
+          slaAdherence: 84
+        },
+        {
+          id: 'w6',
+          name: 'Juliana Rocha',
+          initials: 'JR',
+          status: 'available',
+          currentTask: null,
+          tasksCompleted: 12,
+          slaAdherence: 97
+        }
+      ]
+    };
+
+    // ===== UTILITY FUNCTIONS =====
+    function formatSLA(minutes) {
+      if (minutes < 60) {
+        return `${minutes} min`;
+      }
+      const hours = Math.floor(minutes / 60);
+      const mins = minutes % 60;
+      return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+    }
+
+    function getSLALabel(minutes) {
+      if (minutes < 15) return 'Due in ' + formatSLA(minutes);
+      if (minutes < 60) return 'Due in ' + formatSLA(minutes);
+      return 'Due in ' + formatSLA(minutes);
+    }
+
+    function getPriorityLabel(priority) {
+      const labels = {
+        critical: 'Critical',
+        warning: 'Warning',
+        success: 'On Track'
+      };
+      return labels[priority] || priority;
+    }
+
+    function getPriorityIcon(priority) {
+      const icons = {
+        critical: 'error',
+        warning: 'warning',
+        success: 'check_circle'
+      };
+      return icons[priority] || 'info';
+    }
+
+    function getStatusLabel(status) {
+      const labels = {
+        unassigned: 'Unassigned',
+        'in-progress': 'In Progress',
+        completed: 'Completed'
+      };
+      return labels[status] || status;
+    }
+
+    function getStatusIcon(status) {
+      const icons = {
+        unassigned: 'radio_button_unchecked',
+        'in-progress': 'pending',
+        completed: 'check_circle'
+      };
+      return icons[status] || 'circle';
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function showToast(message, icon = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.setAttribute('role', 'status');
+      toast.innerHTML = `
+        <span class="material-symbols-outlined" aria-hidden="true">${icon}</span>
+        <span>${escapeHtml(message)}</span>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    // ===== THEME MANAGEMENT =====
+    function applyTheme() {
+      document.documentElement.setAttribute('data-theme', state.settings.darkMode ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-contrast', state.settings.highContrast ? 'high' : 'normal');
+      const themeIcon = document.getElementById('themeIcon');
+      if (themeIcon) {
+        themeIcon.textContent = state.settings.darkMode ? 'light_mode' : 'dark_mode';
+      }
+      const btn = document.getElementById('btnThemeToggle');
+      if (btn) {
+        btn.setAttribute('aria-label', state.settings.darkMode ? 'Switch to light mode' : 'Switch to dark mode');
+      }
+    }
+
+    // ===== MODAL MANAGEMENT =====
+    let lastFocusedElement = null;
+
+    function openModal(title, bodyHtml) {
+      lastFocusedElement = document.activeElement;
+      const overlay = document.getElementById('modalOverlay');
+      const titleEl = document.getElementById('modalTitleText');
+      const bodyEl = document.getElementById('modalBody');
+      titleEl.textContent = title;
+      bodyEl.innerHTML = bodyHtml;
+      overlay.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      // Focus the close button after transition
+      setTimeout(() => {
+        const closeBtn = document.getElementById('modalClose');
+        if (closeBtn) closeBtn.focus();
+      }, 100);
+    }
+
+    function closeModal() {
+      const overlay = document.getElementById('modalOverlay');
+      overlay.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      if (lastFocusedElement && lastFocusedElement.focus) {
+        lastFocusedElement.focus();
+      }
+    }
+
+    // ===== TASK ACTIONS =====
+    function assignTask(taskId) {
+      const task = state.tasks.find(t => t.id === taskId);
+      if (!task) return;
+      if (task.status === 'in-progress' && task.assignee) {
+        showToast(`Task ${taskId} is already being worked on by ${task.assignee}`, 'info');
+        return;
+      }
+      task.status = 'in-progress';
+      task.assignee = 'You';
+      showToast(`Task ${taskId} assigned to you`, 'check_circle');
+      renderCurrentView();
+    }
+
+    function completeTask(taskId) {
+      const task = state.tasks.find(t => t.id === taskId);
+      if (!task) return;
+      task.status = 'completed';
+      showToast(`Task ${taskId} completed`, 'check_circle');
+      renderCurrentView();
+    }
+
+    // ===== VIEW RENDERERS =====
+    function renderQueueView() {
+      const isManager = state.role === 'manager';
+      const filteredTasks = state.tasks.filter(task => {
+        if (state.filters.queue === 'all') return true;
+        if (state.filters.queue === 'unassigned') return task.status === 'unassigned';
+        return task.priority === state.filters.queue;
+      });
+
+      let html = `
+        <div class="view-header">
+          <div class="view-header__title-group">
+            <h1 class="view-header__title">${isManager ? 'Team Allocation' : 'Task Queue'}</h1>
+            <button class="hint-btn" data-hint="queue" aria-label="Show UX decision hint for task queue" type="button">
+              <span class="material-symbols-outlined" aria-hidden="true">lightbulb</span>
+            </button>
+          </div>
+          <p class="view-header__subtitle">
+            ${isManager
+              ? 'Real-time visibility into worker allocation and task status across the fulfillment center.'
+              : 'Single ranked queue prioritized by SLA. Tasks are ordered by urgency and time remaining.'}
+          </p>
+        </div>
+      `;
+
+      if (isManager) {
+        html += `
+          <div class="manager-grid" role="list" aria-label="Worker allocation status">
+            ${state.workers.map(worker => `
+              <article class="worker-card" role="listitem">
+                <div class="worker-card__header">
+                  <div class="worker-card__avatar" aria-hidden="true">${worker.initials}</div>
+                  <div>
+                    <div class="worker-card__name">${escapeHtml(worker.name)}</div>
+                    <div class="worker-card__status">
+                      <span class="worker-card__status-dot ${worker.status === 'busy' ? 'worker-card__status-dot--busy' : worker.status === 'offline' ? 'worker-card__status-dot--offline' : ''}" aria-hidden="true"></span>
+                      ${worker.status === 'busy' ? 'Working' : worker.status === 'available' ? 'Available' : 'Offline'}
+                    </div>
+                  </div>
+                </div>
+                ${worker.currentTask ? `
+                  <div class="worker-card__task">
+                    <span class="material-symbols-outlined" aria-hidden="true">assignment</span>
+                    <span>Working on ${escapeHtml(worker.currentTask)}</span>
+                  </div>
+                ` : `
+                  <div class="worker-card__task" style="color: var(--md-on-surface-variant);">
+                    <span class="material-symbols-outlined" aria-hidden="true">hourglass_empty</span>
+                    <span>Awaiting task assignment</span>
+                  </div>
+                `}
+                <div class="worker-card__stats">
+                  <div class="worker-card__stat">
+                    <span class="worker-card__stat-value">${worker.tasksCompleted}</span>
+                    <span>Tasks done</span>
+                  </div>
+                  <div class="worker-card__stat">
+                    <span class="worker-card__stat-value">${worker.slaAdherence}%</span>
+                    <span>SLA adherence</span>
+                  </div>
+                </div>
+              </article>
+            `).join('')}
+          </div>
+        `;
+      } else {
+        html += `
+          <div class="filter-bar" role="group" aria-label="Filter tasks by priority">
+            <button class="chip" data-filter="all" aria-pressed="${state.filters.queue === 'all'}" type="button">
+              <span class="material-symbols-outlined" aria-hidden="true">apps</span>
+              All Tasks
+            </button>
+            <button class="chip" data-filter="critical" aria-pressed="${state.filters.queue === 'critical'}" type="button">
+              <span class="material-symbols-outlined" aria-hidden="true">error</span>
+              Critical
+            </button>
+            <button class="chip" data-filter="warning" aria-pressed="${state.filters.queue === 'warning'}" type="button">
+              <span class="material-symbols-outlined" aria-hidden="true">warning</span>
+              Warning
+            </button>
+            <button class="chip" data-filter="success" aria-pressed="${state.filters.queue === 'success'}" type="button">
+              <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
+              On Track
+            </button>
+            <button class="chip" data-filter="unassigned" aria-pressed="${state.filters.queue === 'unassigned'}" type="button">
+              <span class="material-symbols-outlined" aria-hidden="true">person_off</span>
+              Unassigned
+            </button>
+          </div>
+        `;
+
+        if (filteredTasks.length === 0) {
+          html += `
+            <div class="empty-state">
+              <span class="material-symbols-outlined" aria-hidden="true">inbox</span>
+              <div class="empty-state__title">No tasks match this filter</div>
+              <div class="empty-state__description">Try selecting a different priority filter to see available tasks.</div>
+            </div>
+          `;
+        } else {
+          html += `
+            <ul class="task-list" role="list" aria-label="Task queue">
+              ${filteredTasks.map(task => {
+                const isAssignedToYou = task.assignee === 'You';
+                const isInProgress = task.status === 'in-progress';
+                return `
+                  <li class="task-card" data-priority="${task.priority}" role="listitem">
+                    <div class="task-card__header">
+                      <div>
+                        <div class="task-card__id">${escapeHtml(task.id)}</div>
+                        <div class="task-card__title">${escapeHtml(task.title)}</div>
+                      </div>
+                      <div class="task-card__badges">
+                        <span class="badge badge--${task.priority}">
+                          <span class="material-symbols-outlined" aria-hidden="true">${getPriorityIcon(task.priority)}</span>
+                          ${getPriorityLabel(task.priority)}
+                        </span>
+                        <span class="badge badge--info">
+                          <span class="material-symbols-outlined" aria-hidden="true">${getStatusIcon(task.status)}</span>
+                          ${getStatusLabel(task.status)}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="task-card__meta">
+                      <span class="task-card__meta-item">
+                        <span class="material-symbols-outlined" aria-hidden="true">location_on</span>
+                        ${escapeHtml(task.location)}
+                      </span>
+                      <span class="task-card__meta-item">
+                        <span class="material-symbols-outlined" aria-hidden="true">schedule</span>
+                        Created ${escapeHtml(task.createdAt)}
+                      </span>
+                      <span class="task-card__meta-item">
+                        <span class="material-symbols-outlined" aria-hidden="true">category</span>
+                        ${escapeHtml(task.type)}
+                      </span>
+                    </div>
+                    <div class="task-card__footer">
+                      <div class="task-card__sla" data-state="${task.slaState}">
+                        <span class="material-symbols-outlined" aria-hidden="true">timer</span>
+                        <span>${getSLALabel(task.slaMinutes)}</span>
+                      </div>
+                      <div class="task-card__actions">
+                        ${isInProgress && isAssignedToYou ? `
+                          <button class="btn btn--filled btn--small" data-action="complete" data-task-id="${escapeHtml(task.id)}" type="button">
+                            <span class="material-symbols-outlined" aria-hidden="true">check</span>
+                            Complete
+                          </button>
+                        ` : isInProgress ? `
+                          <span class="badge badge--warning">
+                            <span class="material-symbols-outlined" aria-hidden="true">person</span>
+                            ${escapeHtml(task.assignee || 'Assigned')}
+                          </span>
+                        ` : `
+                          <button class="btn btn--filled btn--small" data-action="assign" data-task-id="${escapeHtml(task.id)}" type="button">
+                            <span class="material-symbols-outlined" aria-hidden="true">play_arrow</span>
+                            Assume Task
+                          </button>
+                        `}
+                        <button class="hint-btn" data-hint="task" data-task-id="${escapeHtml(task.id)}" aria-label="Show UX decision hint for this task" type="button">
+                          <span class="material-symbols-outlined" aria-hidden="true">lightbulb</span>
+                        </button>
+                      </div>
+                    </div>
+                  </li>
+                `;
+              }).join('')}
+            </ul>
+          `;
+        }
+      }
+
+      return html;
+    }
+
+    function renderReportsView() {
+      const totalTasks = state.tasks.length;
+      const completedTasks = state.tasks.filter(t => t.status === 'completed').length;
+      const inProgressTasks = state.tasks.filter(t => t.status === 'in-progress').length;
+      const unassignedTasks = state.tasks.filter(t => t.status === 'unassigned').length;
+
+      return `
+        <div class="view-header">
+          <div class="view-header__title-group">
+            <h1 class="view-header__title">Reports & Analytics</h1>
+            <button class="hint-btn" data-hint="reports" aria-label="Show UX decision hint for reports" type="button">
+              <span class="material-symbols-outlined" aria-hidden="true">lightbulb</span>
+            </button>
+          </div>
+          <p class="view-header__subtitle">Personal throughput metrics, SLA adherence, and exception category breakdown.</p>
+        </div>
+
+        <div class="metrics-grid" role="list" aria-label="Key performance metrics">
+          <div class="metric-card" role="listitem">
+            <div class="metric-card__label">Throughput</div>
+            <div class="metric-card__value">${completedTasks}</div>
+            <div class="metric-card__trend metric-card__trend--up">
+              <span class="material-symbols-outlined" aria-hidden="true">trending_up</span>
+              <span>+12% vs yesterday</span>
+            </div>
+          </div>
+          <div class="metric-card" role="listitem">
+            <div class="metric-card__label">SLA Adherence</div>
+            <div class="metric-card__value metric-card__value--success">94%</div>
+            <div class="metric-card__trend metric-card__trend--up">
+              <span class="material-symbols-outlined" aria-hidden="true">trending_up</span>
+              <span>+3% vs last week</span>
+            </div>
+          </div>
+          <div class="metric-card" role="listitem">
+            <div class="metric-card__label">Avg Resolution Time</div>
+            <div class="metric-card__value">18m</div>
+            <div class="metric-card__trend metric-card__trend--down">
+              <span class="material-symbols-outlined" aria-hidden="true">trending_down</span>
+              <span>-2m vs last week</span>
+            </div>
+          </div>
+          <div class="metric-card" role="listitem">
+            <div class="metric-card__label">Blocked Orders</div>
+            <div class="metric-card__value metric-card__value--error">${unassignedTasks}</div>
+            <div class="metric-card__trend metric-card__trend--up">
+              <span class="material-symbols-outlined" aria-hidden="true">trending_up</span>
+              <span>+2 vs yesterday</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="progress-section">
+          <h2 class="progress-section__title">Exception Categories</h2>
+          <div class="progress-item">
+            <div class="progress-item__header">
+              <span class="progress-item__label">Payment Mismatches</span>
+              <span class="progress-item__value">38%</span>
+            </div>
+            <div class="progress-bar" role="progressbar" aria-valuenow="38" aria-valuemin="0" aria-valuemax="100" aria-label="Payment mismatches: 38%">
+              <div class="progress-bar__fill progress-bar__fill--warning" style="width: 38%;"></div>
+            </div>
+          </div>
+          <div class="progress-item">
+            <div class="progress-item__header">
+              <span class="progress-item__label">Compliance Holds</span>
+              <span class="progress-item__value">25%</span>
+            </div>
+            <div class="progress-bar" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" aria-label="Compliance holds: 25%">
+              <div class="progress-bar__fill progress-bar__fill--error" style="width: 25%;"></div>
+            </div>
+          </div>
+          <div class="progress-item">
+            <div class="progress-item__header">
+              <span class="progress-item__label">Address Validation</span>
+              <span class="progress-item__value">22%</span>
+            </div>
+            <div class="progress-bar" role="progressbar" aria-valuenow="22" aria-valuemin="0" aria-valuemax="100" aria-label="Address validation: 22%">
+              <div class="progress-bar__fill" style="width: 22%;"></div>
+            </div>
+          </div>
+          <div class="progress-item">
+            <div class="progress-item__header">
+              <span class="progress-item__label">Inventory Discrepancies</span>
+              <span class="progress-item__value">15%</span>
+            </div>
+            <div class="progress-bar" role="progressbar" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100" aria-label="Inventory discrepancies: 15%">
+              <div class="progress-bar__fill progress-bar__fill--success" style="width: 15%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn--outlined" id="btnExportCSV" type="button">
+          <span class="material-symbols-outlined" aria-hidden="true">download</span>
+          Export CSV Report
+        </button>
+      `;
+    }
+
+    function renderSettingsView() {
+      return `
+        <div class="view-header">
+          <div class="view-header__title-group">
+            <h1 class="view-header__title">Settings</h1>
+          </div>
+          <p class="view-header__subtitle">Accessibility, theme, and operational preferences for the fulfillment floor.</p>
+        </div>
+
+        <div class="settings-list" role="list">
+          <div class="settings-card" role="listitem">
+            <div class="settings-card__info">
+              <div class="settings-card__title">
+                <span class="material-symbols-outlined" aria-hidden="true">dark_mode</span>
+                Dark Mode
+              </div>
+              <div class="settings-card__description">Optimized for low-light warehouse environments.</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="toggleDarkMode" ${state.settings.darkMode ? 'checked' : ''} aria-label="Toggle dark mode">
+              <span class="toggle__slider"></span>
+            </label>
+          </div>
+
+          <div class="settings-card" role="listitem">
+            <div class="settings-card__info">
+              <div class="settings-card__title">
+                <span class="material-symbols-outlined" aria-hidden="true">contrast</span>
+                High Contrast Mode
+              </div>
+              <div class="settings-card__description">WCAG AAA strict contrast (7:1) with solid borders. No shadows.</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="toggleHighContrast" ${state.settings.highContrast ? 'checked' : ''} aria-label="Toggle high contrast mode">
+              <span class="toggle__slider"></span>
+            </label>
+          </div>
+
+          <div class="settings-card" role="listitem">
+            <div class="settings-card__info">
+              <div class="settings-card__title">
+                <span class="material-symbols-outlined" aria-hidden="true">auto_awesome</span>
+                Auto-dispatch Next Task
+              </div>
+              <div class="settings-card__description">Automatically surface the next highest-priority task after completing one.</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="toggleAutoDispatch" ${state.settings.autoDispatch ? 'checked' : ''} aria-label="Toggle auto-dispatch">
+              <span class="toggle__slider"></span>
+            </label>
+          </div>
+
+          <div class="settings-card" role="listitem">
+            <div class="settings-card__info">
+              <div class="settings-card__title">
+                <span class="material-symbols-outlined" aria-hidden="true">volume_up</span>
+                Sound Alerts for Critical SLA
+              </div>
+              <div class="settings-card__description">Audible alert when a task has less than 15 minutes remaining.</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="toggleSoundAlerts" ${state.settings.soundAlerts ? 'checked' : ''} aria-label="Toggle sound alerts">
+              <span class="toggle__slider"></span>
+            </label>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderChallengeView() {
+      return `
+        <div class="view-header">
+          <div class="view-header__title-group">
+            <h1 class="view-header__title">Foundey UX Challenge</h1>
+          </div>
+          <p class="view-header__subtitle">Documentation of the design thinking process, priorities, and proposed solution.</p>
+        </div>
+
+        <div class="challenge-content">
+          <article class="challenge-card">
+            <div class="challenge-card__number">1</div>
+            <h2 class="challenge-card__title">My Thought Process</h2>
+            <div class="challenge-card__body">
+              <p>When I first opened the existing OPS interface, I was immediately struck by how much cognitive load the operator had to carry. The interface was fragmented into four separate areas: Orders, Notifications, Comms, and Recent Activity. Each area had its own logic, its own priority system, and its own visual language.</p>
+              <p>I asked myself: <em>What does an operator actually need to do their job well?</em> The answer was clear — they need to know what to work on next, and they need to know it fast. Everything else is secondary.</p>
+              <p>This led me to the core insight: <strong>replace fragmentation with a single ranked queue</strong>. One list. One priority order. One place to look.</p>
+            </div>
+          </article>
+
+          <article class="challenge-card">
+            <div class="challenge-card__number">2</div>
+            <h2 class="challenge-card__title">What Problem I Am Solving</h2>
+            <div class="challenge-card__body">
+              <p>The existing system creates two distinct problems:</p>
+              <ul>
+                <li><strong>For operators:</strong> High cognitive load. They must mentally merge information from four different areas to decide what to do next. This causes delays, missed SLAs, and errors.</li>
+                <li><strong>For managers:</strong> Operational opacity. They cannot see who is working on what without interrupting the floor or digging through multiple systems.</li>
+              </ul>
+              <p>The solution must solve both problems without compromising either user group's experience.</p>
+            </div>
+          </article>
+
+          <article class="challenge-card">
+            <div class="challenge-card__number">3</div>
+            <h2 class="challenge-card__title">What I Prioritized and Why</h2>
+            <div class="challenge-card__body">
+              <p>I prioritized three things, in this order:</p>
+              <ul>
+                <li><strong>SLA visibility above all else:</strong> Every task card shows the time remaining and its urgency state (Critical, Warning, On Track). This is the single most important piece of information for an operator.</li>
+                <li><strong>One-click ownership:</strong> The "Assume Task" button is always visible and always works. No nested menus, no confirmation dialogs. The operator should be able to claim work in a single action.</li>
+                <li><strong>Manager visibility without operator pollution:</strong> The role switcher lets managers see team allocation in real time, but operators never see manager data. The two views share the same data model but present it differently.</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="challenge-card">
+            <div class="challenge-card__number">4</div>
+            <h2 class="challenge-card__title">My Proposed Solution</h2>
+            <div class="challenge-card__body">
+              <p>A Material Design 3-based single-page application with:</p>
+              <ul>
+                <li><strong>Single Ranked Queue:</strong> All tasks in one list, sorted by SLA urgency. Filter chips let operators focus on specific priority levels.</li>
+                <li><strong>Role Switcher:</strong> A top-bar toggle between Operator View (task queue) and Manager View (team allocation grid).</li>
+                <li><strong>Inline UX Hints:</strong> Lightbulb buttons throughout the interface open modals explaining the design decisions behind each component.</li>
+                <li><strong>Full Accessibility:</strong> WCAG 2.2 AA compliance by default, with an optional High Contrast Mode that meets AAA (7:1) requirements.</li>
+                <li><strong>Warehouse-Ready Themes:</strong> Dark mode for low-light environments, high contrast for bright/direct sunlight conditions.</li>
+                <li><strong>Reports Dashboard:</strong> Personal throughput metrics, SLA adherence, and exception category breakdowns with CSV export.</li>
+              </ul>
+              <p>The result is an interface that reduces cognitive load, increases operational visibility, and works in the real conditions of a fulfillment center.</p>
+            </div>
+          </article>
+        </div>
+      `;
+    }
+
+    // ===== RENDER CURRENT VIEW =====
+    function renderCurrentView() {
+      const main = document.getElementById('main-content');
+      let html = '';
+
+      switch (state.currentView) {
+        case 'queue':
+          html = renderQueueView();
+          break;
+        case 'reports':
+          html = renderReportsView();
+          break;
+        case 'settings':
+          html = renderSettingsView();
+          break;
+        case 'challenge':
+          html = renderChallengeView();
+          break;
+        default:
+          html = renderQueueView();
+      }
+
+      main.innerHTML = html;
+
+      // Update top bar context
+      const contextEl = document.getElementById('topBarContext');
+      if (contextEl) {
+        const contexts = {
+          queue: state.role === 'manager' ? 'Manager View — Team Allocation' : 'Operator View — Task Queue',
+          reports: 'Reports & Analytics',
+          settings: 'Settings',
+          challenge: 'Foundey UX Challenge'
+        };
+        contextEl.textContent = contexts[state.currentView] || 'Fulfillment Control Center';
+      }
+
+      // Re-bind event listeners for dynamic content
+      bindDynamicListeners();
+    }
+
+    // ===== BIND DYNAMIC LISTENERS =====
+    function bindDynamicListeners() {
+      // Filter chips
+      document.querySelectorAll('.chip[data-filter]').forEach(chip => {
+        chip.addEventListener('click', function() {
+          const filter = this.dataset.filter;
+          state.filters.queue = filter;
+          renderCurrentView();
+        });
+      });
+
+      // Task action buttons
+      document.querySelectorAll('[data-action="assign"]').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const taskId = this.dataset.taskId;
+          assignTask(taskId);
+        });
+      });
+
+      document.querySelectorAll('[data-action="complete"]').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const taskId = this.dataset.taskId;
+          completeTask(taskId);
+        });
+      });
+
+      // Hint buttons
+      document.querySelectorAll('[data-hint]').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const hintType = this.dataset.hint;
+          const taskId = this.dataset.taskId;
+          showHint(hintType, taskId);
+        });
+      });
+
+      // Export CSV
+      const exportBtn = document.getElementById('btnExportCSV');
+      if (exportBtn) {
+        exportBtn.addEventListener('click', exportCSV);
+      }
+
+      // Settings toggles
+      const toggleDarkMode = document.getElementById('toggleDarkMode');
+      if (toggleDarkMode) {
+        toggleDarkMode.addEventListener('change', function() {
+          state.settings.darkMode = this.checked;
+          applyTheme();
+          showToast(this.checked ? 'Dark mode enabled' : 'Dark mode disabled', 'dark_mode');
+        });
+      }
+
+      const toggleHighContrast = document.getElementById('toggleHighContrast');
+      if (toggleHighContrast) {
+        toggleHighContrast.addEventListener('change', function() {
+          state.settings.highContrast = this.checked;
+          applyTheme();
+          showToast(this.checked ? 'High contrast mode enabled' : 'High contrast mode disabled', 'contrast');
+        });
+      }
+
+      const toggleAutoDispatch = document.getElementById('toggleAutoDispatch');
+      if (toggleAutoDispatch) {
+        toggleAutoDispatch.addEventListener('change', function() {
+          state.settings.autoDispatch = this.checked;
+          showToast(this.checked ? 'Auto-dispatch enabled' : 'Auto-dispatch disabled', 'auto_awesome');
+        });
+      }
+
+      const toggleSoundAlerts = document.getElementById('toggleSoundAlerts');
+      if (toggleSoundAlerts) {
+        toggleSoundAlerts.addEventListener('change', function() {
+          state.settings.soundAlerts = this.checked;
+          showToast(this.checked ? 'Sound alerts enabled' : 'Sound alerts disabled', 'volume_up');
+        });
+      }
+    }
+
+    // ===== HINT MODAL CONTENT =====
+    function showHint(type, taskId) {
+      let title = 'UX Decision Hint';
+      let body = '';
+
+      if (type === 'queue') {
+        title = 'Why a Single Ranked Queue?';
+        body = `
+          <p>The original OPS interface fragmented work across four separate areas: Orders, Notifications, Comms, and Recent Activity. Operators had to mentally merge these streams to decide what to do next.</p>
+          <p><strong>The problem:</strong> High cognitive load, delayed decisions, and missed SLAs.</p>
+          <p><strong>The solution:</strong> A single ranked queue sorted by SLA urgency. One list. One priority order. One place to look.</p>
+          <p>Tasks are automatically sorted by time remaining, with the most critical tasks at the top. Color-coded borders and badges provide instant visual priority signals, but the text label ("Due in 12 min") ensures the information is accessible without relying on color alone.</p>
+        `;
+      } else if (type === 'task' && taskId) {
+        const task = state.tasks.find(t => t.id === taskId);
+        if (task) {
+          title = `Task ${task.id} — Design Decisions`;
+          body = `
+            <p><strong>Priority:</strong> ${getPriorityLabel(task.priority)} — determined by SLA time remaining and exception category.</p>
+            <p><strong>SLA State:</strong> ${task.slaState === 'critical' ? 'Critical (under 15 minutes remaining)' : task.slaState === 'warning' ? 'Warning (under 60 minutes remaining)' : 'On Track (over 60 minutes remaining)'}.</p>
+            <p><strong>Actions:</strong> The "Assume Task" button provides one-click ownership. No nested menus, no confirmation dialogs. The operator should be able to claim work in a single action.</p>
+            <p><strong>Accessibility:</strong> Priority is communicated through color, text, and icon simultaneously. This ensures the information is accessible to users with color vision deficiencies.</p>
+            <p><strong>Location:</strong> ${task.location} — helps operators navigate the physical warehouse efficiently.</p>
+          `;
+        }
+      } else if (type === 'reports') {
+        title = 'Why These Metrics?';
+        body = `
+          <p>Reports are designed to answer three questions:</p>
+          <ul>
+            <li><strong>How am I performing?</strong> Throughput and SLA adherence show personal effectiveness.</li>
+            <li><strong>Where are the bottlenecks?</strong> Exception category breakdown reveals systemic issues.</li>
+            <li><strong>What needs attention?</strong> Blocked orders count highlights tasks that are stuck and need intervention.</li>
+          </ul>
+          <p>All metrics are presented with clear labels, trend indicators, and accessible progress bars. The CSV export allows managers to share data with other systems.</p>
+        `;
+      }
+
+      openModal(title, body);
+    }
+
+    // ===== CSV EXPORT =====
+    function exportCSV() {
+      const headers = ['Task ID', 'Title', 'Type', 'Priority', 'SLA (min)', 'Status', 'Assignee', 'Location'];
+      const rows = state.tasks.map(task => [
+        task.id,
+        task.title,
+        task.type,
+        task.priority,
+        task.slaMinutes,
+        task.status,
+        task.assignee || 'Unassigned',
+        task.location
+      ]);
+
+      const csvContent = [
+        headers.join(','),
+        ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+      ].join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `ops-report-${new Date().toISOString().slice(0,10)}.csv`);
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      showToast('CSV report exported successfully', 'download');
+    }
+
+    // ===== NAVIGATION =====
+    function switchView(viewName) {
+      state.currentView = viewName;
+
+      // Update nav rail
+      document.querySelectorAll('.nav-rail__item').forEach(item => {
+        if (item.dataset.view === viewName) {
+          item.setAttribute('aria-current', 'page');
+        } else {
+          item.removeAttribute('aria-current');
+        }
+      });
+
+      renderCurrentView();
+
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ===== ROLE SWITCHER =====
+    function switchRole(role) {
+      state.role = role;
+
+      const btnOperator = document.getElementById('btnOperatorView');
+      const btnManager = document.getElementById('btnManagerView');
+
+      if (role === 'operator') {
+        btnOperator.setAttribute('aria-pressed', 'true');
+        btnManager.setAttribute('aria-pressed', 'false');
+      } else {
+        btnOperator.setAttribute('aria-pressed', 'false');
+        btnManager.setAttribute('aria-pressed', 'true');
+      }
+
+      renderCurrentView();
+    }
+
+    // ===== INITIALIZATION =====
+    function init() {
+      // Apply saved theme preferences (default: light, normal contrast)
+      applyTheme();
+
+      // Bind static event listeners
+      document.querySelectorAll('.nav-rail__item').forEach(item => {
+        item.addEventListener('click', function() {
+          switchView(this.dataset.view);
+        });
+      });
+
+      document.getElementById('btnOperatorView').addEventListener('click', function() {
+        switchRole('operator');
+      });
+
+      document.getElementById('btnManagerView').addEventListener('click', function() {
+        switchRole('manager');
+      });
+
+      document.getElementById('btnThemeToggle').addEventListener('click', function() {
+        state.settings.darkMode = !state.settings.darkMode;
+        applyTheme();
+        // Sync settings toggle if visible
+        const toggle = document.getElementById('toggleDarkMode');
+        if (toggle) toggle.checked = state.settings.darkMode;
+        showToast(state.settings.darkMode ? 'Dark mode enabled' : 'Dark mode disabled', 'dark_mode');
+      });
+
+      // Modal close handlers
+      document.getElementById('modalClose').addEventListener('click', closeModal);
+
+      document.getElementById('modalOverlay').addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeModal();
+        }
+      });
+
+      // ESC key to close modal
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          const overlay = document.getElementById('modalOverlay');
+          if (overlay.getAttribute('aria-hidden') === 'false') {
+            closeModal();
+          }
+        }
+      });
+
+      // Focus trap in modal
+      document.getElementById('modalOverlay').addEventListener('keydown', function(e) {
+        if (e.key !== 'Tab') return;
+        const focusable = this.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      });
+
+      // Initial render
+      renderCurrentView();
+    }
+
+    // Start the app
+    init();
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#131921">
+  <title>Amazon OPS | Fulfillment Control Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --primary: #00639b;
+      --on-primary: #ffffff;
+      --primary-container: #cce5ff;
+      --on-primary-container: #001d32;
+      --surface: #f8f9fa;
+      --surface-container-low: #f1f3f5;
+      --surface-container: #eceef0;
+      --surface-container-high: #e6e8ea;
+      --surface-highest: #dfe2e5;
+      --on-surface: #191c1e;
+      --on-surface-variant: #43474b;
+      --outline: #73777b;
+      --outline-variant: #c3c7cb;
+      --error: #ba1a1a;
+      --error-container: #ffdad6;
+      --warning: #7d5200;
+      --warning-container: #ffddb0;
+      --success: #006e1c;
+      --success-container: #a7f5a1;
+      --navy: #131921;
+      --navy-2: #232f3e;
+      --focus: #00d5ff;
+      --shadow: 0 1px 2px rgb(0 0 0 / 10%), 0 2px 8px rgb(0 0 0 / 5%);
+      --radius-card: 18px;
+      --radius-control: 12px;
+      --rail-width: 88px;
+    }
+    [data-theme="dark"] {
+      color-scheme: dark;
+      --primary: #91ccff;
+      --on-primary: #003353;
+      --primary-container: #004a70;
+      --on-primary-container: #cce5ff;
+      --surface: #111416;
+      --surface-container-low: #191c1e;
+      --surface-container: #1d2022;
+      --surface-container-high: #272a2d;
+      --surface-highest: #323639;
+      --on-surface: #e1e3e5;
+      --on-surface-variant: #c3c7cb;
+      --outline: #8d9195;
+      --outline-variant: #43474b;
+      --error: #ffb4ab;
+      --error-container: #93000a;
+      --warning: #ffb951;
+      --warning-container: #5e3d00;
+      --success: #8bd88a;
+      --success-container: #005313;
+      --focus: #72e7ff;
+      --shadow: 0 1px 2px rgb(0 0 0 / 35%);
+    }
+    [data-contrast="high"] {
+      --outline: #24282c;
+      --outline-variant: #45494d;
+      --shadow: none;
+    }
+    [data-theme="dark"][data-contrast="high"] {
+      --outline: #f4f6f8;
+      --outline-variant: #d4d8dc;
+    }
+    * { box-sizing: border-box; }
+    html { min-width: 320px; scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--surface);
+      color: var(--on-surface);
+      font-family: Roboto, "Noto Sans", Arial, sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input, select { font: inherit; }
+    button { color: inherit; }
+    button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, [tabindex="0"]:focus-visible {
+      outline: 4px solid var(--focus) !important;
+      outline-offset: 3px;
+      z-index: 2;
+    }
+    a { color: var(--primary); }
+    .material-symbols-outlined { font-family: "Material Symbols Outlined"; font-weight: normal; font-style: normal; font-size: 22px; line-height: 1; display: inline-block; white-space: nowrap; direction: ltr; font-feature-settings: "liga"; -webkit-font-feature-settings: "liga"; -webkit-font-smoothing: antialiased; }
+    .skip-link { position: fixed; top: 8px; left: 8px; z-index: 1000; padding: 12px 16px; color: #fff; background: #000; border-radius: 8px; transform: translateY(-150%); }
+    .skip-link:focus { transform: translateY(0); }
+    .topbar {
+      min-height: 68px; display: flex; align-items: center; gap: 18px; padding: 0 24px;
+      color: #fff; background: var(--navy); position: sticky; top: 0; z-index: 20;
+      box-shadow: 0 2px 8px rgb(0 0 0 / 22%);
+    }
+    .brand { display: flex; align-items: center; gap: 11px; min-width: 248px; }
+    .brand-mark { width: 34px; height: 34px; display: grid; place-items: center; border: 2px solid #ff9900; border-radius: 10px; color: #ff9900; }
+    .brand-mark .material-symbols-outlined { font-size: 22px; }
+    .brand-name { font-size: 15px; font-weight: 700; letter-spacing: .02em; }
+    .brand-sub { display: block; color: #c7cbd1; font-size: 11px; font-weight: 400; letter-spacing: .08em; text-transform: uppercase; }
+    .topbar-spacer { flex: 1; }
+    .site-status { display: inline-flex; align-items: center; gap: 8px; color: #e5e7eb; font-size: 12px; white-space: nowrap; }
+    .live-dot { width: 9px; height: 9px; border-radius: 50%; background: #66d19e; box-shadow: 0 0 0 3px rgb(102 209 158 / 18%); }
+    .role-wrap { display: flex; align-items: center; gap: 9px; }
+    .role-wrap label { font-size: 12px; color: #d5d8dc; }
+    .role-select { min-height: 40px; color: #fff; background: #253140; border: 1px solid #65707d; border-radius: 10px; padding: 0 34px 0 12px; }
+    .role-select option { color: #111; }
+    .avatar { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; background: #37475a; border: 1px solid #9aa5b1; font-weight: 700; font-size: 12px; }
+    .app-layout { display: grid; grid-template-columns: var(--rail-width) minmax(0, 1fr); min-height: calc(100vh - 68px); }
+    .rail { background: var(--surface-container-low); border-right: 1px solid var(--outline-variant); padding: 18px 10px; display: flex; flex-direction: column; gap: 9px; }
+    .rail-label { padding: 3px 0 9px; text-align: center; color: var(--on-surface-variant); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; }
+    .nav-item { min-height: 66px; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; border: 0; border-radius: 16px; background: transparent; color: var(--on-surface-variant); cursor: pointer; font-size: 11px; font-weight: 500; text-decoration: none; }
+    .nav-item .material-symbols-outlined { font-size: 23px; }
+    .nav-item:hover { background: var(--surface-container); }
+    .nav-item[aria-current="page"] { color: var(--on-primary-container); background: var(--primary-container); font-weight: 700; }
+    .rail-bottom { margin-top: auto; }
+    main { min-width: 0; padding: 30px clamp(18px, 3.5vw, 52px) 48px; }
+    .page { max-width: 1280px; margin: 0 auto; }
+    .page[hidden] { display: none; }
+    .eyebrow { color: var(--on-surface-variant); text-transform: uppercase; letter-spacing: .12em; font-size: 11px; font-weight: 700; margin: 0 0 5px; }
+    .page-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; margin-bottom: 24px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { font-size: clamp(26px, 3vw, 34px); line-height: 1.2; letter-spacing: -.025em; margin: 0; }
+    h2 { font-size: 20px; line-height: 1.3; margin-bottom: 8px; }
+    h3 { font-size: 16px; line-height: 1.35; margin-bottom: 5px; }
+    .subheading { color: var(--on-surface-variant); margin: 8px 0 0; max-width: 660px; }
+    .title-with-hint { display: flex; align-items: center; gap: 8px; }
+    .icon-button { display: inline-grid; place-items: center; width: 40px; height: 40px; flex: 0 0 auto; background: transparent; border: 1px solid var(--outline-variant); border-radius: 50%; color: var(--on-surface-variant); cursor: pointer; }
+    .icon-button:hover { background: var(--surface-container); color: var(--on-surface); }
+    .icon-button.small { width: 34px; height: 34px; }
+    .icon-button.small .material-symbols-outlined { font-size: 19px; }
+    .button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px; padding: 0 16px; border: 1px solid transparent; border-radius: 999px; background: var(--primary); color: var(--on-primary); cursor: pointer; font-weight: 700; font-size: 13px; text-decoration: none; transition: filter .15s ease, transform .15s ease; }
+    .button:hover { filter: brightness(.93); }
+    .button:active { transform: scale(.98); }
+    .button.secondary { background: transparent; color: var(--primary); border-color: var(--outline); }
+    .button.tonal { background: var(--primary-container); color: var(--on-primary-container); }
+    .button.danger { background: var(--error); color: #fff; }
+    .button:disabled { opacity: .55; cursor: not-allowed; }
+    .button .material-symbols-outlined { font-size: 18px; }
+    .summary-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 22px; }
+    .summary-card { padding: 15px 17px; border: 1px solid var(--outline-variant); background: var(--surface-container-low); border-radius: 15px; }
+    .summary-label { display: flex; align-items: center; gap: 7px; color: var(--on-surface-variant); font-size: 12px; font-weight: 500; }
+    .summary-label .material-symbols-outlined { font-size: 18px; }
+    .summary-value { font-size: 24px; font-weight: 700; margin-top: 4px; line-height: 1.2; }
+    .summary-note { color: var(--on-surface-variant); font-size: 11px; margin-top: 3px; }
+    .queue-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 15px 16px; background: var(--surface-container-low); border: 1px solid var(--outline-variant); border-radius: 16px 16px 0 0; }
+    .toolbar-left, .toolbar-right { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; }
+    .filter-label { font-size: 12px; font-weight: 700; margin-right: 2px; }
+    .chips { display: flex; gap: 7px; flex-wrap: wrap; }
+    .chip { min-height: 34px; padding: 0 13px; border-radius: 999px; border: 1px solid var(--outline); background: transparent; color: var(--on-surface); cursor: pointer; font-size: 12px; font-weight: 500; }
+    .chip:hover { background: var(--surface-container); }
+    .chip[aria-pressed="true"] { color: var(--on-primary-container); background: var(--primary-container); border-color: var(--primary); font-weight: 700; }
+    .search-wrap { position: relative; }
+    .search-wrap .material-symbols-outlined { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--on-surface-variant); font-size: 19px; pointer-events: none; }
+    .search { width: min(240px, 55vw); min-height: 38px; padding: 0 12px 0 37px; color: var(--on-surface); background: var(--surface); border: 1px solid var(--outline); border-radius: 999px; }
+    .queue-container { border: 1px solid var(--outline-variant); border-top: 0; border-radius: 0 0 18px 18px; overflow: hidden; }
+    .queue-meta { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 13px 17px; color: var(--on-surface-variant); background: var(--surface-container); font-size: 12px; }
+    .queue-list { display: grid; gap: 0; }
+    .task-card { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(150px, .75fr) auto; align-items: center; gap: 20px; padding: 18px; background: var(--surface); border-top: 1px solid var(--outline-variant); }
+    .task-card:first-child { border-top: 0; }
+    .task-main { min-width: 0; }
+    .task-topline { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; margin-bottom: 6px; }
+    .task-id { font-size: 12px; color: var(--on-surface-variant); font-weight: 700; letter-spacing: .04em; }
+    .task-title { font-size: 16px; font-weight: 700; margin: 0; }
+    .task-description { color: var(--on-surface-variant); font-size: 13px; margin: 0 0 9px; }
+    .task-details { display: flex; flex-wrap: wrap; gap: 7px 15px; color: var(--on-surface-variant); font-size: 12px; }
+    .task-details span { display: inline-flex; align-items: center; gap: 5px; }
+    .task-details .material-symbols-outlined { font-size: 16px; }
+    .sla-box { min-width: 145px; }
+    .sla-label { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; }
+    .sla-label .material-symbols-outlined { font-size: 18px; }
+    .sla-progress { height: 7px; background: var(--surface-container-high); overflow: hidden; border-radius: 99px; margin-top: 9px; }
+    .sla-progress > span { display: block; height: 100%; border-radius: inherit; background: var(--success); }
+    .sla-critical .sla-label { color: var(--error); }
+    .sla-critical .sla-progress > span { background: var(--error); }
+    .sla-warning .sla-label { color: var(--warning); }
+    .sla-warning .sla-progress > span { background: var(--warning); }
+    .sla-ok .sla-label { color: var(--success); }
+    .sla-badge { display: inline-flex; align-items: center; gap: 4px; min-height: 24px; padding: 2px 9px; border: 1px solid currentColor; border-radius: 999px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .sla-badge.critical { color: var(--error); background: var(--error-container); }
+    .sla-badge.warning { color: var(--warning); background: var(--warning-container); }
+    .sla-badge.ok { color: var(--success); background: var(--success-container); }
+    .task-actions { display: flex; flex-direction: column; align-items: stretch; gap: 7px; min-width: 142px; }
+    .task-actions .button { min-height: 40px; padding: 0 14px; white-space: nowrap; }
+    .hint-inline { display: flex; align-items: center; justify-content: flex-end; gap: 5px; color: var(--on-surface-variant); font-size: 11px; }
+    .hint-inline button { border: 0; padding: 2px; border-radius: 50%; color: var(--primary); background: transparent; cursor: pointer; display: grid; place-items: center; }
+    .hint-inline .material-symbols-outlined { font-size: 18px; }
+    .empty-state { text-align: center; padding: 48px 20px; color: var(--on-surface-variant); }
+    .empty-state .material-symbols-outlined { font-size: 38px; margin-bottom: 9px; }
+    .empty-state strong { display: block; color: var(--on-surface); margin-bottom: 5px; }
+    .manager-banner { display: flex; align-items: flex-start; gap: 12px; padding: 15px 17px; margin-bottom: 17px; background: var(--primary-container); color: var(--on-primary-container); border-radius: 15px; }
+    .manager-banner .material-symbols-outlined { margin-top: 2px; }
+    .manager-banner p { margin: 0; font-size: 13px; }
+    .manager-banner strong { display: block; margin-bottom: 2px; }
+    .section-card { background: var(--surface-container-low); border: 1px solid var(--outline-variant); border-radius: var(--radius-card); box-shadow: var(--shadow); overflow: hidden; }
+    .section-card-header { display: flex; justify-content: space-between; align-items: center; gap: 15px; padding: 19px 20px; border-bottom: 1px solid var(--outline-variant); }
+    .section-card-header p { color: var(--on-surface-variant); font-size: 13px; margin: 2px 0 0; }
+    .section-card-body { padding: 18px 20px; }
+    .worker-list { display: grid; gap: 0; }
+    .worker-row { display: grid; grid-template-columns: minmax(200px, 1fr) minmax(180px, 1.1fr) minmax(130px, .6fr) auto; align-items: center; gap: 14px; padding: 16px 20px; border-top: 1px solid var(--outline-variant); }
+    .worker-row:first-child { border-top: 0; }
+    .worker-person { display: flex; align-items: center; gap: 11px; }
+    .worker-avatar { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: var(--primary-container); color: var(--on-primary-container); font-weight: 700; font-size: 12px; }
+    .worker-name { font-weight: 700; }
+    .worker-id { color: var(--on-surface-variant); font-size: 11px; }
+    .worker-task { font-size: 13px; }
+    .worker-task small { display: block; color: var(--on-surface-variant); font-size: 11px; }
+    .status-pill { display: inline-flex; align-items: center; gap: 6px; width: fit-content; border: 1px solid var(--outline); border-radius: 999px; padding: 5px 10px; font-weight: 700; font-size: 11px; white-space: nowrap; }
+    .status-pill .live-dot { width: 7px; height: 7px; box-shadow: none; }
+    .status-idle .live-dot { background: #73777b; }
+    .status-break .live-dot { background: var(--warning); }
+    .worker-sla { font-size: 12px; color: var(--on-surface-variant); text-align: right; }
+    .metrics-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }
+    .metric-card { padding: 18px; background: var(--surface-container-low); border: 1px solid var(--outline-variant); border-radius: 17px; box-shadow: var(--shadow); }
+    .metric-icon { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 12px; color: var(--on-primary-container); background: var(--primary-container); margin-bottom: 16px; }
+    .metric-label { color: var(--on-surface-variant); font-size: 12px; font-weight: 500; }
+    .metric-value { font-size: clamp(22px, 2.4vw, 30px); line-height: 1.2; font-weight: 700; margin: 4px 0; }
+    .metric-change { display: inline-flex; align-items: center; gap: 4px; color: var(--success); font-size: 11px; font-weight: 700; }
+    .metric-change.neutral { color: var(--on-surface-variant); }
+    .report-grid { display: grid; grid-template-columns: 1.25fr .75fr; gap: 16px; }
+    .bar-row { display: grid; grid-template-columns: minmax(120px, .9fr) minmax(100px, 2fr) 50px; align-items: center; gap: 12px; margin: 17px 0; font-size: 12px; }
+    .bar-track { height: 11px; border-radius: 99px; background: var(--surface-container-high); overflow: hidden; }
+    .bar-fill { display: block; height: 100%; border-radius: inherit; background: var(--primary); }
+    .bar-count { text-align: right; font-weight: 700; }
+    .report-note { color: var(--on-surface-variant); font-size: 11px; margin: 16px 0 0; }
+    .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .setting-row { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 18px 19px; background: var(--surface-container-low); border: 1px solid var(--outline-variant); border-radius: 16px; }
+    .setting-copy { display: flex; align-items: flex-start; gap: 12px; }
+    .setting-copy > .material-symbols-outlined { color: var(--primary); font-size: 22px; margin-top: 1px; }
+    .setting-title { font-weight: 700; font-size: 14px; }
+    .setting-description { color: var(--on-surface-variant); font-size: 12px; margin-top: 3px; max-width: 380px; }
+    .switch { position: relative; flex: 0 0 auto; width: 52px; height: 32px; }
+    .switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+    .switch-track { display: block; width: 52px; height: 32px; border: 2px solid var(--outline); border-radius: 99px; background: var(--surface-container); cursor: pointer; transition: background .16s ease; }
+    .switch-track::after { content: ""; display: block; width: 16px; height: 16px; margin: 6px; border-radius: 50%; background: var(--outline); transition: transform .16s ease, background .16s ease, width .16s ease, height .16s ease; }
+    .switch input:checked + .switch-track { background: var(--primary); border-color: var(--primary); }
+    .switch input:checked + .switch-track::after { width: 22px; height: 22px; margin: 3px 4px; transform: translateX(19px); background: var(--on-primary); }
+    .switch input:focus-visible + .switch-track { outline: 4px solid var(--focus); outline-offset: 3px; }
+    .settings-footnote { margin: 17px 0 0; padding: 12px 14px; border-left: 4px solid var(--primary); background: var(--surface-container); border-radius: 0 10px 10px 0; color: var(--on-surface-variant); font-size: 12px; }
+    .challenge-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
+    .challenge-card { padding: 21px; border: 1px solid var(--outline-variant); background: var(--surface-container-low); border-radius: 17px; }
+    .challenge-card .number { display: inline-grid; place-items: center; width: 30px; height: 30px; margin-bottom: 13px; border-radius: 10px; background: var(--primary-container); color: var(--on-primary-container); font-size: 12px; font-weight: 700; }
+    .challenge-card h2 { font-size: 17px; }
+    .challenge-card p { color: var(--on-surface-variant); font-size: 13px; margin: 0; }
+    .challenge-card ul { color: var(--on-surface-variant); font-size: 13px; margin: 9px 0 0; padding-left: 20px; }
+    .page-footer { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 24px; color: var(--on-surface-variant); font-size: 11px; }
+    .footer-live { display: inline-flex; gap: 7px; align-items: center; }
+    .toast-region { position: fixed; right: 20px; bottom: 20px; z-index: 100; display: grid; gap: 9px; }
+    .toast { display: flex; align-items: center; gap: 10px; max-width: min(390px, calc(100vw - 40px)); padding: 13px 16px; color: #fff; background: #24292e; border-radius: 13px; box-shadow: 0 5px 22px rgb(0 0 0 / 25%); font-size: 13px; animation: toast-in .2s ease-out; }
+    .toast .material-symbols-outlined { color: #8bd88a; }
+    @keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .dialog-backdrop { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 18px; background: rgb(0 0 0 / 55%); }
+    .dialog-backdrop[hidden] { display: none; }
+    .dialog { position: relative; width: min(520px, 100%); max-height: min(85vh, 680px); overflow: auto; padding: 24px; color: var(--on-surface); background: var(--surface-container-low); border: 1px solid var(--outline); border-radius: 22px; box-shadow: 0 18px 55px rgb(0 0 0 / 28%); }
+    .dialog-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; }
+    .dialog h2 { margin: 0; font-size: 21px; }
+    .dialog-content { color: var(--on-surface-variant); font-size: 14px; margin: 16px 0 22px; }
+    .dialog-content p:last-child { margin-bottom: 0; }
+    .dialog-actions { display: flex; justify-content: flex-end; }
+    .high-contrast *, [data-contrast="high"] * { box-shadow: none !important; }
+    [data-contrast="high"] .section-card, [data-contrast="high"] .metric-card, [data-contrast="high"] .task-card, [data-contrast="high"] .summary-card, [data-contrast="high"] .setting-row, [data-contrast="high"] .challenge-card { border-width: 2px; }
+    @media (min-width: 1600px) { main { padding-top: 38px; } }
+    @media (max-width: 980px) {
+      .summary-strip, .metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .task-card { grid-template-columns: minmax(0, 1fr) minmax(130px, .5fr); }
+      .task-actions { grid-column: 1 / -1; flex-direction: row; align-items: center; justify-content: space-between; }
+      .task-actions .button { min-width: 170px; }
+      .report-grid { grid-template-columns: 1fr; }
+      .worker-row { grid-template-columns: minmax(180px, 1fr) minmax(140px, 1fr) auto; }
+      .worker-sla { display: none; }
+    }
+    @media (max-width: 680px) {
+      .topbar { min-height: 62px; padding: 0 14px; gap: 10px; }
+      .brand { min-width: 0; }
+      .brand-sub, .site-status, .role-wrap label { display: none; }
+      .brand-name { font-size: 13px; }
+      .role-select { min-height: 36px; font-size: 12px; padding-left: 9px; }
+      .avatar { display: none; }
+      .app-layout { display: block; min-height: calc(100vh - 62px); padding-bottom: 70px; }
+      .rail { position: fixed; z-index: 30; bottom: 0; left: 0; right: 0; height: 66px; padding: 5px 8px; display: flex; flex-direction: row; justify-content: space-around; gap: 4px; border-right: 0; border-top: 1px solid var(--outline-variant); }
+      .rail-label, .rail-bottom { display: none; }
+      .nav-item { flex: 1; min-height: 54px; border-radius: 13px; font-size: 10px; gap: 2px; }
+      .nav-item .material-symbols-outlined { font-size: 21px; }
+      main { padding: 22px 15px 32px; }
+      .page-heading { margin-bottom: 19px; }
+      .page-heading > .button { align-self: center; }
+      .summary-strip { gap: 8px; }
+      .summary-card { padding: 12px; }
+      .summary-value { font-size: 21px; }
+      .summary-label { font-size: 11px; }
+      .queue-toolbar { align-items: flex-start; }
+      .toolbar-left { width: 100%; }
+      .toolbar-right { width: 100%; justify-content: space-between; }
+      .search { width: min(220px, 57vw); }
+      .task-card { grid-template-columns: 1fr; gap: 14px; padding: 16px 14px; }
+      .sla-box { min-width: 0; }
+      .task-actions { grid-column: auto; }
+      .task-actions .button { min-width: 0; flex: 1; }
+      .hint-inline { justify-content: flex-start; }
+      .worker-row { grid-template-columns: 1fr auto; gap: 9px; padding: 14px; }
+      .worker-task { grid-column: 1 / -1; padding-left: 49px; }
+      .worker-row > .status-pill { grid-column: 2; grid-row: 1; }
+      .metrics-grid { gap: 9px; }
+      .metric-card { padding: 14px; }
+      .metric-icon { margin-bottom: 10px; }
+      .settings-grid, .challenge-grid { grid-template-columns: 1fr; }
+      .setting-row { padding: 15px; }
+      .page-footer { align-items: flex-start; flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+    @media (forced-colors: active) {
+      .button, .chip, .nav-item, .status-pill, .sla-badge, .switch-track { border: 1px solid ButtonText; }
+      .live-dot { forced-color-adjust: none; background: Highlight; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <header class="topbar">
+    <div class="brand" aria-label="Amazon OPS Fulfillment Control Center">
+      <span class="brand-mark" aria-hidden="true"><span class="material-symbols-outlined">inventory_2</span></span>
+      <span class="brand-name">Amazon OPS<span class="brand-sub">Fulfillment Control Center</span></span>
+    </div>
+    <div class="topbar-spacer"></div>
+    <div class="site-status" aria-label="System status: live"><span class="live-dot" aria-hidden="true"></span><span>Live · FC Seattle 04</span></div>
+    <div class="role-wrap">
+      <label for="role-select">View</label>
+      <select id="role-select" class="role-select" aria-label="Choose workspace role">
+        <option value="operator">Operator View</option>
+        <option value="manager">Manager View</option>
+      </select>
+    </div>
+    <div class="avatar" aria-label="Signed in as Alex Morgan">AM</div>
+  </header>
+
+  <div class="app-layout">
+    <nav class="rail" aria-label="Primary navigation">
+      <div class="rail-label">Workspace</div>
+      <button class="nav-item" type="button" data-page="queue" aria-current="page"><span class="material-symbols-outlined" aria-hidden="true">format_list_bulleted</span><span>Queue</span></button>
+      <button class="nav-item" type="button" data-page="reports"><span class="material-symbols-outlined" aria-hidden="true">analytics</span><span>Reports</span></button>
+      <button class="nav-item" type="button" data-page="settings"><span class="material-symbols-outlined" aria-hidden="true">settings</span><span>Settings</span></button>
+      <button class="nav-item" type="button" data-page="challenge"><span class="material-symbols-outlined" aria-hidden="true">assignment_turned_in</span><span>Challenge</span></button>
+      <div class="rail-bottom"><button class="nav-item" type="button" id="nav-help" aria-label="About this prototype"><span class="material-symbols-outlined" aria-hidden="true">help</span><span>About</span></button></div>
+    </nav>
+
+    <main id="main-content" tabindex="-1">
+      <section class="page" id="page-queue" aria-labelledby="queue-title">
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">Fulfillment operations / Seattle 04</p>
+            <div class="title-with-hint"><h1 id="queue-title">Priority queue</h1><button class="icon-button small hint-button" type="button" aria-label="Why this prioritized queue?" data-hint="queue"><span class="material-symbols-outlined" aria-hidden="true">lightbulb</span></button></div>
+            <p class="subheading" id="queue-description">One clear next action, ranked by SLA risk. Focus on the work that needs you most.</p>
+          </div>
+          <button class="button secondary" type="button" id="refresh-button"><span class="material-symbols-outlined" aria-hidden="true">refresh</span>Refresh</button>
+        </div>
+
+        <div class="summary-strip" aria-label="Queue summary">
+          <article class="summary-card"><div class="summary-label"><span class="material-symbols-outlined" aria-hidden="true">inbox</span>Open tasks</div><div class="summary-value" id="open-count">—</div><div class="summary-note">Across all exception types</div></article>
+          <article class="summary-card"><div class="summary-label"><span class="material-symbols-outlined" aria-hidden="true">timer</span>Critical SLA</div><div class="summary-value" id="critical-count">—</div><div class="summary-note">Due in less than 15 minutes</div></article>
+          <article class="summary-card"><div class="summary-label"><span class="material-symbols-outlined" aria-hidden="true">check_circle</span>Completed today</div><div class="summary-value" id="completed-count">—</div><div class="summary-note">Your completed resolutions</div></article>
+          <article class="summary-card"><div class="summary-label"><span class="material-symbols-outlined" aria-hidden="true">schedule</span>Avg. resolution</div><div class="summary-value">8.4 min</div><div class="summary-note">Your rolling 7-day average</div></article>
+        </div>
+
+        <div id="operator-view">
+          <div class="queue-toolbar">
+            <div class="toolbar-left">
+              <span class="filter-label" id="filter-label">Filter:</span>
+              <div class="chips" role="radiogroup" aria-labelledby="filter-label" id="filter-chips">
+                <button class="chip" type="button" role="radio" aria-checked="true" aria-pressed="true" data-filter="all">All</button>
+                <button class="chip" type="button" role="radio" aria-checked="false" aria-pressed="false" data-filter="payment">Payment</button>
+                <button class="chip" type="button" role="radio" aria-checked="false" aria-pressed="false" data-filter="compliance">Compliance</button>
+                <button class="chip" type="button" role="radio" aria-checked="false" aria-pressed="false" data-filter="inventory">Inventory</button>
+              </div>
+            </div>
+            <div class="toolbar-right">
+              <label class="search-wrap"><span class="material-symbols-outlined" aria-hidden="true">search</span><input class="search" id="queue-search" type="search" placeholder="Search tasks" aria-label="Search tasks by order or issue"></label>
+            </div>
+          </div>
+          <div class="queue-container">
+            <div class="queue-meta"><span id="queue-result-count" aria-live="polite">Loading tasks…</span><span>Sorted by earliest SLA</span></div>
+            <div class="queue-list" id="task-list" role="list" aria-label="Prioritized tasks"></div>
+          </div>
+        </div>
+
+        <div id="manager-view" hidden>
+          <aside class="manager-banner"><span class="material-symbols-outlined" aria-hidden="true">visibility</span><p><strong>Team allocation at a glance</strong>See who is working on what without adding noise to the operator’s task view.</p></aside>
+          <section class="section-card" aria-labelledby="team-title">
+            <div class="section-card-header"><div><h2 id="team-title">Team activity</h2><p>Live allocation · 6 associates on shift</p></div><span class="status-pill"><span class="live-dot" aria-hidden="true"></span>Shift active</span></div>
+            <div class="worker-list" id="worker-list" role="list" aria-label="Team members and current assignments"></div>
+          </section>
+          <div class="section-card" style="margin-top:16px">
+            <div class="section-card-header"><div><h2>Queue health</h2><p>Open work requiring team attention</p></div><button class="icon-button small hint-button" type="button" aria-label="How team allocation is shown" data-hint="manager"><span class="material-symbols-outlined" aria-hidden="true">lightbulb</span></button></div>
+            <div class="section-card-body"><div class="summary-strip" style="margin:0" id="manager-summary"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="page-reports" aria-labelledby="reports-title" hidden>
+        <div class="page-heading"><div><p class="eyebrow">Fulfillment operations / Seattle 04</p><div class="title-with-hint"><h1 id="reports-title">Operations reports</h1><button class="icon-button small hint-button" type="button" aria-label="About these metrics" data-hint="reports"><span class="material-symbols-outlined" aria-hidden="true">lightbulb</span></button></div><p class="subheading">A focused view of throughput, service levels, and the exceptions slowing the shift.</p></div><button class="button" id="export-csv" type="button"><span class="material-symbols-outlined" aria-hidden="true">download</span>Export CSV</button></div>
+        <div class="metrics-grid" aria-label="Personal performance metrics">
+          <article class="metric-card"><div class="metric-icon"><span class="material-symbols-outlined" aria-hidden="true">inventory</span></div><div class="metric-label">Personal throughput</div><div class="metric-value">42</div><div class="metric-change"><span class="material-symbols-outlined" aria-hidden="true">trending_up</span>+8% vs. last shift</div></article>
+          <article class="metric-card"><div class="metric-icon"><span class="material-symbols-outlined" aria-hidden="true">verified</span></div><div class="metric-label">SLA adherence</div><div class="metric-value">96.2%</div><div class="metric-change"><span class="material-symbols-outlined" aria-hidden="true">trending_up</span>+1.4 pts this week</div></article>
+          <article class="metric-card"><div class="metric-icon"><span class="material-symbols-outlined" aria-hidden="true">avg_time</span></div><div class="metric-label">Avg. resolution time</div><div class="metric-value">8.4 min</div><div class="metric-change"><span class="material-symbols-outlined" aria-hidden="true">trending_down</span>−0.6 min this week</div></article>
+          <article class="metric-card"><div class="metric-icon"><span class="material-symbols-outlined" aria-hidden="true">block</span></div><div class="metric-label">Blocked orders</div><div class="metric-value" id="blocked-metric">—</div><div class="metric-change neutral">Across active queue</div></article>
+        </div>
+        <div class="report-grid">
+          <section class="section-card" aria-labelledby="exceptions-title"><div class="section-card-header"><div><h2 id="exceptions-title">Exceptions by category</h2><p>Current open queue</p></div><span class="material-symbols-outlined" aria-hidden="true">bar_chart</span></div><div class="section-card-body" id="exception-bars"></div></section>
+          <section class="section-card" aria-labelledby="report-context-title"><div class="section-card-header"><div><h2 id="report-context-title">Shift snapshot</h2><p>Personal operating context</p></div><span class="material-symbols-outlined" aria-hidden="true">today</span></div><div class="section-card-body"><div class="bar-row"><span>Shift completion</span><span class="bar-track" role="progressbar" aria-label="Shift completion" aria-valuemin="0" aria-valuemax="100" aria-valuenow="68"><span class="bar-fill" style="width:68%"></span></span><span class="bar-count">68%</span></div><div class="bar-row"><span>Quality checks</span><span class="bar-track" role="progressbar" aria-label="Quality checks passed" aria-valuemin="0" aria-valuemax="100" aria-valuenow="98"><span class="bar-fill" style="width:98%"></span></span><span class="bar-count">98%</span></div><p class="report-note">Metrics are illustrative prototype data for the current shift. Export includes the task-level queue snapshot.</p></div></section>
+        </div>
+      </section>
+
+      <section class="page" id="page-settings" aria-labelledby="settings-title" hidden>
+        <div class="page-heading"><div><p class="eyebrow">Personal preferences</p><div class="title-with-hint"><h1 id="settings-title">Settings</h1><button class="icon-button small hint-button" type="button" aria-label="About accessibility settings" data-hint="settings"><span class="material-symbols-outlined" aria-hidden="true">lightbulb</span></button></div><p class="subheading">Adjust the workspace to your environment. Preferences are saved on this device.</p></div></div>
+        <div class="settings-grid">
+          <div class="setting-row"><div class="setting-copy"><span class="material-symbols-outlined" aria-hidden="true">dark_mode</span><div><div class="setting-title">Dark mode</div><div class="setting-description">Reduce glare in low-light work areas.</div></div></div><label class="switch"><input id="dark-toggle" type="checkbox" role="switch" aria-label="Dark mode"><span class="switch-track" aria-hidden="true"></span></label></div>
+          <div class="setting-row"><div class="setting-copy"><span class="material-symbols-outlined" aria-hidden="true">contrast</span><div><div class="setting-title">High contrast</div><div class="setting-description">Use strong borders and remove elevation cues for clearer separation.</div></div></div><label class="switch"><input id="contrast-toggle" type="checkbox" role="switch" aria-label="High contrast mode"><span class="switch-track" aria-hidden="true"></span></label></div>
+          <div class="setting-row"><div class="setting-copy"><span class="material-symbols-outlined" aria-hidden="true">bolt</span><div><div class="setting-title">Auto-dispatch next task</div><div class="setting-description">After resolving a task, move focus to the next highest-priority item.</div></div></div><label class="switch"><input id="dispatch-toggle" type="checkbox" role="switch" aria-label="Auto-dispatch next task"><span class="switch-track" aria-hidden="true"></span></label></div>
+          <div class="setting-row"><div class="setting-copy"><span class="material-symbols-outlined" aria-hidden="true">notifications_active</span><div><div class="setting-title">Critical SLA sound alerts</div><div class="setting-description">Play a brief tone when a task enters the under-15-minute window.</div></div></div><label class="switch"><input id="sound-toggle" type="checkbox" role="switch" aria-label="Sound alerts for critical SLA"><span class="switch-track" aria-hidden="true"></span></label></div>
+        </div>
+        <p class="settings-footnote"><strong>Accessibility note:</strong> High contrast complements the operating system's accessibility settings. Keyboard focus remains visible throughout the workspace; no workflow depends on color alone.</p>
+      </section>
+
+      <section class="page" id="page-challenge" aria-labelledby="challenge-title" hidden>
+        <div class="page-heading"><div><p class="eyebrow">Foundey UX Challenge</p><div class="title-with-hint"><h1 id="challenge-title">My thought process</h1><button class="icon-button small hint-button" type="button" aria-label="About the design approach" data-hint="challenge"><span class="material-symbols-outlined" aria-hidden="true">lightbulb</span></button></div><p class="subheading">How I approached a high-volume fulfillment operations workflow.</p></div></div>
+        <div class="challenge-grid">
+          <article class="challenge-card"><span class="number" aria-hidden="true">01</span><h2>What problem I am solving</h2><p>I am reducing the cognitive load operators face when work is split across orders, notifications, communications, and recent activity. At the same time, I am giving managers a clear view of team allocation without crowding the operator’s workspace.</p></article>
+          <article class="challenge-card"><span class="number" aria-hidden="true">02</span><h2>What I prioritized and why</h2><p>I prioritized time-sensitive work and the next clear action. A single queue sorted by SLA risk makes urgency explicit, while task details stay scannable.</p><ul><li>Show urgency as text, icon, and color—not color alone.</li><li>Keep operator and manager needs in distinct views.</li><li>Make key actions reachable by keyboard and touch.</li></ul></article>
+          <article class="challenge-card"><span class="number" aria-hidden="true">03</span><h2>My proposed solution</h2><p>I designed a responsive operations control center around one ranked queue. Operators can filter, search, and claim work in place. Managers can switch to a live allocation view, and reports and settings remain one navigation action away.</p></article>
+          <article class="challenge-card"><span class="number" aria-hidden="true">04</span><h2>How I measure success</h2><p>I would validate the solution with lower time-to-next-task, fewer missed SLAs, improved resolution time, and positive operator feedback. I would also test manager confidence in understanding workload distribution across the shift.</p></article>
+        </div>
+      </section>
+      <footer class="page-footer"><span class="footer-live"><span class="live-dot" aria-hidden="true"></span>Prototype data · Last refreshed <time id="last-refreshed">—</time></span><span>Amazon OPS · Fulfillment Control Center</span></footer>
+    </main>
+  </div>
+
+  <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="false"></div>
+  <div class="dialog-backdrop" id="dialog-backdrop" hidden>
+    <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialog-title" aria-describedby="dialog-description" tabindex="-1">
+      <div class="dialog-header"><h2 id="dialog-title">About this view</h2><button class="icon-button small" type="button" id="dialog-close" aria-label="Close dialog"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
+      <div class="dialog-content" id="dialog-description"></div>
+      <div class="dialog-actions"><button class="button" type="button" id="dialog-done">Got it</button></div>
+    </section>
+  </div>
+
+  <script>
+    (() => {
+      'use strict';
+      const tasks = [
+        { id: 'EX-2841', order: '#4821', category: 'payment', title: 'Payment mismatch', description: 'Captured amount differs from the order total; verify authorization before release.', customer: 'Standard', due: 7, age: '12 min ago', location: 'Pack station 12', icon: 'payments' },
+        { id: 'EX-2837', order: '#4798', category: 'compliance', title: 'Compliance document review', description: 'Required export documentation is missing from the shipment record.', customer: 'Priority', due: 12, age: '18 min ago', location: 'Outbound · Zone B', icon: 'fact_check' },
+        { id: 'EX-2846', order: '#4836', category: 'inventory', title: 'Inventory location mismatch', description: 'Scanned unit is not in the expected bin; confirm item and update location.', customer: 'Standard', due: 24, age: '6 min ago', location: 'Pick module 3', icon: 'inventory_2' },
+        { id: 'EX-2829', order: '#4764', category: 'payment', title: 'Payment authorization expired', description: 'Authorization expired before fulfillment; request a refreshed payment check.', customer: 'Priority', due: 31, age: '22 min ago', location: 'Pack station 08', icon: 'credit_card' },
+        { id: 'EX-2842', order: '#4827', category: 'compliance', title: 'Restricted item verification', description: 'Validate handling requirements and destination eligibility for this item.', customer: 'Standard', due: 46, age: '9 min ago', location: 'Outbound · Zone A', icon: 'gpp_maybe' },
+        { id: 'EX-2818', order: '#4712', category: 'inventory', title: 'Short pick investigation', description: 'The pick quantity is lower than expected; check reserve stock and recount.', customer: 'Standard', due: 58, age: '31 min ago', location: 'Pick module 1', icon: 'find_in_page' },
+        { id: 'EX-2848', order: '#4840', category: 'payment', title: 'Duplicate charge check', description: 'Review transaction history and confirm the customer is not charged twice.', customer: 'Priority', due: 74, age: '4 min ago', location: 'Pack station 04', icon: 'receipt_long' },
+        { id: 'EX-2806', order: '#4669', category: 'compliance', title: 'Address validation exception', description: 'Resolve a carrier validation issue before the next dispatch cutoff.', customer: 'Standard', due: 91, age: '42 min ago', location: 'Sort lane 07', icon: 'location_on' }
+      ];
+      const workers = [
+        { name: 'João Pereira', initials: 'JP', id: 'A-1042', task: 'Working on Order #4821', detail: 'Payment mismatch · Pack station 12', status: 'Working', minutes: 7 },
+        { name: 'Priya Shah', initials: 'PS', id: 'A-1088', task: 'Working on Order #4798', detail: 'Compliance review · Outbound Zone B', status: 'Working', minutes: 12 },
+        { name: 'Marcus Chen', initials: 'MC', id: 'A-1021', task: 'Working on Order #4810', detail: 'Short pick · Pick module 2', status: 'Working', minutes: 19 },
+        { name: 'Elena Garcia', initials: 'EG', id: 'A-1115', task: 'Available for dispatch', detail: 'No active task', status: 'Available', minutes: null },
+        { name: 'Sam Wilson', initials: 'SW', id: 'A-1076', task: 'Working on Order #4752', detail: 'Address validation · Sort lane 03', status: 'Working', minutes: 38 },
+        { name: 'Taylor Brooks', initials: 'TB', id: 'A-1094', task: 'On scheduled break', detail: 'Returns at 22:35', status: 'On break', minutes: null }
+      ];
+      const state = { filter: 'all', query: '', role: 'operator', completed: 12, claimed: new Set(), dark: false, contrast: false, autoDispatch: false, sound: false, previousCritical: new Set() };
+      const $ = (s, root = document) => root.querySelector(s);
+      const $$ = (s, root = document) => [...root.querySelectorAll(s)];
+      const escapeHTML = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+      const categoryNames = { payment: 'Payment', compliance: 'Compliance', inventory: 'Inventory' };
+      const loadPrefs = () => {
+        try { return JSON.parse(localStorage.getItem('amazonOpsPrefs') || '{}'); } catch (_) { return {}; }
+      };
+      const prefs = loadPrefs();
+      state.dark = !!prefs.dark; state.contrast = !!prefs.contrast; state.autoDispatch = !!prefs.autoDispatch; state.sound = !!prefs.sound;
+      const root = document.documentElement;
+      function applyPrefs() {
+        root.dataset.theme = state.dark ? 'dark' : 'light';
+        root.dataset.contrast = state.contrast ? 'high' : 'normal';
+        $('#dark-toggle').checked = state.dark;
+        $('#contrast-toggle').checked = state.contrast;
+        $('#dispatch-toggle').checked = state.autoDispatch;
+        $('#sound-toggle').checked = state.sound;
+        try { localStorage.setItem('amazonOpsPrefs', JSON.stringify({ dark: state.dark, contrast: state.contrast, autoDispatch: state.autoDispatch, sound: state.sound })); } catch (_) { /* Storage may be unavailable in private browsing. */ }
+      }
+      function toast(message, icon = 'check_circle') {
+        const item = document.createElement('div'); item.className = 'toast'; item.setAttribute('role', 'status');
+        item.innerHTML = `<span class="material-symbols-outlined" aria-hidden="true">${icon}</span><span>${escapeHTML(message)}</span>`;
+        $('#toast-region').append(item); window.setTimeout(() => item.remove(), 4200);
+      }
+      function slaFor(task) {
+        if (task.due < 15) return { cls: 'critical', text: `Due in ${task.due} min`, icon: 'error' };
+        if (task.due < 30) return { cls: 'warning', text: `Due in ${task.due} min`, icon: 'warning' };
+        return { cls: 'ok', text: `Due in ${task.due} min`, icon: 'schedule' };
+      }
+      function visibleTasks() {
+        return tasks.filter(t => !t.done && (state.filter === 'all' || t.category === state.filter) && (!state.query || `${t.id} ${t.order} ${t.title} ${t.description}`.toLowerCase().includes(state.query))).sort((a, b) => a.due - b.due);
+      }
+      function renderQueue() {
+        const open = tasks.filter(t => !t.done);
+        $('#open-count').textContent = open.length;
+        $('#critical-count').textContent = open.filter(t => t.due < 15).length;
+        $('#completed-count').textContent = state.completed;
+        $('#blocked-metric').textContent = open.length;
+        const list = $('#task-list'); const shown = visibleTasks();
+        $('#queue-result-count').textContent = `${shown.length} ${shown.length === 1 ? 'task' : 'tasks'} shown`;
+        if (!shown.length) {
+          list.innerHTML = `<div class="empty-state"><span class="material-symbols-outlined" aria-hidden="true">task_alt</span><strong>No tasks match this view</strong>Try another filter or search term.</div>`;
+          return;
+        }
+        list.innerHTML = shown.map(task => {
+          const sla = slaFor(task); const progress = Math.max(5, Math.min(100, Math.round((task.due / 90) * 100)));
+          const claimed = state.claimed.has(task.id);
+          const actionText = claimed ? 'In Progress by You' : 'Take ownership';
+          return `<article class="task-card" role="listitem" aria-label="${escapeHTML(task.title)}, order ${escapeHTML(task.order)}, ${sla.text}">
+            <div class="task-main"><div class="task-topline"><span class="task-id">${escapeHTML(task.id)} · ${escapeHTML(task.order)}</span><span class="sla-badge ${sla.cls}"><span class="material-symbols-outlined" aria-hidden="true">${sla.icon}</span>${sla.text}</span></div><h2 class="task-title">${escapeHTML(task.title)}</h2><p class="task-description">${escapeHTML(task.description)}</p><div class="task-details"><span><span class="material-symbols-outlined" aria-hidden="true">${task.icon}</span>${escapeHTML(categoryNames[task.category])}</span><span><span class="material-symbols-outlined" aria-hidden="true">person</span>${escapeHTML(task.customer)}</span><span><span class="material-symbols-outlined" aria-hidden="true">location_on</span>${escapeHTML(task.location)}</span><span><span class="material-symbols-outlined" aria-hidden="true">history</span>${escapeHTML(task.age)}</span></div></div>
+            <div class="sla-box sla-${sla.cls}" aria-label="SLA ${sla.text}"><div class="sla-label"><span class="material-symbols-outlined" aria-hidden="true">${sla.icon}</span><span>${sla.text}</span></div><div class="sla-progress" role="progressbar" aria-label="Time remaining for ${escapeHTML(task.order)}" aria-valuemin="0" aria-valuemax="90" aria-valuenow="${task.due}"><span style="width:${progress}%"></span></div></div>
+            <div class="task-actions"><button class="button ${claimed ? 'tonal' : ''}" type="button" data-claim="${escapeHTML(task.id)}" ${claimed ? 'aria-pressed="true"' : ''}><span class="material-symbols-outlined" aria-hidden="true">${claimed ? 'check_circle' : 'play_arrow'}</span>${actionText}</button><span class="hint-inline"><span>Why this task?</span><button class="hint-button" type="button" aria-label="Why this task is prioritized" data-hint="task" data-task="${escapeHTML(task.id)}"><span class="material-symbols-outlined" aria-hidden="true">lightbulb</span></button></span></div>
+          </article>`;
+        }).join('');
+      }
+      function renderWorkers() {
+        const list = $('#worker-list');
+        list.innerHTML = workers.map(w => {
+          const cls = w.status === 'Working' ? '' : w.status === 'Available' ? 'status-idle' : 'status-break';
+          const statusText = w.status === 'Working' ? 'Working' : w.status;
+          const sla = w.minutes === null ? '—' : `SLA due in ${w.minutes} min`;
+          return `<div class="worker-row" role="listitem"><div class="worker-person"><span class="worker-avatar" aria-hidden="true">${escapeHTML(w.initials)}</span><div><div class="worker-name">${escapeHTML(w.name)}</div><div class="worker-id">Associate ${escapeHTML(w.id)}</div></div></div><div class="worker-task">${escapeHTML(w.task)}<small>${escapeHTML(w.detail)}</small></div><span class="status-pill ${cls}"><span class="live-dot" aria-hidden="true"></span>${escapeHTML(statusText)}</span><div class="worker-sla">${sla}</div></div>`;
+        }).join('');
+        const open = tasks.filter(t => !t.done);
+        $('#manager-summary').innerHTML = `<article class="summary-card"><div class="summary-label">Active associates</div><div class="summary-value">${workers.filter(w => w.status === 'Working').length}</div><div class="summary-note">Currently assigned work</div></article><article class="summary-card"><div class="summary-label">Available</div><div class="summary-value">${workers.filter(w => w.status === 'Available').length}</div><div class="summary-note">Ready for next dispatch</div></article><article class="summary-card"><div class="summary-label">Critical queue</div><div class="summary-value">${open.filter(t => t.due < 15).length}</div><div class="summary-note">Tasks due in under 15 min</div></article><article class="summary-card"><div class="summary-label">Open tasks</div><div class="summary-value">${open.length}</div><div class="summary-note">Across all categories</div></article>`;
+      }
+      function renderBars() {
+        const open = tasks.filter(t => !t.done); const counts = Object.keys(categoryNames).map(key => [categoryNames[key], open.filter(t => t.category === key).length]);
+        const max = Math.max(1, ...counts.map(x => x[1]));
+        $('#exception-bars').innerHTML = counts.map(([name, count]) => `<div class="bar-row"><span>${name}</span><span class="bar-track" role="progressbar" aria-label="${name} exceptions" aria-valuemin="0" aria-valuemax="${max}" aria-valuenow="${count}"><span class="bar-fill" style="width:${Math.round(count / max * 100)}%"></span></span><span class="bar-count">${count}</span></div>`).join('') + '<p class="report-note">Counts update when tasks are resolved in the queue.</p>';
+      }
+      function setUpdated() { $('#last-refreshed').textContent = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit' }).format(new Date()); }
+      function renderAll() { renderQueue(); renderWorkers(); renderBars(); setUpdated(); }
+      function switchPage(page) {
+        $$('.page').forEach(el => { el.hidden = el.id !== `page-${page}`; });
+        $$('.nav-item[data-page]').forEach(btn => { if (btn.dataset.page === page) btn.setAttribute('aria-current', 'page'); else btn.removeAttribute('aria-current'); });
+        document.title = `${page[0].toUpperCase()}${page.slice(1)} | Amazon OPS`;
+        if (page === 'queue') $('#queue-title').focus?.({ preventScroll: true });
+      }
+      function switchRole(role) {
+        state.role = role;
+        $('#operator-view').hidden = role !== 'operator'; $('#manager-view').hidden = role !== 'manager';
+        $('#queue-description').textContent = role === 'manager' ? 'Understand team allocation and queue health without adding noise to operator workflows.' : 'One clear next action, ranked by SLA risk. Focus on the work that needs you most.';
+        $('#queue-title').textContent = role === 'manager' ? 'Team overview' : 'Priority queue';
+        $('#queue-title').setAttribute('tabindex', '-1');
+        if (role === 'manager') renderWorkers(); else renderQueue();
+        toast(role === 'manager' ? 'Manager view enabled.' : 'Operator view enabled.', 'visibility');
+      }
+      const hints = {
+        queue: ['A single ranked queue', '<p>Fragmented work surfaces increase context switching. This queue combines actionable exceptions and sorts them by time remaining to SLA, so the most time-sensitive work is easiest to find.</p><p>Urgency is communicated with explicit time text, a familiar icon, and a color treatment. The information remains understandable without color perception.</p>'],
+        task: ['Why this task is prioritized', '<p>Tasks are ordered by their remaining SLA time. The countdown is shown as text as well as a progress indicator; color is supplementary, not the only signal.</p><p>Taking ownership records the task as in progress for this prototype.</p>'],
+        manager: ['A separate manager view', '<p>Managers need to see team allocation, while operators need an uncluttered place to complete work. The role switcher provides a dedicated team overview with current assignments and queue health.</p>'],
+        reports: ['Metrics with operational context', '<p>Throughput, SLA adherence, resolution time, and blocked orders help evaluate the shift. Category bars show which exception types are currently represented in the queue.</p><p>This prototype uses illustrative sample metrics; CSV export provides a task-level snapshot.</p>'],
+        settings: ['Designed for variable work environments', '<p>Dark mode and high contrast adapt the display to lighting and visibility needs. Keyboard focus is visible independently of the selected theme. Sound alerts are opt-in and should supplement, never replace, visual and text alerts.</p>'],
+        challenge: ['Design rationale', '<p>This concept treats priority and ownership as the core workflow. The operator sees a ranked, actionable list; the manager sees a separate team allocation view. Supporting reports and personal settings remain close at hand.</p>'],
+        about: ['About this prototype', '<p>Amazon OPS Fulfillment Control Center is an interactive UX challenge prototype. Queue records, team assignments, and performance metrics are sample data and are not connected to production systems.</p><p>Use the role switcher to explore the operator and manager experiences. Preferences are stored locally in this browser.</p>']
+      };
+      let lastFocus = null;
+      function openDialog(key, taskId) {
+        const [title, html] = hints[key] || hints.about;
+        const description = key === 'task' && taskId ? `<p><strong>${escapeHTML(taskId)}</strong> is near the top because of its remaining SLA time.</p>${html}` : html;
+        $('#dialog-title').textContent = title; $('#dialog-description').innerHTML = description;
+        const backdrop = $('#dialog-backdrop'); lastFocus = document.activeElement; backdrop.hidden = false; $('#dialog-close').focus();
+      }
+      function closeDialog() { $('#dialog-backdrop').hidden = true; if (lastFocus && lastFocus.isConnected) lastFocus.focus(); }
+      function playAlert() {
+        if (!state.sound) return;
+        try { const ctx = new (window.AudioContext || window.webkitAudioContext)(); const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.frequency.value = 660; gain.gain.setValueAtTime(.06, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + .22); osc.start(); osc.stop(ctx.currentTime + .22); } catch (_) { /* Audio may be blocked by browser policy. */ }
+      }
+      function claimTask(id) {
+        const task = tasks.find(t => t.id === id); if (!task || task.done) return;
+        if (!state.claimed.has(id)) { state.claimed.add(id); toast(`${task.order} is now In Progress by You.`); }
+        else {
+          task.done = true; state.claimed.delete(id); state.completed += 1;
+          toast(`${task.order} marked resolved.`, 'task_alt');
+          if (state.autoDispatch) { const next = visibleTasks().find(t => !state.claimed.has(t.id)); if (next) { state.claimed.add(next.id); toast(`Next task dispatched: ${next.order}.`, 'bolt'); } }
+        }
+        renderAll();
+      }
+      function exportCSV() {
+        const rows = [['Task ID', 'Order', 'Category', 'Issue', 'Customer tier', 'SLA minutes remaining', 'Location', 'Status']];
+        tasks.forEach(t => rows.push([t.id, t.order, categoryNames[t.category], t.title, t.customer, t.due, t.location, t.done ? 'Resolved' : state.claimed.has(t.id) ? 'In Progress by You' : 'Open']));
+        const csv = rows.map(row => row.map(value => `"${String(value).replace(/"/g, '""')}"`).join(',')).join('\r\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' }); const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = 'amazon-ops-queue-report.csv'; document.body.append(a); a.click(); a.remove(); URL.revokeObjectURL(url); toast('CSV report downloaded.', 'download');
+      }
+      $$('.nav-item[data-page]').forEach(btn => btn.addEventListener('click', () => switchPage(btn.dataset.page)));
+      $('#nav-help').addEventListener('click', () => openDialog('about'));
+      $('#role-select').addEventListener('change', e => switchRole(e.target.value));
+      $('#filter-chips').addEventListener('click', e => { const chip = e.target.closest('[data-filter]'); if (!chip) return; state.filter = chip.dataset.filter; $$('.chip', $('#filter-chips')).forEach(btn => { const selected = btn === chip; btn.setAttribute('aria-checked', String(selected)); btn.setAttribute('aria-pressed', String(selected)); }); renderQueue(); });
+      $('#filter-chips').addEventListener('keydown', e => { if (!['ArrowRight', 'ArrowLeft'].includes(e.key)) return; const chips = $$('.chip', $('#filter-chips')); const current = chips.indexOf(document.activeElement); const next = (current + (e.key === 'ArrowRight' ? 1 : -1) + chips.length) % chips.length; e.preventDefault(); chips[next].focus(); chips[next].click(); });
+      $('#queue-search').addEventListener('input', e => { state.query = e.target.value.trim().toLowerCase(); renderQueue(); });
+      $('#task-list').addEventListener('click', e => { const claim = e.target.closest('[data-claim]'); const hint = e.target.closest('[data-hint]'); if (claim) claimTask(claim.dataset.claim); if (hint) openDialog(hint.dataset.hint, hint.dataset.task); });
+      $$('.hint-button').forEach(btn => btn.addEventListener('click', () => openDialog(btn.dataset.hint, btn.dataset.task)));
+      $('#refresh-button').addEventListener('click', () => { renderAll(); toast('Queue refreshed with the latest prototype data.', 'refresh'); });
+      $('#export-csv').addEventListener('click', exportCSV);
+      $('#dark-toggle').addEventListener('change', e => { state.dark = e.target.checked; applyPrefs(); toast(`Dark mode ${state.dark ? 'on' : 'off'}.`, 'dark_mode'); });
+      $('#contrast-toggle').addEventListener('change', e => { state.contrast = e.target.checked; applyPrefs(); toast(`High contrast ${state.contrast ? 'on' : 'off'}.`, 'contrast'); });
+      $('#dispatch-toggle').addEventListener('change', e => { state.autoDispatch = e.target.checked; applyPrefs(); toast(`Auto-dispatch ${state.autoDispatch ? 'enabled' : 'disabled'}.`, 'bolt'); });
+      $('#sound-toggle').addEventListener('change', e => { state.sound = e.target.checked; applyPrefs(); toast(`Critical SLA sound alerts ${state.sound ? 'enabled' : 'disabled'}.`, 'notifications_active'); if (state.sound) playAlert(); });
+      $('#dialog-close').addEventListener('click', closeDialog); $('#dialog-done').addEventListener('click', closeDialog);
+      $('#dialog-backdrop').addEventListener('click', e => { if (e.target === $('#dialog-backdrop')) closeDialog(); });
+      document.addEventListener('keydown', e => {
+        const backdrop = $('#dialog-backdrop'); if (backdrop.hidden) return;
+        if (e.key === 'Escape') { e.preventDefault(); closeDialog(); }
+        if (e.key === 'Tab') { const focusables = $$('button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), [tabindex="0"]', $('.dialog')); const first = focusables[0], last = focusables[focusables.length - 1]; if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); } }
+      });
+      applyPrefs(); renderAll();
+      // Simulated live refresh keeps remaining SLA time legible in a long-running demo.
+      window.setInterval(() => {
+        tasks.filter(t => !t.done && t.due > 0).forEach(t => t.due = Math.max(0, t.due - 1));
+        const nowCritical = new Set(tasks.filter(t => !t.done && t.due < 15).map(t => t.id));
+        if ([...nowCritical].some(id => !state.previousCritical.has(id))) playAlert();
+        state.previousCritical = nowCritical;
+        renderAll();
+      }, 60000);
+      state.previousCritical = new Set(tasks.filter(t => !t.done && t.due < 15).map(t => t.id));
+    })();
+  </script>
+</body>
+</html>
