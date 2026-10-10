@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Amazon OPS - Fulfillment Control Center</title>
+  <!-- Material Symbols & Google Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <style>
+    /* ==========================================================================
+       MATERIAL DESIGN 3 TOKENS & SYSTEM
+       ========================================================================== */
+    :root {
+      --md-sys-color-primary: #00639b;
+      --md-sys-color-on-primary: #ffffff;
+      --md-sys-color-primary-container: #ce2a00;
+      --md-sys-color-on-primary-container: #ffffff;
+
+      --md-sys-color-surface: #f8f9fa;
+      --md-sys-color-surface-container-lowest: #ffffff;
+      --md-sys-color-surface-container: #f1f3f4;
+      --md-sys-color-surface-container-high: #e8eaed;
+      --md-sys-color-on-surface: #1f1f1f;
+      --md-sys-color-on-surface-variant: #444746;
+      --md-sys-color-outline: #747775;
+      --md-sys-color-outline-variant: #c4c7c5;
+
+      /* Urgency Tokens */
+      --md-sys-color-error: #ba1a1a;
+      --md-sys-color-error-container: #ffdad6;
+      --md-sys-color-on-error-container: #410002;
+
+      --md-sys-color-warning: #7d5200;
+      --md-sys-color-warning-container: #ffdea8;
+      --md-sys-color-on-warning-container: #281800;
+
+      --md-sys-color-success: #006e1c;
+
+      /* Hint Token */
+      --ux-hint-container: #eaddff;
+      --ux-on-hint-container: #21005d;
+
+      --md-sys-typescale-font: 'Roboto', -apple-system, sans-serif;
+      --md-elevation-1: 0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
+      --md-elevation-2: 0px 2px 6px 2px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
+      --md-radius-s: 8px;
+      --md-radius-m: 12px;
+      --md-radius-l: 16px;
+      --md-radius-full: 9999px;
+
+      --border-high-contrast: transparent;
+    }
+
+    /* Dark Mode Override */
+    body.dark-mode {
+      --md-sys-color-surface: #121316;
+      --md-sys-color-surface-container-lowest: #1e1f23;
+      --md-sys-color-surface-container: #282a2f;
+      --md-sys-color-surface-container-high: #33353b;
+      --md-sys-color-on-surface: #e2e2e6;
+      --md-sys-color-on-surface-variant: #c4c7c5;
+      --md-sys-color-outline: #8e918f;
+      --md-sys-color-outline-variant: #444746;
+      --md-sys-color-primary: #9ecaff;
+      --md-sys-color-on-primary: #003254;
+      --ux-hint-container: #4f378b;
+      --ux-on-hint-container: #eaddff;
+    }
+
+    /* High Contrast Mode (WCAG AAA Strict) */
+    body.high-contrast {
+      --md-sys-color-surface: #ffffff !important;
+      --md-sys-color-surface-container-lowest: #ffffff !important;
+      --md-sys-color-on-surface: #000000 !important;
+      --md-sys-color-on-surface-variant: #000000 !important;
+      --md-sys-color-outline: #000000 !important;
+      --md-sys-color-outline-variant: #000000 !important;
+      --md-sys-color-primary: #000000 !important;
+      --md-sys-color-on-primary: #ffffff !important;
+      --border-high-contrast: 2px solid #000000 !important;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--md-sys-typescale-font);
+      background-color: var(--md-sys-color-surface);
+      color: var(--md-sys-color-on-surface);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    :focus-visible {
+      outline: 4px solid #febd69;
+      outline-offset: 3px;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      background-color: #131921;
+      color: #ffffff;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      box-shadow: var(--md-elevation-1);
+      z-index: 10;
+    }
+
+    .top-bar .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 1.25rem;
+    }
+
+    .top-bar .role-switcher {
+      display: flex;
+      align-items: center;
+      background: rgba(255,255,255,0.1);
+      padding: 4px;
+      border-radius: var(--md-radius-full);
+      gap: 4px;
+      border: var(--border-high-contrast);
+    }
+
+    .role-btn {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      padding: 6px 16px;
+      border-radius: var(--md-radius-full);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .role-btn.active {
+      background: #febd69;
+      color: #111111;
+      font-weight: 700;
+    }
+
+    /* App Structure */
+    .app-container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .nav-rail {
+      width: 80px;
+      background-color: var(--md-sys-color-surface-container-lowest);
+      border-right: 1px solid var(--md-sys-color-outline-variant);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 16px;
+      gap: 12px;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      background: none;
+      border: var(--border-high-contrast);
+      color: var(--md-sys-color-on-surface-variant);
+      font-size: 0.75rem;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: var(--md-radius-m);
+      width: 68px;
+    }
+
+    .nav-item.active {
+      background-color: var(--md-sys-color-surface-container-high);
+      color: var(--md-sys-color-on-surface);
+      font-weight: bold;
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .header-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* UX Hint Icon Button */
+    .ux-hint-icon-btn {
+      background-color: var(--ux-hint-container);
+      color: var(--ux-on-hint-container);
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.15s ease, background-color 0.2s;
+    }
+
+    .ux-hint-icon-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      background: var(--md-sys-color-surface-container-lowest);
+      border: 1px solid var(--md-sys-color-outline);
+      color: var(--md-sys-color-on-surface);
+      border-radius: var(--md-radius-s);
+      padding: 6px 16px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .chip.selected {
+      background-color: #e8f0fe;
+      border-color: var(--md-sys-color-primary);
+      color: var(--md-sys-color-primary);
+      font-weight: 700;
+    }
+
+    .queue-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .task-card {
+      background-color: var(--md-sys-color-surface-container-lowest);
+      border-radius: var(--md-radius-m);
+      padding: 16px 20px;
+      box-shadow: var(--md-elevation-1);
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 16px;
+      border-left: 6px solid transparent;
+      border: var(--border-high-contrast);
+    }
+
+    .task-card.priority-critical { border-left: 6px solid var(--md-sys-color-error); }
+    .task-card.priority-high { border-left: 6px solid var(--md-sys-color-warning); }
+    .task-card.priority-medium { border-left: 6px solid var(--md-sys-color-primary); }
+
+    .badge-sla {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      border-radius: var(--md-radius-s);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      border: var(--border-high-contrast);
+    }
+
+    .priority-critical .badge-sla {
+      background-color: var(--md-sys-color-error-container);
+      color: var(--md-sys-color-on-error-container);
+    }
+
+    .priority-high .badge-sla {
+      background-color: var(--md-sys-color-warning-container);
+      color: var(--md-sys-color-on-warning-container);
+    }
+
+    .action-btn {
+      background-color: var(--md-sys-color-primary);
+      color: var(--md-sys-color-on-primary);
+      border: var(--border-high-contrast);
+      padding: 10px 20px;
+      border-radius: var(--md-radius-full);
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .action-btn.secondary {
+      background-color: var(--md-sys-color-surface-container-high);
+      color: var(--md-sys-color-on-surface);
+    }
+
+    /* Reports Metrics Grid */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .metric-card {
+      background: var(--md-sys-color-surface-container-lowest);
+      padding: 20px;
+      border-radius: var(--md-radius-m);
+      box-shadow: var(--md-elevation-1);
+      border: var(--border-high-contrast);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .metric-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--md-sys-color-primary);
+    }
+
+    .manager-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .worker-card {
+      background: var(--md-sys-color-surface-container-lowest);
+      padding: 16px;
+      border-radius: var(--md-radius-m);
+      box-shadow: var(--md-elevation-1);
+      border: var(--border-high-contrast);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .status-active { background-color: var(--md-sys-color-success); }
+    .status-busy { background-color: var(--md-sys-color-warning); }
+
+    .settings-section {
+      background: var(--md-sys-color-surface-container-lowest);
+      padding: 24px;
+      border-radius: var(--md-radius-m);
+      box-shadow: var(--md-elevation-1);
+      border: var(--border-high-contrast);
+      margin-bottom: 16px;
+    }
+
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    }
+
+    /* Modal Component */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background-color: var(--md-sys-color-surface-container-lowest);
+      color: var(--md-sys-color-on-surface);
+      border-radius: var(--md-radius-l);
+      padding: 28px;
+      max-width: 520px;
+      width: 90%;
+      box-shadow: var(--md-elevation-2);
+      border: var(--border-high-contrast);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .close-btn {
+      background: transparent;
+      border: none;
+      color: var(--md-sys-color-on-surface);
+      cursor: pointer;
+      border-radius: 50%;
+      padding: 4px;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    @media (max-width: 768px) {
+      .app-container { flex-direction: column; }
+      .nav-rail {
+        width: 100%;
+        height: 56px;
+        flex-direction: row;
+        justify-content: space-around;
+        padding-top: 0;
+        border-right: none;
+        border-top: 1px solid var(--md-sys-color-outline-variant);
+        order: 2;
+      }
+      .task-card { grid-template-columns: 1fr; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="top-bar" role="banner">
+    <div class="brand">
+      <span class="material-symbols-outlined" aria-hidden="true">inventory_2</span>
+      <span>Amazon OPS Center</span>
+    </div>
+    
+    <div class="role-switcher" role="radiogroup" aria-label="Role View Selector">
+      <button class="role-btn active" id="btn-operator" role="radio" aria-checked="true" onclick="switchRoleView('operator')">
+        Operator View
+      </button>
+      <button class="role-btn" id="btn-manager" role="radio" aria-checked="false" onclick="switchRoleView('manager')">
+        Manager View
+      </button>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <!-- Navigation Rail -->
+    <nav class="nav-rail" aria-label="Main Navigation">
+      <button class="nav-item active" id="nav-queue" onclick="navigateTo('queue-view', this)">
+        <span class="material-symbols-outlined" aria-hidden="true">format_list_bulleted</span>
+        Queue
+      </button>
+      <button class="nav-item" id="nav-reports" onclick="navigateTo('reports-view', this)">
+        <span class="material-symbols-outlined" aria-hidden="true">analytics</span>
+        Reports
+      </button>
+      <button class="nav-item" id="nav-settings" onclick="navigateTo('settings-view', this)">
+        <span class="material-symbols-outlined" aria-hidden="true">settings</span>
+        Settings
+      </button>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- 1. QUEUE PAGE -->
+      <section id="queue-view" class="content-page">
+        <!-- Operator Queue Section -->
+        <div id="operator-queue-section">
+          <div class="dashboard-header">
+            <div class="header-title-group">
+              <h1 style="font-size: 1.5rem;">Ranked Action Queue</h1>
+              <button class="ux-hint-icon-btn" onclick="openUxModal('hint-queue')" title="UI Rationale Explanation">
+                <span class="material-symbols-outlined" style="font-size: 18px;">lightbulb</span>
+              </button>
+            </div>
+          </div>
+
+          <p style="color: var(--md-sys-color-on-surface-variant); font-size: 0.875rem; margin-top: 4px;">
+            Single ranked queue strictly ordered by SLA expiration urgency.
+          </p>
+
+          <div class="filter-group" style="margin: 16px 0;" role="tablist">
+            <button class="chip selected" role="tab" aria-selected="true" onclick="filterQueue('all', this)">All (4)</button>
+            <button class="chip" role="tab" aria-selected="false" onclick="filterQueue('critical', this)">CRITICAL (SLA &lt; 30m)</button>
+            <button class="chip" role="tab" aria-selected="false" onclick="filterQueue('order', this)">Orders</button>
+          </div>
+
+          <div id="queue-list" class="queue-container" role="list"></div>
+        </div>
+
+        <!-- Manager Capacity Section -->
+        <div id="manager-capacity-section" style="display: none;">
+          <div class="dashboard-header" style="margin-bottom: 20px;">
+            <div class="header-title-group">
+              <h1 style="font-size: 1.5rem;">Real-time Team Capacity &amp; Allocation</h1>
+              <button class="ux-hint-icon-btn" onclick="openUxModal('hint-manager')" title="UI Rationale Explanation">
+                <span class="material-symbols-outlined" style="font-size: 18px;">lightbulb</span>
+              </button>
+            </div>
+          </div>
+          <div class="manager-grid" id="worker-grid"></div>
+        </div>
+      </section>
+
+      <!-- 2. REPORTS PAGE -->
+      <section id="reports-view" class="content-page" style="display: none;">
+        <div class="dashboard-header" style="margin-bottom: 20px;">
+          <div class="header-title-group">
+            <h1 style="font-size: 1.5rem;">Reports &amp; Operational Metrics</h1>
+          </div>
+          <button class="action-btn secondary" onclick="exportReportData()">
+            <span class="material-symbols-outlined" aria-hidden="true">download</span>
+            Export CSV
+          </button>
+        </div>
+
+        <!-- Metrics Grid -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <span style="font-size: 0.875rem; color: var(--md-sys-color-on-surface-variant);">Personal Throughput</span>
+            <span class="metric-value">28</span>
+            <span style="font-size: 0.75rem; color: var(--md-sys-color-success);">+12% above shift avg</span>
+          </div>
+          <div class="metric-card">
+            <span style="font-size: 0.875rem; color: var(--md-sys-color-on-surface-variant);">SLA Adherence</span>
+            <span class="metric-value">98.4%</span>
+            <span style="font-size: 0.75rem; color: var(--md-sys-color-success);">Target: &gt; 95%</span>
+          </div>
+          <div class="metric-card">
+            <span style="font-size: 0.875rem; color: var(--md-sys-color-on-surface-variant);">Avg Resolution Time</span>
+            <span class="metric-value">4.2 min</span>
+            <span style="font-size: 0.75rem; color: var(--md-sys-color-on-surface-variant);">-30s on Mismatches</span>
+          </div>
+          <div class="metric-card">
+            <span style="font-size: 0.875rem; color: var(--md-sys-color-on-surface-variant);">Blocked Orders / Bottlenecks</span>
+            <span class="metric-value" style="color: var(--md-sys-color-error);">3</span>
+            <span style="font-size: 0.75rem; color: var(--md-sys-color-error);">Immediate action required</span>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3>Breakdown by Exception Category</h3>
+          <p style="font-size: 0.875rem; color: var(--md-sys-color-on-surface-variant); margin-bottom: 16px;">
+            Distribution of resolved tasks in the current shift.
+          </p>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.875rem; margin-bottom: 4px;">
+                <span>Payment Mismatches (Orders)</span>
+                <strong>14 resolved</strong>
+              </div>
+              <div style="background: var(--md-sys-color-surface-container-high); height: 8px; border-radius: 4px;">
+                <div style="background: var(--md-sys-color-primary); width: 50%; height: 100%; border-radius: 4px;"></div>
+              </div>
+            </div>
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.875rem; margin-bottom: 4px;">
+                <span>Compliance &amp; Filings</span>
+                <strong>8 resolved</strong>
+              </div>
+              <div style="background: var(--md-sys-color-surface-container-high); height: 8px; border-radius: 4px;">
+                <div style="background: var(--md-sys-color-warning); width: 30%; height: 100%; border-radius: 4px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. SETTINGS PAGE -->
+      <section id="settings-view" class="content-page" style="display: none;">
+        <div class="dashboard-header" style="margin-bottom: 20px;">
+          <div class="header-title-group">
+            <h1 style="font-size: 1.5rem;">System Settings &amp; Preferences</h1>
+            <button class="ux-hint-icon-btn" onclick="openUxModal('hint-wcag')" title="UI Rationale Explanation">
+              <span class="material-symbols-outlined" style="font-size: 18px;">lightbulb</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3>Accessibility &amp; Appearance</h3>
+          <div class="settings-group">
+            <div class="setting-item">
+              <div>
+                <strong>Dark Mode</strong>
+                <p style="font-size: 0.8rem; color: var(--md-sys-color-on-surface-variant);">Reduces eye strain in warehouse fulfillment environments.</p>
+              </div>
+              <input type="checkbox" id="toggle-dark" onchange="toggleDarkMode(this.checked)" style="width: 20px; height: 20px;">
+            </div>
+            <div class="setting-item">
+              <div>
+                <strong>High Contrast Mode (WCAG AAA Strict)</strong>
+                <p style="font-size: 0.8rem; color: var(--md-sys-color-on-surface-variant);">Applies rigid solid borders and contrast ratios exceeding 7:1.</p>
+              </div>
+              <input type="checkbox" id="toggle-contrast" onchange="toggleHighContrast(this.checked)" style="width: 20px; height: 20px;">
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3>Workflow &amp; Auto-Dispatch</h3>
+          <div class="settings-group">
+            <div class="setting-item">
+              <div>
+                <strong>Next Task Auto-Dispatch</strong>
+                <p style="font-size: 0.8rem; color: var(--md-sys-color-on-surface-variant);">Automatically assigns the highest critical task upon completing the previous one.</p>
+              </div>
+              <input type="checkbox" checked style="width: 20px; height: 20px;">
+            </div>
+            <div class="setting-item">
+              <div>
+                <strong>Critical SLA Audio Alert (&lt; 15m)</strong>
+                <p style="font-size: 0.8rem; color: var(--md-sys-color-on-surface-variant);">Triggers an acoustic chime when an urgent task enters the queue.</p>
+              </div>
+              <input type="checkbox" checked style="width: 20px; height: 20px;">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div id="aria-announce" class="sr-only" aria-live="polite"></div>
+    </main>
+  </div>
+
+  <!-- UX DECISIONS MODAL -->
+  <div class="modal-backdrop" id="ux-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title-text" onclick="closeUxModalOnBackdrop(event)">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">
+          <span class="material-symbols-outlined" style="color: var(--md-sys-color-primary);">lightbulb</span>
+          <span id="modal-title-text">UI Design Rationale</span>
+        </div>
+        <button class="close-btn" onclick="closeUxModal()" aria-label="Close Modal">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="modal-body" id="modal-body-text" style="font-size: 0.95rem; line-height: 1.5; color: var(--md-sys-color-on-surface-variant);">
+        <!-- Dynamically injected -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // UX Explanations
+    const uxHints = {
+      'hint-queue': {
+        title: "UI Design Rationale: Single Ranked Queue by SLA",
+        content: "Eliminated the fragmented grid layout (Recent Activity, Notifications, Orders). Everything is consolidated into a single sequential queue strictly ranked by SLA expiration urgency. This drastically reduces operator cognitive load and removes guesswork on what to do next."
+      },
+      'hint-ownership': {
+        title: "UI Design Rationale: Instant Ownership Assignment",
+        content: "The primary action button instantly assigns the task to the logged-in operator. This eliminates duplicate effort across fulfillment workers and provides managers with real-time visibility into who is resolving each exception."
+      },
+      'hint-manager': {
+        title: "UI Design Rationale: Real-time Manager Capacity View",
+        content: "The role view switcher allows managers to inspect team throughput, active workers, and operational bottlenecks in real time without cluttering or disrupting the operator's execution workflow."
+      },
+      'hint-wcag': {
+        title: "UI Design Rationale: Accessibility & WCAG Compliance",
+        content: "Task priorities do not rely solely on color. We combine explicit time labels (e.g., SLA due in 12m), standardized Material Symbols icons, 100% keyboard navigation, and High Contrast Mode support for industrial compliance."
+      }
+    };
+
+    // State Data
+    let tasks = [
+      { id: "4821", type: "ORDER", title: "Order #4821 — Payment mismatch, blocking fulfillment", sla: "Due in 12 min", priority: "priority-critical", status: "Unassigned", assignedTo: null },
+      { id: "COMP-102", type: "NOTIFICATION", title: "Compliance alert — Entity annual report filing due", sla: "Due today", priority: "priority-high", status: "In Progress", assignedTo: "Carlos Silva" },
+      { id: "COMM-301", type: "COMMS", title: "Teammate flagged you in 'Client escalation' thread", sla: "3 hours remaining", priority: "priority-medium", status: "Unassigned", assignedTo: null },
+      { id: "4796", type: "ORDER", title: "Order #4796 — Customer requested rush shipping", sla: "Due tomorrow", priority: "priority-medium", status: "Unassigned", assignedTo: null }
+    ];
+
+    const workers = [
+      { name: "João Pereira", status: "Active", task: "Working on Order #4821" },
+      { name: "Carlos Silva", status: "Busy", task: "Reviewing Compliance Alert" },
+      { name: "Ana Souza", status: "Active", task: "Available for assignment" }
+    ];
+
+    // Navigation Logic
+    function navigateTo(pageId, navElement) {
+      document.querySelectorAll('.content-page').forEach(page => page.style.display = 'none');
+      document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+
+      document.getElementById(pageId).style.display = 'block';
+      navElement.classList.add('active');
+    }
+
+    function switchRoleView(role) {
+      const opSec = document.getElementById('operator-queue-section');
+      const mgrSec = document.getElementById('manager-capacity-section');
+      const btnOp = document.getElementById('btn-operator');
+      const btnMgr = document.getElementById('btn-manager');
+
+      if (role === 'operator') {
+        opSec.style.display = 'block';
+        mgrSec.style.display = 'none';
+        btnOp.classList.add('active');
+        btnMgr.classList.remove('active');
+      } else {
+        opSec.style.display = 'none';
+        mgrSec.style.display = 'block';
+        btnMgr.classList.add('active');
+        btnOp.classList.remove('active');
+        renderWorkers();
+      }
+    }
+
+    // Render Logic
+    function renderQueue(filter = 'all') {
+      const container = document.getElementById('queue-list');
+      container.innerHTML = '';
+
+      const filteredTasks = tasks.filter(t => {
+        if (filter === 'critical') return t.priority === 'priority-critical';
+        if (filter === 'order') return t.type === 'ORDER';
+        return true;
+      });
+
+      filteredTasks.forEach(task => {
+        const card = document.createElement('article');
+        card.className = `task-card ${task.priority}`;
+        card.setAttribute('role', 'listitem');
+        
+        card.innerHTML = `
+          <div>
+            <span class="badge-sla">
+              <span class="material-symbols-outlined" style="font-size: 14px;">schedule</span>
+              ${task.sla}
+            </span>
+          </div>
+          <div class="task-details">
+            <h3 style="font-size: 1rem; font-weight:500; margin-bottom: 4px;">[${task.type}] ${task.title}</h3>
+            <div style="font-size: 0.85rem; color: var(--md-sys-color-on-surface-variant); display: flex; gap: 16px;">
+              <span>Status: <strong>${task.status}</strong></span>
+              ${task.assignedTo ? `<span>Assigned to: <strong>${task.assignedTo}</strong></span>` : ''}
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button class="ux-hint-icon-btn" onclick="openUxModal('hint-ownership')" title="UI Rationale Explanation">
+              <span class="material-symbols-outlined" style="font-size: 18px;">lightbulb</span>
+            </button>
+            <button class="action-btn ${task.status === 'In Progress' ? 'secondary' : ''}" onclick="handleTaskAction('${task.id}')">
+              ${task.status === 'In Progress' ? 'Review' : 'Start Task'}
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderWorkers() {
+      const grid = document.getElementById('worker-grid');
+      grid.innerHTML = '';
+
+      workers.forEach(worker => {
+        const card = document.createElement('div');
+        card.className = 'worker-card';
+        const statusClass = worker.status === 'Active' ? 'status-active' : 'status-busy';
+
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>${worker.name}</strong>
+            <span style="font-size: 0.8rem; display: flex; align-items: center; gap: 4px;">
+              <span class="status-dot ${statusClass}"></span> ${worker.status}
+            </span>
+          </div>
+          <p style="font-size: 0.875rem; color: var(--md-sys-color-on-surface-variant); margin-top: 8px;">
+            ${worker.task}
+          </p>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function handleTaskAction(taskId) {
+      const task = tasks.find(t => t.id === taskId);
+      if (task) {
+        task.status = "In Progress";
+        task.assignedTo = "You (Fulfillment Operator)";
+        renderQueue();
+      }
+    }
+
+    function filterQueue(type, element) {
+      document.querySelectorAll('.filter-group .chip').forEach(c => c.classList.remove('selected'));
+      element.classList.add('selected');
+      renderQueue(type);
+    }
+
+    // Modal Handlers
+    function openUxModal(hintKey) {
+      const modal = document.getElementById('ux-modal');
+      const hint = uxHints[hintKey];
+      if (hint) {
+        document.getElementById('modal-title-text').innerText = hint.title;
+        document.getElementById('modal-body-text').innerText = hint.content;
+        modal.classList.add('active');
+      }
+    }
+
+    function closeUxModal() {
+      document.getElementById('ux-modal').classList.remove('active');
+    }
+
+    function closeUxModalOnBackdrop(event) {
+      if (event.target.id === 'ux-modal') {
+        closeUxModal();
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeUxModal();
+    });
+
+    function toggleDarkMode(isDark) {
+      document.body.classList.toggle('dark-mode', isDark);
+    }
+
+    function toggleHighContrast(isHigh) {
+      document.body.classList.toggle('high-contrast', isHigh);
+    }
+
+    function exportReportData() {
+      alert("CSV Report Download initiated successfully!");
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderQueue();
+    });
+  </script>
+</body>
+</html>
