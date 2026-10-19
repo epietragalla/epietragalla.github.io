@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Faz de Conta RPG | Livro-Jogo Solo</title>
+  <!-- Fontes Retrô / Fantasia / Pixel Art -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       1. VARIÁVEIS DE COR E TEMA (PALETA FAZ DE CONTA RPG)
+       ========================================================================== */
+    :root {
+      --bg-dark: #1f1811;
+      --bg-papiro: #f4e8c1;
+      --border-papiro: #7a5230;
+      --border-papiro-dark: #4a3018;
+      --text-main: #331e0b;
+      --gold-primary: #f5ab2b;
+      --gold-hover: #ffd166;
+      --font-pixel: 'Press Start 2P', monospace;
+      --font-pixel-large: 'VT323', monospace;
+      --font-body: 'MedievalSharp', cursive, serif;
+    }
+
+    /* ==========================================================================
+       2. RESET E ESTILOS GERAIS
+       ========================================================================== */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      image-rendering: pixelated;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px;
+    }
+
+    /* ==========================================================================
+       3. CABEÇALHO E UTILITY BAR
+       ========================================================================== */
+    header {
+      width: 100%;
+      max-width: 800px;
+      background-color: #2e1d11;
+      border: 4px solid var(--border-papiro);
+      box-shadow: 0 4px 0 #000;
+      padding: 12px 16px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-title {
+      font-family: var(--font-pixel);
+      font-size: 0.85rem;
+      color: var(--gold-primary);
+      text-shadow: 2px 2px #000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-restart {
+      background: #731b1b;
+      color: #fff;
+      border: 2px solid #a32e2e;
+      font-family: var(--font-pixel);
+      font-size: 0.6rem;
+      padding: 8px 12px;
+      cursor: pointer;
+      box-shadow: 0 3px 0 #420f0f;
+      transition: all 0.1s;
+    }
+
+    .btn-restart:active {
+      transform: translateY(3px);
+      box-shadow: 0 0 0;
+    }
+
+    /* ==========================================================================
+       4. FOLHA DE PERGAMINHO / CONTAINER PRINCIPAL
+       ========================================================================== */
+    main {
+      width: 100%;
+      max-width: 800px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .parchment-card {
+      background-color: var(--bg-papiro);
+      border: 6px solid var(--border-papiro);
+      outline: 3px solid var(--border-papiro-dark);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.8), inset 0 0 30px rgba(122, 82, 48, 0.2);
+      padding: 25px 20px;
+      position: relative;
+      margin-bottom: 20px;
+      border-radius: 2px;
+      animation: fadeIn 0.4s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Efeito de bordas rasgadas nas pontas */
+    .parchment-card::before, .parchment-card::after {
+      content: "";
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: var(--bg-dark);
+      border: 3px solid var(--border-papiro);
+    }
+    .parchment-card::before { top: -9px; left: -9px; }
+    .parchment-card::after { bottom: -9px; right: -9px; }
+
+    .reference-badge {
+      font-family: var(--font-pixel);
+      font-size: 0.8rem;
+      color: #fff;
+      background: var(--border-papiro-dark);
+      display: inline-block;
+      padding: 6px 12px;
+      border: 2px solid var(--gold-primary);
+      margin-bottom: 15px;
+      box-shadow: 3px 3px 0 #000;
+    }
+
+    .game-title {
+      font-family: var(--font-pixel);
+      font-size: 1rem;
+      color: var(--border-papiro-dark);
+      margin-bottom: 15px;
+      text-align: center;
+      line-height: 1.5;
+      text-transform: uppercase;
+      border-bottom: 2px dashed var(--border-papiro);
+      padding-bottom: 10px;
+    }
+
+    .story-text {
+      font-size: 1.2rem;
+      line-height: 1.6;
+      color: var(--text-main);
+      margin-bottom: 20px;
+      text-align: justify;
+    }
+
+    .story-text p {
+      margin-bottom: 12px;
+    }
+
+    .story-text h2, .story-text h3, .story-text h4 {
+      font-family: var(--font-pixel);
+      font-size: 0.85rem;
+      color: var(--border-papiro-dark);
+      margin: 15px 0 10px 0;
+      line-height: 1.4;
+    }
+
+    .story-text ol {
+      margin-left: 20px;
+      margin-bottom: 12px;
+    }
+
+    .story-text ol li {
+      margin-bottom: 8px;
+    }
+
+    /* ==========================================================================
+       5. BOTÕES DE ESCOLHA / OPÇÕES
+       ========================================================================== */
+    .options-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .choice-btn {
+      background: var(--gold-primary);
+      color: #2b1803;
+      border: 3px solid var(--border-papiro-dark);
+      font-family: var(--font-body);
+      font-size: 1.15rem;
+      font-weight: bold;
+      padding: 12px 16px;
+      text-align: left;
+      cursor: pointer;
+      box-shadow: 0 5px 0 var(--border-papiro-dark);
+      transition: all 0.1s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .choice-btn:hover {
+      background: var(--gold-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 7px 0 var(--border-papiro-dark);
+    }
+
+    .choice-btn:active {
+      transform: translateY(5px);
+      box-shadow: 0 0 0 var(--border-papiro-dark);
+    }
+
+    .choice-btn .ref-number {
+      font-family: var(--font-pixel);
+      font-size: 0.7rem;
+      background: var(--border-papiro-dark);
+      color: var(--gold-primary);
+      padding: 4px 6px;
+      border-radius: 2px;
+      white-space: nowrap;
+    }
+
+    /* ==========================================================================
+       6. CARD DE HISTÓRICO DE ESCOLHAS
+       ========================================================================== */
+    .history-card {
+      background-color: #2a1f16;
+      border: 4px solid var(--border-papiro);
+      box-shadow: 0 6px 0 #000;
+      padding: 18px;
+      margin-bottom: 20px;
+      color: #f4e8c1;
+    }
+
+    .history-header {
+      font-family: var(--font-pixel);
+      font-size: 0.75rem;
+      color: var(--gold-primary);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 2px dashed var(--border-papiro);
+      padding-bottom: 8px;
+    }
+
+    .history-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 250px;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+
+    .history-list::-webkit-scrollbar {
+      width: 6px;
+    }
+    .history-list::-webkit-scrollbar-thumb {
+      background: var(--border-papiro);
+    }
+
+    .history-item {
+      font-size: 0.95rem;
+      line-height: 1.4;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      background: rgba(0,0,0,0.2);
+      padding: 6px 10px;
+      border-left: 3px solid var(--gold-primary);
+    }
+
+    .history-item .step-num {
+      font-family: var(--font-pixel);
+      font-size: 0.6rem;
+      color: var(--gold-primary);
+      white-space: nowrap;
+      margin-top: 2px;
+    }
+
+    .history-item .step-text {
+      color: #e2d2a4;
+    }
+
+    .history-empty {
+      font-size: 0.95rem;
+      color: #a38d78;
+      font-style: italic;
+    }
+
+    /* ==========================================================================
+       7. RODAPÉ E RESPONSIVIDADE
+       ========================================================================== */
+    footer {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #9c826b;
+      padding: 15px 0;
+      margin-top: auto;
+    }
+
+    @media (max-width: 600px) {
+      header {
+        padding: 10px 12px;
+      }
+
+      .brand-title {
+        font-size: 0.7rem;
+      }
+
+      .parchment-card {
+        padding: 18px 14px;
+      }
+
+      .story-text {
+        font-size: 1.05rem;
+      }
+
+      .choice-btn {
+        font-size: 1rem;
+        padding: 10px 12px;
+      }
+
+      .history-card {
+        padding: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CABEÇALHO FIXO DO SISTEMA -->
+  <header>
+    <div class="brand-title">
+      <span>🎲🗡️</span> FAZ DE CONTA RPG
+    </div>
+    
+    <!-- BOTÃO DE REINICIAR -->
+    <button class="btn-restart" onclick="confirmRestart()">REINICIAR AVENTURA</button>
+  </header>
+
+  <!-- CONTAINER PRINCIPAL -->
+  <main>
+    <!-- CARD DO PERGAMINHO PRINCIPAL -->
+    <div class="parchment-card" id="parchmentCard">
+      <!-- CONTEÚDO INJETADO DINAMICAMENTE VIA JAVASCRIPT -->
+    </div>
+
+    <!-- CARD DO HISTÓRICO DE ESCOLHAS -->
+    <div class="history-card">
+      <div class="history-header">
+        <span>📜</span> HISTÓRICO DA SUA JORNADA
+      </div>
+      <ul class="history-list" id="historyList">
+        <!-- REGISTROS INJETADOS VIA JAVASCRIPT -->
+      </ul>
+    </div>
+  </main>
+
+  <footer>
+    <p>Faz de Conta RPG • Um Grande RPG para Pequeninos!</p>
+  </footer>
+
+  <!-- BANCO DE DADOS DA AVENTURA & LÓGICA DO JOGO -->
+  <script>
+    /* ==========================================================================
+       1. BANCO DE DADOS INTEGRAL DE TODAS AS REFERÊNCIAS (0 A 132)
+       ========================================================================== */
+    const storyData = {
+      0: {
+        title: "AVENTURA SOLO: O DESAFIO MÁGICO DOS ESCOMBROS",
+        text: `<p><em>Um livro-jogo interativo no universo de Faz de Conta RPG</em></p>
+               <hr style="border: 0; border-top: 1px dashed var(--border-papiro); margin: 15px 0;">
+               <h3>Boas-Vindas do Mago Ancião Zaimen</h3>
+               <p><em>"Olá, pequenos e bravos heróis de Vila Velha! Cheguem mais perto, ajeitem suas mochilas e escutem com atenção!"</em></p>
+               <p>O Mago Ancião Zaimen acena carinhosamente com seu cajado, soltando pequenas faíscas douradas no ar. "Como vocês sabem, a Terra da Chuva Miúda está cheia de segredos antigos. Nas ruínas da velha cidade conhecida como Escombros, existem corredores misteriosos criados por Magos Engenhoqueiros de antigamente. Dizem que lá dentro há um labirinto cheio de mecanismos malucos, Insetos Gigantes tontos e baús repleto de doces mágicos, Chuviscos e tesouros lendários!"</p>
+               <p>"Hoje, um de vocês entrará nessa grande jornada solo! Não é preciso dados ou fichas complexas: apenas coragem, atenção e boas escolhas. Lembrem-se sempre: em Faz de Conta RPG, nunca estamos sozinhos e a verdadeira vitória é ajudar os amigos e agir como um verdadeiro herói!"</p>
+               <h3>Dicas de Imersão (Para o Adulto e para o Herói)</h3>
+               <ol>
+                 <li><strong>Criando o Clima:</strong> Ajeite almofadas confortáveis. Diminua ligeiramente as luzes e use a lanterna do celular para simular a iluminação de uma tocha mágica ou pedra brilhante no labirinto.</li>
+                 <li><strong>Sem Morte ou Violência:</strong> Neste jogo não existe morte! Se perder todos os Pontos de Vida, seu herói fica tonto, cansado, lambuzado de lama ou sem pó de fada. Quando isso acontecer, descanse um pouco e recomece do início ou do trecho em que errou!</li>
+                 <li><strong>Mochila do Herói:</strong> Você começa a aventura carregando uma mochila, uma corda de cipó forte, um cantil de suco de mel e sua coragem!</li>
+               </ol>`,
+        choices: [
+          { text: "⚔️ Começar a Aventura Solo!", target: 1 }
+        ]
+      },
+      1: {
+        text: `<p>Você é uma jovem criança aventureira de Vila Velha e está sentado na praça central comendo biscoitos doces e tomando suco de mel. O lugar está animado por conta do Festival da Primavera. Mais adiante, contudo, um velho viajante usando farrapos chama sua atenção: ele parece estar contando histórias sobre um laboratório e labirinto misterioso nos Escombros, povoado por Insetos Gigantes tontos e repleto de doces mágicos e brinquedos lendários.</p>`,
+        choices: [
+          { text: "Se você se aproximar para ouvir a história melhor", target: 38 },
+          { text: "Se achar que a história do velho é apenas uma invenção e prefere observar a praça", target: 69 }
+        ]
+      },
+      2: {
+        text: `<p>Abrindo a porta, você entra em uma salinha bem familiar. Para seu espanto, percebe que o aposento é idêntico ao ponto de partida — a sala redonda com quatro portas numeradas por onde você caiu ao escorregar pelo duto mágico. A passagem no teto continua trancada. Você acabou de entrar pela porta marcada com o número 3. Agora você:</p>`,
+        choices: [
+          { text: "Abrirá a porta com o número 4?", target: 19 },
+          { text: "Abrirá a porta com o número 2?", target: 34 },
+          { text: "Abrirá a porta com o número 1?", target: 78 },
+          { text: "Retornará por onde veio, pela porta número 3?", target: 20 }
+        ]
+      },
+      3: {
+        text: `<p>A porta não está trancada e você a abre. Ela leva a um grande salão onde uma enorme melancia mágica pende do teto — sustentada por uma corda grossa amarrada a um baú de madeira bem embaixo dela.</p>`,
+        choices: [
+          { text: "Se quiser se aproximar do baú com cuidado para investigar", target: 73 },
+          { text: "Se prefere não arriscar acionar uma armadilha e sair pelo corredor", target: 59 },
+          { text: "Se tiver uma chave colorida e quiser procurar algum fecho escondido na parede", target: 131 }
+        ]
+      },
+      4: {
+        text: `<p>Com muito cuidado, você pega a chave colorida pendurada no gancho — e suspira de aliviado ao perceber que nada de ruim acontece. Você guarda a chave na mochila junto com suas coisas.</p>`,
+        choices: [
+          { text: "Se quiser retornar pelo corredor até a sala anterior", target: 8 },
+          { text: "Se quiser examinar o corredor para ver se há alguma passagem secreta", target: 74 }
+        ]
+      },
+      5: {
+        text: `<p>Agora que os insetos saíram da sala, você prossegue em seu caminho. Anda alguns metros pelo corredor até encontrar uma bifurcação em \"T\", com passagens para a esquerda e para a direita.</p>`,
+        choices: [
+          { text: "Se quiser parar e tentar ouvir algum zumbido ou barulho", target: 93 },
+          { text: "Se quiser pegar o caminho da direita", target: 68 },
+          { text: "Se escolher o caminho da esquerda", target: 98 }
+        ]
+      },
+      6: {
+        text: `<p>Você pega o pergaminho e o desenrola. Ele diz em letras brilhantes: <em>\"Até agora você está indo bem, pequeno herói de Vila Velha, mas tenha muito cuidado! Eu o observo com as gemas brilhantes do destino.\"</em></p>`,
+        choices: [
+          { text: "Se quiser tentar remover a gema do olho direito da estátua", target: 33 },
+          { text: "Se quiser remover a gema do olho esquerdo", target: 40 },
+          { text: "Se quiser sair sem mexer nas gemas da estátua", target: 80 }
+        ]
+      },
+      7: {
+        text: `<p>Ao abrir a porta sem dificuldade, você vê que ela leva a um corredor iluminado por pedrinhas reluzentes. O caminho segue e vira para a direita. Um pouco mais à frente, surge uma porta lateral de madeira, mas o corredor prossegue adiante.</p>`,
+        choices: [
+          { text: "Se quer investigar a porta lateral", target: 3 },
+          { text: "Se prefere ignorar a porta e continuar caminhando pelo corredor", target: 59 }
+        ]
+      },
+      8: {
+        text: `<p>Agora que você está de volta à sala inicial de quatro portas, pode escolher qual porta abrir a seguir:</p>`,
+        choices: [
+          { text: "Se você já esteve na sala da estátua do mago", target: 78 },
+          { text: "Se ainda não esteve lá e quer explorá-la agora", target: 19 },
+          { text: "Se prefere tentar a porta de número 2", target: 34 }
+        ]
+      },
+      9: {
+        text: `<p>Só restam alguns caminhos que você ainda não explorou totalmente a partir desta sala.</p>`,
+        choices: [
+          { text: "Se quiser abrir a porta com o número 4", target: 12 },
+          { text: "Se escolher a porta com o número 3", target: 72 },
+          { text: "Se prefere voltar pelo corredor que você já conhece", target: 77 }
+        ]
+      },
+      10: {
+        text: `<p>Percorrendo o corredor novamente, você chega a uma sala onde encontra duas Lagartas de Fogo pequeninas e atrapalhadas. Elas conversam entre si com estalos e chiados engraçados.</p>`,
+        choices: [
+          { text: "Se você usa sua arma de brinquedo ou cajado para assustá-las e fazê-las correr", target: 55 },
+          { text: "Se prefere recuar de mansinho pelo corredor sem fazer barulho", target: 36 },
+          { text: "Se quiser acenar amigavelmente e tentar conversar com elas", target: 101 }
+        ]
+      },
+      11: {
+        text: `<p>Você toma distância e empurra a porta de madeira com força! Encontra as duas criaturinhas espremidas em um canto, tremendo feito gelatina de morango.</p>`,
+        choices: [
+          { text: "Se vai fazer uma pose brava de herói para fazê-las fugir", target: 81 },
+          { text: "Se prefere conversar com elas com calma para pedir informações", target: 101 }
+        ]
+      },
+      12: {
+        text: `<p>Abrindo a porta, você vê um corredor reto que vira para a direita e depois para a esquerda. O corredor termina em uma pequena sala sem saída. Encostado na parede está um lindo <strong>Escudo de Madeira Brilhante</strong>.</p>`,
+        choices: [
+          { text: "Se quiser pegar o escudo para colocar nas costas e se proteger", target: 63 },
+          { text: "Se achar que não precisa carregar mais peso na mochila", target: 32 }
+        ]
+      },
+      13: {
+        text: `<p>Uma das criaturinhas responde envergonhada: <em>\"Nós não sabemos como sair, fomos trazidas pelo vento mágico assim como você e nos perdemos!\"</em></p>`,
+        choices: [
+          { text: "Se você pergunta a elas sobre os perigos encontrados mais à frente", target: 22 },
+          { text: "Se prefere ser generoso e permitir que elas fujam em paz", target: 31 }
+        ]
+      },
+      14: {
+        text: `<p>Você abre a porta lentamente e olha o interior da sala, que parece a oficina de um artesão antigo dos Escombros: há várias estátuas de pedra de animais e pessoas. Nas sombras do fundo, você vê a silhueta de uma figura feminina de costas, sentada sobre um banco de pedra.</p>`,
+        choices: [
+          { text: "Se quiser entrar na sala e tentar falar com ela", target: 112 },
+          { text: "Se prefere fechar a porta de mansinho e continuar pelo corredor", target: 103 }
+        ]
+      },
+      15: {
+        text: `<p>Você abre a porta e vê um simpático Anão Engenhoqueiro com óculos de proteção. Ele segura uma faquinha de madeira e esculpe um pequeno amuleto de árvore. Ele diz: "Entre, pequeno aventureiro! Por apenas algumas moedas de Chuvisco, posso vender-lhe um amuleto mágico que o protegerá no labirinto!"</p>`,
+        choices: [
+          { text: "Se você tem moedas de Chuvisco e quer comprar o artesanato", target: 92 },
+          { text: "Se não tem moedas ou não quer gastar seus Chuviscos", target: 123 }
+        ]
+      },
+      16: {
+        text: `<p>Virando para a esquerda e prosseguindo por alguns metros, o caminho vira novamente para a direita até uma nova bifurcação.</p>`,
+        choices: [
+          { text: "Se quiser pegar o caminho da esquerda", target: 129 },
+          { text: "Se prefere o caminho da direita", target: 56 }
+        ]
+      },
+      17: {
+        text: `<p>Você se aproxima da porta e lê uma placa bem grande que diz: <em>\"Entre sem bater os pés!\"</em></p>`,
+        choices: [
+          { text: "Se quiser seguir as instruções da placa e abrir a porta devagar", target: 54 },
+          { text: "Se acha que pode ser uma armadilha e prefere voltar pelo corredor", target: 46 }
+        ]
+      },
+      18: {
+        text: `<p>Você empunha sua arma de brinquedo e prepara-se para conter o salto da criatura. Um enorme Tigre de Pedra salta sobre você! Sem o equipamento adequado para se defender, a fera mecânica derruba você no chão e o deixa completamente exausto e sem energia. Você precisa descansar! Sua aventura termina aqui.</p>`,
+        choices: [
+          { text: "🔄 Tentar Novamente desde o Início", target: 0 }
+        ]
+      },
+      19: {
+        text: `<p>Abrindo a porta, você caminha até uma salinha. No centro há uma estátua de pedra — muito parecida com o Mago Ancião Zaimen! Os olhos da estátua são rubis vermelhos muito brilhantes e ela segura um pergaminho nas mãos.</p>`,
+        choices: [
+          { text: "Se quer pegar o pergaminho das mãos da estátua", target: 6 },
+          { text: "Se quer tentar remover o rubi do olho direito", target: 33 },
+          { text: "Se quer tentar remover o rubi do olho esquerdo", target: 40 },
+          { text: "Se quer sair da sala sem mexer em nada", target: 80 }
+        ]
+      },
+      20: {
+        text: `<p>O caminho segue mais um pouco, mas termina em uma parede sem saída nos Escombros.</p>`,
+        choices: [
+          { text: "Se quiser dar meia-volta e retornar pelo corredor", target: 51 },
+          { text: "Se quiser examinar as pedras da parede para ver se há um tijolo solto", target: 131 }
+        ]
+      },
+      21: {
+        text: `<p>Você abre a porta trancada usando a chave colorida e, espantado, descobre-se de volta na sala inicial com as quatro portas numeradas! O duto mágico no teto continua lá.</p>`,
+        choices: [
+          { text: "Se quiser tentar uma rota diferente pelas portas numeradas", target: 9 },
+          { text: "Se quiser examinar a chave colorida para ver se ela tem outro uso", target: 131 }
+        ]
+      },
+      22: {
+        text: `<p>A outra criaturinha fala rindo: <em>\"Mais à frente você vai encontrar uma mulher estranha com cobras no lugar dos cabelos! Se você olhar direto nos olhos dela, o feitiço vai transformar você em uma estátua de pedra!\"</em></p>`,
+        choices: [
+          { text: "Se você quer perguntar a elas como encontrar a saída do labirinto", target: 13 },
+          { text: "Se vai deixá-las fugir em paz", target: 31 }
+        ]
+      },
+      23: {
+        text: `<p>Você joga sua corda de cipó. O anão amarra a corda no topo do poço e ajuda você a subir em segurança. Ele diz: <em>\"Sorte a sua ter comprado meu amuleto! Viu como ele dá boa sorte?\"</em></p>`,
+        choices: [
+          { text: "Se você agradece o anão e volta pelo corredor", target: 46 },
+          { text: "Se quer perguntar ao anão se ele conhece algum atalho secreto no labirinto", target: 132 }
+        ]
+      },
+      24: {
+        text: `<p>Você toma distância e dá um chute forte na porta para arrombá-la, mas do outro lado existe apenas um grande buraco cheio de lama escorregadia! Você cai na lama, fica todo lambuzado e não consegue subir. Sua aventura termina aqui por enquanto!</p>`,
+        choices: [
+          { text: "🔄 Tentar Novamente desde o Início", target: 0 }
+        ]
+      },
+      25: {
+        text: `<p>Você se aproxima e pega a caixa de ferro. Dentro dela há um pequeno frasco de vidro contendo um líquido azul brilhante. Você cheira o frasco: o odor é forte, parecido com o de uma Poção Cola ou solvente mágico! Você guarda o frasco na sua mochila.</p>`,
+        choices: [
+          { text: "Se quiser sair da sala e continuar caminhando pelo corredor", target: 104 },
+          { text: "Se prefere examinar o fundo da caixinha de ferro antes de sair", target: 128 }
+        ]
+      },
+      26: {
+        text: `<p>A porta se abre para um longo corredor limpo e vazio. Você caminha por ele prestando atenção em cada detalhe.</p>`,
+        choices: [
+          { text: "Se quiser seguir até encontrar a curva do corredor", target: 111 },
+          { text: "Se preferir fazer um teste de atenção para procurar algo escondido nas paredes", target: 124 }
+        ]
+      },
+      27: {
+        text: `<p>Você caminha pelo corredor com cautela. Súbito, surge à sua frente um jovem bardo com roupas coloridas e rasgadas segurando um alaúde desafinado. Ele se apresenta como Hooks!</p>`,
+        choices: [
+          { text: "Se você deseja conversar amigavelmente com Hooks para saber o que ele faz aqui", target: 58 },
+          { text: "Se prefere não dar atenção e continuar andando sozinho pelo corredor", target: 125 }
+        ]
+      },
+      28: {
+        text: `<p>O bardo Hooks acompanha você pelo corredor cantarolando canções engraçadas. Logo surge uma porta à sua direita e o corredor continua em frente. Vocês dois param para decidir o que fazer:</p>`,
+        choices: [
+          { text: "Se você sugere abrir a porta lateral para explorar a sala", target: 126 },
+          { text: "Se você convence Hooks a ignorar a porta e continuar pelo corredor principal", target: 50 },
+          { text: "Se você pede para Hooks usar a música dele para ver se há algum eco dentro da sala antes de entrar", target: 83 }
+        ]
+      },
+      29: {
+        text: `<p>Desesperadamente, Hooks segura-se na sua mochila enquanto chora! Você faz uma força incrível e levanta a alavanca de metal. O chão inclinado volta ao normal. Hooks agradece choramingando por você ter salvo a vida dele e promete se comportar.</p>`,
+        choices: [
+          { text: "Se você decide continuar explorando o corredor ao lado de Hooks", target: 85 },
+          { text: "Se você prefere pedir para Hooks ficar esperando nesta sala enquanto você avança sozinho", target: 52 }
+        ]
+      },
+      30: {
+        text: `<p>Lembrando-se do aviso das criaturinhas (<em>\"Nunca olhe para ela!\"</em>), você fecha os olhos no exato momento em que a Medusa de Pedra se vira! Guiando-se apenas pelos sons, você usa seu bastão ou espada de brinquedo e dá um golpe certeiro. A criatura solta um grito assustado e cai desmaiada, quebrando o feitiço! Vasculhando a sala, você encontra um belo Colar de Pedras Verdes com uma pérola central.</p>`,
+        choices: [
+          { text: "Se você guarda o colar e prossegue pelo corredor", target: 103 },
+          { text: "Se prefere examinar as estátuas quebradas da sala antes de sair", target: 132 }
+        ]
+      },
+      31: {
+        text: `<p>Você resolve que as criaturinhas não são ameaça e dá passagem. Elas saem correndo feito coelhinhos e somem no corredor. A sala fica vazia e só resta voltar.</p>`,
+        choices: [
+          { text: "Se quer retornar pelo corredor de onde veio", target: 68 },
+          { text: "Se prefere dar uma última olhada na sala antes de ir embora", target: 5 }
+        ]
+      },
+      32: {
+        text: `<p>Você deixa o escudo onde está, dá meia-volta e prossegue caminhando.</p>`,
+        choices: [
+          { text: "Se quiser retornar pela passagem que leva de volta à sala inicial", target: 90 },
+          { text: "Se preferir tentar procurar algum botão oculto na parede sem saída", target: 12 }
+        ]
+      },
+      33: {
+        text: `<p>Com a ponta da sua arma, você tenta arrancar o rubi do olho direito da estátua. Mas o rubi ativa uma armadilha mágica que solta uma grande nuvem de fumaça estalando faíscas! A explosão de purpurina deixa você tonto e desmaiado no chão. Fim da aventura.</p>`,
+        choices: [
+          { text: "🔄 Tentar Novamente desde o Início", target: 0 }
+        ]
+      },
+      34: {
+        text: `<p>Você abre a porta não trancada e encontra um corredor curto que termina em uma parede lisa. Pendurada em um gancho metálico está uma chave colorida.</p>`,
+        choices: [
+          { text: "Se quer pegar a chave e voltar pelo corredor", target: 4 },
+          { text: "Se acha que pode ser uma armadilha e quer voltar sem a chave", target: 74 }
+        ]
+      },
+      35: {
+        text: `<p>Você tenta empurrar a porta de madeira, mas ela está firmemente trancada por feitiço.</p>`,
+        choices: [
+          { text: "Se quiser voltar para a sala onde o Mago Genalin conversou com você", target: 42 },
+          { text: "Se tiver uma chave colorida na mochila e quiser tentar usá-la na fechadura", target: 21 }
+        ]
+      },
+      36: {
+        text: `<p>Você recua em silêncio a passos lentos. As duas criaturinhas saem do cômodo sem ver você e entram por outra passagem do outro lado da sala.</p>`,
+        choices: [
+          { text: "Se quiser seguir as criaturinhas de longe pela nova passagem", target: 5 },
+          { text: "Se prefere voltar pelo corredor que já explorou", target: 10 }
+        ]
+      },
+      37: {
+        text: `<p>Prosseguindo pelo corredor, você vê que ele se divide em dois caminhos.</p>`,
+        choices: [
+          { text: "Se quiser ir pelo caminho da direita", target: 89 },
+          { text: "Se quiser ir pelo caminho da esquerda", target: 16 }
+        ]
+      },
+      38: {
+        text: `<p>Você se aproxima do velho viajante. Animado por ter uma criança atenta, ele exagera na história: os Insetos Gigantes ficam do tamanho de casas e os tesouros viram montanhas de doces e moedas de Chuviscos! Você se convence de que é tudo exagero, mas fica curioso para ver os Escombros.</p>`,
+        choices: [
+          { text: "Se você decide aceitar o desafio e seguir o mapa do velho", target: 42 },
+          { text: "Se prefere mudar de ideia e voltar para seus biscoitos na praça", target: 69 }
+        ]
+      },
+      39: {
+        text: `<p>O anão aproxima-se da beirada do poço. Você joga sua corda de cipó e pede para ele amarrar em algum lugar.</p>`,
+        choices: [
+          { text: "Aguardar a ajuda do anão", target: 100 }
+        ]
+      },
+      40: {
+        text: `<p>Com cuidado, você solta o rubi do olho esquerdo da estátua. Ele é lindo e brilha muito! Você guarda a gema na mochila. Ainda resta o olho direito da estátua.</p>`,
+        choices: [
+          { text: "Se quer tentar tirar o rubi do olho direito", target: 33 },
+          { text: "Se prefere sair da sala em segurança com apenas uma gema", target: 80 }
+        ]
+      },
+      41: {
+        text: `<p>Quando você se aproxima, a mulher vira-se para você. Não é uma pessoa comum, mas a Medusa dos Escombros, com serpentes no lugar de cabelos! Seus olhos brilham e, antes que possa reagir, o feitiço dela transforma você em uma estátua de pedra para a coleção do labirinto. Fim da aventura.</p>`,
+        choices: [
+          { text: "🔄 Tentar Novamente desde o Início", target: 0 }
+        ]
+      },
+      42: {
+        text: `<p>Repentinamente, o velho viajante entrega a você um pergaminho com um mapa dos Escombros e desaparece no meio da multidão! Curioso, no dia seguinte você pega sua mochila com corda, tocha, biscoitos e cantil de suco e vai até o local indicado.</p>
+               <p>Lá, encontra um casebre antigo. A porta se abre sozinhando e uma voz sussurra: <em>"Entre, jovem herói!"</em> O interior está repleto de livros mágicos e frascos coloridos. De repente, surge o Mago Genalin vestindo um pijama estrelado! Ele diz: <em>"Estava te esperando! Adoro desafios. Se conseguir sair do meu labirinto mágico nos Escombros, cobrirei você de brinquedos e doces; se falhar, ficará preso aqui até cansar!"</em></p>
+               <p>Antes que você responda, ele puxa uma cordinha e um alçapão se abre! Você escorrega por um duto de pedra e cai suavemente em uma salinha iluminada por tochas com 4 portas numeradas nas paredes.</p>`,
+        choices: [
+          { text: "Abrirá a porta com o número 1?", target: 47 },
+          { text: "Abrirá a porta com o número 2?", target: 35 },
+          { text: "Abrirá a porta com o número 3?", target: 12 },
+          { text: "Abrirá a porta com o número 4?", target: 72 }
+        ]
+      },
+      43: {
+        text: `<p>Sem outra opção no momento, você retorna ao corredor sem saída onde está a chave colorida. Pega a chave sem problemas.</p>`,
+        choices: [
+          { text: "Se quiser procurar a porta trancada para testar a chave", target: 21 },
+          { text: "Se prefere guardar a chave e voltar para a sala de quatro portas", target: 8 }
+        ]
+      },
+      44: {
+        text: `<p>O corredor prossegue por mais alguns metros e vira à direita novamente.</p>`,
+        choices: [
+          { text: "Se quiser continuar caminhando por este corredor", target: 53 },
+          { text: "Se preferir parar para examinar as paredes de pedra", target: 111 }
+        ]
+      },
+      45: {
+        text: `<p>Depois de caminhar um pouco, um duto mágico abre-se sob seus pés e você escorrega caindo em uma pequena sala com uma única porta na sua frente.</p>`,
+        choices: [
+          { text: "Se quiser abrir a porta à sua frente imediatamente", target: 71 },
+          { text: "Se prefere descansar um minuto para recuperar as forças antes de abrir a porta", target: 104 }
+        ]
+      },
+      46: {
+        text: `<p>Você volta pelo corredor e pega o caminho da direita.</p>`,
+        choices: [
+          { text: "Se quiser seguir por esta passagem até a próxima porta", target: 56 },
+          { text: "Se preferir investigar os detalhes das paredes deste corredor", target: 129 }
+        ]
+      },
+      47: {
+        text: `<p>Você abre a porta e vê um longo corredor iluminado por pedras brilhantes. O caminho vira para a direita. Mais à frente há uma porta de madeira, mas o corredor continua em frente.</p>`,
+        choices: [
+          { text: "Se quer investigar a porta de madeira à sua direita", target: 3 },
+          { text: "Se vai continuar caminhando pelo corredor reto", target: 59 }
+        ]
+      },
+      48: {
+        text: `<p>O corredor continua por mais alguns metros depois de uma curva acentuada.</p>`,
+        choices: [
+          { text: "Se quiser continuar em frente até o final da passagem", target: 115 },
+          { text: "Se preferir voltar para conferir o corredor anterior", target: 124 }
+        ]
+      },
+      49: {
+        text: `<p>Você fica quieto e faz silêncio. Escuta ao longe uma voz desafinada cantando uma música engraçada. Parece ser um bardo!</p>`,
+        choices: [
+          { text: "Se você se aproxima devagar para ver quem é a pessoa que canta", target: 27 },
+          { text: "Se prefere recuar para evitar fazer barulho e procurar outro caminho", target: 71 }
+        ]
+      },
+      50: {
+        text: `<p>Na companhia de Hooks, você e o bardo continuam caminhando. Logo à frente, vocês chegam diante de uma grande alavanca na parede. Vocês trocam olhares e analisam a situação juntos:</p>`,
+        choices: [
+          { text: "Se você concorda em deixar Hooks puxar a alavanca para ver o que acontece", target: 102 },
+          { text: "Se você segura a mão de Hooks e sugere continuar pelo corredor sem mexer na alavanca", target: 85 },
+          { text: "Se você pede para Hooks examinar a engrenagem da alavanca com atenção enquanto você observa o teto", target: 29 }
+        ]
+      },
+      51: {
+        text: `<p>Você volta pelo corredor e passa novamente pela porta lateral de madeira.</p>`,
+        choices: [
+          { text: "Se quiser tentar abrir a porta lateral agora", target: 2 },
+          { text: "Se prefere continuar recuando pelo corredor em busca das criaturinhas", target: 10 }
+        ]
+      },
+      52: {
+        text: `<p>Caminhando pelo corredor, surge uma porta aberta à sua esquerda e não parece haver perigo dentro da sala.</p>`,
+        choices: [
+          { text: "Se quer dar uma espiada no interior do aposento", target: 75 },
+          { text: "Se prefere ignorar a porta aberta e seguir pelo corredor", target: 105 }
+        ]
+      },
+      53: {
+        text: `<p>Continuando pelo corredor, você chega a uma porta. Abrindo-a, descobre-se de volta na sala das quatro portas numeradas! Você acabou de entrar pela porta número 1.</p>`,
+        choices: [
+          { text: "Se deseja tentar explorar a porta de número 4 agora", target: 127 },
+          { text: "Se prefere entrar pela porta de número 2", target: 35 }
+        ]
+      },
+      54: {
+        text: `<p>Você gira a maçaneta com cuidado, mas era uma armadilha! Um alçapão se abre no chão e você cai em um poço suave de 6 metros coberto de folhas secas. As paredes são muito lisas para subir e não há onde amarrar sua corda. Você grita por socorro!</p>`,
+        choices: [
+          { text: "Gritar por ajuda", target: 110 }
+        ]
+      },
+      55: {
+        text: `<p>Você empunha sua espada de madeira ou bastão, solta um grito heroico e corre em direção às criaturinhas! Assustadas com sua coragem, as duas saem correndo apavoradas pela outra passagem.</p>`,
+        choices: [
+          { text: "Se quiser continuar seu caminho pela passagem por onde elas fugiram", target: 5 },
+          { text: "Se prefere explorar com cuidado a sala em que elas estavam antes de prosseguir", target: 81 }
+        ]
+      },
+      56: {
+        text: `<p>Você pega o caminho da direita. O corredor vira à direita duas vezes e leva você até uma porta de madeira encostada.</p>`,
+        choices: [
+          { text: "Se quer abrir a porta para ver o que há dentro", target: 82 },
+          { text: "Se prefere continuar caminhando pelo corredor sem abrir a porta", target: 104 }
+        ]
+      },
+      57: {
+        text: `<p>Você desenrola o pergaminho sobre a mesa. Ele diz: "Três garrafas iguais: uma contém poção amarga de paralisia, outra contém antídoto saboroso e a terceira é uma Poção de Grande Força. Os rótulos podem estar trocados!"<br>Qual garrafa deseja provar?</p>`,
+        choices: [
+          { text: "Se provar a garrafa com rótulo POÇÃO AMARGA", target: 108 },
+          { text: "Se provar a garrafa com rótulo POÇÃO DE FORÇA", target: 88 },
+          { text: "Se provar a garrafa com rótulo ANTÍDOTO", target: 117 }
+        ]
+      },
+      58: {
+        text: `<p>Você conversa com o bardo Hooks. Ele responde rindo com seu alaúde: "Sou Hooks, o bardo cantarolante! Estou perdido nestes corredores dos Escombros há dias tentando achar a saída!"<br>Você precisa decidir o que fazer a respeito do bardo:</p>`,
+        choices: [
+          { text: "Se você oferece sua amizade e convida Hooks para formar uma dupla e explorar juntos", target: 28 },
+          { text: "Se você acha que o alaúde barulhento dele vai atrair atenção e prefere continuar sozinho", target: 79 },
+          { text: "Se você pede para Hooks tocar uma música suave para acalmar os espíritos do labirinto antes de escolher um caminho", target: 125 }
+        ]
+      },
+      59: {
+        text: `<p>O corredor se divide em dois caminhos totalmente diferentes.</p>`,
+        choices: [
+          { text: "Se seguir pelo corredor que vira para a esquerda", target: 10 },
+          { text: "Se preferir seguir pelo corredor da direita", target: 70 }
+        ]
+      },
+      60: {
+        text: `<p>Sob a luz da tocha, surge a cabeça assustadora de uma fera! Por reflexo, você dá um golpe com seu bastão ou espada de madeira, mas sente o impacto forte na pedra pura: era apenas uma estátua decorativa! Sua arma de brinquedo acaba se quebrando ao meio. Mesmo assim, metade de um bastão é melhor do que nada!</p>`,
+        choices: [
+          { text: "Se você decide sair da sala e retornar ao corredor", target: 50 },
+          { text: "Se quiser examinar os pedaços de pedra da estátua antes de sair", target: 83 }
+        ]
+      },
+      61: {
+        text: `<p>Após conseguir passar pelo desafio do Tigre, você vasculha a sala e encontra uma caixinha de ferro no centro.</p>`,
+        choices: [
+          { text: "Se quer abrir a caixinha para ver o conteúdo", target: 25 },
+          { text: "Se prefere sair da sala sem mexer nela", target: 128 }
+        ]
+      },
+      62: {
+        text: `<p>Você bebe o conteúdo amargo rapidamente. Sente seus músculos pesados e fica sem forças para continuar a caminhada. Exausto, você cai em um sono profundo. Sua aventura termina aqui.</p>`,
+        choices: [
+          { text: "🔄 Tentar Novamente desde o Início", target: 0 }
+        ]
+      },
+      63: {
+        text: `<p>Você pega o Escudo de Madeira Brilhante, coloca-o nas costas e deixa a sala feliz.</p>`,
+        choices: [
+          { text: "Se quiser retornar pela passagem que leva de volta à sala inicial", target: 90 },
+          { text: "Se prefere dar mais uma olhada no corredor antes de voltar", target: 32 }
+        ]
+      },
+      64: {
+        text: `<p>Você lembra do frasco de líquido azul brilhante (Poção Cola / Solvente) na mochila e joga no poço d'água! O líquido reage com a água e neutraliza as Piranhas-Gigantes, permitindo que você atravesse em segurança. Viva a esperteza!</p>`,
+        choices: [
+          { text: "Se quiser continuar avançando até a próxima sala do labirinto", target: 106 },
+          { text: "Se preferir procurar um caminho lateral que contorne a área", target: 132 }
+        ]
+      },
+      65: {
+        text: `<p>Você bebe a poção e sente uma energia incrível tomar conta do seu corpo! Sua Força aumenta para realizar feitos incríveis!</p>`,
+        choices: [
+          { text: "Se quer retornar ao corredor com super força e prosseguir", target: 105 },
+          { text: "Se prefere testar sua força tentando mover a mesa da sala antes de sair", target: 76 }
+        ]
+      },
+      66: {
+        text: `<p>Você luta com toda a sua coragem, mas a criatura é muito forte! Seus golpes quebram seu escudo e você fica exausto e sem energia. Fim da aventura por enquanto!</p>`,
+        choices: [
+          { text: "🔄 Tentar Novamente desde o Início", target: 0 }
+        ]
+      },
+      67: {
+        text: `<p>Você corre e salta com toda força, mas não atinge o outro lado! Você cai na água mole, fica todo molhado e os peixinhos dão pequenas beliscadas na sua roupa até você desmaiar de cansaço. Fim da tentativa!</p>`,
+        choices: [
+          { text: "🔄 Tentar Novamente desde o Início", target: 0 }
+        ]
+      },
+      68: {
+        text: `<p>Você retoma seu caminho pelo corredor que vira para a esquerda. Logo surge uma porta lateral, mas o corredor continua em frente.</p>`,
+        choices: [
+          { text: "Se quer parar e abrir a porta lateral", target: 14 },
+          { text: "Se prefere continuar caminhando em frente pelo corredor", target: 103 }
+        ]
+      },
+      69: {
+        text: `<p>Você acha que a história do velho é invenção e continua comendo seus biscoitos na praça. Mas, em certo momento, o velho olha diretamente para você e pisca os olhos de forma mágica, convidando-o a se aproximar. Tomado por uma curiosidade irresistível, você vai até ele.</p>`,
+        choices: [
+          { text: "Aproximar-se do velho", target: 42 }
+        ]
+      },
+      70: {
+        text: `<p>O corredor parece longo. Após alguns metros, surge uma porta à direita e o corredor continua.</p>`,
+        choices: [
+          { text: "Se quiser abrir a porta à sua direita", target: 2 },
+          { text: "Se escolher continuar caminhando pelo corredor", target: 20 }
+        ]
+      },
+      71: {
+        text: `<p>Recuperado da queda, você segue pelo corredor até que ele vira para a direita. Você ouve um som misterioso vindo da curva.</p>`,
+        choices: [
+          { text: "Se quer ficar quieto e oculto para ouvir melhor o barulho", target: 49 },
+          { text: "Se prefere avançar com cuidado e curiosidade", target: 27 }
+        ]
+      },
+      72: {
+        text: `<p>A porta se abre para um longo corredor que termina em uma porta trancada.</p>`,
+        choices: [
+          { text: "Se quiser voltar pelo corredor até a salinha das quatro portas", target: 42 },
+          { text: "Se vai tentar empurrar e arrombar a porta com a ombrada", target: 24 },
+          { text: "Se tiver uma chave colorida e quiser tentar destrancar a porta", target: 21 }
+        ]
+      },
+      73: {
+        text: `<p>Você entra na sala com cuidado e se aproxima do baú embaixo da melancia suspensa. A tampa não está amarrada à corda! Você abre o baú e encontra um punhado de moedas de Chuviscos e doces deliciosos. Você guarda tudo na mochila.</p>`,
+        choices: [
+          { text: "Se quiser sair da sala e seguir pelo corredor", target: 59 },
+          { text: "Se prefere examinar a corda amarrada à melancia antes de ir embora", target: 77 }
+        ]
+      },
+      74: {
+        text: `<p>Desconfiando de uma armadilha, você deixa a chave colorida onde está e volta até a sala inicial.</p>`,
+        choices: [
+          { text: "Se quiser tentar abrir outra porta da sala redonda", target: 8 },
+          { text: "Se mudar de ideia e quiser voltar para pegar a chave colorida", target: 43 }
+        ]
+      },
+      75: {
+        text: `<p>A sala tem uma mesa com três garrafões grandes cheios de líquido amarelo com os rótulos: POÇÃO AMARGA, POÇÃO DE GRANDE FORÇA e ANTÍDOTO. Sobre a mesa há um pergaminho.</p>`,
+        choices: [
+          { text: "Se provar a POÇÃO AMARGA", target: 108 },
+          { text: "Se provar a POÇÃO DE FORÇA", target: 88 },
+          { text: "Se provar o ANTÍDOTO", target: 117 },
+          { text: "Se ler o pergaminho sobre a mesa antes de beber", target: 57 },
+          { text: "Se preferir não arriscar e sair da sala imediatamente", target: 105 }
+        ]
+      },
+      76: {
+        text: `<p>Você bebe o garrafão correto e sente seus músculos cheios de energia! Satisfeito, você se prepara para sair.</p>`,
+        choices: [
+          { text: "Se deseja prosseguir pelo corredor para enfrentar os próximos desafios", target: 105 },
+          { text: "Se quiser guardar um pouco do líquido em seu recipiente pessoal antes de ir", target: 65 }
+        ]
+      },
+      77: {
+        text: `<p>Você percorre todo o caminho novamente e passa pela porta da sala com o baú e a melancia pendurada.</p>`,
+        choices: [
+          { text: "Se ainda não entrou nesta sala e quer entrar agora", target: 73 },
+          { text: "Se já entrou ou não quer correr riscos com a melancia", target: 59 }
+        ]
+      },
+      78: {
+        text: `<p>Abrindo a porta, você vê um corredor que termina em uma porta trancada.</p>`,
+        choices: [
+          { text: "Se você tem a chave colorida na mochila", target: 21 },
+          { text: "Se não pegou a chave colorida", target: 43 }
+        ]
+      },
+      79: {
+        text: `<p>Hooks ouve sua decisão. O jovem bardo faz uma cara triste com o alaúde, mas tenta negociar com você:</p>`,
+        choices: [
+          { text: "Se você muda de ideia e concorda em deixar Hooks ir junto contanto que ele toque bem baixinho", target: 28 },
+          { text: "Se você se mantém firme, diz a ele para esperar seguro nesta sala e avança sozinho", target: 125 },
+          { text: "Se você propõe a Hooks trocarem um item de utilidade antes de se separarem", target: 50 }
+        ]
+      },
+      80: {
+        text: `<p>Você resolve voltar à sala das quatro portas.</p>`,
+        choices: [
+          { text: "Se ainda não tentou a porta de número 1", target: 78 },
+          { text: "Se quiser tentar a porta de número 2", target: 34 }
+        ]
+      },
+      81: {
+        text: `<p>A batalha contra as criaturinhas é fácil para um jovem herói de Vila Velha! Você as espanta com poses corajosas e elas saem correndo. Ao procurar pelo local, você não encontra nada de especial.</p>`,
+        choices: [
+          { text: "Se prefere voltar caminhando pelo corredor principal", target: 68 },
+          { text: "Se prefere investigar os cantos da sala onde as criaturas se escondiam", target: 5 }
+        ]
+      },
+      82: {
+        text: `<p>Ao abrir a porta, você ouve um rosnado feroz: um Tigre de Pedra mecânico salta em sua direção!</p>`,
+        choices: [
+          { text: "Se você tiver um escudo de madeira para se proteger do impacto", target: 99 },
+          { text: "Se não tiver escudo e estiver desarmado", target: 18 }
+        ]
+      },
+      83: {
+        text: `<p>Você pega uma tocha da parede e pede para Hooks esperar do lado de fora. Ao entrar na sala escura, a luz revela pouco... até que algo macio encosta na sua cintura!</p>`,
+        choices: [
+          { text: "Se você se vira rapidamente com a tocha em riste para ver o que é", target: 60 },
+          { text: "Se você recua um passo e chama Hooks para trazer ajuda", target: 50 }
+        ]
+      },
+      84: {
+        text: `<p>Você pega seu escudo, empunha sua arma e se prepara! Com o efeito da Poção de Grande Força, você está pronto para a grande batalha contra o guardião do labirinto!</p>`,
+        choices: [
+          { text: "Se deseja avançar e confrontar a fera diretamente", target: 114 },
+          { text: "Se prefere tentar usar sua força para empurrar uma pedra do cenário sobre o guarda", target: 95 }
+        ]
+      },
+      85: {
+        text: `<p>Refeitos do susto da alavanca, você e Hooks continuam pelo corredor. Surge outra porta lateral à esquerda. Vocês conversam rapidinho sobre o próximo passo:</p>`,
+        choices: [
+          { text: "Se você sugere que Hooks abra a porta enquanto você fica de guarda", target: 120 },
+          { text: "Se você prefere que vocês dois ignorem a porta e continuem reto pelo corredor", target: 52 },
+          { text: "Se você pede para Hooks olhar pelo buraco da fechadura antes de encostar na maçaneta", target: 28 }
+        ]
+      },
+      86: {
+        text: `<p>Após alguns instantes de confronto, você fica sem forças perante o guardião e cai cansado no chão. O guardião vence o combate e você precisa descansar. Sua aventura termina aqui.</p>`,
+        choices: [
+          { text: "🔄 Tentar Novamente desde o Início", target: 0 }
+        ]
+      },
+      87: {
+        text: `<p>Você pega um papel preso na porta e lê o recado escrito com tinta brilhante: "Parabéns, pequeno herói! Você chegou até o desafio final do Mago Genalin. Na próxima sala, escolha bem entre a libertação e o fracasso!"</p>`,
+        choices: [
+          { text: "Se você se sente preparado e quer abrir a porta do desafio final", target: 94 },
+          { text: "Se prefere dar uma última checada na mochila e nos arredores antes de entrar", target: 95 }
+        ]
+      },
+      88: {
+        text: `<p>Você provou a garrafa marcada Poção de Força, mas nada acontece. O rótulo estava trocado!</p>`,
+        choices: [
+          { text: "Se deseja experimentar uma das outras duas garrafas restantes", target: 91 },
+          { text: "Se prefere não arriscar e sair da sala imediatamente", target: 105 }
+        ]
+      },
+      89: {
+        text: `<p>O caminho vira para a esquerda e termina em um beco sem saída com uma placa pintada: <em>\"É uma pena, mas terá que voltar!\"</em></p>`,
+        choices: [
+          { text: "Se você aceita a placa e dá meia-volta para retornar à bifurcação", target: 16 },
+          { text: "Se prefere examinar a placa de madeira para ver se há uma alavanca secreta atrás dela", target: 37 }
+        ]
+      },
+      90: {
+        text: `<p>Você retorna pelo caminho que veio e está de volta à sala inicial redonda.</p>`,
+        choices: [
+          { text: "Se quiser tentar abrir a porta de número 1 ou 2 agora", target: 42 },
+          { text: "Se quiser tentar uma combinação com as ferramentas adquiridas", target: 8 }
+        ]
+      },
+      91: {
+        text: `<p>Restam duas garrafas sobre a mesa de madeira.</p>`,
+        choices: [
+          { text: "Se provar a garrafa com o rótulo POÇÃO AMARGA", target: 119 },
+          { text: "Se provar a garrafa com o rótulo ANTÍDOTO", target: 76 },
+          { text: "Se quiser deixar as garrafas e ir embora da sala", target: 105 }
+        ]
+      },
+      92: {
+        text: `<p>Lembrando das moedas de Chuvisco que encontrou no baú, você paga o simpático Anão Engenhoqueiro. Ele pendura o amuleto de madeira esculpida no seu pescoço e deseja boa sorte na jornada.</p>`,
+        choices: [
+          { text: "Se você se despede do anão e sai da oficina", target: 37 },
+          { text: "Se quer perguntar ao anão se ele conhece o caminho para o Mago Genalin", target: 110 }
+        ]
+      },
+      93: {
+        text: `<p>Você faz silêncio total para escutar, mas não ouve som algum no corredor.</p>`,
+        choices: [
+          { text: "Se quiser ir pelo caminho da direita", target: 68 },
+          { text: "Se preferir ir pelo caminho da esquerda", target: 98 }
+        ]
+      },
+      94: {
+        text: `<p>Você entra em uma salinha e a porta se tranca magicamente atrás de você! No centro há uma mesa com duas pedras preciosas: uma gema azul brilhante e uma gema vermelha. Na parede oposta há duas portas marcadas com os números 1 e 2 com encaixes para as pedras.</p>`,
+        choices: [
+          { text: "Quer colocar a gema azul na posição 2 e a vermelha na posição 1?", target: 109 },
+          { text: "Quer colocar a gema azul na posição 1 e a vermelha na posição 2?", target: 116 },
+          { text: "Se tiver trazido a gema vermelha extra da estátua e quiser testar um encaixe duplo", target: 131 }
+        ]
+      },
+      95: {
+        text: `<p>A sala está vazia, exceto por uma folha de papel afixada na porta oposta.</p>`,
+        choices: [
+          { text: "Se quiser se aproximar para ler o papel afixado", target: 87 },
+          { text: "Se prefere ignorar o papel e ir direto para o desafio das pedras preciosas", target: 94 }
+        ]
+      },
+      96: {
+        text: `<p>O corredor segue um pouco mais e dobra suavemente para a esquerda.</p>`,
+        choices: [
+          { text: "Se deseja continuar caminhando por esta passagem", target: 115 },
+          { text: "Se prefere retornar para conferir uma porta que ficou para trás", target: 104 }
+        ]
+      },
+      97: {
+        text: `<p>Você abre a porta e vê uma longa escadaria de pedra que sobe em caracol! Ansioso para ver a luz do dia de Vila Velha, você sobe os degraus correndo até encontrar uma porta iluminada no topo.</p>`,
+        choices: [
+          { text: "Se empurrar a porta no topo da escada para retornar ao laboratório do Mago", target: 130 },
+          { text: "Se preferir usar uma saída secreta lateral que dá direto para o vale dos Escombros", target: 132 }
+        ]
+      },
+      98: {
+        text: `<p>O caminho termina em uma porta trancada. Lá de dentro, a voz das duas criaturinhas diz: <em>\"Vá embora! Não queremos comprar nada!\"</em></p>`,
+        choices: [
+          { text: "Se quer empurrar e tentar arrombar a porta para falar com elas", target: 11 },
+          { text: "Se prefere respeitar o pedido e voltar pelo corredor", target: 68 }
+        ]
+      },
+      99: {
+        text: `<p>Você ergue rapidamente o Escudo de Madeira Brilhante e se protege do ataque do Tigre de Pedra! O impacto faz a fera mecânica cambalear e você usa seu bastão de brinquedo para derrotá-la!</p>`,
+        choices: [
+          { text: "Se deseja explorar o fundo da sala do tigre", target: 61 },
+          { text: "Se prefere deixar a sala vitorioso e retornar ao corredor", target: 90 }
+        ]
+      },
+      100: {
+        text: `<p>Você joga a corda para o anão. Ele olha a corda e diz: <em>\"É uma boa corda, mas você não quis comprar meu amuleto da sorte...\"</em> O anão vai embora e deixa você preso no poço sem conseguir subir. Fim da tentativa por enquanto!</p>`,
+        choices: [
+          { text: "🔄 Tentar Novamente desde o Início", target: 0 }
+        ]
+      },
+      101: {
+        text: `<p>As criaturinhas choramingam: "Não nos machuque! Somos apenas dois ajudantes do Mago Genalin e ele mandou a gente cuidar dos corredores!"</p>`,
+        choices: [
+          { text: "Se acha que não dá para confiar em ajudantes do Mago e quer assustá-los", target: 81 },
+          { text: "Se quer perguntar a eles sobre onde fica a saída do labirinto", target: 13 },
+          { text: "Se quer perguntar sobre os perigos que existem mais à frente", target: 22 },
+          { text: "Se quer poupar as criaturinhas e deixá-las fugir em paz", target: 31 }
+        ]
+      },
+      102: {
+        text: `<p>Com a descida da alavanca puxada por Hooks, o chão vira uma rampa escorregadia! Você se segura em uma saliência da pedra, mas Hooks começa a deslizar direto em direção a um poço cheio de bolinhas e lama verde!</p>`,
+        choices: [
+          { text: "Se você estica o braço e faz força para puxar Hooks de volta", target: 29 },
+          { text: "Se você joga sua corda de cipó para Hooks se segurar na rampa", target: 85 }
+        ]
+      },
+      103: {
+        text: `<p>Você retorna ao corredor e encontra outra porta de madeira à sua direita.</p>`,
+        choices: [
+          { text: "Se abrir a porta para ver o que há dentro", target: 15 },
+          { text: "Se continuar caminhando direto em frente", target: 37 }
+        ]
+      },
+      104: {
+        text: `<p>Andando pelo corredor, ele vira para a esquerda e chega a uma saleta idêntica à inicial, mas com um grande <strong>Pilar de Pedra</strong> no centro. Você entrou pela porta número 2.</p>`,
+        choices: [
+          { text: "Abrirá a porta com o número 1?", target: 124 },
+          { text: "Abrirá a porta com o número 3?", target: 26 },
+          { text: "Abrirá a porta com o número 4?", target: 45 }
+        ]
+      },
+      105: {
+        text: `<p>Você encontra um grande poço cheio d'água no caminho. Para testar o perigo, você joga um pedaço de biscoito na água e ela começa a fervilhar: o poço está cheio de Piranhas-Gigantes de água doce!</p>`,
+        choices: [
+          { text: "Se quiser tomar impulso e arriscar um salto longo até o outro lado", target: 121 },
+          { text: "Se você tem o frasco com líquido azul brilhante (Poção Cola / Solvente) na mochila", target: 64 },
+          { text: "Se preferir usar sua corda de cipó no teto para balançar como um herói de Vila Velha", target: 132 }
+        ]
+      },
+      106: {
+        text: `<p>Livre do poço de piranhas, você avança até se deparar com o temível guardião do labirinto: um <strong>Minotauro-Centauro Gigante</strong>, com cabeça de touro, torso humano e quatro patas! Ele bufa e desafia você para o combate!</p>`,
+        choices: [
+          { text: "Se você quebrou seu bastão/arma na estátua de pedra", target: 118 },
+          { text: "Se você bebeu a Poção de Grande Força na sala dos garrafões", target: 84 },
+          { text: "Se nada disso aconteceu e você está com seus itens normais", target: 86 }
+        ]
+      },
+      107: {
+        text: `<p>O encaixe incorreto ativa uma armadilha mágica! Uma grande estátua mecânica em forma de Dragão lança uma fumaça quente cheia de purpurina que deixa você exausto e desmaiado instantaneamente. Pena, você estava tão perto! Fim da aventura por enquanto.</p>`,
+        choices: [
+          { text: "🔄 Tentar Novamente desde o Início", target: 0 }
+        ]
+      },
+      108: {
+        text: `<p>Você bebe a Poção Amarga e sente uma tontura terrível! Era uma poção de paralisia! Restam poucos segundos para beber o antídoto correto antes de ficar imóvel.</p>`,
+        choices: [
+          { text: "Se beber da garrafa com rótulo POÇÃO DE FORÇA", target: 122 },
+          { text: "Se beber da garrafa com rótulo ANTÍDOTO", target: 62 }
+        ]
+      },
+      109: {
+        text: `<p>Você encaixa a gema azul na posição 2 e a vermelha na posição 1. A porta da direita começa a abrir devagarzinho com barulho de engrenagens...</p>`,
+        choices: [
+          { text: "Ver o que há do outro lado", target: 113 }
+        ]
+      },
+      110: {
+        text: `<p>Seus gritos de socorro chamam a atenção do Anão Engenhoqueiro no alto do poço.</p>`,
+        choices: [
+          { text: "Se você comprou o amuleto de madeira dele anteriormente", target: 23 },
+          { text: "Se não comprou o amuleto e foi pão-duro", target: 39 }
+        ]
+      },
+      111: {
+        text: `<p>O caminho vira para a direita e segue por mais alguns metros.</p>`,
+        choices: [
+          { text: "Se quiser continuar pela passagem iluminada", target: 44 },
+          { text: "Se prefere checar uma dobra no corredor", target: 53 }
+        ]
+      },
+      112: {
+        text: `<p>Você entra na sala com cuidado, olhando para as estátuas. A mulher vira-se em sua direção.</p>`,
+        choices: [
+          { text: "Se você conversou com as duas criaturinhas e aprendeu o segredo de fechar os olhos contra o olhar da Medusa", target: 30 },
+          { text: "Se você não conversou com as criaturinhas e não sabe do segredo", target: 41 }
+        ]
+      },
+      113: {
+        text: `<p>A porta abre e revela a cabeça de um Dragão mecânico lançador de fumaça!</p>`,
+        choices: [
+          { text: "Avançar", target: 107 }
+        ]
+      },
+      114: {
+        text: `<p>Com a Poção de Grande Força, você consegue vencer o terrível Minotauro-Centauro em uma disputa incrível! O monstro se rende e foge pelo corredor. Você venceu! A porta atrás dele está aberta.</p>`,
+        choices: [
+          { text: "Se quer atravessar a porta aberta para o desafio final", target: 95 },
+          { text: "Se prefere checar se o Minotauro deixou cair algum item antes de entrar", target: 131 }
+        ]
+      },
+      115: {
+        text: `<p>O corredor termina em uma porta. Abrindo-a, você está de volta à sala com o Pilar de Pedra no centro, tendo entrado pela porta 3.</p>`,
+        choices: [
+          { text: "Só resta agora a porta de número 4. Se quiser abri-la", target: 45 },
+          { text: "Se preferir refazer seus passos pela porta 1", target: 124 }
+        ]
+      },
+      116: {
+        text: `<p>Você encaixa a gema azul na posição 1 e a vermelha na posição 2. A porta da esquerda se abre suavemente com um brilho mágico, revelando a passagem para a saída!</p>`,
+        choices: [
+          { text: "Sair em liberdade!", target: 97 }
+        ]
+      },
+      117: {
+        text: `<p>Você bebe a garrafa marcada Antídoto, mas ela continha a Poção de Grande Força! Seus músculos se enchem de energia mágica. Satisfeito, você retorna ao corredor.</p>`,
+        choices: [
+          { text: "Se deseja continuar sua caminhada rumo ao poço d'água", target: 105 },
+          { text: "Se prefere descansar um pouco na sala antes de ir embora", target: 76 }
+        ]
+      },
+      118: {
+        text: `<p>Você tenta encarar o guardião, mas lembra que seu bastão de brinquedo está quebrado! Sem conseguir se defender dos fortes golpes do monstro, você fica exausto e desmaia no chão.</p>`,
+        choices: [
+          { text: "Ver o resultado", target: 86 }
+        ]
+      },
+      119: {
+        text: `<p>Você bebe o garrafão de Poção Amarga por engano. O efeito faz você ficar paralisado e tonto, caindo no chão sem conseguir se mover. Sua aventura termina aqui.</p>`,
+        choices: [
+          { text: "🔄 Tentar Novamente desde o Início", target: 0 }
+        ]
+      },
+      120: {
+        text: `<p>O afobado Hooks abre a porta e ativa uma armadilha de esferas de tinta! O bardo fica todo coberto de tinta colorida e resolve voltar correndo para Vila Velha envergonhado. Você lamenta a perda do companheiro, mas continua pelo corredor.</p>`,
+        choices: [
+          { text: "Se deseja prosseguir sozinho pelo corredor iluminado", target: 52 },
+          { text: "Se quer checar a sala da armadilha para ver se sobrou algo útil", target: 85 }
+        ]
+      },
+      121: {
+        text: `<p>Você toma impulso e corre com toda a velocidade em direção ao poço de piranhas!</p>`,
+        choices: [
+          { text: "Se salta com determinação heroica", target: 67 },
+          { text: "Se no meio da corrida resolve mudar de ideia e usar a Poção Cola", target: 64 }
+        ]
+      },
+      122: {
+        text: `<p>Você bebe a garrafa e sente o mal-estar passar imediatamente: era o verdadeiro antídoto! A garrafa restante só pode ser a Poção de Grande Força.</p>`,
+        choices: [
+          { text: "Se quiser provar a garrafa restante para ganhar super força", target: 65 },
+          { text: "Se prefere não arriscar e sair da sala imediatamente", target: 105 }
+        ]
+      },
+      123: {
+        text: `<p>O anão se irrita: <em>\"Seu pão-duro! Não terá as bênçãos nem a proteção do meu amuleto! Saia da minha oficina!\"</em> E você sai.</p>`,
+        choices: [
+          { text: "Se deseja seguir em frente pelo corredor", target: 37 },
+          { text: "Se prefere tentar pedir desculpas e comprar o amuleto agora", target: 92 }
+        ]
+      },
+      124: {
+        text: `<p>Você abre a porta 1 e o corredor prossegue por alguns metros antes de virar para a esquerda.</p>`,
+        choices: [
+          { text: "Se quer seguir o caminho até a curva", target: 48 },
+          { text: "Se prefere voltar e checar o pilar central na sala anterior", target: 104 }
+        ]
+      },
+      125: {
+        text: `<p>Assim que você dá as costas, Hooks começa a chorar e toca uma música super desafinada com seu alaúde. O barulho alto vai atrair atenção! Sem opção, você aceita a companhia do bardo para fazê-lo parar com a barulheira.</p>`,
+        choices: [
+          { text: "Se você e Hooks continuam caminhando juntas pelo corredor", target: 28 },
+          { text: "Se você propõe a Hooks um jogo de silêncio enquanto caminham", target: 50 }
+        ]
+      },
+      126: {
+        text: `<p>A sala está em total escuridão e não é possível enxergar nada lá dentro.</p>`,
+        choices: [
+          { text: "Se quiser usar uma tocha brilhante para investigar a sala escura", target: 83 },
+          { text: "Se prefere fechar a porta e seguir em frente pelo corredor com Hooks", target: 50 }
+        ]
+      },
+      127: {
+        text: `<p>Você está na sala inicial redonda novamente. Agora resta somente a porta de número 4.</p>`,
+        choices: [
+          { text: "Se quiser abrir a porta 4 agora", target: 45 },
+          { text: "Se prefere revisar seus itens na mochila antes de entrar", target: 53 }
+        ]
+      },
+      128: {
+        text: `<p>Você sai da sala em segurança e continua pelo corredor.</p>`,
+        choices: [
+          { text: "Se deseja caminhar até a próxima salinha com pilar de pedra", target: 104 },
+          { text: "Se prefere dar meia-volta para checar a caixinha de ferro novamente", target: 25 }
+        ]
+      },
+      129: {
+        text: `<p>Você pega o caminho da esquerda. Depois de uma curva, encontra uma porta de madeira com uma placa de metal escrita.</p>`,
+        choices: [
+          { text: "Se você se aproxima para ler a inscrição na placa", target: 17 },
+          { text: "Se prefere voltar pelo corredor e ir pelo caminho da direita", target: 46 }
+        ]
+      },
+      130: {
+        text: `<p><strong>PRIMEIRA SAÍDA DA VITÓRIA: O SALÃO DO MAGO GENALIN</strong></p>
+               <p>Você abre a porta e se vê novamente no laboratório mágico do Mago Genalin! Ele está sentado em sua escrivaninha e fica de queixo caído ao ver você sair do labirinto dos Escombros: <em>\"Não posso acreditar! Em todos esses anos, você é a primeira criança de Vila Velha que consegue sair do meu labirinto! Como prometido, vou cobri-lo com tesouros!\"</em></p>
+               <p>O Mago aproxima-se de uma porta dourada e abre-a, esparramando pelo aposento uma pequena montanha de moedas de Chuvisco, doces deliciosos, brinquedos mágicos e pedras reluzentes! Você sorri feliz, sabendo que provou sua coragem de herói. E o melhor de tudo: o Mago prometeu que nunca mais vai prender nenhuma criança em seu jogo mágico! Parabéns, você venceu o labirinto dos Escombros!</p>`,
+        choices: [
+          { text: "🎉 Jogar Novamente", target: 0 }
+        ]
+      },
+      131: {
+        text: `<p><strong>SEGUNDA SAÍDA DA VITÓRIA: A PASSAGEM DA CHAVE COLORIDA</strong></p>
+               <p>Procurando com atenção pelas ranhuras das pedras, você descobre uma pequena fechadura secreta escondida atrás de um tijolo falso! Você pega a chave colorida que encontrou durante sua jornada e a encaixa perfeitamente na fechadura.</p>
+               <p>Com um som suave de engrenagens, a parede de pedra desliza para o lado, revelando um túnel iluminado por pedras fluorescentes! Caminhando por ele, você sai diretamente em uma clareira ensolarada nos Escombros. No chão da clareira, um pequeno baú dos Engenhoqueiros esperava por um explorador atento: dentro dele há vários pergaminhos mágicos e sacos cheios de moedas de Chuvisco! Você conseguiu escapar do labirinto usando sua inteligência e astúcia! Parabéns pela vitória!</p>`,
+        choices: [
+          { text: "🎉 Jogar Novamente", target: 0 }
+        ]
+      },
+      132: {
+        text: `<p><strong>TERCEIRA SAÍDA DA VITÓRIA: A ESCADARIA DAS CAVERNAS SEM LUZ</strong></p>
+               <p>Guiando-se pelo mapa e pela sua intuição, você encontra uma porta de carvalho escondida atrás das estátuas velhas! Ao abri-la, encontra uma passagem de pedra que sobe suavemente até o topo da montanha dos Escombros.</p>
+               <p>Ao empurrar a escotilha de saída, você sente o ar fresco da Terra da Chuva Miúda e vê o sol brilhando sobre Vila Velha! Na saída da caverna, o Mago Ancião Zaimen e seus amigos estavam esperando por você com aplausos e um grande piquenique repleto de bolos e suco de mel. Zaimen sorri e diz: <em>\"Parabéns, jovem herói! Você provou que a sabedoria e a observação superam qualquer armadilha!\"</em> Você venceu o Desafio Mágico!</p>`,
+        choices: [
+          { text: "🎉 Jogar Novamente", target: 0 }
+        ]
+      }
+    };
+
+    /* ==========================================================================
+       2. LÓGICA DO SISTEMA, HISTÓRICO & PERSISTÊNCIA (LOCALSTORAGE)
+       ========================================================================== */
+    let currentRef = 0;
+    let historyPath = [];
+
+    // Inicialização da página
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedRef = localStorage.getItem('fazdeconta_current_ref');
+      const savedHistory = localStorage.getItem('fazdeconta_history');
+
+      if (savedHistory) {
+        try {
+          historyPath = JSON.parse(savedHistory);
+        } catch(e) {
+          historyPath = [];
+        }
+      }
+
+      if (savedRef !== null && storyData[savedRef]) {
+        currentRef = parseInt(savedRef, 10);
+      } else {
+        currentRef = 0;
+        historyPath = [{ ref: 0, choiceText: "Início da Jornada" }];
+      }
+
+      renderReference(currentRef);
+      renderHistory();
+    });
+
+    // Renderiza a referência atual na folha de pergaminho
+    function renderReference(refId) {
+      const card = document.getElementById('parchmentCard');
+      const data = storyData[refId];
+
+      if (!data) {
+        card.innerHTML = `<p class="story-text">Erro: Referência ${refId} não encontrada.</p>`;
+        return;
+      }
+
+      // Salva progresso no navegador
+      localStorage.setItem('fazdeconta_current_ref', refId);
+      currentRef = refId;
+
+      // Monta badge / título
+      let headerHTML = '';
+      if (refId === 0) {
+        headerHTML = `<div class="game-title">${data.title}</div>`;
+      } else {
+        headerHTML = `<div class="reference-badge">REFERÊNCIA ${refId}</div>`;
+      }
+
+      // Monta opções
+      let optionsHTML = '';
+      if (data.choices && data.choices.length > 0) {
+        optionsHTML = `<div class="options-container">`;
+        data.choices.forEach(choice => {
+          const targetBadge = choice.target > 0 ? `<span class="ref-number">Vá para a ${choice.target}</span>` : '';
+          const escapedText = choice.text.replace(/'/g, "\\'");
+          optionsHTML += `
+            <button class="choice-btn" onclick="makeChoice(${choice.target}, '${escapedText}')">
+              <span>${choice.text}</span>
+              ${targetBadge}
+            </button>
+          `;
+        });
+        optionsHTML += `</div>`;
+      }
+
+      // Injeta no DOM
+      card.innerHTML = `
+        ${headerHTML}
+        <div class="story-text">${data.text}</div>
+        ${optionsHTML}
+      `;
+
+      // Rola a página suavemente até o topo da folha
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Registra escolha no histórico e carrega nova referência
+    function makeChoice(targetId, choiceText) {
+      if (targetId === 0) {
+        historyPath = [{ ref: 0, choiceText: "Início da Jornada" }];
+      } else {
+        historyPath.push({ ref: targetId, choiceText: choiceText });
+      }
+
+      localStorage.setItem('fazdeconta_history', JSON.stringify(historyPath));
+      renderHistory();
+      renderReference(targetId);
+    }
+
+    // Renderiza o card do histórico de escolhas
+    function renderHistory() {
+      const historyEl = document.getElementById('historyList');
+
+      if (!historyPath || historyPath.length === 0) {
+        historyEl.innerHTML = `<li class="history-empty">Nenhum passo registrado ainda.</li>`;
+        return;
+      }
+
+      let html = '';
+      historyPath.forEach((item, index) => {
+        const refLabel = item.ref === 0 ? "Introdução" : `Ref. ${item.ref}`;
+        html += `
+          <li class="history-item">
+            <span class="step-num">#${index + 1} [${refLabel}]:</span>
+            <span class="step-text">${item.choiceText}</span>
+          </li>
+        `;
+      });
+
+      historyEl.innerHTML = html;
+
+      // Mantém a rolagem do histórico no final
+      historyEl.scrollTop = historyEl.scrollHeight;
+    }
+
+    // Reiniciar aventura
+    function confirmRestart() {
+      if (confirm("Tem certeza de que deseja reiniciar sua aventura desde o início?")) {
+        localStorage.removeItem('fazdeconta_current_ref');
+        localStorage.removeItem('fazdeconta_history');
+        historyPath = [{ ref: 0, choiceText: "Início da Jornada" }];
+        renderHistory();
+        renderReference(0);
+      }
+    }
+  </script>
+</body>
+</html>
