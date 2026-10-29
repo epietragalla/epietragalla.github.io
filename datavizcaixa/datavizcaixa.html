@@ -3,8 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CAIXA GeoAnalytics - Inteligência Territorial & Rede de Atendimento</title>
+  <title>CAIXA GeoAnalytics & Portfólio - Looker Studio</title>
   
+  <!-- Fontes Google -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   
@@ -30,6 +35,34 @@
       --caixa-cyan: #00A4E4;
       --caixa-orange: #F37021;
     }
+    body {
+      font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background-color: #f8f9fa;
+      color: #3c4043;
+    }
+    .looker-card {
+      background: #ffffff;
+      border: 1px solid #dadce0;
+      border-radius: 8px;
+      box-shadow: 0 1px 2px 0 rgba(60,64,67,0.1), 0 1px 3px 1px rgba(60,64,67,0.06);
+    }
+    .looker-pill {
+      background: #ffffff;
+      border: 1px solid #dadce0;
+      color: #3c4043;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 5px 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .looker-pill:hover {
+      background-color: #f1f3f4;
+      border-color: #bdc1c6;
+    }
     .custom-cluster {
       background-color: rgba(0, 92, 169, 0.90);
       border: 3px solid #00A4E4;
@@ -46,121 +79,128 @@
     .marker-pin-caminhao { background: #F37021; }
 
     .caixa-marker-pin {
-      width: 30px;
-      height: 30px;
+      width: 28px;
+      height: 28px;
       border-radius: 50% 50% 50% 0;
       position: absolute;
       transform: rotate(-45deg);
       left: 50%;
       top: 50%;
-      margin: -19px 0 0 -15px;
+      margin: -18px 0 0 -14px;
       display: flex;
       align-items: center;
       justify-content: center;
       border: 2px solid #ffffff;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 3px 6px -1px rgba(0, 0, 0, 0.35);
     }
     .caixa-marker-pin::after {
       content: '';
-      width: 10px;
-      height: 10px;
-      margin: 8px 0 0 8px;
+      width: 9px;
+      height: 9px;
+      margin: 7px 0 0 7px;
       background: #ffffff;
       position: absolute;
       border-radius: 50%;
     }
-    .leaflet-popup-content-wrapper {
-      border-radius: 12px;
-      padding: 0;
-      overflow: hidden;
-      box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.25);
-    }
-    .leaflet-popup-content {
-      margin: 0;
-      line-height: 1.4;
+    .nav-tab-active {
+      color: #005CA9;
+      border-bottom: 3px solid #005CA9;
+      font-weight: 700;
     }
     ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+      width: 5px;
+      height: 5px;
     }
     ::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
+      background: #dadce0;
       border-radius: 4px;
     }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-800 font-sans h-screen flex flex-col overflow-hidden">
+<body class="h-screen flex flex-col overflow-hidden">
 
-  <!-- HEADER -->
-  <header class="bg-[#003366] text-white px-6 py-2.5 flex items-center justify-between border-b-4 border-[#F37021] z-20 shadow-md flex-shrink-0">
-    <div class="flex items-center gap-3">
-      <div class="bg-white p-1.5 rounded-lg flex items-center justify-center shadow-inner">
-        <div class="w-7 h-7 bg-[#005CA9] rounded flex items-center justify-center font-black text-white text-base">X</div>
+  <!-- TOP BAR LOOKER STUDIO -->
+  <header class="bg-white border-b border-[#dadce0] px-5 py-2 flex items-center justify-between flex-shrink-0 z-30 shadow-2xs">
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2">
+        <div class="bg-[#003366] p-1.5 rounded-lg flex items-center justify-center">
+          <span class="w-5 h-5 bg-[#005CA9] rounded flex items-center justify-center font-black text-white text-xs">X</span>
+        </div>
+        <div>
+          <h1 class="text-sm font-bold text-[#202124] flex items-center gap-2">
+            CAIXA <span class="text-xs bg-[#e8f0fe] text-[#005CA9] px-2 py-0.5 rounded font-bold">Looker Intelligence</span>
+          </h1>
+        </div>
       </div>
-      <div>
-        <h1 class="text-xl font-black tracking-wide flex items-center gap-2">
-          CAIXA <span class="text-xs bg-[#00A4E4] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider text-white">GeoAnalytics</span>
-        </h1>
-        <p class="text-xs text-slate-300">Inteligência Territorial & Rede de Atendimento Integrada</p>
-      </div>
+
+      <!-- SELETOR DE ABAS LOOKER -->
+      <nav class="flex items-center gap-4 ml-6 text-xs text-slate-600 font-medium">
+        <button id="tab-btn-mapa" class="nav-tab-active py-2 px-1 flex items-center gap-1.5 transition-all">
+          <i data-lucide="map" class="w-4 h-4"></i> Rede & Unidades
+        </button>
+        <button id="tab-btn-produtos" class="py-2 px-1 flex items-center gap-1.5 text-slate-500 hover:text-slate-800 transition-all border-b-3 border-transparent">
+          <i data-lucide="layout-grid" class="w-4 h-4"></i> Produtos CAIXA
+        </button>
+        <button id="tab-btn-fgts" class="py-2 px-1 flex items-center gap-1.5 text-slate-500 hover:text-slate-800 transition-all border-b-3 border-transparent">
+          <i data-lucide="wallet" class="w-4 h-4 text-[#005CA9]"></i> Painel FGTS (DF)
+        </button>
+      </nav>
     </div>
 
-    <!-- SELETOR DE RA E PESQUISA -->
-    <div class="flex items-center gap-3">
-      <div class="flex items-center bg-white/10 rounded-lg p-1 border border-white/20">
-        <span class="text-xs font-semibold px-2 text-[#00A4E4]">Localidade / RA:</span>
-        <select id="select-ra" class="bg-transparent text-white text-sm font-semibold px-2 py-1 focus:outline-none cursor-pointer max-w-[240px]">
-          <option value="ALL" class="text-slate-800">Visão Brasil (Todas as RAs)</option>
-        </select>
+    <!-- CONTROLES SUPERIORES -->
+    <div class="flex items-center gap-2.5">
+      <div id="filter-container-mapa" class="flex items-center gap-2">
+        <div class="looker-pill">
+          <i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#005CA9]"></i>
+          <select id="select-ra" class="bg-transparent focus:outline-none cursor-pointer pr-1 text-slate-700 font-medium text-xs">
+            <option value="ALL">Visão Brasil (Todas as RAs)</option>
+          </select>
+        </div>
+
+        <div class="looker-pill">
+          <i data-lucide="layers" class="w-3.5 h-3.5 text-[#00A4E4]"></i>
+          <select id="filter-tipo" class="bg-transparent focus:outline-none cursor-pointer pr-1 text-slate-700 text-xs">
+            <option value="ALL">Todos os Tipos</option>
+            <option value="Agência">Agência Convencional</option>
+            <option value="PAA">Posto de Atendimento (PAA)</option>
+            <option value="Caminhão">Unidade Móvel (Caminhão)</option>
+          </select>
+        </div>
       </div>
 
       <div class="relative">
-        <input type="text" id="search-input" placeholder="Buscar unidade, RA, código..." 
-               class="bg-white/10 text-white placeholder-slate-300 text-sm rounded-lg pl-8 pr-3 py-1.5 focus:bg-white focus:text-slate-900 focus:outline-none w-64 transition-all border border-white/20">
-        <i data-lucide="search" class="w-4 h-4 text-slate-300 absolute left-2.5 top-2.5"></i>
+        <input type="text" id="search-input" placeholder="Pesquisar..." 
+               class="bg-white border border-[#dadce0] rounded-full text-xs pl-8 pr-3 py-1.5 focus:outline-none focus:border-[#005CA9] w-44 text-slate-700 transition-all">
+        <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2"></i>
       </div>
 
-      <button id="btn-reset" class="bg-[#F37021] hover:bg-[#d95e14] text-white px-3 py-1.5 rounded-lg text-sm font-semibold flex items-center gap-1.5 shadow transition-all">
-        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Redefinir
+      <button id="btn-reset" class="looker-pill hover:bg-slate-100 text-slate-600 text-xs font-semibold">
+        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 text-[#F37021]"></i>
       </button>
     </div>
   </header>
 
-  <!-- WORKSPACE -->
+  <!-- CONTAINER DE TELAS -->
   <div class="flex-1 flex overflow-hidden">
     
-    <!-- SIDEBAR -->
-    <aside class="w-84 bg-white border-r border-slate-200 flex flex-col z-10 shadow-sm flex-shrink-0">
-      
-      <!-- BREADCRUMB -->
-      <div class="px-4 py-2 bg-slate-50 border-b border-slate-200 text-xs flex items-center gap-1 text-slate-500 font-medium">
-        <span class="cursor-pointer hover:text-[#005CA9]" id="bread-br">Brasil</span>
-        <span id="bread-sep-ra" class="hidden">></span>
-        <span id="bread-ra" class="font-bold text-[#F37021] hidden">Plano Piloto</span>
-      </div>
-
-      <!-- FILTROS -->
-      <div class="p-4 border-b border-slate-200 overflow-y-auto max-h-[300px]">
-        <div class="mb-3.5">
-          <label class="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-1.5 flex items-center gap-1">
-            <i data-lucide="layers" class="w-3.5 h-3.5 text-[#005CA9]"></i> Tipo de Ponto de Atendimento
-          </label>
-          <select id="filter-tipo" class="w-full text-xs border border-slate-300 rounded-lg p-2 bg-slate-50 font-medium focus:outline-none focus:border-[#005CA9]">
-            <option value="ALL">Todos os Tipos de Unidade</option>
-            <option value="Agência">Agência Convencional</option>
-            <option value="PAA">Posto de Atendimento (PAA)</option>
-            <option value="Caminhão">Unidade Móvel (Caminhão CAIXA)</option>
-          </select>
+    <!-- ==================== ABA 1: MAPA & REDE ==================== -->
+    <div id="view-mapa" class="flex-1 flex overflow-hidden">
+      <!-- SIDEBAR -->
+      <aside class="w-80 bg-white border-r border-[#dadce0] flex flex-col z-10 flex-shrink-0">
+        <div class="px-4 py-2 bg-slate-50 border-b border-[#dadce0] text-xs flex items-center gap-1.5 text-slate-500 font-medium">
+          <span class="cursor-pointer hover:text-[#005CA9]" id="bread-br">Brasil</span>
+          <span id="bread-sep-ra" class="hidden">></span>
+          <span id="bread-ra" class="font-bold text-[#F37021] hidden">Plano Piloto</span>
         </div>
 
-        <div>
-          <label class="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-2 flex items-center gap-1">
-            <i data-lucide="check-square" class="w-3.5 h-3.5 text-[#F37021]"></i> Serviços Disponíveis
-          </label>
-          <div class="grid grid-cols-1 gap-1.5 text-xs text-slate-700">
+        <div class="p-3.5 border-b border-[#dadce0] bg-white">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 block mb-2 flex items-center gap-1.5">
+            <i data-lucide="check-square" class="w-3.5 h-3.5 text-[#F37021]"></i> Serviços Homologados
+          </span>
+          <div class="space-y-1.5 text-xs text-slate-700">
             <label class="flex items-center gap-2 p-1 rounded hover:bg-slate-50 cursor-pointer">
               <input type="checkbox" id="check-24h" class="rounded text-[#005CA9] focus:ring-0">
-              <span>Autoatendimento 24 Horas</span>
+              <span>Autoatendimento 24h</span>
             </label>
             <label class="flex items-center gap-2 p-1 rounded hover:bg-slate-50 cursor-pointer">
               <input type="checkbox" id="check-acessivel" class="rounded text-[#005CA9] focus:ring-0">
@@ -176,182 +216,333 @@
             </label>
             <label class="flex items-center gap-2 p-1 rounded hover:bg-slate-50 cursor-pointer">
               <input type="checkbox" id="check-habitacao" class="rounded text-[#005CA9] focus:ring-0">
-              <span>Crédito Imobiliário / Habitação</span>
+              <span>Crédito Habitação</span>
             </label>
           </div>
         </div>
-      </div>
 
-      <!-- LISTA DE AGÊNCIAS -->
-      <div class="flex-1 flex flex-col overflow-hidden bg-slate-50">
-        <div class="px-4 py-2 border-b border-slate-200 flex justify-between items-center bg-white">
-          <span class="text-xs font-bold text-slate-700 uppercase flex items-center gap-1.5">
-            <i data-lucide="list" class="w-3.5 h-3.5 text-[#005CA9]"></i> Unidades Listadas
-          </span>
-          <span id="badge-count" class="bg-[#005CA9] text-white text-[11px] font-bold px-2 py-0.5 rounded-full">0</span>
-        </div>
-        <div id="agencias-list" class="flex-1 overflow-y-auto divide-y divide-slate-100 p-2 space-y-1.5"></div>
-      </div>
-    </aside>
-
-    <!-- ÁREA PRINCIPAL -->
-    <main class="flex-1 flex flex-col overflow-y-auto bg-slate-100">
-      
-      <!-- BIG NUMBERS -->
-      <div class="p-4 grid grid-cols-5 gap-3 flex-shrink-0">
-        <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs flex items-center justify-between border-l-4 border-l-[#005CA9]">
-          <div>
-            <p class="text-[11px] font-bold text-slate-400 uppercase">Total de Unidades</p>
-            <h3 id="kpi-total" class="text-2xl font-black text-slate-800 mt-0.5">0</h3>
-            <span class="text-[10px] text-emerald-600 font-semibold flex items-center gap-0.5 mt-0.5">
-              <i data-lucide="check-circle" class="w-3 h-3"></i> Operacionais
-            </span>
-          </div>
-          <div class="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center text-[#005CA9]">
-            <i data-lucide="building-2" class="w-5 h-5"></i>
-          </div>
-        </div>
-
-        <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs flex items-center justify-between border-l-4 border-l-[#00A4E4]">
-          <div>
-            <p class="text-[11px] font-bold text-slate-400 uppercase">Salas 24 Horas</p>
-            <h3 id="kpi-24h" class="text-2xl font-black text-slate-800 mt-0.5">0</h3>
-            <span id="kpi-24h-pct" class="text-[10px] text-[#00A4E4] font-semibold mt-0.5 block">0% do total</span>
-          </div>
-          <div class="w-9 h-9 rounded-lg bg-cyan-50 flex items-center justify-center text-[#00A4E4]">
-            <i data-lucide="clock" class="w-5 h-5"></i>
-          </div>
-        </div>
-
-        <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs flex items-center justify-between border-l-4 border-l-emerald-500">
-          <div>
-            <p class="text-[11px] font-bold text-slate-400 uppercase">Acessíveis</p>
-            <h3 id="kpi-acessivel" class="text-2xl font-black text-slate-800 mt-0.5">0</h3>
-            <span id="kpi-acess-pct" class="text-[10px] text-emerald-600 font-semibold mt-0.5 block">0% acessíveis</span>
-          </div>
-          <div class="w-9 h-9 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
-            <i data-lucide="accessibility" class="w-5 h-5"></i>
-          </div>
-        </div>
-
-        <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs flex items-center justify-between border-l-4 border-l-purple-500">
-          <div>
-            <p class="text-[11px] font-bold text-slate-400 uppercase">Atendimento PJ</p>
-            <h3 id="kpi-pj" class="text-2xl font-black text-slate-800 mt-0.5">0</h3>
-            <span class="text-[10px] text-purple-600 font-semibold mt-0.5 block">Empresas</span>
-          </div>
-          <div class="w-9 h-9 rounded-lg bg-purple-50 flex items-center justify-center text-purple-600">
-            <i data-lucide="briefcase" class="w-5 h-5"></i>
-          </div>
-        </div>
-
-        <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs flex items-center justify-between border-l-4 border-l-[#F37021]">
-          <div>
-            <p class="text-[11px] font-bold text-slate-400 uppercase">Espera Média</p>
-            <h3 id="kpi-espera" class="text-2xl font-black text-slate-800 mt-0.5">14m</h3>
-            <span class="text-[10px] text-slate-500 font-medium mt-0.5 block">Tempo de fila</span>
-          </div>
-          <div class="w-9 h-9 rounded-lg bg-orange-50 flex items-center justify-center text-[#F37021]">
-            <i data-lucide="hourglass" class="w-5 h-5"></i>
-          </div>
-        </div>
-      </div>
-
-      <!-- MAPA -->
-      <div class="px-4 pb-3">
-        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-2 flex flex-col" style="height: 480px;">
-          <div class="flex justify-between items-center px-2 py-1 mb-1">
+        <div class="flex-1 flex flex-col overflow-hidden bg-slate-50">
+          <div class="px-3.5 py-2 border-b border-[#dadce0] flex justify-between items-center bg-white">
             <span class="text-xs font-bold text-slate-700 uppercase flex items-center gap-1.5">
-              <i data-lucide="map-pin" class="w-4 h-4 text-[#005CA9]"></i> Mapa Territorial CAIXA (Visão Brasil)
+              <i data-lucide="list" class="w-3.5 h-3.5 text-[#005CA9]"></i> Unidades
             </span>
-            <div class="flex items-center gap-3 text-[11px] text-slate-600 font-medium">
-              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-[#005CA9]"></span> Agência</span>
-              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-[#00A4E4]"></span> PAA</span>
-              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-[#F37021]"></span> Unidade Móvel</span>
+            <span id="badge-count" class="bg-[#005CA9] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
+          </div>
+          <div id="agencias-list" class="flex-1 overflow-y-auto p-2 space-y-1.5 divide-y divide-slate-100"></div>
+        </div>
+      </aside>
+
+      <!-- MAIN MAPA -->
+      <main class="flex-1 overflow-y-auto p-4 space-y-4 bg-[#f8f9fa]">
+        <div class="grid grid-cols-5 gap-3">
+          <div class="looker-card p-3 flex items-center justify-between border-l-4 border-l-[#005CA9]">
+            <div>
+              <p class="text-[11px] font-bold text-slate-400 uppercase">Total Unidades</p>
+              <h3 id="kpi-total" class="text-2xl font-bold text-slate-800 mt-0.5">0</h3>
+              <span class="text-[10px] text-emerald-600 font-semibold flex items-center gap-0.5 mt-0.5">
+                <i data-lucide="check-circle" class="w-3 h-3"></i> Monitoradas
+              </span>
+            </div>
+            <div class="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center text-[#005CA9]">
+              <i data-lucide="building-2" class="w-5 h-5"></i>
             </div>
           </div>
-          <div id="map" class="w-full flex-1 rounded-lg z-0"></div>
-        </div>
-      </div>
 
-      <!-- GRÁFICOS -->
-      <div class="px-4 pb-6 grid grid-cols-3 gap-4">
-        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 flex items-center gap-1.5">
-            <i data-lucide="pie-chart" class="w-4 h-4 text-[#005CA9]"></i> Tipos de Ponto
-          </h4>
-          <div class="h-44 flex items-center justify-center">
-            <canvas id="chart-tipo"></canvas>
+          <div class="looker-card p-3 flex items-center justify-between border-l-4 border-l-[#00A4E4]">
+            <div>
+              <p class="text-[11px] font-bold text-slate-400 uppercase">Salas 24 Horas</p>
+              <h3 id="kpi-24h" class="text-2xl font-bold text-slate-800 mt-0.5">0</h3>
+              <span id="kpi-24h-pct" class="text-[10px] text-[#00A4E4] font-semibold mt-0.5 block">0% do total</span>
+            </div>
+            <div class="w-9 h-9 rounded-lg bg-cyan-50 flex items-center justify-center text-[#00A4E4]">
+              <i data-lucide="clock" class="w-5 h-5"></i>
+            </div>
+          </div>
+
+          <div class="looker-card p-3 flex items-center justify-between border-l-4 border-l-emerald-500">
+            <div>
+              <p class="text-[11px] font-bold text-slate-400 uppercase">Acessibilidade</p>
+              <h3 id="kpi-acessivel" class="text-2xl font-bold text-slate-800 mt-0.5">0</h3>
+              <span id="kpi-acess-pct" class="text-[10px] text-emerald-600 font-semibold mt-0.5 block">0% acessíveis</span>
+            </div>
+            <div class="w-9 h-9 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
+              <i data-lucide="accessibility" class="w-5 h-5"></i>
+            </div>
+          </div>
+
+          <div class="looker-card p-3 flex items-center justify-between border-l-4 border-l-purple-500">
+            <div>
+              <p class="text-[11px] font-bold text-slate-400 uppercase">Atendimento PJ</p>
+              <h3 id="kpi-pj" class="text-2xl font-bold text-slate-800 mt-0.5">0</h3>
+              <span class="text-[10px] text-purple-600 font-semibold mt-0.5 block">Empresas</span>
+            </div>
+            <div class="w-9 h-9 rounded-lg bg-purple-50 flex items-center justify-center text-purple-600">
+              <i data-lucide="briefcase" class="w-5 h-5"></i>
+            </div>
+          </div>
+
+          <div class="looker-card p-3 flex items-center justify-between border-l-4 border-l-[#F37021]">
+            <div>
+              <p class="text-[11px] font-bold text-slate-400 uppercase">Espera Média</p>
+              <h3 id="kpi-espera" class="text-2xl font-bold text-slate-800 mt-0.5">14m</h3>
+              <span class="text-[10px] text-slate-500 font-medium mt-0.5 block">Tempo de fila</span>
+            </div>
+            <div class="w-9 h-9 rounded-lg bg-orange-50 flex items-center justify-center text-[#F37021]">
+              <i data-lucide="hourglass" class="w-5 h-5"></i>
+            </div>
           </div>
         </div>
 
-        <div class="col-span-2 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 flex items-center gap-1.5">
-            <i data-lucide="bar-chart-3" class="w-4 h-4 text-[#005CA9]"></i> Distribuição Territorial de Unidades
-          </h4>
-          <div class="h-44">
-            <canvas id="chart-ras"></canvas>
+        <!-- MAPA COM CARD FLUTUANTE GA4 -->
+        <div class="relative looker-card overflow-hidden" style="height: 460px;">
+          <div id="map" class="w-full h-full z-0"></div>
+
+          <!-- OVERLAY GA4 REALTIME -->
+          <div class="absolute top-4 left-4 z-10 w-72 bg-white/95 backdrop-blur-md rounded-lg border border-[#dadce0] p-3 shadow-md pointer-events-auto">
+            <div class="flex items-center justify-between text-[#5f6368] mb-1">
+              <span class="text-[10px] font-bold tracking-wider uppercase">Unidades em Foco</span>
+              <i data-lucide="activity" class="w-3.5 h-3.5 text-[#005CA9]"></i>
+            </div>
+            
+            <div class="flex items-baseline gap-2">
+              <h2 id="realtime-total" class="text-3xl font-normal text-[#202124] tracking-tight">0</h2>
+              <span class="text-[11px] text-emerald-600 font-medium">pontos ativos</span>
+            </div>
+
+            <div class="mt-2.5 pt-2 border-t border-[#f1f3f4]">
+              <span class="text-[9px] font-bold uppercase tracking-wider text-[#70757a] block mb-1">Distribuição de Carga / Fluxo</span>
+              <div class="h-9">
+                <canvas id="chart-sparkline"></canvas>
+              </div>
+            </div>
+
+            <div class="mt-2.5 pt-2 border-t border-[#f1f3f4]">
+              <span class="text-[9px] font-bold uppercase tracking-wider text-[#70757a] block mb-1">Composição por Tipo</span>
+              <div class="h-20 flex items-center justify-center">
+                <canvas id="chart-tipo"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="absolute top-4 right-4 z-10 flex gap-1.5 bg-white/90 backdrop-blur rounded-lg border border-[#dadce0] p-1 shadow-sm">
+            <button id="btn-zoom-br" class="px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-100 rounded">Brasil</button>
+            <button id="btn-zoom-df" class="px-2.5 py-1 text-xs font-semibold text-[#005CA9] bg-blue-50 hover:bg-blue-100 rounded">Distrito Federal (35 RAs)</button>
           </div>
         </div>
+
+        <!-- SCORECARDS HORIZONTAIS -->
+        <div class="grid grid-cols-3 gap-4">
+          <div class="looker-card p-4">
+            <div class="flex items-center justify-between text-xs text-slate-500 mb-2">
+              <span class="font-semibold text-[#202124]">Concentração Territorial</span>
+              <i data-lucide="bar-chart-2" class="w-3.5 h-3.5 text-slate-400"></i>
+            </div>
+            <div class="mb-3">
+              <span class="text-[11px] text-slate-400">#1 Principal Polo</span>
+              <div class="flex items-baseline gap-2">
+                <h4 id="top1-ra-nome" class="text-lg font-normal text-slate-900 truncate">Plano Piloto</h4>
+                <span id="top1-ra-count" class="text-xs font-bold text-[#005CA9]">10 un.</span>
+              </div>
+            </div>
+            <div class="space-y-2 text-xs" id="table-ra-bars"></div>
+          </div>
+
+          <div class="looker-card p-4">
+            <div class="flex items-center justify-between text-xs text-slate-500 mb-2">
+              <span class="font-semibold text-[#202124]">Serviços & Recursos</span>
+              <i data-lucide="layers" class="w-3.5 h-3.5 text-slate-400"></i>
+            </div>
+            <div class="mb-3">
+              <span class="text-[11px] text-slate-400">Serviço Predominante</span>
+              <div class="flex items-baseline gap-2">
+                <h4 class="text-lg font-normal text-slate-900">Salas 24 Horas</h4>
+                <span id="kpi-24h-sub" class="text-xs font-bold text-[#00A4E4]">0 un.</span>
+              </div>
+            </div>
+            <div class="space-y-2 text-xs" id="table-services-bars"></div>
+          </div>
+
+          <div class="looker-card p-4">
+            <div class="flex items-center justify-between text-xs text-slate-500 mb-2">
+              <span class="font-semibold text-[#202124]">Eficiência no Atendimento</span>
+              <i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400"></i>
+            </div>
+            <div class="mb-3">
+              <span class="text-[11px] text-slate-400">Menores Tempos de Espera</span>
+              <div class="flex items-baseline gap-2">
+                <h4 class="text-lg font-normal text-slate-900">Agilidade Operacional</h4>
+                <span class="text-xs text-emerald-600 font-semibold">Dentro do SLA</span>
+              </div>
+            </div>
+            <div class="space-y-2 text-xs" id="table-speed-bars"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- ==================== ABA 2: PRODUTOS CAIXA ==================== -->
+    <div id="view-produtos" class="flex-1 overflow-y-auto p-6 bg-[#f8f9fa] hidden">
+      <div class="max-w-6xl mx-auto space-y-6">
+        <div>
+          <h2 class="text-xl font-bold text-slate-800">Portfólio de Soluções & Produtos Estratégicos CAIXA</h2>
+          <p class="text-xs text-slate-500">Selecione um produto para visualizar informações regulatórias, estatísticas e bases públicas.</p>
+        </div>
+
+        <div class="grid grid-cols-3 gap-5" id="produtos-grid">
+          <!-- Gerado via JS com cartões interativos -->
+        </div>
       </div>
-    </main>
+    </div>
+
+    <!-- ==================== ABA 3: PAINEL FGTS (DISTRITO FEDERAL) ==================== -->
+    <div id="view-fgts" class="flex-1 overflow-y-auto p-6 bg-[#f8f9fa] hidden">
+      <div class="max-w-7xl mx-auto space-y-5">
+        
+        <!-- HEADER FGTS -->
+        <div class="flex justify-between items-center bg-white p-4 rounded-lg border border-[#dadce0] shadow-2xs">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="bg-[#005CA9] text-white p-1 rounded font-black text-xs">FGTS</span>
+              <h2 class="text-lg font-bold text-slate-900">Painel de Arrecadação & Contas Vinculadas - Distrito Federal</h2>
+            </div>
+            <p class="text-xs text-slate-500 mt-0.5">Estatísticas públicas consolidadas (MTE / Relatórios de Gestão FGTS / PDAD IPEDF).</p>
+          </div>
+          <div class="text-right">
+            <span class="text-xs text-slate-400 font-mono">Exercício Anual DF</span>
+            <p class="text-sm font-bold text-[#005CA9]">R$ 7,12 Bilhões Arrecadados/ano</p>
+          </div>
+        </div>
+
+        <!-- BIG NUMBERS FGTS -->
+        <div class="grid grid-cols-4 gap-4">
+          <div class="looker-card p-4 border-l-4 border-l-[#005CA9]">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Arrecadado Anual (DF)</span>
+            <h3 class="text-2xl font-black text-slate-800 mt-1">R$ 7,12 Bi</h3>
+            <span class="text-[11px] text-emerald-600 font-medium">↑ +6.4% em relação ao exercício anterior</span>
+          </div>
+
+          <div class="looker-card p-4 border-l-4 border-l-[#00A4E4]">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Saldo Sob Gestão (DF)</span>
+            <h3 class="text-2xl font-black text-slate-800 mt-1">R$ 28,45 Bi</h3>
+            <span class="text-[11px] text-slate-500 font-medium">Contas ativas e inativas vinculadas</span>
+          </div>
+
+          <div class="looker-card p-4 border-l-4 border-l-emerald-500">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Trabalhadores Formais CLT</span>
+            <h3 class="text-2xl font-black text-slate-800 mt-1">1.024.300</h3>
+            <span class="text-[11px] text-emerald-600 font-medium">Recolhimento regular mensal de 8%</span>
+          </div>
+
+          <div class="looker-card p-4 border-l-4 border-l-[#F37021]">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Saldo Médio / Cotista no DF</span>
+            <h3 class="text-2xl font-black text-slate-800 mt-1">R$ 27.780</h3>
+            <span class="text-[11px] text-[#F37021] font-semibold">Média ponderada pelas 35 RAs</span>
+          </div>
+        </div>
+
+        <!-- GRÁFICOS DO FGTS -->
+        <div class="grid grid-cols-3 gap-4">
+          <div class="looker-card p-4">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-1.5">
+              <i data-lucide="pie-chart" class="w-4 h-4 text-[#005CA9]"></i> Modalidades de Saque (DF)
+            </h4>
+            <div class="h-48 flex items-center justify-center">
+              <canvas id="chart-fgts-modalidade"></canvas>
+            </div>
+          </div>
+
+          <div class="col-span-2 looker-card p-4">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-1.5">
+              <i data-lucide="bar-chart-3" class="w-4 h-4 text-[#005CA9]"></i> Top RAs por Volume de Recursos do FGTS
+            </h4>
+            <div class="h-48">
+              <canvas id="chart-fgts-ras"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- TABELA DETALHADA DAS 35 RAs DO DF COM O FGTS -->
+        <div class="looker-card overflow-hidden">
+          <div class="p-4 border-b border-[#dadce0] flex justify-between items-center bg-slate-50">
+            <span class="text-xs font-bold text-slate-700 uppercase">Detalhamento por Região Administrativa (35 RAs do Distrito Federal)</span>
+            <span class="text-[11px] text-slate-500">Estimativas baseadas em RAIS/CAGED/PDAD IPEDF</span>
+          </div>
+          <div class="overflow-x-auto max-h-80">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-100 text-slate-600 font-semibold sticky top-0 border-b border-[#dadce0]">
+                <tr>
+                  <th class="p-3">Região Administrativa</th>
+                  <th class="p-3">Trabalhadores Formais (CLT)</th>
+                  <th class="p-3">Saldo Médio / Cotista</th>
+                  <th class="p-3">Volume Total Estimado</th>
+                  <th class="p-3">Arrecadação Mensal Estimada</th>
+                  <th class="p-3">Perfil Predominante</th>
+                </tr>
+              </thead>
+              <tbody id="table-fgts-body" class="divide-y divide-slate-100">
+                <!-- Populado via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 
-  <!-- MODAL -->
-  <div id="modal-detalhe" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 transform transition-all">
-      <div class="flex justify-between items-start border-b border-slate-100 pb-3 mb-4">
+  <!-- MODAL DE DETALHES -->
+  <div id="modal-detalhe" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg max-w-lg w-full p-6 shadow-xl border border-[#dadce0]">
+      <div class="flex justify-between items-start border-b border-[#f1f3f4] pb-3 mb-4">
         <div>
-          <span id="modal-tipo" class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-blue-100 text-[#005CA9]"></span>
-          <h3 id="modal-nome" class="text-lg font-black text-slate-900 mt-1"></h3>
+          <span id="modal-tipo" class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-blue-50 text-[#005CA9]"></span>
+          <h3 id="modal-nome" class="text-base font-semibold text-[#202124] mt-1"></h3>
           <p id="modal-codigo" class="text-xs text-slate-400 font-mono"></p>
         </div>
-        <button id="modal-close" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100">
+        <button id="modal-close" class="text-slate-400 hover:text-slate-600 p-1 rounded-full">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
 
-      <div class="space-y-3.5 text-xs text-slate-600">
-        <div class="flex items-start gap-2">
-          <i data-lucide="map-pin" class="w-4 h-4 text-[#005CA9] flex-shrink-0 mt-0.5"></i>
+      <div class="space-y-3 text-xs text-slate-600">
+        <div>
+          <strong class="text-slate-800 block mb-0.5">Endereço Completo:</strong>
+          <p id="modal-endereco" class="text-slate-600"></p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 pt-2 border-t border-[#f1f3f4]">
           <div>
-            <strong class="text-slate-800">Localização:</strong>
-            <p id="modal-endereco" class="text-slate-600"></p>
+            <strong class="text-slate-800 block mb-0.5">Telefone Direto:</strong>
+            <p id="modal-telefone" class="font-medium text-slate-800"></p>
+          </div>
+          <div>
+            <strong class="text-slate-800 block mb-0.5">Horário Bancário:</strong>
+            <p id="modal-horario" class="font-medium text-slate-800"></p>
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3 pt-1 border-t border-slate-100">
+        <div class="grid grid-cols-2 gap-2 pt-2 border-t border-[#f1f3f4]">
           <div>
-            <strong class="text-slate-800 flex items-center gap-1 mb-0.5"><i data-lucide="phone" class="w-3.5 h-3.5 text-slate-400"></i> Telefone Direto:</strong>
-            <p id="modal-telefone" class="font-semibold text-slate-800"></p>
+            <strong class="text-slate-800 block mb-0.5">Caixas Eletrônicos (ATMs):</strong>
+            <p id="modal-atms" class="font-medium text-slate-800"></p>
           </div>
           <div>
-            <strong class="text-slate-800 flex items-center gap-1 mb-0.5"><i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400"></i> Horário Bancário:</strong>
-            <p id="modal-horario" class="font-semibold text-slate-800"></p>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3 border-t border-slate-100 pt-1">
-          <div>
-            <strong class="text-slate-800 flex items-center gap-1 mb-0.5"><i data-lucide="credit-card" class="w-3.5 h-3.5 text-slate-400"></i> ATMs (Caixas Eletrônicos):</strong>
-            <p id="modal-atms" class="font-semibold text-slate-800"></p>
-          </div>
-          <div>
-            <strong class="text-slate-800 flex items-center gap-1 mb-0.5"><i data-lucide="hourglass" class="w-3.5 h-3.5 text-[#F37021]"></i> Espera Estimada:</strong>
+            <strong class="text-slate-800 block mb-0.5">Tempo Médio Estimado:</strong>
             <p id="modal-espera" class="font-bold text-[#F37021]"></p>
           </div>
         </div>
 
-        <div class="border-t border-slate-100 pt-2">
-          <strong class="text-slate-800 block mb-1.5">Recursos & Serviços Homologados:</strong>
-          <div id="modal-tags" class="flex flex-wrap gap-1.5"></div>
+        <div class="pt-2 border-t border-[#f1f3f4]">
+          <strong class="text-slate-800 block mb-1.5">Recursos Homologados:</strong>
+          <div id="modal-tags" class="flex flex-wrap gap-1"></div>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    // 35 REGIÕES ADMINISTRATIVAS DO DISTRITO FEDERAL
+    // 35 RAs DO DF
     const DF_REGIOES_ADMINISTRATIVAS = [
       { id: "RA_I", nome: "Plano Piloto", lat: -15.7942, lng: -47.8822 },
       { id: "RA_II", nome: "Gama", lat: -16.0182, lng: -48.0645 },
@@ -392,7 +583,6 @@
 
     // BASE DE DADOS COMPLETA DE PONTOS CAIXA
     const CAIXA_DATA = [
-      // Distrito Federal (35 RAs)
       { id: "0001", nome: "Agência Matriz CAIXA (Sede I)", ra: "Plano Piloto", lat: -15.7981, lng: -47.8824, tipo: "Agência", endereco: "SBS Quadra 4 Lote 3/4 - Asa Sul", telefone: "(61) 3206-9000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 22, espera: "10 min" },
       { id: "0972", nome: "Agência Esplanada dos Ministérios", ra: "Plano Piloto", lat: -15.7975, lng: -47.8762, tipo: "Agência", endereco: "Esplanada dos Ministérios, Bloco P - Fazenda", telefone: "(61) 3412-2000", horario: "10h às 16h", auto24h: false, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 8, espera: "8 min" },
       { id: "0647", nome: "Agência Pátio Brasil", ra: "Plano Piloto", lat: -15.7963, lng: -47.8921, tipo: "Agência", endereco: "SCS Quadra 7 Bloco A - Shopping Pátio Brasil", telefone: "(61) 3323-8100", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 14, espera: "18 min" },
@@ -448,7 +638,7 @@
       { id: "9008", nome: "Caminhão CAIXA Arapoanga", ra: "Arapoanga", lat: -15.6310, lng: -47.6980, tipo: "Caminhão", endereco: "Quadra 05 Área Especial - Av. Principal", telefone: "(61) 4004-0104", horario: "09h às 15h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: false, atms: 3, espera: "16 min" },
       { id: "9009", nome: "Caminhão CAIXA Água Quente", ra: "Água Quente", lat: -15.9620, lng: -48.1750, tipo: "Caminhão", endereco: "Área Especial Central - DF-280", telefone: "(61) 4004-0104", horario: "09h às 15h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: false, atms: 2, espera: "14 min" },
 
-      // Unidades de Referência Nacional em outras Capitais
+      // Capitais de Referência (Brasil)
       { id: "0235", nome: "Agência Sé", ra: "São Paulo (SP)", lat: -23.5498, lng: -46.6340, tipo: "Agência", endereco: "Praça da Sé, 111", telefone: "(11) 3242-1000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 24, espera: "21 min" },
       { id: "0180", nome: "Agência Rio Branco", ra: "Rio de Janeiro (RJ)", lat: -22.9035, lng: -43.1789, tipo: "Agência", endereco: "Av. Rio Branco, 174", telefone: "(21) 2212-3000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 18, espera: "17 min" },
       { id: "0081", nome: "Agência Belo Horizonte Centro", ra: "Belo Horizonte (MG)", lat: -19.9191, lng: -43.9386, tipo: "Agência", endereco: "Rua Rio de Janeiro, 750", telefone: "(31) 3270-4000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 16, espera: "16 min" },
@@ -457,8 +647,112 @@
       { id: "0501", nome: "Agência Manaus Praça da Polícia", ra: "Manaus (AM)", lat: -3.1325, lng: -60.0210, tipo: "Agência", endereco: "Rua Guilherme Moreira, 315", telefone: "(92) 3621-1200", horario: "09h às 15h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 16, espera: "19 min" }
     ];
 
+    // DADOS ANALÍTICOS DE FGTS NAS 35 RAs DO DISTRITO FEDERAL
+    const FGTS_DATA_DF = [
+      { ra: "Plano Piloto", clt: 265000, saldoMedio: 46500, volumeTotal: 12322500000, arrecadacaoMes: 198000000, perfil: "Executivo / Corporativo" },
+      { ra: "Taguatinga", clt: 122000, saldoMedio: 28400, volumeTotal: 3464800000, arrecadacaoMes: 62000000, perfil: "Comércio / Serviços" },
+      { ra: "Ceilândia", clt: 148000, saldoMedio: 15200, volumeTotal: 2249600000, arrecadacaoMes: 48500000, perfil: "Industrial / Comércio" },
+      { ra: "Águas Claras", clt: 84000, saldoMedio: 36200, volumeTotal: 3040800000, arrecadacaoMes: 51200000, perfil: "Serviços / Médio-Alto" },
+      { ra: "Guará", clt: 58000, saldoMedio: 26800, volumeTotal: 1554400000, arrecadacaoMes: 29000000, perfil: "Serviços / Residencial" },
+      { ra: "Samambaia", clt: 79000, saldoMedio: 13900, volumeTotal: 1098100000, arrecadacaoMes: 24500000, perfil: "Construção / Comércio" },
+      { ra: "Gama", clt: 54000, saldoMedio: 19800, volumeTotal: 1069200000, arrecadacaoMes: 21000000, perfil: "Saúde / Indústria / Polo" },
+      { ra: "Sudoeste/Octogonal", clt: 42000, saldoMedio: 52100, volumeTotal: 2188200000, arrecadacaoMes: 36000000, perfil: "Alta Renda / Consultoria" },
+      { ra: "Santa Maria", clt: 46000, saldoMedio: 12400, volumeTotal: 570400000, arrecadacaoMes: 14200000, perfil: "Comércio Local" },
+      { ra: "Sobradinho", clt: 36000, saldoMedio: 22500, volumeTotal: 810000000, arrecadacaoMes: 16500000, perfil: "Residencial / Serviços" },
+      { ra: "Planaltina", clt: 41000, saldoMedio: 13200, volumeTotal: 541200000, arrecadacaoMes: 13800000, perfil: "Agro / Comércio" },
+      { ra: "SIA", clt: 38000, saldoMedio: 31200, volumeTotal: 1185600000, arrecadacaoMes: 34500000, perfil: "Atacado / Logística" },
+      { ra: "Vicente Pires", clt: 32000, saldoMedio: 27900, volumeTotal: 892800000, arrecadacaoMes: 18200000, perfil: "Pequenas Empresas" },
+      { ra: "Lago Sul", clt: 16000, saldoMedio: 58400, volumeTotal: 934400000, arrecadacaoMes: 18500000, perfil: "Alta Renda" },
+      { ra: "Lago Norte", clt: 14000, saldoMedio: 51200, volumeTotal: 716800000, arrecadacaoMes: 14100000, perfil: "Alta Renda" },
+      { ra: "Jardim Botânico", clt: 18000, saldoMedio: 39500, volumeTotal: 711000000, arrecadacaoMes: 13900000, perfil: "Condomínios / Serviços" },
+      { ra: "Recanto das Emas", clt: 37000, saldoMedio: 11800, volumeTotal: 436600000, arrecadacaoMes: 11200000, perfil: "Varejo Popular" },
+      { ra: "São Sebastião", clt: 31000, saldoMedio: 12900, volumeTotal: 399900000, arrecadacaoMes: 9800000, perfil: "Construção / Varejo" },
+      { ra: "Riacho Fundo", clt: 21000, saldoMedio: 17800, volumeTotal: 373800000, arrecadacaoMes: 8400000, perfil: "Serviços Gerais" },
+      { ra: "Riacho Fundo II", clt: 19000, saldoMedio: 12200, volumeTotal: 231800000, arrecadacaoMes: 5900000, perfil: "Habitacional Popular" },
+      { ra: "Paranoá", clt: 22000, saldoMedio: 12500, volumeTotal: 275000000, arrecadacaoMes: 6800000, perfil: "Comércio Local" },
+      { ra: "Núcleo Bandeirante", clt: 16000, saldoMedio: 24100, volumeTotal: 385600000, arrecadacaoMes: 8100000, perfil: "Comércio Central" },
+      { ra: "Cruzeiro", clt: 18000, saldoMedio: 33400, volumeTotal: 601200000, arrecadacaoMes: 12000000, perfil: "Funcionalismo / Serviços" },
+      { ra: "Brazlândia", clt: 17000, saldoMedio: 14600, volumeTotal: 248200000, arrecadacaoMes: 6200000, perfil: "Agronegócio / Hortifrúti" },
+      { ra: "Sobradinho II", clt: 24000, saldoMedio: 14200, volumeTotal: 340800000, arrecadacaoMes: 8200000, perfil: "Serviços Gerais" },
+      { ra: "Itapoã", clt: 18000, saldoMedio: 10400, volumeTotal: 187200000, arrecadacaoMes: 4700000, perfil: "Comércio Local" },
+      { ra: "SCIA / Estrutural", clt: 12000, saldoMedio: 9200, volumeTotal: 110400000, arrecadacaoMes: 3100000, perfil: "Reciclagem / Serviços" },
+      { ra: "Sol Nascente/Pôr do Sol", clt: 28000, saldoMedio: 9800, volumeTotal: 274400000, arrecadacaoMes: 7100000, perfil: "Construção / Informal" },
+      { ra: "Arniqueira", clt: 15000, saldoMedio: 25400, volumeTotal: 381000000, arrecadacaoMes: 8900000, perfil: "Pequenos Negócios" },
+      { ra: "Park Way", clt: 9000, saldoMedio: 48900, volumeTotal: 440100000, arrecadacaoMes: 9800000, perfil: "Aeroportuário / Renda Alta" },
+      { ra: "Candangolândia", clt: 8000, saldoMedio: 19500, volumeTotal: 156000000, arrecadacaoMes: 3800000, perfil: "Comércio Tradicional" },
+      { ra: "Varjão", clt: 5000, saldoMedio: 11200, volumeTotal: 56000000, arrecadacaoMes: 1400000, perfil: "Serviços Domésticos" },
+      { ra: "Fercal", clt: 4500, saldoMedio: 15800, volumeTotal: 71100000, arrecadacaoMes: 1800000, perfil: "Cimenteira / Mineração" },
+      { ra: "Arapoanga", clt: 11000, saldoMedio: 10100, volumeTotal: 111100000, arrecadacaoMes: 2900000, perfil: "Varejo Bairro" },
+      { ra: "Água Quente", clt: 6000, saldoMedio: 9500, volumeTotal: 57000000, arrecadacaoMes: 1500000, perfil: "Zona de Expansão" }
+    ];
+
+    // CATÁLOGO DE PRODUTOS DA CAIXA
+    const PRODUTOS_CAIXA = [
+      {
+        id: "fgts",
+        nome: "FGTS (Fundo de Garantia)",
+        categoria: "Benefícios & Trabalhador",
+        icone: "wallet",
+        cor: "#005CA9",
+        descricao: "Gestão exclusiva de contas vinculadas dos trabalhadores, Saque-Aniversário, Habitação e suporte ao trabalhador CLT.",
+        destaque: "R$ 7,12 Bi arrecadados no DF",
+        temPainelDedicado: true
+      },
+      {
+        id: "habitacao",
+        nome: "Crédito Imobiliário / Habitação",
+        categoria: "Financiamento & Cidadania",
+        icone: "home",
+        cor: "#00A4E4",
+        descricao: "Líder nacional com recursos SBPE e FGTS. Programa Minha Casa Minha Vida com subsídios e financiamentos de longo prazo.",
+        destaque: "Maior carteira imobiliária da AL",
+        temPainelDedicado: false
+      },
+      {
+        id: "poupanca",
+        nome: "Poupança & Investimentos CAIXA",
+        categoria: "Captação & Rentabilidade",
+        icone: "piggy-bank",
+        cor: "#F37021",
+        descricao: "A mais tradicional aplicação financeira do país. Isenta de IR para pessoa física com garantia total do FGC.",
+        destaque: "Mais de 100 milhões de poupadores",
+        temPainelDedicado: false
+      },
+      {
+        id: "penhor",
+        nome: "Penhor CAIXA",
+        categoria: "Crédito Ágil Sem Consulta",
+        icone: "gem",
+        cor: "#8b5cf6",
+        descricao: "Empréstimo instantâneo sem consulta ao SPC/Serasa, utilizando joias, ouro e relógios de valor como garantia contratual.",
+        destaque: "Exclusividade federal da CAIXA",
+        temPainelDedicado: false
+      },
+      {
+        id: "social",
+        nome: "Bolsa Família & Benefícios Sociais",
+        categoria: "Programas de Transferência",
+        icone: "hand-heart",
+        cor: "#10b981",
+        descricao: "Operação do aplicativo Caixa Tem, pagamento do PIS/Abono Salarial, Seguro-Desemprego e programas governamentais.",
+        destaque: "Pilar central de bancarização",
+        temPainelDedicado: false
+      },
+      {
+        id: "loterias",
+        nome: "Loterias CAIXA",
+        categoria: "Repasse Social & Sorteios",
+        icone: "ticket",
+        cor: "#ec4899",
+        descricao: "Mega-Sena, Quina e Lotofácil. Cerca de metade da arrecadação é destinada para educação, segurança e esporte.",
+        destaque: "Milhões repassados para a sociedade",
+        temPainelDedicado: false
+      }
+    ];
+
     // ESTADO REATIVO
     const appState = {
+      activeTab: 'mapa',
       ra: 'ALL',
       tipo: 'ALL',
       auto24h: false,
@@ -470,20 +764,22 @@
       filteredData: [...CAIXA_DATA]
     };
 
-    // INICIALIZAÇÃO DO MAPA COM ENQUADRAMENTO AMPLO DO BRASIL
+    // INICIALIZAÇÃO DO MAPA
     const map = L.map('map', {
       center: [-14.2350, -51.9253],
       zoom: 4,
-      zoomControl: true,
+      zoomControl: false,
       minZoom: 3
     });
 
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
-      attribution: 'Esri & CAIXA GeoAnalytics',
+      attribution: 'Esri & CAIXA Looker GeoAnalytics',
       maxZoom: 18
     }).addTo(map);
 
-    // MALHA DE ESTADOS (GEOJSON)
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+    // MALHA VETORIAL ESTADOS BRASIL
     const statesLayerGroup = L.geoJSON(null, {
       style: {
         fillColor: '#005CA9',
@@ -491,16 +787,6 @@
         opacity: 0.9,
         color: '#ffffff',
         fillOpacity: 0.08
-      },
-      onEachFeature: function(feature, layer) {
-        layer.on({
-          mouseover: function(e) {
-            e.target.setStyle({ fillOpacity: 0.25, fillColor: '#00A4E4' });
-          },
-          mouseout: function(e) {
-            statesLayerGroup.resetStyle(e.target);
-          }
-        });
       }
     }).addTo(map);
 
@@ -509,14 +795,13 @@
       .then(data => statesLayerGroup.addData(data))
       .catch(err => console.warn('GeoJSON states fallback:', err));
 
-    // CLUSTERING DE MARCADORES
+    // CLUSTERING DE AGÊNCIAS
     const markerClusterGroup = L.markerClusterGroup({
       showCoverageOnHover: false,
-      maxClusterRadius: 40,
+      maxClusterRadius: 38,
       iconCreateFunction: function (cluster) {
-        const count = cluster.getChildCount();
         return L.divIcon({
-          html: `<div>${count}</div>`,
+          html: `<div>${cluster.getChildCount()}</div>`,
           className: 'custom-cluster',
           iconSize: L.point(34, 34)
         });
@@ -524,33 +809,54 @@
     });
     map.addLayer(markerClusterGroup);
 
-    // CÍRCULOS INDICADORES DAS RAs DO DF
+    // CÍRCULOS DAS 35 RAs
     const rasLayerGroup = L.layerGroup().addTo(map);
-
     function renderRaPolygons() {
       rasLayerGroup.clearLayers();
       DF_REGIOES_ADMINISTRATIVAS.forEach(ra => {
         const count = CAIXA_DATA.filter(d => d.ra === ra.nome).length;
         const circle = L.circleMarker([ra.lat, ra.lng], {
-          radius: 12,
+          radius: 11,
           fillColor: count > 0 ? '#005CA9' : '#94a3b8',
           color: '#ffffff',
           weight: 2,
           opacity: 1,
           fillOpacity: 0.65
         });
-
         circle.bindTooltip(`<strong>${ra.nome}</strong><br>${count} ponto(s) CAIXA`, { direction: 'top' });
         circle.on('click', () => setRaFilter(ra.nome));
         rasLayerGroup.addLayer(circle);
       });
     }
 
-    // CHART.JS
+    // GRÁFICOS CHART.JS
     let chartTipo = null;
-    let chartRas = null;
+    let sparklineChart = null;
+    let chartFgtsModalidade = null;
+    let chartFgtsRas = null;
 
     function initCharts() {
+      // 1. Sparkline GA4
+      const ctxSpark = document.getElementById('chart-sparkline').getContext('2d');
+      sparklineChart = new Chart(ctxSpark, {
+        type: 'bar',
+        data: {
+          labels: Array.from({length: 20}, (_, i) => i + 1),
+          datasets: [{
+            data: [6, 8, 4, 12, 16, 9, 14, 19, 11, 15, 20, 14, 8, 12, 17, 13, 9, 7, 10, 14],
+            backgroundColor: '#005CA9',
+            borderRadius: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { x: { display: false }, y: { display: false } }
+        }
+      });
+
+      // 2. Rosca de Tipo
       const ctxTipo = document.getElementById('chart-tipo').getContext('2d');
       chartTipo = new Chart(ctxTipo, {
         type: 'doughnut',
@@ -566,18 +872,42 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } }
+          cutout: '70%',
+          plugins: { legend: { display: false } }
         }
       });
 
-      const ctxRas = document.getElementById('chart-ras').getContext('2d');
-      chartRas = new Chart(ctxRas, {
+      // 3. Modalidade de Saque FGTS
+      const ctxModalidade = document.getElementById('chart-fgts-modalidade').getContext('2d');
+      chartFgtsModalidade = new Chart(ctxModalidade, {
+        type: 'doughnut',
+        data: {
+          labels: ['Rescisão Sem Justa Causa', 'Saque-Aniversário', 'Habitação / Compra Imóvel', 'Aposentadoria / Outros'],
+          datasets: [{
+            data: [42, 31, 18, 9],
+            backgroundColor: ['#005CA9', '#00A4E4', '#F37021', '#10b981'],
+            borderWidth: 2,
+            borderColor: '#ffffff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 9 } } } }
+        }
+      });
+
+      // 4. Top RAs por Volume de FGTS
+      const ctxFgtsRas = document.getElementById('chart-fgts-ras').getContext('2d');
+      const topRasFgts = [...FGTS_DATA_DF].sort((a,b) => b.volumeTotal - a.volumeTotal).slice(0, 8);
+
+      chartFgtsRas = new Chart(ctxFgtsRas, {
         type: 'bar',
         data: {
-          labels: [],
+          labels: topRasFgts.map(r => r.ra),
           datasets: [{
-            label: 'Unidades CAIXA',
-            data: [],
+            label: 'Volume em Bilhões (R$)',
+            data: topRasFgts.map(r => (r.volumeTotal / 1000000000).toFixed(2)),
             backgroundColor: '#005CA9',
             borderRadius: 4
           }]
@@ -587,16 +917,17 @@
           maintainAspectRatio: false,
           plugins: { legend: { display: false } },
           scales: {
-            x: { grid: { display: false }, ticks: { font: { size: 9 }, maxRotation: 45, minRotation: 45 } },
-            y: { beginAtZero: true, ticks: { precision: 0, font: { size: 10 } } }
+            x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+            y: { beginAtZero: true, ticks: { font: { size: 10 }, callback: v => `R$ ${v}B` } }
           }
         }
       });
     }
 
-    // POPULAR SELECT COM AS 35 RAs
+    // POPULAÇÃO DE ELEMENTOS E TABELAS
     function populateRaSelect() {
       const select = document.getElementById('select-ra');
+      select.innerHTML = '<option value="ALL">Visão Brasil (Todas as Regiões)</option>';
       DF_REGIOES_ADMINISTRATIVAS.forEach(ra => {
         const count = CAIXA_DATA.filter(d => d.ra === ra.nome).length;
         const opt = document.createElement('option');
@@ -607,12 +938,69 @@
       });
     }
 
-    // FILTRO E ATUALIZAÇÃO
+    function renderProdutosGrid() {
+      const grid = document.getElementById('produtos-grid');
+      grid.innerHTML = '';
+
+      PRODUTOS_CAIXA.forEach(prod => {
+        const card = document.createElement('div');
+        card.className = "looker-card p-5 hover:border-[#005CA9] hover:shadow-md cursor-pointer transition-all flex flex-col justify-between";
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 text-slate-600">${prod.categoria}</span>
+              <div class="w-8 h-8 rounded-full flex items-center justify-center text-white" style="background-color: ${prod.cor}">
+                <i data-lucide="${prod.icone}" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <h3 class="text-base font-bold text-slate-800">${prod.nome}</h3>
+            <p class="text-xs text-slate-500 mt-1 leading-relaxed">${prod.descricao}</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+            <span class="text-[11px] font-semibold text-[#005CA9]">${prod.destaque}</span>
+            <button class="text-xs font-bold text-[#005CA9] hover:underline flex items-center gap-1">
+              ${prod.temPainelDedicado ? 'Abrir Painel →' : 'Ver Ficha →'}
+            </button>
+          </div>
+        `;
+
+        card.addEventListener('click', () => {
+          if (prod.temPainelDedicado) {
+            switchTab('fgts');
+          } else {
+            alert(`Ficha técnica institucional: ${prod.nome}\n\n${prod.descricao}\n\nDestaque: ${prod.destaque}`);
+          }
+        });
+
+        grid.appendChild(card);
+      });
+      lucide.createIcons();
+    }
+
+    function renderFgtsTable() {
+      const tbody = document.getElementById('table-fgts-body');
+      tbody.innerHTML = '';
+
+      FGTS_DATA_DF.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 border-b border-slate-100";
+        tr.innerHTML = `
+          <td class="p-3 font-semibold text-slate-800">${item.ra}</td>
+          <td class="p-3 text-slate-600">${item.clt.toLocaleString('pt-BR')}</td>
+          <td class="p-3 font-bold text-[#005CA9]">R$ ${item.saldoMedio.toLocaleString('pt-BR')}</td>
+          <td class="p-3 font-medium text-slate-700">R$ ${(item.volumeTotal / 1000000).toLocaleString('pt-BR', {maximumFractionDigits: 1})} Mi</td>
+          <td class="p-3 text-emerald-600 font-semibold">R$ ${(item.arrecadacaoMes / 1000000).toLocaleString('pt-BR', {maximumFractionDigits: 1})} Mi/mês</td>
+          <td class="p-3 text-slate-500">${item.perfil}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // FILTRO E ATUALIZAÇÃO DA REDE
     function applyFilters() {
       appState.filteredData = CAIXA_DATA.filter(item => {
         const matchRa = (appState.ra === 'ALL' || item.ra === appState.ra);
         const matchTipo = (appState.tipo === 'ALL' || item.tipo === appState.tipo);
-        
         const match24h = !appState.auto24h || item.auto24h;
         const matchAcess = !appState.acessivel || item.acessivel;
         const matchPj = !appState.pj || item.pj;
@@ -636,6 +1024,7 @@
       renderMarkers();
       updateCharts();
       updateBreadcrumb();
+      renderProgressTables();
     }
 
     function renderKPIs() {
@@ -648,7 +1037,9 @@
       const pctAcess = total > 0 ? Math.round((countAcess / total) * 100) : 0;
 
       document.getElementById('kpi-total').textContent = total;
+      document.getElementById('realtime-total').textContent = total;
       document.getElementById('kpi-24h').textContent = count24h;
+      document.getElementById('kpi-24h-sub').textContent = `${count24h} un.`;
       document.getElementById('kpi-24h-pct').textContent = `${pct24h}% do total`;
       document.getElementById('kpi-acessivel').textContent = countAcess;
       document.getElementById('kpi-acess-pct').textContent = `${pctAcess}% do total`;
@@ -663,7 +1054,7 @@
       if (appState.filteredData.length === 0) {
         container.innerHTML = `
           <div class="text-center py-8 text-slate-400">
-            <i data-lucide="map-pin-off" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+            <i data-lucide="map-pin-off" class="w-7 h-7 mx-auto mb-1.5 opacity-50"></i>
             <p class="text-xs">Nenhuma unidade encontrada.</p>
           </div>
         `;
@@ -673,7 +1064,7 @@
 
       appState.filteredData.forEach(item => {
         const card = document.createElement('div');
-        card.className = "p-2.5 rounded-lg border border-slate-200 hover:border-[#00A4E4] hover:bg-blue-50/50 cursor-pointer transition-all bg-white shadow-2xs";
+        card.className = "p-2 rounded border border-slate-200 hover:border-[#00A4E4] hover:bg-blue-50/40 cursor-pointer transition-all bg-white shadow-2xs";
         
         let badgeColor = "bg-blue-50 text-[#005CA9]";
         if (item.tipo === "PAA") badgeColor = "bg-cyan-50 text-[#00A4E4]";
@@ -707,17 +1098,16 @@
         const customIcon = L.divIcon({
           className: 'caixa-marker-wrap',
           html: `<div class="caixa-marker-pin ${pinClass}"></div>`,
-          iconSize: [30, 30],
-          iconAnchor: [15, 30],
-          popupAnchor: [0, -26]
+          iconSize: [28, 28],
+          iconAnchor: [14, 28],
+          popupAnchor: [0, -24]
         });
 
         const marker = L.marker([item.lat, item.lng], { icon: customIcon });
-
         const popupContent = `
-          <div class="bg-white p-3.5 text-xs text-slate-800 min-w-[220px]">
-            <span class="text-[9px] font-bold uppercase tracking-wider bg-blue-100 text-[#005CA9] px-2 py-0.5 rounded-full">${item.tipo} • ${item.ra}</span>
-            <h4 class="text-sm font-black text-slate-900 mt-1">${item.nome}</h4>
+          <div class="bg-white p-3 text-xs text-slate-800 min-w-[210px]">
+            <span class="text-[9px] font-bold uppercase tracking-wider bg-blue-50 text-[#005CA9] px-2 py-0.5 rounded-full">${item.tipo} • ${item.ra}</span>
+            <h4 class="text-xs font-bold text-slate-900 mt-1">${item.nome}</h4>
             <p class="text-[11px] text-slate-500 mt-0.5">${item.endereco}</p>
             <div class="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between">
               <span class="text-[10px] text-slate-500 font-medium">Espera: <strong>${item.espera}</strong></span>
@@ -725,7 +1115,6 @@
             </div>
           </div>
         `;
-
         marker.bindPopup(popupContent);
         markerClusterGroup.addLayer(marker);
       });
@@ -736,22 +1125,89 @@
       appState.filteredData.forEach(d => {
         tipoMap[d.tipo] = (tipoMap[d.tipo] || 0) + 1;
       });
-      chartTipo.data.labels = Object.keys(tipoMap);
       chartTipo.data.datasets[0].data = Object.values(tipoMap);
       chartTipo.update();
+    }
 
+    function renderProgressTables() {
       const raMap = {};
       appState.filteredData.forEach(d => {
         raMap[d.ra] = (raMap[d.ra] || 0) + 1;
       });
+      const sortedRas = Object.entries(raMap).sort((a,b) => b[1] - a[1]);
+      
+      if (sortedRas.length > 0) {
+        document.getElementById('top1-ra-nome').textContent = sortedRas[0][0];
+        document.getElementById('top1-ra-count').textContent = `${sortedRas[0][1]} un.`;
+      }
 
-      const sortedRas = Object.entries(raMap)
-        .sort((a,b) => b[1] - a[1])
-        .slice(0, 10);
+      const raContainer = document.getElementById('table-ra-bars');
+      raContainer.innerHTML = '';
+      const maxRa = sortedRas.length > 0 ? sortedRas[0][1] : 1;
 
-      chartRas.data.labels = sortedRas.map(i => i[0]);
-      chartRas.data.datasets[0].data = sortedRas.map(i => i[1]);
-      chartRas.update();
+      sortedRas.slice(0, 5).forEach(([nome, count]) => {
+        const pct = Math.round((count / maxRa) * 100);
+        raContainer.innerHTML += `
+          <div>
+            <div class="flex justify-between items-center text-slate-700 mb-0.5">
+              <span class="truncate max-w-[170px]">${nome}</span>
+              <span class="font-bold text-slate-900">${count}</span>
+            </div>
+            <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+              <div class="bg-[#005CA9] h-full rounded-full" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      });
+
+      const s24h = appState.filteredData.filter(d => d.auto24h).length;
+      const sAcess = appState.filteredData.filter(d => d.acessivel).length;
+      const sPj = appState.filteredData.filter(d => d.pj).length;
+      const sPenhor = appState.filteredData.filter(d => d.penhor).length;
+      const sHab = appState.filteredData.filter(d => d.habitacao).length;
+
+      const services = [
+        { name: 'Sala Autoatendimento 24h', val: s24h },
+        { name: 'Acessibilidade Plena', val: sAcess },
+        { name: 'Atendimento Gerência PJ', val: sPj },
+        { name: 'Penhor CAIXA', val: sPenhor },
+        { name: 'Crédito Imobiliário / Habitação', val: sHab }
+      ];
+
+      const servContainer = document.getElementById('table-services-bars');
+      servContainer.innerHTML = '';
+      const maxServ = Math.max(...services.map(s => s.val), 1);
+
+      services.forEach(serv => {
+        const pct = Math.round((serv.val / maxServ) * 100);
+        servContainer.innerHTML += `
+          <div>
+            <div class="flex justify-between items-center text-slate-700 mb-0.5">
+              <span class="truncate">${serv.name}</span>
+              <span class="font-bold text-slate-900">${serv.val}</span>
+            </div>
+            <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+              <div class="bg-[#00A4E4] h-full rounded-full" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      });
+
+      const sortedSpeed = [...appState.filteredData].sort((a,b) => parseInt(a.espera) - parseInt(b.espera));
+      const speedContainer = document.getElementById('table-speed-bars');
+      speedContainer.innerHTML = '';
+
+      sortedSpeed.slice(0, 5).forEach(item => {
+        speedContainer.innerHTML += `
+          <div class="flex items-center justify-between py-1 border-b border-slate-50 last:border-0 cursor-pointer hover:bg-slate-50 px-1 rounded" onclick="window.viewAgencyDetail('${item.id}')">
+            <div class="truncate max-w-[170px]">
+              <span class="text-[9px] font-bold text-slate-400 block">${item.ra}</span>
+              <span class="font-medium text-slate-800 truncate">${item.nome}</span>
+            </div>
+            <span class="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">${item.espera}</span>
+          </div>
+        `;
+      });
     }
 
     function updateBreadcrumb() {
@@ -774,7 +1230,6 @@
       applyFilters();
 
       if (raName === 'ALL') {
-        // Retorna para o enquadramento amplo de todo o Brasil
         map.flyTo([-14.2350, -51.9253], 4, { duration: 1.2 });
       } else {
         const found = DF_REGIOES_ADMINISTRATIVAS.find(r => r.nome === raName);
@@ -792,7 +1247,7 @@
     function openModal(item) {
       document.getElementById('modal-tipo').textContent = item.tipo;
       document.getElementById('modal-nome').textContent = item.nome;
-      document.getElementById('modal-codigo').textContent = `Cód: ${item.id} | ${item.ra}`;
+      document.getElementById('modal-codigo').textContent = `Cód: ${item.id} | RA: ${item.ra}`;
       document.getElementById('modal-endereco').textContent = item.endereco;
       document.getElementById('modal-telefone').textContent = item.telefone || '(61) 4004-0104';
       document.getElementById('modal-horario').textContent = item.horario;
@@ -815,7 +1270,47 @@
       document.getElementById('modal-detalhe').classList.add('hidden');
     });
 
-    // LISTENERS
+    // CONTROLE DE NAVEGAÇÃO POR ABAS
+    function switchTab(tabId) {
+      appState.activeTab = tabId;
+      
+      const btnMapa = document.getElementById('tab-btn-mapa');
+      const btnProdutos = document.getElementById('tab-btn-produtos');
+      const btnFgts = document.getElementById('tab-btn-fgts');
+      const viewMapa = document.getElementById('view-mapa');
+      const viewProdutos = document.getElementById('view-produtos');
+      const viewFgts = document.getElementById('view-fgts');
+      const filterContainer = document.getElementById('filter-container-mapa');
+
+      // Reset de estilos
+      [btnMapa, btnProdutos, btnFgts].forEach(b => {
+        b.className = "py-2 px-1 flex items-center gap-1.5 text-slate-500 hover:text-slate-800 transition-all border-b-3 border-transparent";
+      });
+      [viewMapa, viewProdutos, viewFgts].forEach(v => v.classList.add('hidden'));
+
+      if (tabId === 'mapa') {
+        btnMapa.className = "nav-tab-active py-2 px-1 flex items-center gap-1.5 transition-all";
+        viewMapa.classList.remove('hidden');
+        filterContainer.classList.remove('hidden');
+        setTimeout(() => map.invalidateSize(), 200);
+      } else if (tabId === 'produtos') {
+        btnProdutos.className = "nav-tab-active py-2 px-1 flex items-center gap-1.5 transition-all";
+        viewProdutos.classList.remove('hidden');
+        filterContainer.classList.add('hidden');
+      } else if (tabId === 'fgts') {
+        btnFgts.className = "nav-tab-active py-2 px-1 flex items-center gap-1.5 transition-all";
+        viewFgts.classList.remove('hidden');
+        filterContainer.classList.add('hidden');
+      }
+      lucide.createIcons();
+    }
+
+    // LISTENERS DE ABAS
+    document.getElementById('tab-btn-mapa').addEventListener('click', () => switchTab('mapa'));
+    document.getElementById('tab-btn-produtos').addEventListener('click', () => switchTab('produtos'));
+    document.getElementById('tab-btn-fgts').addEventListener('click', () => switchTab('fgts'));
+
+    // LISTENERS DOS FILTROS DO MAPA
     document.getElementById('select-ra').addEventListener('change', (e) => setRaFilter(e.target.value));
     document.getElementById('filter-tipo').addEventListener('change', (e) => {
       appState.tipo = e.target.value;
@@ -834,6 +1329,14 @@
     });
 
     document.getElementById('bread-br').addEventListener('click', () => setRaFilter('ALL'));
+
+    document.getElementById('btn-zoom-br').addEventListener('click', () => setRaFilter('ALL'));
+    document.getElementById('btn-zoom-df').addEventListener('click', () => {
+      appState.ra = 'ALL';
+      document.getElementById('select-ra').value = 'ALL';
+      applyFilters();
+      map.flyTo([-15.7801, -47.9292], 10, { duration: 1.2 });
+    });
 
     document.getElementById('btn-reset').addEventListener('click', () => {
       document.getElementById('search-input').value = '';
@@ -855,9 +1358,11 @@
       setRaFilter('ALL');
     });
 
-    // INICIALIZAÇÃO
+    // INICIALIZAÇÃO GERAL
     window.addEventListener('DOMContentLoaded', () => {
       populateRaSelect();
+      renderProdutosGrid();
+      renderFgtsTable();
       lucide.createIcons();
       initCharts();
       renderRaPolygons();
