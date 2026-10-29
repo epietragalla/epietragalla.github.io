@@ -107,6 +107,19 @@
       border-bottom: 3px solid #005CA9;
       font-weight: 700;
     }
+    .state-tooltip {
+      background-color: rgba(0, 51, 102, 0.95);
+      border: 1px solid #00A4E4;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 6px;
+      padding: 4px 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .state-tooltip::before {
+      border-top-color: rgba(0, 51, 102, 0.95);
+    }
     ::-webkit-scrollbar {
       width: 5px;
       height: 5px;
@@ -153,7 +166,7 @@
         <div class="looker-pill">
           <i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#005CA9]"></i>
           <select id="select-ra" class="bg-transparent focus:outline-none cursor-pointer pr-1 text-slate-700 font-medium text-xs">
-            <option value="ALL">Visão Brasil (Todas as RAs)</option>
+            <option value="ALL">Visão Brasil (Todas as Regiões)</option>
           </select>
         </div>
 
@@ -388,17 +401,13 @@
           <p class="text-xs text-slate-500">Selecione um produto para visualizar informações regulatórias, estatísticas e bases públicas.</p>
         </div>
 
-        <div class="grid grid-cols-3 gap-5" id="produtos-grid">
-          <!-- Gerado via JS com cartões interativos -->
-        </div>
+        <div class="grid grid-cols-3 gap-5" id="produtos-grid"></div>
       </div>
     </div>
 
     <!-- ==================== ABA 3: PAINEL FGTS (DISTRITO FEDERAL) ==================== -->
     <div id="view-fgts" class="flex-1 overflow-y-auto p-6 bg-[#f8f9fa] hidden">
       <div class="max-w-7xl mx-auto space-y-5">
-        
-        <!-- HEADER FGTS -->
         <div class="flex justify-between items-center bg-white p-4 rounded-lg border border-[#dadce0] shadow-2xs">
           <div>
             <div class="flex items-center gap-2">
@@ -413,7 +422,6 @@
           </div>
         </div>
 
-        <!-- BIG NUMBERS FGTS -->
         <div class="grid grid-cols-4 gap-4">
           <div class="looker-card p-4 border-l-4 border-l-[#005CA9]">
             <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Arrecadado Anual (DF)</span>
@@ -440,7 +448,6 @@
           </div>
         </div>
 
-        <!-- GRÁFICOS DO FGTS -->
         <div class="grid grid-cols-3 gap-4">
           <div class="looker-card p-4">
             <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-1.5">
@@ -461,7 +468,6 @@
           </div>
         </div>
 
-        <!-- TABELA DETALHADA DAS 35 RAs DO DF COM O FGTS -->
         <div class="looker-card overflow-hidden">
           <div class="p-4 border-b border-[#dadce0] flex justify-between items-center bg-slate-50">
             <span class="text-xs font-bold text-slate-700 uppercase">Detalhamento por Região Administrativa (35 RAs do Distrito Federal)</span>
@@ -479,16 +485,12 @@
                   <th class="p-3">Perfil Predominante</th>
                 </tr>
               </thead>
-              <tbody id="table-fgts-body" class="divide-y divide-slate-100">
-                <!-- Populado via JS -->
-              </tbody>
+              <tbody id="table-fgts-body" class="divide-y divide-slate-100"></tbody>
             </table>
           </div>
         </div>
-
       </div>
     </div>
-
   </div>
 
   <!-- MODAL DE DETALHES -->
@@ -581,70 +583,101 @@
       { id: "RA_XXXV", nome: "Água Quente", lat: -15.9620, lng: -48.1750 }
     ];
 
+    // COORDENADAS CENTRAIS E ZOOMS DOS ESTADOS BRASILEIROS
+    const ESTADOS_CENTROS = {
+      'AC': { lat: -9.0238, lng: -70.8120, zoom: 7 },
+      'AL': { lat: -9.5713, lng: -36.7820, zoom: 8 },
+      'AM': { lat: -3.4168, lng: -65.8561, zoom: 6 },
+      'AP': { lat: 0.9020, lng: -52.0030, zoom: 7 },
+      'BA': { lat: -12.5797, lng: -41.7007, zoom: 6 },
+      'CE': { lat: -5.4984, lng: -39.3206, zoom: 7 },
+      'DF': { lat: -15.7801, lng: -47.9292, zoom: 10 },
+      'ES': { lat: -19.1834, lng: -40.3089, zoom: 8 },
+      'GO': { lat: -15.8270, lng: -49.8362, zoom: 6 },
+      'MA': { lat: -4.9609, lng: -45.2744, zoom: 6 },
+      'MG': { lat: -18.5122, lng: -44.5550, zoom: 6 },
+      'MS': { lat: -20.7722, lng: -54.7852, zoom: 6 },
+      'MT': { lat: -12.6819, lng: -56.9211, zoom: 6 },
+      'PA': { lat: -1.9981, lng: -54.9306, zoom: 6 },
+      'PB': { lat: -7.2399, lng: -36.7820, zoom: 8 },
+      'PE': { lat: -8.8137, lng: -36.9541, zoom: 7 },
+      'PI': { lat: -7.7183, lng: -42.7289, zoom: 6 },
+      'PR': { lat: -25.2521, lng: -52.0215, zoom: 7 },
+      'RJ': { lat: -22.9068, lng: -43.1729, zoom: 8 },
+      'RN': { lat: -5.7945, lng: -36.5615, zoom: 8 },
+      'RO': { lat: -11.5057, lng: -63.5806, zoom: 7 },
+      'RR': { lat: 2.7376, lng: -62.0751, zoom: 7 },
+      'RS': { lat: -30.0346, lng: -51.2177, zoom: 7 },
+      'SC': { lat: -27.2423, lng: -50.2189, zoom: 7 },
+      'SE': { lat: -10.5741, lng: -37.3857, zoom: 9 },
+      'SP': { lat: -23.5505, lng: -46.6333, zoom: 7 },
+      'TO': { lat: -10.1753, lng: -48.2982, zoom: 6 }
+    };
+
     // BASE DE DADOS COMPLETA DE PONTOS CAIXA
     const CAIXA_DATA = [
-      { id: "0001", nome: "Agência Matriz CAIXA (Sede I)", ra: "Plano Piloto", lat: -15.7981, lng: -47.8824, tipo: "Agência", endereco: "SBS Quadra 4 Lote 3/4 - Asa Sul", telefone: "(61) 3206-9000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 22, espera: "10 min" },
-      { id: "0972", nome: "Agência Esplanada dos Ministérios", ra: "Plano Piloto", lat: -15.7975, lng: -47.8762, tipo: "Agência", endereco: "Esplanada dos Ministérios, Bloco P - Fazenda", telefone: "(61) 3412-2000", horario: "10h às 16h", auto24h: false, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 8, espera: "8 min" },
-      { id: "0647", nome: "Agência Pátio Brasil", ra: "Plano Piloto", lat: -15.7963, lng: -47.8921, tipo: "Agência", endereco: "SCS Quadra 7 Bloco A - Shopping Pátio Brasil", telefone: "(61) 3323-8100", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 14, espera: "18 min" },
-      { id: "1004", nome: "Agência Brasília Shopping", ra: "Plano Piloto", lat: -15.7892, lng: -47.8899, tipo: "Agência", endereco: "SCN Quadra 5 Bloco A - Brasília Shopping", telefone: "(61) 3252-7000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 12, espera: "14 min" },
-      { id: "0002", nome: "Agência Asa Sul 210", ra: "Plano Piloto", lat: -15.8219, lng: -47.9152, tipo: "Agência", endereco: "CLS 210 Bloco B Lojas 02/38", telefone: "(61) 3443-4100", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 10, espera: "15 min" },
-      { id: "0845", nome: "Agência W3 Sul 515", ra: "Plano Piloto", lat: -15.8190, lng: -47.9255, tipo: "Agência", endereco: "CRS 515 Bloco C Lojas 22/30", telefone: "(61) 3345-1234", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 9, espera: "19 min" },
-      { id: "1606", nome: "Agência Asa Norte 211", ra: "Plano Piloto", lat: -15.7681, lng: -47.8833, tipo: "Agência", endereco: "CLN 211 Bloco D Lojas 1/15", telefone: "(61) 3340-9876", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 8, espera: "16 min" },
-      { id: "4012", nome: "PAA Tribunal Superior do Trabalho", ra: "Plano Piloto", lat: -15.8122, lng: -47.8722, tipo: "PAA", endereco: "SAFS Quadra 8 Lote 1 - TST", telefone: "(61) 3043-4000", horario: "10h às 16h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 4, espera: "5 min" },
-      { id: "4015", nome: "PAA Superior Tribunal de Justiça", ra: "Plano Piloto", lat: -15.8080, lng: -47.8744, tipo: "PAA", endereco: "SAFS Quadra 6 Lote 1 - STJ", telefone: "(61) 3319-8000", horario: "10h às 16h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 5, espera: "6 min" },
-      { id: "4020", nome: "PAA Palácio do Buriti", ra: "Plano Piloto", lat: -15.7877, lng: -47.9238, tipo: "PAA", endereco: "Praça do Buriti - Anexo do Palácio do Buriti", telefone: "(61) 3325-1100", horario: "10h às 16h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 4, espera: "9 min" },
-      { id: "0652", nome: "Agência Gama Centro", ra: "Gama", lat: -16.0182, lng: -48.0645, tipo: "Agência", endereco: "Quadra 1 Setor Central Lote 1", telefone: "(61) 3484-1100", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 14, espera: "22 min" },
-      { id: "2841", nome: "Agência Gama Leste", ra: "Gama", lat: -16.0120, lng: -48.0490, tipo: "Agência", endereco: "Setor Leste - Entrequadra 29/33", telefone: "(61) 3484-5500", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 8, espera: "17 min" },
-      { id: "0003", nome: "Agência Taguatinga Centro", ra: "Taguatinga", lat: -15.8331, lng: -48.0567, tipo: "Agência", endereco: "C 9 Lote 15/16 - Taguatinga Centro", telefone: "(61) 3351-4000", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 18, espera: "25 min" },
-      { id: "1547", nome: "Agência Taguatinga Shopping", ra: "Taguatinga", lat: -15.8441, lng: -48.0422, tipo: "Agência", endereco: "QS 01 Lote 40 - Shopping Taguatinga", telefone: "(61) 3353-9000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 11, espera: "17 min" },
-      { id: "0991", nome: "Agência Comercial Norte", ra: "Taguatinga", lat: -15.8250, lng: -48.0620, tipo: "Agência", endereco: "QNA 01 Lote 02 - Avenida Comercial Norte", telefone: "(61) 3352-7800", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 12, espera: "21 min" },
-      { id: "1256", nome: "Agência Pistão Sul", ra: "Taguatinga", lat: -15.8601, lng: -48.0315, tipo: "Agência", endereco: "QSE Área Especial 1 - Pistão Sul", telefone: "(61) 3356-8800", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 8, espera: "16 min" },
-      { id: "0653", nome: "Agência Brazlândia", ra: "Brazlândia", lat: -15.6739, lng: -48.2014, tipo: "Agência", endereco: "Setor Tradicional Quadra 15 Lote 02", telefone: "(61) 3391-1400", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 8, espera: "16 min" },
-      { id: "0980", nome: "Agência Sobradinho Centro", ra: "Sobradinho", lat: -15.6533, lng: -47.7944, tipo: "Agência", endereco: "Quadra 08 Bloco 02 Lote 04", telefone: "(61) 3591-2200", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 10, espera: "18 min" },
-      { id: "2876", nome: "Agência Planaltina Tradicional", ra: "Planaltina", lat: -15.6178, lng: -47.6521, tipo: "Agência", endereco: "Setor Tradicional - Praça Cel. Salviano", telefone: "(61) 3389-4400", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 10, espera: "20 min" },
-      { id: "3312", nome: "Agência Planaltina Vila Buritis", ra: "Planaltina", lat: -15.6260, lng: -47.6680, tipo: "Agência", endereco: "Quadra 02 Conjunto A Lote 12 - Buritis", telefone: "(61) 3388-3100", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 8, espera: "17 min" },
-      { id: "2885", nome: "Agência Paranoá", ra: "Paranoá", lat: -15.7725, lng: -47.7781, tipo: "Agência", endereco: "Quadra 18 Conjunto A Lote 01", telefone: "(61) 3369-7000", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 10, espera: "23 min" },
-      { id: "0651", nome: "Agência Núcleo Bandeirante", ra: "Núcleo Bandeirante", lat: -15.8710, lng: -47.9680, tipo: "Agência", endereco: "3ª Avenida Lotes 790/810", telefone: "(61) 3552-1400", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 10, espera: "16 min" },
-      { id: "0004", nome: "Agência Ceilândia Centro", ra: "Ceilândia", lat: -15.8202, lng: -48.1125, tipo: "Agência", endereco: "CNN 02 Bloco A Lotes 01/02", telefone: "(61) 3371-3344", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 20, espera: "28 min" },
-      { id: "2855", nome: "Agência Ceilândia Norte", ra: "Ceilândia", lat: -15.8055, lng: -48.1210, tipo: "Agência", endereco: "QNM 18 Conjunto A Lote 01", telefone: "(61) 3373-6100", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 12, espera: "24 min" },
-      { id: "3244", nome: "Agência P Sul", ra: "Ceilândia", lat: -15.8390, lng: -48.1320, tipo: "Agência", endereco: "P1 Sul - QNP 26 Conjunto A Lote 02", telefone: "(61) 3378-4300", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 10, espera: "22 min" },
-      { id: "3235", nome: "Agência Guará II", ra: "Guará", lat: -15.8305, lng: -47.9861, tipo: "Agência", endereco: "QE 15 Lote A - Guará II", telefone: "(61) 3381-6789", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 8, espera: "15 min" },
-      { id: "1088", nome: "Agência Guará I", ra: "Guará", lat: -15.8210, lng: -47.9790, tipo: "Agência", endereco: "QI 02 Bloco B Lojas 02/08", telefone: "(61) 3382-4100", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 8, espera: "14 min" },
-      { id: "0847", nome: "Agência Cruzeiro", ra: "Cruzeiro", lat: -15.7915, lng: -47.9405, tipo: "Agência", endereco: "SHCES Quadra 305 Bloco A", telefone: "(61) 3361-5500", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 8, espera: "13 min" },
-      { id: "3050", nome: "Agência Samambaia Sul", ra: "Samambaia", lat: -15.8755, lng: -48.0877, tipo: "Agência", endereco: "QS 302 Conjunto 01 Lote 03", telefone: "(61) 3359-9900", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 14, espera: "23 min" },
-      { id: "3540", nome: "Agência Samambaia Norte", ra: "Samambaia", lat: -15.8680, lng: -48.0960, tipo: "Agência", endereco: "QN 204 Conjunto 02 Lote 01", telefone: "(61) 3357-1200", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 10, espera: "21 min" },
-      { id: "3120", nome: "Agência Santa Maria", ra: "Santa Maria", lat: -16.0160, lng: -47.9890, tipo: "Agência", endereco: "CL 214 Lote D - Avenida Alagados", telefone: "(61) 3392-7500", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 10, espera: "25 min" },
-      { id: "2940", nome: "Agência São Sebastião", ra: "São Sebastião", lat: -15.9089, lng: -47.7711, tipo: "Agência", endereco: "Rua da Gameleira Quadra 101 Lote 05", telefone: "(61) 3335-8000", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 10, espera: "24 min" },
-      { id: "3510", nome: "Agência Recanto das Emas", ra: "Recanto das Emas", lat: -15.9080, lng: -48.0670, tipo: "Agência", endereco: "Quadra 103 Conjunto 02 Lote 01", telefone: "(61) 3331-5000", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 12, espera: "26 min" },
-      { id: "1548", nome: "Agência Gilberto Salomão", ra: "Lago Sul", lat: -15.8285, lng: -47.8735, tipo: "Agência", endereco: "SHIS QI 05 Bloco F - Gilberto Salomão", telefone: "(61) 3364-1000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 8, espera: "7 min" },
-      { id: "3115", nome: "Agência Riacho Fundo I", ra: "Riacho Fundo", lat: -15.8822, lng: -48.0175, tipo: "Agência", endereco: "QN 07 Área Especial 01 Lote A", telefone: "(61) 3399-4400", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 8, espera: "19 min" },
-      { id: "2910", nome: "Agência Deck Norte", ra: "Lago Norte", lat: -15.7380, lng: -47.8810, tipo: "Agência", endereco: "SHIN CA 01 Bloco A - Shopping Deck Norte", telefone: "(61) 3468-2500", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 6, espera: "8 min" },
-      { id: "4090", nome: "PAA Candangolândia", ra: "Candangolândia", lat: -15.8505, lng: -47.9500, tipo: "PAA", endereco: "Rua dos Transportes Quadra 02 Lote 04", telefone: "(61) 3301-2000", horario: "11h às 16h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 4, espera: "11 min" },
-      { id: "4122", nome: "Agência Águas Claras", ra: "Águas Claras", lat: -15.8398, lng: -48.0261, tipo: "Agência", endereco: "Av. Castanheiras Lote 1060 - Shopping Felicittà", telefone: "(61) 3435-8900", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 12, espera: "14 min" },
-      { id: "4288", nome: "Agência Boulevard Águas Claras", ra: "Águas Claras", lat: -15.8340, lng: -48.0310, tipo: "Agência", endereco: "Rua das Figueiras Lote 06", telefone: "(61) 3436-1200", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 8, espera: "12 min" },
-      { id: "4320", nome: "PAA Riacho Fundo II", ra: "Riacho Fundo II", lat: -15.8950, lng: -48.0550, tipo: "PAA", endereco: "QN 14 Conjunto 02 Lote 05", telefone: "(61) 3399-9100", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 6, espera: "16 min" },
-      { id: "2417", nome: "Agência Terraço Shopping", ra: "Sudoeste/Octogonal", lat: -15.7997, lng: -47.9338, tipo: "Agência", endereco: "SHCSW EQ 52/53 - Terraço Shopping", telefone: "(61) 3362-2300", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 10, espera: "12 min" },
-      { id: "9005", nome: "Caminhão CAIXA Varjão", ra: "Varjão", lat: -15.7190, lng: -47.8815, tipo: "Caminhão", endereco: "Quadra 02 Área Especial - Praça Central", telefone: "(61) 4004-0104", horario: "09h às 15h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: false, atms: 2, espera: "14 min" },
-      { id: "4501", nome: "PAA Aeroporto de Brasília", ra: "Park Way", lat: -15.8711, lng: -47.9186, tipo: "PAA", endereco: "Aeroporto Internacional JK - TPS 1 Desembarque", telefone: "(61) 3365-2000", horario: "09h às 19h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: false, atms: 6, espera: "9 min" },
-      { id: "4610", nome: "PAA Cidade Estrutural", ra: "SCIA / Estrutural", lat: -15.7890, lng: -47.9940, tipo: "PAA", endereco: "Setor Central Quadra 03 Área Especial", telefone: "(61) 3465-1100", horario: "11h às 16h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 4, espera: "18 min" },
-      { id: "3380", nome: "Agência Sobradinho II", ra: "Sobradinho II", lat: -15.6420, lng: -47.8150, tipo: "Agência", endereco: "AR 13 Conjunto 01 Lote 02", telefone: "(61) 3591-6600", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 8, espera: "19 min" },
-      { id: "4190", nome: "Agência Jardim Botânico", ra: "Jardim Botânico", lat: -15.8720, lng: -47.8200, tipo: "Agência", endereco: "Av. Comercial Lote 22 - Polo de Artesanato", telefone: "(61) 3427-1500", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 6, espera: "10 min" },
-      { id: "4720", nome: "Agência Itapoã", ra: "Itapoã", lat: -15.7480, lng: -47.7650, tipo: "Agência", endereco: "Quadra 61 Área Especial 01", telefone: "(61) 3369-9000", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 8, espera: "22 min" },
-      { id: "1546", nome: "Agência SIA", ra: "SIA", lat: -15.8170, lng: -47.9620, tipo: "Agência", endereco: "SIA Trecho 3 Lote 625/695 - Ed. CAIXA", telefone: "(61) 3233-9000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 12, espera: "13 min" },
-      { id: "4788", nome: "Agência Vicente Pires", ra: "Vicente Pires", lat: -15.8115, lng: -48.0289, tipo: "Agência", endereco: "Rua 05 Chácara 101 Lote 08", telefone: "(61) 3597-1200", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 8, espera: "18 min" },
-      { id: "9006", nome: "Caminhão CAIXA Fercal", ra: "Fercal", lat: -15.5980, lng: -47.8820, tipo: "Caminhão", endereco: "DF-150 Km 12 - Próximo à Adm. Regional", telefone: "(61) 4004-0104", horario: "09h às 15h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: false, atms: 2, espera: "12 min" },
-      { id: "9001", nome: "Caminhão CAIXA Sol Nascente", ra: "Sol Nascente/Pôr do Sol", lat: -15.8260, lng: -48.1520, tipo: "Caminhão", endereco: "Trecho 2 - Próximo à Administração Regional", telefone: "(61) 4004-0104", horario: "09h às 15h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: false, atms: 4, espera: "15 min" },
-      { id: "4820", nome: "PAA Arniqueira", ra: "Arniqueira", lat: -15.8540, lng: -48.0210, tipo: "PAA", endereco: "SHA Conjunto 04 Chácara 24", telefone: "(61) 3562-4100", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 4, espera: "14 min" },
-      { id: "9008", nome: "Caminhão CAIXA Arapoanga", ra: "Arapoanga", lat: -15.6310, lng: -47.6980, tipo: "Caminhão", endereco: "Quadra 05 Área Especial - Av. Principal", telefone: "(61) 4004-0104", horario: "09h às 15h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: false, atms: 3, espera: "16 min" },
-      { id: "9009", nome: "Caminhão CAIXA Água Quente", ra: "Água Quente", lat: -15.9620, lng: -48.1750, tipo: "Caminhão", endereco: "Área Especial Central - DF-280", telefone: "(61) 4004-0104", horario: "09h às 15h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: false, atms: 2, espera: "14 min" },
+      { id: "0001", nome: "Agência Matriz CAIXA (Sede I)", uf: "DF", ra: "Plano Piloto", lat: -15.7981, lng: -47.8824, tipo: "Agência", endereco: "SBS Quadra 4 Lote 3/4 - Asa Sul", telefone: "(61) 3206-9000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 22, espera: "10 min" },
+      { id: "0972", nome: "Agência Esplanada dos Ministérios", uf: "DF", ra: "Plano Piloto", lat: -15.7975, lng: -47.8762, tipo: "Agência", endereco: "Esplanada dos Ministérios, Bloco P - Fazenda", telefone: "(61) 3412-2000", horario: "10h às 16h", auto24h: false, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 8, espera: "8 min" },
+      { id: "0647", nome: "Agência Pátio Brasil", uf: "DF", ra: "Plano Piloto", lat: -15.7963, lng: -47.8921, tipo: "Agência", endereco: "SCS Quadra 7 Bloco A - Shopping Pátio Brasil", telefone: "(61) 3323-8100", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 14, espera: "18 min" },
+      { id: "1004", nome: "Agência Brasília Shopping", uf: "DF", ra: "Plano Piloto", lat: -15.7892, lng: -47.8899, tipo: "Agência", endereco: "SCN Quadra 5 Bloco A - Brasília Shopping", telefone: "(61) 3252-7000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 12, espera: "14 min" },
+      { id: "0002", nome: "Agência Asa Sul 210", uf: "DF", ra: "Plano Piloto", lat: -15.8219, lng: -47.9152, tipo: "Agência", endereco: "CLS 210 Bloco B Lojas 02/38", telefone: "(61) 3443-4100", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 10, espera: "15 min" },
+      { id: "0845", nome: "Agência W3 Sul 515", uf: "DF", ra: "Plano Piloto", lat: -15.8190, lng: -47.9255, tipo: "Agência", endereco: "CRS 515 Bloco C Lojas 22/30", telefone: "(61) 3345-1234", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 9, espera: "19 min" },
+      { id: "1606", nome: "Agência Asa Norte 211", uf: "DF", ra: "Plano Piloto", lat: -15.7681, lng: -47.8833, tipo: "Agência", endereco: "CLN 211 Bloco D Lojas 1/15", telefone: "(61) 3340-9876", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 8, espera: "16 min" },
+      { id: "4012", nome: "PAA Tribunal Superior do Trabalho", uf: "DF", ra: "Plano Piloto", lat: -15.8122, lng: -47.8722, tipo: "PAA", endereco: "SAFS Quadra 8 Lote 1 - TST", telefone: "(61) 3043-4000", horario: "10h às 16h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 4, espera: "5 min" },
+      { id: "4015", nome: "PAA Superior Tribunal de Justiça", uf: "DF", ra: "Plano Piloto", lat: -15.8080, lng: -47.8744, tipo: "PAA", endereco: "SAFS Quadra 6 Lote 1 - STJ", telefone: "(61) 3319-8000", horario: "10h às 16h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 5, espera: "6 min" },
+      { id: "4020", nome: "PAA Palácio do Buriti", uf: "DF", ra: "Plano Piloto", lat: -15.7877, lng: -47.9238, tipo: "PAA", endereco: "Praça do Buriti - Anexo do Palácio do Buriti", telefone: "(61) 3325-1100", horario: "10h às 16h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 4, espera: "9 min" },
+      { id: "0652", nome: "Agência Gama Centro", uf: "DF", ra: "Gama", lat: -16.0182, lng: -48.0645, tipo: "Agência", endereco: "Quadra 1 Setor Central Lote 1", telefone: "(61) 3484-1100", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 14, espera: "22 min" },
+      { id: "2841", nome: "Agência Gama Leste", uf: "DF", ra: "Gama", lat: -16.0120, lng: -48.0490, tipo: "Agência", endereco: "Setor Leste - Entrequadra 29/33", telefone: "(61) 3484-5500", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 8, espera: "17 min" },
+      { id: "0003", nome: "Agência Taguatinga Centro", uf: "DF", ra: "Taguatinga", lat: -15.8331, lng: -48.0567, tipo: "Agência", endereco: "C 9 Lote 15/16 - Taguatinga Centro", telefone: "(61) 3351-4000", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 18, espera: "25 min" },
+      { id: "1547", nome: "Agência Taguatinga Shopping", uf: "DF", ra: "Taguatinga", lat: -15.8441, lng: -48.0422, tipo: "Agência", endereco: "QS 01 Lote 40 - Shopping Taguatinga", telefone: "(61) 3353-9000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 11, espera: "17 min" },
+      { id: "0991", nome: "Agência Comercial Norte", uf: "DF", ra: "Taguatinga", lat: -15.8250, lng: -48.0620, tipo: "Agência", endereco: "QNA 01 Lote 02 - Avenida Comercial Norte", telefone: "(61) 3352-7800", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 12, espera: "21 min" },
+      { id: "1256", nome: "Agência Pistão Sul", uf: "DF", ra: "Taguatinga", lat: -15.8601, lng: -48.0315, tipo: "Agência", endereco: "QSE Área Especial 1 - Pistão Sul", telefone: "(61) 3356-8800", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 8, espera: "16 min" },
+      { id: "0653", nome: "Agência Brazlândia", uf: "DF", ra: "Brazlândia", lat: -15.6739, lng: -48.2014, tipo: "Agência", endereco: "Setor Tradicional Quadra 15 Lote 02", telefone: "(61) 3391-1400", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 8, espera: "16 min" },
+      { id: "0980", nome: "Agência Sobradinho Centro", uf: "DF", ra: "Sobradinho", lat: -15.6533, lng: -47.7944, tipo: "Agência", endereco: "Quadra 08 Bloco 02 Lote 04", telefone: "(61) 3591-2200", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 10, espera: "18 min" },
+      { id: "2876", nome: "Agência Planaltina Tradicional", uf: "DF", ra: "Planaltina", lat: -15.6178, lng: -47.6521, tipo: "Agência", endereco: "Setor Tradicional - Praça Cel. Salviano", telefone: "(61) 3389-4400", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 10, espera: "20 min" },
+      { id: "3312", nome: "Agência Planaltina Vila Buritis", uf: "DF", ra: "Planaltina", lat: -15.6260, lng: -47.6680, tipo: "Agência", endereco: "Quadra 02 Conjunto A Lote 12 - Buritis", telefone: "(61) 3388-3100", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 8, espera: "17 min" },
+      { id: "2885", nome: "Agência Paranoá", uf: "DF", ra: "Paranoá", lat: -15.7725, lng: -47.7781, tipo: "Agência", endereco: "Quadra 18 Conjunto A Lote 01", telefone: "(61) 3369-7000", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 10, espera: "23 min" },
+      { id: "0651", nome: "Agência Núcleo Bandeirante", uf: "DF", ra: "Núcleo Bandeirante", lat: -15.8710, lng: -47.9680, tipo: "Agência", endereco: "3ª Avenida Lotes 790/810", telefone: "(61) 3552-1400", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 10, espera: "16 min" },
+      { id: "0004", nome: "Agência Ceilândia Centro", uf: "DF", ra: "Ceilândia", lat: -15.8202, lng: -48.1125, tipo: "Agência", endereco: "CNN 02 Bloco A Lotes 01/02", telefone: "(61) 3371-3344", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 20, espera: "28 min" },
+      { id: "2855", nome: "Agência Ceilândia Norte", uf: "DF", ra: "Ceilândia", lat: -15.8055, lng: -48.1210, tipo: "Agência", endereco: "QNM 18 Conjunto A Lote 01", telefone: "(61) 3373-6100", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 12, espera: "24 min" },
+      { id: "3244", nome: "Agência P Sul", uf: "DF", ra: "Ceilândia", lat: -15.8390, lng: -48.1320, tipo: "Agência", endereco: "P1 Sul - QNP 26 Conjunto A Lote 02", telefone: "(61) 3378-4300", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 10, espera: "22 min" },
+      { id: "3235", nome: "Agência Guará II", uf: "DF", ra: "Guará", lat: -15.8305, lng: -47.9861, tipo: "Agência", endereco: "QE 15 Lote A - Guará II", telefone: "(61) 3381-6789", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 8, espera: "15 min" },
+      { id: "1088", nome: "Agência Guará I", uf: "DF", ra: "Guará", lat: -15.8210, lng: -47.9790, tipo: "Agência", endereco: "QI 02 Bloco B Lojas 02/08", telefone: "(61) 3382-4100", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 8, espera: "14 min" },
+      { id: "0847", nome: "Agência Cruzeiro", uf: "DF", ra: "Cruzeiro", lat: -15.7915, lng: -47.9405, tipo: "Agência", endereco: "SHCES Quadra 305 Bloco A", telefone: "(61) 3361-5500", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 8, espera: "13 min" },
+      { id: "3050", nome: "Agência Samambaia Sul", uf: "DF", ra: "Samambaia", lat: -15.8755, lng: -48.0877, tipo: "Agência", endereco: "QS 302 Conjunto 01 Lote 03", telefone: "(61) 3359-9900", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 14, espera: "23 min" },
+      { id: "3540", nome: "Agência Samambaia Norte", uf: "DF", ra: "Samambaia", lat: -15.8680, lng: -48.0960, tipo: "Agência", endereco: "QN 204 Conjunto 02 Lote 01", telefone: "(61) 3357-1200", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 10, espera: "21 min" },
+      { id: "3120", nome: "Agência Santa Maria", uf: "DF", ra: "Santa Maria", lat: -16.0160, lng: -47.9890, tipo: "Agência", endereco: "CL 214 Lote D - Avenida Alagados", telefone: "(61) 3392-7500", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 10, espera: "25 min" },
+      { id: "2940", nome: "Agência São Sebastião", uf: "DF", ra: "São Sebastião", lat: -15.9089, lng: -47.7711, tipo: "Agência", endereco: "Rua da Gameleira Quadra 101 Lote 05", telefone: "(61) 3335-8000", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 10, espera: "24 min" },
+      { id: "3510", nome: "Agência Recanto das Emas", uf: "DF", ra: "Recanto das Emas", lat: -15.9080, lng: -48.0670, tipo: "Agência", endereco: "Quadra 103 Conjunto 02 Lote 01", telefone: "(61) 3331-5000", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 12, espera: "26 min" },
+      { id: "1548", nome: "Agência Gilberto Salomão", uf: "DF", ra: "Lago Sul", lat: -15.8285, lng: -47.8735, tipo: "Agência", endereco: "SHIS QI 05 Bloco F - Gilberto Salomão", telefone: "(61) 3364-1000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 8, espera: "7 min" },
+      { id: "3115", nome: "Agência Riacho Fundo I", uf: "DF", ra: "Riacho Fundo", lat: -15.8822, lng: -48.0175, tipo: "Agência", endereco: "QN 07 Área Especial 01 Lote A", telefone: "(61) 3399-4400", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 8, espera: "19 min" },
+      { id: "2910", nome: "Agência Deck Norte", uf: "DF", ra: "Lago Norte", lat: -15.7380, lng: -47.8810, tipo: "Agência", endereco: "SHIN CA 01 Bloco A - Shopping Deck Norte", telefone: "(61) 3468-2500", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 6, espera: "8 min" },
+      { id: "4090", nome: "PAA Candangolândia", uf: "DF", ra: "Candangolândia", lat: -15.8505, lng: -47.9500, tipo: "PAA", endereco: "Rua dos Transportes Quadra 02 Lote 04", telefone: "(61) 3301-2000", horario: "11h às 16h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 4, espera: "11 min" },
+      { id: "4122", nome: "Agência Águas Claras", uf: "DF", ra: "Águas Claras", lat: -15.8398, lng: -48.0261, tipo: "Agência", endereco: "Av. Castanheiras Lote 1060 - Shopping Felicittà", telefone: "(61) 3435-8900", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 12, espera: "14 min" },
+      { id: "4288", nome: "Agência Boulevard Águas Claras", uf: "DF", ra: "Águas Claras", lat: -15.8340, lng: -48.0310, tipo: "Agência", endereco: "Rua das Figueiras Lote 06", telefone: "(61) 3436-1200", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 8, espera: "12 min" },
+      { id: "4320", nome: "PAA Riacho Fundo II", uf: "DF", ra: "Riacho Fundo II", lat: -15.8950, lng: -48.0550, tipo: "PAA", endereco: "QN 14 Conjunto 02 Lote 05", telefone: "(61) 3399-9100", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 6, espera: "16 min" },
+      { id: "2417", nome: "Agência Terraço Shopping", uf: "DF", ra: "Sudoeste/Octogonal", lat: -15.7997, lng: -47.9338, tipo: "Agência", endereco: "SHCSW EQ 52/53 - Terraço Shopping", telefone: "(61) 3362-2300", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 10, espera: "12 min" },
+      { id: "9005", nome: "Caminhão CAIXA Varjão", uf: "DF", ra: "Varjão", lat: -15.7190, lng: -47.8815, tipo: "Caminhão", endereco: "Quadra 02 Área Especial - Praça Central", telefone: "(61) 4004-0104", horario: "09h às 15h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: false, atms: 2, espera: "14 min" },
+      { id: "4501", nome: "PAA Aeroporto de Brasília", uf: "DF", ra: "Park Way", lat: -15.8711, lng: -47.9186, tipo: "PAA", endereco: "Aeroporto Internacional JK - TPS 1 Desembarque", telefone: "(61) 3365-2000", horario: "09h às 19h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: false, atms: 6, espera: "9 min" },
+      { id: "4610", nome: "PAA Cidade Estrutural", uf: "DF", ra: "SCIA / Estrutural", lat: -15.7890, lng: -47.9940, tipo: "PAA", endereco: "Setor Central Quadra 03 Área Especial", telefone: "(61) 3465-1100", horario: "11h às 16h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 4, espera: "18 min" },
+      { id: "3380", nome: "Agência Sobradinho II", uf: "DF", ra: "Sobradinho II", lat: -15.6420, lng: -47.8150, tipo: "Agência", endereco: "AR 13 Conjunto 01 Lote 02", telefone: "(61) 3591-6600", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 8, espera: "19 min" },
+      { id: "4190", nome: "Agência Jardim Botânico", uf: "DF", ra: "Jardim Botânico", lat: -15.8720, lng: -47.8200, tipo: "Agência", endereco: "Av. Comercial Lote 22 - Polo de Artesanato", telefone: "(61) 3427-1500", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 6, espera: "10 min" },
+      { id: "4720", nome: "Agência Itapoã", uf: "DF", ra: "Itapoã", lat: -15.7480, lng: -47.7650, tipo: "Agência", endereco: "Quadra 61 Área Especial 01", telefone: "(61) 3369-9000", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 8, espera: "22 min" },
+      { id: "1546", nome: "Agência SIA", uf: "DF", ra: "SIA", lat: -15.8170, lng: -47.9620, tipo: "Agência", endereco: "SIA Trecho 3 Lote 625/695 - Ed. CAIXA", telefone: "(61) 3233-9000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 12, espera: "13 min" },
+      { id: "4788", nome: "Agência Vicente Pires", uf: "DF", ra: "Vicente Pires", lat: -15.8115, lng: -48.0289, tipo: "Agência", endereco: "Rua 05 Chácara 101 Lote 08", telefone: "(61) 3597-1200", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 8, espera: "18 min" },
+      { id: "9006", nome: "Caminhão CAIXA Fercal", uf: "DF", ra: "Fercal", lat: -15.5980, lng: -47.8820, tipo: "Caminhão", endereco: "DF-150 Km 12 - Próximo à Adm. Regional", telefone: "(61) 4004-0104", horario: "09h às 15h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: false, atms: 2, espera: "12 min" },
+      { id: "9001", nome: "Caminhão CAIXA Sol Nascente", uf: "DF", ra: "Sol Nascente/Pôr do Sol", lat: -15.8260, lng: -48.1520, tipo: "Caminhão", endereco: "Trecho 2 - Próximo à Administração Regional", telefone: "(61) 4004-0104", horario: "09h às 15h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: false, atms: 4, espera: "15 min" },
+      { id: "4820", nome: "PAA Arniqueira", uf: "DF", ra: "Arniqueira", lat: -15.8540, lng: -48.0210, tipo: "PAA", endereco: "SHA Conjunto 04 Chácara 24", telefone: "(61) 3562-4100", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 4, espera: "14 min" },
+      { id: "9008", nome: "Caminhão CAIXA Arapoanga", uf: "DF", ra: "Arapoanga", lat: -15.6310, lng: -47.6980, tipo: "Caminhão", endereco: "Quadra 05 Área Especial - Av. Principal", telefone: "(61) 4004-0104", horario: "09h às 15h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: false, atms: 3, espera: "16 min" },
+      { id: "9009", nome: "Caminhão CAIXA Água Quente", uf: "DF", ra: "Água Quente", lat: -15.9620, lng: -48.1750, tipo: "Caminhão", endereco: "Área Especial Central - DF-280", telefone: "(61) 4004-0104", horario: "09h às 15h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: false, atms: 2, espera: "14 min" },
 
-      // Capitais de Referência (Brasil)
-      { id: "0235", nome: "Agência Sé", ra: "São Paulo (SP)", lat: -23.5498, lng: -46.6340, tipo: "Agência", endereco: "Praça da Sé, 111", telefone: "(11) 3242-1000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 24, espera: "21 min" },
-      { id: "0180", nome: "Agência Rio Branco", ra: "Rio de Janeiro (RJ)", lat: -22.9035, lng: -43.1789, tipo: "Agência", endereco: "Av. Rio Branco, 174", telefone: "(21) 2212-3000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 18, espera: "17 min" },
-      { id: "0081", nome: "Agência Belo Horizonte Centro", ra: "Belo Horizonte (MG)", lat: -19.9191, lng: -43.9386, tipo: "Agência", endereco: "Rua Rio de Janeiro, 750", telefone: "(31) 3270-4000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 16, espera: "16 min" },
-      { id: "0060", nome: "Agência Salvador Comércio", ra: "Salvador (BA)", lat: -12.9714, lng: -38.5124, tipo: "Agência", endereco: "Rua Miguel Calmon, 555", telefone: "(71) 3243-2000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 15, espera: "20 min" },
-      { id: "0451", nome: "Agência Porto Alegre Centro", ra: "Porto Alegre (RS)", lat: -30.0331, lng: -51.2300, tipo: "Agência", endereco: "Rua dos Andradas, 1000", telefone: "(51) 3210-5000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 14, espera: "14 min" },
-      { id: "0501", nome: "Agência Manaus Praça da Polícia", ra: "Manaus (AM)", lat: -3.1325, lng: -60.0210, tipo: "Agência", endereco: "Rua Guilherme Moreira, 315", telefone: "(92) 3621-1200", horario: "09h às 15h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 16, espera: "19 min" }
+      // Unidades Estratégicas em outras Capitais (Brasil)
+      { id: "0235", nome: "Agência Sé", uf: "SP", ra: "São Paulo (SP)", lat: -23.5498, lng: -46.6340, tipo: "Agência", endereco: "Praça da Sé, 111", telefone: "(11) 3242-1000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 24, espera: "21 min" },
+      { id: "0180", nome: "Agência Rio Branco", uf: "RJ", ra: "Rio de Janeiro (RJ)", lat: -22.9035, lng: -43.1789, tipo: "Agência", endereco: "Av. Rio Branco, 174", telefone: "(21) 2212-3000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 18, espera: "17 min" },
+      { id: "0081", nome: "Agência Belo Horizonte Centro", uf: "MG", ra: "Belo Horizonte (MG)", lat: -19.9191, lng: -43.9386, tipo: "Agência", endereco: "Rua Rio de Janeiro, 750", telefone: "(31) 3270-4000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 16, espera: "16 min" },
+      { id: "0060", nome: "Agência Salvador Comércio", uf: "BA", ra: "Salvador (BA)", lat: -12.9714, lng: -38.5124, tipo: "Agência", endereco: "Rua Miguel Calmon, 555", telefone: "(71) 3243-2000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 15, espera: "20 min" },
+      { id: "0451", nome: "Agência Porto Alegre Centro", uf: "RS", ra: "Porto Alegre (RS)", lat: -30.0331, lng: -51.2300, tipo: "Agência", endereco: "Rua dos Andradas, 1000", telefone: "(51) 3210-5000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 14, espera: "14 min" },
+      { id: "0501", nome: "Agência Manaus Praça da Polícia", uf: "AM", ra: "Manaus (AM)", lat: -3.1325, lng: -60.0210, tipo: "Agência", endereco: "Rua Guilherme Moreira, 315", telefone: "(92) 3621-1200", horario: "09h às 15h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 16, espera: "19 min" }
     ];
 
     // DADOS ANALÍTICOS DE FGTS NAS 35 RAs DO DISTRITO FEDERAL
@@ -686,7 +719,7 @@
       { ra: "Água Quente", clt: 6000, saldoMedio: 9500, volumeTotal: 57000000, arrecadacaoMes: 1500000, perfil: "Zona de Expansão" }
     ];
 
-    // CATÁLOGO DE PRODUTOS DA CAIXA
+    // PRODUTOS CAIXA
     const PRODUTOS_CAIXA = [
       {
         id: "fgts",
@@ -779,14 +812,71 @@
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-    // MALHA VETORIAL ESTADOS BRASIL
+    // FUNÇÃO AUXILIAR PARA EXTRAIR SIGLA DO GEOJSON
+    function extractStateUf(feature) {
+      if (!feature) return null;
+      const p = feature.properties || {};
+      const candidate = p.sigla || p.UF_05 || p.cod_uf || p.UF || p.name || feature.id;
+      if (candidate === 'Distrito Federal' || candidate === '53' || candidate === 'DF') return 'DF';
+      if (candidate === 'São Paulo' || candidate === '35' || candidate === 'SP') return 'SP';
+      if (candidate === 'Rio de Janeiro' || candidate === '33' || candidate === 'RJ') return 'RJ';
+      if (candidate === 'Minas Gerais' || candidate === '31' || candidate === 'MG') return 'MG';
+      if (candidate === 'Bahia' || candidate === '29' || candidate === 'BA') return 'BA';
+      if (candidate === 'Rio Grande do Sul' || candidate === '43' || candidate === 'RS') return 'RS';
+      if (candidate === 'Amazonas' || candidate === '13' || candidate === 'AM') return 'AM';
+      if (typeof candidate === 'string' && candidate.length === 2) return candidate.toUpperCase();
+      return p.name || 'Estado';
+    }
+
+    // MALHA VETORIAL DOS ESTADOS COM HOVER E FRONTEIRAS EVIDENCIADAS
     const statesLayerGroup = L.geoJSON(null, {
       style: {
         fillColor: '#005CA9',
-        weight: 1.5,
-        opacity: 0.9,
+        weight: 1.8,
+        opacity: 0.95,
         color: '#ffffff',
-        fillOpacity: 0.08
+        fillOpacity: 0.10
+      },
+      onEachFeature: function(feature, layer) {
+        const uf = extractStateUf(feature);
+        const count = CAIXA_DATA.filter(d => d.uf === uf).length;
+
+        // Tooltip elegante Looker
+        layer.bindTooltip(`<strong>${feature.properties?.name || uf}</strong><br><span style="color:#00A4E4">${count} unidades monitoradas</span>`, {
+          className: 'state-tooltip',
+          sticky: true,
+          direction: 'top'
+        });
+
+        // Hover dinâmico
+        layer.on({
+          mouseover: function(e) {
+            const l = e.target;
+            l.setStyle({
+              fillColor: '#00A4E4',
+              fillOpacity: 0.35,
+              weight: 3,
+              color: '#003366'
+            });
+            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+              l.bringToFront();
+            }
+          },
+          mouseout: function(e) {
+            statesLayerGroup.resetStyle(e.target);
+          },
+          click: function(e) {
+            L.DomEvent.stopPropagation(e);
+            if (uf === 'DF') {
+              document.getElementById('btn-zoom-df').click();
+            } else if (ESTADOS_CENTROS[uf]) {
+              const cfg = ESTADOS_CENTROS[uf];
+              map.flyTo([cfg.lat, cfg.lng], cfg.zoom, { duration: 1.2 });
+            } else if (e.target.getBounds && e.target.getBounds().isValid()) {
+              map.flyToBounds(e.target.getBounds(), { maxZoom: 8, duration: 1.2, padding: [30, 30] });
+            }
+          }
+        });
       }
     }).addTo(map);
 
@@ -1270,7 +1360,7 @@
       document.getElementById('modal-detalhe').classList.add('hidden');
     });
 
-    // CONTROLE DE NAVEGAÇÃO POR ABAS
+    // NAVEGAÇÃO DE ABAS LOOKER
     function switchTab(tabId) {
       appState.activeTab = tabId;
       
@@ -1282,7 +1372,6 @@
       const viewFgts = document.getElementById('view-fgts');
       const filterContainer = document.getElementById('filter-container-mapa');
 
-      // Reset de estilos
       [btnMapa, btnProdutos, btnFgts].forEach(b => {
         b.className = "py-2 px-1 flex items-center gap-1.5 text-slate-500 hover:text-slate-800 transition-all border-b-3 border-transparent";
       });
@@ -1305,12 +1394,11 @@
       lucide.createIcons();
     }
 
-    // LISTENERS DE ABAS
     document.getElementById('tab-btn-mapa').addEventListener('click', () => switchTab('mapa'));
     document.getElementById('tab-btn-produtos').addEventListener('click', () => switchTab('produtos'));
     document.getElementById('tab-btn-fgts').addEventListener('click', () => switchTab('fgts'));
 
-    // LISTENERS DOS FILTROS DO MAPA
+    // LISTENERS DE FILTROS DO MAPA
     document.getElementById('select-ra').addEventListener('change', (e) => setRaFilter(e.target.value));
     document.getElementById('filter-tipo').addEventListener('change', (e) => {
       appState.tipo = e.target.value;
@@ -1358,7 +1446,7 @@
       setRaFilter('ALL');
     });
 
-    // INICIALIZAÇÃO GERAL
+    // INICIALIZAÇÃO
     window.addEventListener('DOMContentLoaded', () => {
       populateRaSelect();
       renderProdutosGrid();
