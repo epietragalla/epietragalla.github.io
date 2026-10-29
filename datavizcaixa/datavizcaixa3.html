@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CAIXA | Monitoramento Executivo e FGTS</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  
+  <!-- MarkerCluster CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+    .leaflet-container {
+      background: #f1f5f9;
+      outline: none;
+    }
+    .tufte-cluster {
+      background-color: #0284c7;
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 11px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1.5px solid #ffffff;
+    }
+    .tufte-tooltip {
+      background: #0f172a;
+      color: #f8fafc;
+      font-size: 11px;
+      padding: 3px 6px;
+      border-radius: 2px;
+      border: none;
+      box-shadow: none;
+    }
+    .tufte-tooltip::before {
+      display: none;
+    }
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body class="h-screen w-screen overflow-hidden flex flex-col p-2.5 bg-slate-50 text-slate-900 select-none">
+
+  <!-- CABEÇALHO COMPACTO (Sem chartjunk ou logos desnecessários) -->
+  <header class="flex items-baseline justify-between pb-1.5 mb-1.5 border-b border-slate-200 flex-shrink-0">
+    <div class="flex items-baseline gap-2.5">
+      <h1 class="text-xs font-bold tracking-tight text-slate-900">CAIXA <span class="font-normal text-slate-500">| Rede de Atendimento, Produtos Estratégicos & FGTS</span></h1>
+      <span class="text-[10px] text-slate-400 font-mono">Posição: 2026</span>
+    </div>
+    <div class="flex items-center gap-2 text-xs">
+      <span class="text-slate-400 text-[11px]">Recorte Ativo:</span>
+      <span id="label-recorte" class="font-bold text-slate-800 text-[11px]">Distrito Federal (35 RAs)</span>
+      <button id="btn-visao-br" class="text-sky-700 hover:underline font-medium text-[11px] ml-1">Todo Brasil</button>
+      <button id="btn-visao-df" class="text-sky-700 hover:underline font-medium text-[11px]">Foco DF</button>
+      <span class="text-slate-300">|</span>
+      <button id="btn-info-produtos" class="text-slate-600 hover:text-slate-900 font-medium text-[11px] underline">Catálogo de Produtos (6)</button>
+    </div>
+  </header>
+
+  <!-- GRID PRINCIPAL DE TELA ÚNICA: DADOS LADO A LADO -->
+  <div class="flex-1 grid grid-cols-12 gap-2 min-h-0">
+
+    <!-- COLUNA 1 (3 Colunas): ÁREA NOBRE ESQUERDA - Indicadores Críticos, FGTS e Bullet Graphs -->
+    <div class="col-span-3 flex flex-col justify-between bg-white p-2.5 rounded border border-slate-200 min-h-0">
+      
+      <!-- Bloco A: Atendimento e Fila com Bullet Graph -->
+      <div>
+        <div class="flex items-center justify-between pb-1 border-b border-slate-100">
+          <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Atendimento & Fila</span>
+          <span class="text-[10px] text-slate-400">Meta: &le; 15m</span>
+        </div>
+        
+        <div class="mt-1.5 flex items-baseline justify-between">
+          <div>
+            <span class="text-xl font-semibold tracking-tight text-slate-900" id="kpi-espera">13m</span>
+            <span class="text-[10px] text-slate-400 ml-1">espera média</span>
+          </div>
+          <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-1 py-0.5 rounded" id="kpi-espera-delta">-2m vs meta</span>
+        </div>
+
+        <!-- Bullet Graph de Fila: 0m a 25m -->
+        <div class="mt-1.5">
+          <div class="h-1.5 w-full bg-slate-100 rounded-xs relative flex items-center">
+            <div class="h-full bg-slate-200" style="width: 60%;"></div>
+            <div class="h-full bg-slate-800 absolute left-0" id="bullet-espera-fill" style="width: 52%;"></div>
+            <div class="h-3 w-0.5 bg-rose-600 absolute" style="left: 60%;" title="Meta: 15m"></div>
+          </div>
+          <div class="flex justify-between text-[9px] text-slate-400 mt-0.5">
+            <span>0m</span>
+            <span>Meta: 15m</span>
+            <span>25m</span>
+          </div>
+        </div>
+
+        <div class="mt-2 grid grid-cols-2 gap-1.5 text-xs pt-1.5 border-t border-slate-100">
+          <div>
+            <span class="text-slate-400 block text-[9px] uppercase">Unidades Ativas</span>
+            <span class="font-bold text-slate-800 text-xs" id="kpi-unidades">54</span>
+            <span class="text-[9px] text-slate-400 block">100% monitoradas</span>
+          </div>
+          <div>
+            <span class="text-slate-400 block text-[9px] uppercase">Salas 24 Horas</span>
+            <span class="font-bold text-slate-800 text-xs" id="kpi-auto24h">46</span>
+            <span class="text-[9px] text-emerald-700 block" id="kpi-auto24h-pct">85% da rede</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bloco B: Dados Públicos FGTS (Distrito Federal) -->
+      <div class="pt-2 border-t border-slate-100">
+        <div class="flex items-center justify-between pb-0.5 border-b border-slate-100">
+          <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Recursos FGTS (DF)</span>
+          <span class="text-[9px] text-slate-400">Público / MTE</span>
+        </div>
+
+        <div class="mt-1.5">
+          <span class="text-[9px] text-slate-400 uppercase block">Arrecadação Anual Estimada</span>
+          <div class="flex items-baseline gap-2">
+            <span class="text-xl font-semibold tracking-tight text-slate-900" id="kpi-fgts-arrecadacao">R$ 7,1B</span>
+            <span class="text-[10px] font-semibold text-emerald-700">+6,4% a/a</span>
+          </div>
+          <span class="text-[9px] text-slate-400 block">Meta: R$ 6,9B (103% atingido)</span>
+        </div>
+
+        <!-- Bullet Graph de Meta de Arrecadação -->
+        <div class="mt-1">
+          <div class="h-1.5 w-full bg-slate-100 rounded-xs relative flex items-center">
+            <div class="h-full bg-slate-200" style="width: 100%;"></div>
+            <div class="h-full bg-sky-800 absolute left-0" style="width: 100%;"></div>
+            <div class="h-3 w-0.5 bg-slate-900 absolute" style="left: 95%;" title="Meta R$ 6,9B"></div>
+          </div>
+        </div>
+
+        <div class="mt-2 grid grid-cols-2 gap-1.5 text-xs">
+          <div>
+            <span class="text-slate-400 block text-[9px] uppercase">Saldo sob Gestão</span>
+            <span class="font-bold text-slate-800 text-xs" id="kpi-fgts-saldo">R$ 28,5B</span>
+            <span class="text-[9px] text-slate-400">Contas vinculadas</span>
+          </div>
+          <div>
+            <span class="text-slate-400 block text-[9px] uppercase">Saldo Médio/Cotista</span>
+            <span class="font-bold text-slate-800 text-xs" id="kpi-fgts-media">R$ 27,8K</span>
+            <span class="text-[9px] text-slate-400">Base: 1,02M CLT</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bloco C: Modalidades de Saque (Substituição de Pizza/Rosca por Barras Proporcionais) -->
+      <div class="pt-2 border-t border-slate-100 text-xs">
+        <span class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Modalidades de Saque (DF)</span>
+        <div class="space-y-1">
+          <div>
+            <div class="flex justify-between text-[10px] mb-0.5">
+              <span class="text-slate-600">Rescisão Sem Justa Causa</span>
+              <span class="font-medium text-slate-800">42% (R$ 3,0B)</span>
+            </div>
+            <div class="h-1 w-full bg-slate-100 rounded-xs">
+              <div class="h-full bg-slate-700" style="width: 42%;"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-[10px] mb-0.5">
+              <span class="text-slate-600">Saque-Aniversário</span>
+              <span class="font-medium text-slate-800">31% (R$ 2,2B)</span>
+            </div>
+            <div class="h-1 w-full bg-slate-100 rounded-xs">
+              <div class="h-full bg-sky-700" style="width: 31%;"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-[10px] mb-0.5">
+              <span class="text-slate-600">Habitação / Aquisição</span>
+              <span class="font-medium text-slate-800">18% (R$ 1,3B)</span>
+            </div>
+            <div class="h-1 w-full bg-slate-100 rounded-xs">
+              <div class="h-full bg-slate-400" style="width: 18%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- COLUNA 2 (5 Colunas): MAPA TERRITORIAL (Foco no Dado, Interativo, com Efeito Hover e Fronteiras) -->
+    <div class="col-span-5 flex flex-col bg-white p-2 rounded border border-slate-200 min-h-0">
+      <div class="flex items-center justify-between pb-1 px-1 border-b border-slate-100 mb-1 flex-shrink-0">
+        <span class="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Mapeamento Territorial de Unidades</span>
+        <span class="text-[10px] text-slate-400">Clique na fronteira ou RA para filtrar</span>
+      </div>
+      
+      <!-- Container do Mapa Leaflet -->
+      <div id="map" class="flex-1 rounded min-h-0"></div>
+
+      <!-- Legenda Sóbria do Mapa -->
+      <div class="flex items-center justify-between pt-1.5 px-1 text-[10px] text-slate-500 border-t border-slate-100 mt-1 flex-shrink-0">
+        <div class="flex items-center gap-3">
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#0284c7]"></span> Agência</span>
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#0f172a]"></span> PAA</span>
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#ea580c]"></span> Móvel</span>
+        </div>
+        <span class="text-[9px] text-slate-400">Esri Neutral Carto</span>
+      </div>
+    </div>
+
+    <!-- COLUNA 3 (4 Colunas): TABELAS DE DADOS CONEXOS (Side-by-Side para Comparação Direta) -->
+    <div class="col-span-4 flex flex-col justify-between gap-2 min-h-0">
+      
+      <!-- Tabela Superior: FGTS por Região Administrativa (DF) -->
+      <div class="flex-1 bg-white p-2.5 rounded border border-slate-200 flex flex-col min-h-0">
+        <div class="flex items-center justify-between pb-1 border-b border-slate-100 mb-1 flex-shrink-0">
+          <span class="text-[10px] font-bold text-slate-700 uppercase">FGTS por Região Administrativa (35 RAs)</span>
+          <span class="text-[9px] text-slate-400">Estimativas CAGED/PDAD</span>
+        </div>
+
+        <div class="flex-1 overflow-y-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="text-[9px] text-slate-400 border-b border-slate-100 uppercase">
+                <th class="py-1 font-medium">Região</th>
+                <th class="py-1 font-medium text-right">CLT</th>
+                <th class="py-1 font-medium text-right">Saldo Médio</th>
+                <th class="py-1 font-medium text-right">Volume Total</th>
+                <th class="py-1 font-medium text-right">Arrecad/Mês</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-fgts" class="divide-y divide-slate-50 text-[11px]">
+              <!-- Populado dinamicamente -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tabela Inferior: Unidades e Tempo de Atendimento -->
+      <div class="h-44 bg-white p-2.5 rounded border border-slate-200 flex flex-col min-h-0 flex-shrink-0">
+        <div class="flex items-center justify-between pb-1 border-b border-slate-100 mb-1 flex-shrink-0">
+          <span class="text-[10px] font-bold text-slate-700 uppercase">Unidades no Recorte Ativo</span>
+          <span class="text-[9px] text-slate-400" id="count-unidades-lista">0 unidades</span>
+        </div>
+
+        <div class="flex-1 overflow-y-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="text-[9px] text-slate-400 border-b border-slate-100 uppercase">
+                <th class="py-1 font-medium">Unidade</th>
+                <th class="py-1 font-medium">Tipo</th>
+                <th class="py-1 font-medium text-right">ATMs</th>
+                <th class="py-1 font-medium text-right">Espera</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-unidades" class="divide-y divide-slate-50 text-[11px]">
+              <!-- Populado dinamicamente -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- RODAPÉ DE CONTROLES: FILTROS E OPERAÇÕES NOS CANTOS INFERIORES -->
+  <footer class="mt-1.5 pt-1.5 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500 flex-shrink-0">
+    <div class="flex items-center gap-3">
+      <span class="text-[10px] text-slate-400 uppercase font-semibold">Filtros:</span>
+      <label class="flex items-center gap-1 cursor-pointer text-[11px]">
+        <input type="checkbox" id="filtro-24h" class="rounded text-sky-600 focus:ring-0">
+        <span>Sala 24h</span>
+      </label>
+      <label class="flex items-center gap-1 cursor-pointer text-[11px]">
+        <input type="checkbox" id="filtro-acessivel" class="rounded text-sky-600 focus:ring-0">
+        <span>Acessibilidade</span>
+      </label>
+      <label class="flex items-center gap-1 cursor-pointer text-[11px]">
+        <input type="checkbox" id="filtro-pj" class="rounded text-sky-600 focus:ring-0">
+        <span>Gerência PJ</span>
+      </label>
+      <label class="flex items-center gap-1 cursor-pointer text-[11px]">
+        <input type="checkbox" id="filtro-penhor" class="rounded text-sky-600 focus:ring-0">
+        <span>Penhor CAIXA</span>
+      </label>
+      <label class="flex items-center gap-1 cursor-pointer text-[11px]">
+        <input type="checkbox" id="filtro-habitacao" class="rounded text-sky-600 focus:ring-0">
+        <span>Habitação</span>
+      </label>
+      <span class="text-slate-300">|</span>
+      <select id="filtro-tipo" class="border border-slate-200 rounded px-1.5 py-0.5 text-[11px] text-slate-700 bg-white focus:outline-none">
+        <option value="ALL">Todos os Tipos de Unidade</option>
+        <option value="Agência">Agência Convencional</option>
+        <option value="PAA">Posto de Atendimento (PAA)</option>
+        <option value="Caminhão">Unidade Móvel (Caminhão)</option>
+      </select>
+    </div>
+
+    <!-- Controles do Canto Inferior Direito -->
+    <div class="flex items-center gap-2">
+      <input type="text" id="filtro-busca" placeholder="Buscar unidade, RA ou código..." 
+             class="border border-slate-200 rounded px-2 py-0.5 text-[11px] text-slate-800 bg-white focus:outline-none focus:border-slate-400 w-44">
+      <select id="select-ra-footer" class="border border-slate-200 rounded px-1.5 py-0.5 text-[11px] text-slate-700 bg-white focus:outline-none max-w-[170px]">
+        <option value="ALL">Todas as RAs (DF)</option>
+      </select>
+      <button id="btn-reset-filtros" class="text-[11px] text-slate-600 hover:text-slate-900 border border-slate-200 rounded px-2 py-0.5 bg-white">Limpar</button>
+    </div>
+  </footer>
+
+  <!-- MODAL DE PRODUTOS ESTRATÉGICOS (MANTÉM TODO O CONTEÚDO SEM POLUIR O DASHBOARD) -->
+  <div id="modal-produtos" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-[2000] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded max-w-2xl w-full p-5 shadow-lg border border-slate-200">
+      <div class="flex justify-between items-center border-b border-slate-100 pb-2 mb-3">
+        <div>
+          <h3 class="text-sm font-bold text-slate-900">Portfólio de Soluções & Produtos Estratégicos CAIXA</h3>
+          <p class="text-[11px] text-slate-500">Informações regulatórias, estatísticas e bases públicas oficiais.</p>
+        </div>
+        <button id="btn-fechar-produtos" class="text-slate-400 hover:text-slate-600 p-1 text-sm font-bold">&times;</button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 text-xs" id="container-produtos">
+        <!-- Injetado dinamicamente com os 6 produtos completos -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE FICHA COMPLETA DA UNIDADE -->
+ <div id="modal-unidade" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-[2000] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded max-w-md w-full p-5 shadow-lg border border-slate-200">
+      <div class="flex justify-between items-start border-b border-slate-100 pb-2 mb-3">
+        <div>
+          <span id="modal-unidade-tipo" class="text-[9px] uppercase font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700"></span>
+          <h3 id="modal-unidade-nome" class="text-sm font-bold text-slate-900 mt-1"></h3>
+          <p id="modal-unidade-codigo" class="text-[11px] text-slate-400 font-mono"></p>
+        </div>
+        <button id="btn-fechar-unidade" class="text-slate-400 hover:text-slate-600 p-1 text-sm font-bold">&times;</button>
+      </div>
+
+      <div class="space-y-2.5 text-xs text-slate-600">
+        <div>
+          <strong class="text-slate-800 block text-[11px]">Endereço:</strong>
+          <p id="modal-unidade-endereco" class="text-slate-600"></p>
+        </div>
+        <div class="grid grid-cols-2 gap-2 pt-1 border-t border-slate-100">
+          <div>
+            <strong class="text-slate-800 block text-[11px]">Telefone:</strong>
+            <p id="modal-unidade-telefone" class="font-medium text-slate-800"></p>
+          </div>
+          <div>
+            <strong class="text-slate-800 block text-[11px]">Horário Bancário:</strong>
+            <p id="modal-unidade-horario" class="font-medium text-slate-800"></p>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2 pt-1 border-t border-slate-100">
+          <div>
+            <strong class="text-slate-800 block text-[11px]">Caixas Eletrônicos (ATMs):</strong>
+            <p id="modal-unidade-atms" class="font-medium text-slate-800"></p>
+          </div>
+          <div>
+            <strong class="text-slate-800 block text-[11px]">Fila Estimada:</strong>
+            <p id="modal-unidade-espera" class="font-bold text-slate-900"></p>
+          </div>
+        </div>
+        <div class="pt-2 border-t border-slate-100">
+          <strong class="text-slate-800 block text-[11px] mb-1">Recursos Homologados:</strong>
+          <div id="modal-unidade-tags" class="flex flex-wrap gap-1"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 35 REGIÕES ADMINISTRATIVAS DO DISTRITO FEDERAL
+    const DF_REGIOES_ADMINISTRATIVAS = [
+      { id: "RA_I", nome: "Plano Piloto", lat: -15.7942, lng: -47.8822 },
+      { id: "RA_II", nome: "Gama", lat: -16.0182, lng: -48.0645 },
+      { id: "RA_III", nome: "Taguatinga", lat: -15.8331, lng: -48.0567 },
+      { id: "RA_IV", nome: "Brazlândia", lat: -15.6739, lng: -48.2014 },
+      { id: "RA_V", nome: "Sobradinho", lat: -15.6533, lng: -47.7944 },
+      { id: "RA_VI", nome: "Planaltina", lat: -15.6178, lng: -47.6521 },
+      { id: "RA_VII", nome: "Paranoá", lat: -15.7725, lng: -47.7781 },
+      { id: "RA_VIII", nome: "Núcleo Bandeirante", lat: -15.8710, lng: -47.9680 },
+      { id: "RA_IX", nome: "Ceilândia", lat: -15.8202, lng: -48.1125 },
+      { id: "RA_X", nome: "Guará", lat: -15.8305, lng: -47.9861 },
+      { id: "RA_XI", nome: "Cruzeiro", lat: -15.7915, lng: -47.9405 },
+      { id: "RA_XII", nome: "Samambaia", lat: -15.8755, lng: -48.0877 },
+      { id: "RA_XIII", nome: "Santa Maria", lat: -16.0160, lng: -47.9890 },
+      { id: "RA_XIV", nome: "São Sebastião", lat: -15.9089, lng: -47.7711 },
+      { id: "RA_XV", nome: "Recanto das Emas", lat: -15.9080, lng: -48.0670 },
+      { id: "RA_XVI", nome: "Lago Sul", lat: -15.8285, lng: -47.8735 },
+      { id: "RA_XVII", nome: "Riacho Fundo", lat: -15.8822, lng: -48.0175 },
+      { id: "RA_XVIII", nome: "Lago Norte", lat: -15.7380, lng: -47.8810 },
+      { id: "RA_XIX", nome: "Candangolândia", lat: -15.8505, lng: -47.9500 },
+      { id: "RA_XX", nome: "Águas Claras", lat: -15.8398, lng: -48.0261 },
+      { id: "RA_XXI", nome: "Riacho Fundo II", lat: -15.8950, lng: -48.0550 },
+      { id: "RA_XXII", nome: "Sudoeste/Octogonal", lat: -15.7997, lng: -47.9338 },
+      { id: "RA_XXIII", nome: "Varjão", lat: -15.7190, lng: -47.8815 },
+      { id: "RA_XXIV", nome: "Park Way", lat: -15.8880, lng: -47.9400 },
+      { id: "RA_XXV", nome: "SCIA / Estrutural", lat: -15.7890, lng: -47.9940 },
+      { id: "RA_XXVI", nome: "Sobradinho II", lat: -15.6420, lng: -47.8150 },
+      { id: "RA_XXVII", nome: "Jardim Botânico", lat: -15.8720, lng: -47.8200 },
+      { id: "RA_XXVIII", nome: "Itapoã", lat: -15.7480, lng: -47.7650 },
+      { id: "RA_XXIX", nome: "SIA", lat: -15.8170, lng: -47.9620 },
+      { id: "RA_XXX", nome: "Vicente Pires", lat: -15.8115, lng: -48.0289 },
+      { id: "RA_XXXI", nome: "Fercal", lat: -15.5980, lng: -47.8820 },
+      { id: "RA_XXXII", nome: "Sol Nascente/Pôr do Sol", lat: -15.8260, lng: -48.1520 },
+      { id: "RA_XXXIII", nome: "Arniqueira", lat: -15.8540, lng: -48.0210 },
+      { id: "RA_XXXIV", nome: "Arapoanga", lat: -15.6310, lng: -47.6980 },
+      { id: "RA_XXXV", nome: "Água Quente", lat: -15.9620, lng: -48.1750 }
+    ];
+
+    // COORDENADAS CENTRAIS DOS ESTADOS BRASILEIROS
+    const ESTADOS_CENTROS = {
+      'AC': { lat: -9.0238, lng: -70.8120, zoom: 7 },
+      'AL': { lat: -9.5713, lng: -36.7820, zoom: 8 },
+      'AM': { lat: -3.4168, lng: -65.8561, zoom: 6 },
+      'AP': { lat: 0.9020, lng: -52.0030, zoom: 7 },
+      'BA': { lat: -12.5797, lng: -41.7007, zoom: 6 },
+      'CE': { lat: -5.4984, lng: -39.3206, zoom: 7 },
+      'DF': { lat: -15.7801, lng: -47.9292, zoom: 10 },
+      'ES': { lat: -19.1834, lng: -40.3089, zoom: 8 },
+      'GO': { lat: -15.8270, lng: -49.8362, zoom: 6 },
+      'MA': { lat: -4.9609, lng: -45.2744, zoom: 6 },
+      'MG': { lat: -18.5122, lng: -44.5550, zoom: 6 },
+      'MS': { lat: -20.7722, lng: -54.7852, zoom: 6 },
+      'MT': { lat: -12.6819, lng: -56.9211, zoom: 6 },
+      'PA': { lat: -1.9981, lng: -54.9306, zoom: 6 },
+      'PB': { lat: -7.2399, lng: -36.7820, zoom: 8 },
+      'PE': { lat: -8.8137, lng: -36.9541, zoom: 7 },
+      'PI': { lat: -7.7183, lng: -42.7289, zoom: 6 },
+      'PR': { lat: -25.2521, lng: -52.0215, zoom: 7 },
+      'RJ': { lat: -22.9068, lng: -43.1729, zoom: 8 },
+      'RN': { lat: -5.7945, lng: -36.5615, zoom: 8 },
+      'RO': { lat: -11.5057, lng: -63.5806, zoom: 7 },
+      'RR': { lat: 2.7376, lng: -62.0751, zoom: 7 },
+      'RS': { lat: -30.0346, lng: -51.2177, zoom: 7 },
+      'SC': { lat: -27.2423, lng: -50.2189, zoom: 7 },
+      'SE': { lat: -10.5741, lng: -37.3857, zoom: 9 },
+      'SP': { lat: -23.5505, lng: -46.6333, zoom: 7 },
+      'TO': { lat: -10.1753, lng: -48.2982, zoom: 6 }
+    };
+
+    // BASE DE DADOS COMPLETA DE UNIDADES DA CAIXA
+    const CAIXA_DATA = [
+      { id: "0001", nome: "Agência Matriz CAIXA (Sede I)", uf: "DF", ra: "Plano Piloto", lat: -15.7981, lng: -47.8824, tipo: "Agência", endereco: "SBS Quadra 4 Lote 3/4 - Asa Sul", telefone: "(61) 3206-9000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 22, esperaMin: 10 },
+      { id: "0972", nome: "Agência Esplanada dos Ministérios", uf: "DF", ra: "Plano Piloto", lat: -15.7975, lng: -47.8762, tipo: "Agência", endereco: "Esplanada dos Ministérios, Bloco P - Fazenda", telefone: "(61) 3412-2000", horario: "10h às 16h", auto24h: false, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 8, esperaMin: 8 },
+      { id: "0647", nome: "Agência Pátio Brasil", uf: "DF", ra: "Plano Piloto", lat: -15.7963, lng: -47.8921, tipo: "Agência", endereco: "SCS Quadra 7 Bloco A - Shopping Pátio Brasil", telefone: "(61) 3323-8100", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 14, esperaMin: 18 },
+      { id: "1004", nome: "Agência Brasília Shopping", uf: "DF", ra: "Plano Piloto", lat: -15.7892, lng: -47.8899, tipo: "Agência", endereco: "SCN Quadra 5 Bloco A - Brasília Shopping", telefone: "(61) 3252-7000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 12, esperaMin: 14 },
+      { id: "0002", nome: "Agência Asa Sul 210", uf: "DF", ra: "Plano Piloto", lat: -15.8219, lng: -47.9152, tipo: "Agência", endereco: "CLS 210 Bloco B Lojas 02/38", telefone: "(61) 3443-4100", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 10, esperaMin: 15 },
+      { id: "0845", nome: "Agência W3 Sul 515", uf: "DF", ra: "Plano Piloto", lat: -15.8190, lng: -47.9255, tipo: "Agência", endereco: "CRS 515 Bloco C Lojas 22/30", telefone: "(61) 3345-1234", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 9, esperaMin: 19 },
+      { id: "1606", nome: "Agência Asa Norte 211", uf: "DF", ra: "Plano Piloto", lat: -15.7681, lng: -47.8833, tipo: "Agência", endereco: "CLN 211 Bloco D Lojas 1/15", telefone: "(61) 3340-9876", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 8, esperaMin: 16 },
+      { id: "4012", nome: "PAA Tribunal Superior do Trabalho", uf: "DF", ra: "Plano Piloto", lat: -15.8122, lng: -47.8722, tipo: "PAA", endereco: "SAFS Quadra 8 Lote 1 - TST", telefone: "(61) 3043-4000", horario: "10h às 16h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 4, esperaMin: 5 },
+      { id: "4015", nome: "PAA Superior Tribunal de Justiça", uf: "DF", ra: "Plano Piloto", lat: -15.8080, lng: -47.8744, tipo: "PAA", endereco: "SAFS Quadra 6 Lote 1 - STJ", telefone: "(61) 3319-8000", horario: "10h às 16h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 5, esperaMin: 6 },
+      { id: "4020", nome: "PAA Palácio do Buriti", uf: "DF", ra: "Plano Piloto", lat: -15.7877, lng: -47.9238, tipo: "PAA", endereco: "Praça do Buriti - Anexo do Palácio do Buriti", telefone: "(61) 3325-1100", horario: "10h às 16h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 4, esperaMin: 9 },
+      { id: "0652", nome: "Agência Gama Centro", uf: "DF", ra: "Gama", lat: -16.0182, lng: -48.0645, tipo: "Agência", endereco: "Quadra 1 Setor Central Lote 1", telefone: "(61) 3484-1100", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 14, esperaMin: 22 },
+      { id: "2841", nome: "Agência Gama Leste", uf: "DF", ra: "Gama", lat: -16.0120, lng: -48.0490, tipo: "Agência", endereco: "Setor Leste - Entrequadra 29/33", telefone: "(61) 3484-5500", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 8, esperaMin: 17 },
+      { id: "0003", nome: "Agência Taguatinga Centro", uf: "DF", ra: "Taguatinga", lat: -15.8331, lng: -48.0567, tipo: "Agência", endereco: "C 9 Lote 15/16 - Taguatinga Centro", telefone: "(61) 3351-4000", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 18, esperaMin: 25 },
+      { id: "1547", nome: "Agência Taguatinga Shopping", uf: "DF", ra: "Taguatinga", lat: -15.8441, lng: -48.0422, tipo: "Agência", endereco: "QS 01 Lote 40 - Shopping Taguatinga", telefone: "(61) 3353-9000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 11, esperaMin: 17 },
+      { id: "0991", nome: "Agência Comercial Norte", uf: "DF", ra: "Taguatinga", lat: -15.8250, lng: -48.0620, tipo: "Agência", endereco: "QNA 01 Lote 02 - Avenida Comercial Norte", telefone: "(61) 3352-7800", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 12, esperaMin: 21 },
+      { id: "1256", nome: "Agência Pistão Sul", uf: "DF", ra: "Taguatinga", lat: -15.8601, lng: -48.0315, tipo: "Agência", endereco: "QSE Área Especial 1 - Pistão Sul", telefone: "(61) 3356-8800", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 8, esperaMin: 16 },
+      { id: "0653", nome: "Agência Brazlândia", uf: "DF", ra: "Brazlândia", lat: -15.6739, lng: -48.2014, tipo: "Agência", endereco: "Setor Tradicional Quadra 15 Lote 02", telefone: "(61) 3391-1400", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 8, esperaMin: 16 },
+      { id: "0980", nome: "Agência Sobradinho Centro", uf: "DF", ra: "Sobradinho", lat: -15.6533, lng: -47.7944, tipo: "Agência", endereco: "Quadra 08 Bloco 02 Lote 04", telefone: "(61) 3591-2200", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 10, esperaMin: 18 },
+      { id: "2876", nome: "Agência Planaltina Tradicional", uf: "DF", ra: "Planaltina", lat: -15.6178, lng: -47.6521, tipo: "Agência", endereco: "Setor Tradicional - Praça Cel. Salviano", telefone: "(61) 3389-4400", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 10, esperaMin: 20 },
+      { id: "3312", nome: "Agência Planaltina Vila Buritis", uf: "DF", ra: "Planaltina", lat: -15.6260, lng: -47.6680, tipo: "Agência", endereco: "Quadra 02 Conjunto A Lote 12 - Buritis", telefone: "(61) 3388-3100", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 8, esperaMin: 17 },
+      { id: "2885", nome: "Agência Paranoá", uf: "DF", ra: "Paranoá", lat: -15.7725, lng: -47.7781, tipo: "Agência", endereco: "Quadra 18 Conjunto A Lote 01", telefone: "(61) 3369-7000", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 10, esperaMin: 23 },
+      { id: "0651", nome: "Agência Núcleo Bandeirante", uf: "DF", ra: "Núcleo Bandeirante", lat: -15.8710, lng: -47.9680, tipo: "Agência", endereco: "3ª Avenida Lotes 790/810", telefone: "(61) 3552-1400", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 10, esperaMin: 16 },
+      { id: "0004", nome: "Agência Ceilândia Centro", uf: "DF", ra: "Ceilândia", lat: -15.8202, lng: -48.1125, tipo: "Agência", endereco: "CNN 02 Bloco A Lotes 01/02", telefone: "(61) 3371-3344", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 20, esperaMin: 28 },
+      { id: "2855", nome: "Agência Ceilândia Norte", uf: "DF", ra: "Ceilândia", lat: -15.8055, lng: -48.1210, tipo: "Agência", endereco: "QNM 18 Conjunto A Lote 01", telefone: "(61) 3373-6100", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 12, esperaMin: 24 },
+      { id: "3244", nome: "Agência P Sul", uf: "DF", ra: "Ceilândia", lat: -15.8390, lng: -48.1320, tipo: "Agência", endereco: "P1 Sul - QNP 26 Conjunto A Lote 02", telefone: "(61) 3378-4300", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 10, esperaMin: 22 },
+      { id: "3235", nome: "Agência Guará II", uf: "DF", ra: "Guará", lat: -15.8305, lng: -47.9861, tipo: "Agência", endereco: "QE 15 Lote A - Guará II", telefone: "(61) 3381-6789", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 8, esperaMin: 15 },
+      { id: "1088", nome: "Agência Guará I", uf: "DF", ra: "Guará", lat: -15.8210, lng: -47.9790, tipo: "Agência", endereco: "QI 02 Bloco B Lojas 02/08", telefone: "(61) 3382-4100", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 8, esperaMin: 14 },
+      { id: "0847", nome: "Agência Cruzeiro", uf: "DF", ra: "Cruzeiro", lat: -15.7915, lng: -47.9405, tipo: "Agência", endereco: "SHCES Quadra 305 Bloco A", telefone: "(61) 3361-5500", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 8, esperaMin: 13 },
+      { id: "3050", nome: "Agência Samambaia Sul", uf: "DF", ra: "Samambaia", lat: -15.8755, lng: -48.0877, tipo: "Agência", endereco: "QS 302 Conjunto 01 Lote 03", telefone: "(61) 3359-9900", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 14, esperaMin: 23 },
+      { id: "3540", nome: "Agência Samambaia Norte", uf: "DF", ra: "Samambaia", lat: -15.8680, lng: -48.0960, tipo: "Agência", endereco: "QN 204 Conjunto 02 Lote 01", telefone: "(61) 3357-1200", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 10, esperaMin: 21 },
+      { id: "3120", nome: "Agência Santa Maria", uf: "DF", ra: "Santa Maria", lat: -16.0160, lng: -47.9890, tipo: "Agência", endereco: "CL 214 Lote D - Avenida Alagados", telefone: "(61) 3392-7500", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 10, esperaMin: 25 },
+      { id: "2940", nome: "Agência São Sebastião", uf: "DF", ra: "São Sebastião", lat: -15.9089, lng: -47.7711, tipo: "Agência", endereco: "Rua da Gameleira Quadra 101 Lote 05", telefone: "(61) 3335-8000", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 10, esperaMin: 24 },
+      { id: "3510", nome: "Agência Recanto das Emas", uf: "DF", ra: "Recanto das Emas", lat: -15.9080, lng: -48.0670, tipo: "Agência", endereco: "Quadra 103 Conjunto 02 Lote 01", telefone: "(61) 3331-5000", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 12, esperaMin: 26 },
+      { id: "1548", nome: "Agência Gilberto Salomão", uf: "DF", ra: "Lago Sul", lat: -15.8285, lng: -47.8735, tipo: "Agência", endereco: "SHIS QI 05 Bloco F - Gilberto Salomão", telefone: "(61) 3364-1000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 8, esperaMin: 7 },
+      { id: "3115", nome: "Agência Riacho Fundo I", uf: "DF", ra: "Riacho Fundo", lat: -15.8822, lng: -48.0175, tipo: "Agência", endereco: "QN 07 Área Especial 01 Lote A", telefone: "(61) 3399-4400", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 8, esperaMin: 19 },
+      { id: "2910", nome: "Agência Deck Norte", uf: "DF", ra: "Lago Norte", lat: -15.7380, lng: -47.8810, tipo: "Agência", endereco: "SHIN CA 01 Bloco A - Shopping Deck Norte", telefone: "(61) 3468-2500", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 6, esperaMin: 8 },
+      { id: "4090", nome: "PAA Candangolândia", uf: "DF", ra: "Candangolândia", lat: -15.8505, lng: -47.9500, tipo: "PAA", endereco: "Rua dos Transportes Quadra 02 Lote 04", telefone: "(61) 3301-2000", horario: "11h às 16h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 4, esperaMin: 11 },
+      { id: "4122", nome: "Agência Águas Claras", uf: "DF", ra: "Águas Claras", lat: -15.8398, lng: -48.0261, tipo: "Agência", endereco: "Av. Castanheiras Lote 1060 - Shopping Felicittà", telefone: "(61) 3435-8900", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 12, esperaMin: 14 },
+      { id: "4288", nome: "Agência Boulevard Águas Claras", uf: "DF", ra: "Águas Claras", lat: -15.8340, lng: -48.0310, tipo: "Agência", endereco: "Rua das Figueiras Lote 06", telefone: "(61) 3436-1200", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 8, esperaMin: 12 },
+      { id: "4320", nome: "PAA Riacho Fundo II", uf: "DF", ra: "Riacho Fundo II", lat: -15.8950, lng: -48.0550, tipo: "PAA", endereco: "QN 14 Conjunto 02 Lote 05", telefone: "(61) 3399-9100", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 6, esperaMin: 16 },
+      { id: "2417", nome: "Agência Terraço Shopping", uf: "DF", ra: "Sudoeste/Octogonal", lat: -15.7997, lng: -47.9338, tipo: "Agência", endereco: "SHCSW EQ 52/53 - Terraço Shopping", telefone: "(61) 3362-2300", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 10, esperaMin: 12 },
+      { id: "9005", nome: "Caminhão CAIXA Varjão", uf: "DF", ra: "Varjão", lat: -15.7190, lng: -47.8815, tipo: "Caminhão", endereco: "Quadra 02 Área Especial - Praça Central", telefone: "(61) 4004-0104", horario: "09h às 15h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: false, atms: 2, esperaMin: 14 },
+      { id: "4501", nome: "PAA Aeroporto de Brasília", uf: "DF", ra: "Park Way", lat: -15.8711, lng: -47.9186, tipo: "PAA", endereco: "Aeroporto Internacional JK - TPS 1 Desembarque", telefone: "(61) 3365-2000", horario: "09h às 19h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: false, atms: 6, esperaMin: 9 },
+      { id: "4610", nome: "PAA Cidade Estrutural", uf: "DF", ra: "SCIA / Estrutural", lat: -15.7890, lng: -47.9940, tipo: "PAA", endereco: "Setor Central Quadra 03 Área Especial", telefone: "(61) 3465-1100", horario: "11h às 16h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 4, esperaMin: 18 },
+      { id: "3380", nome: "Agência Sobradinho II", uf: "DF", ra: "Sobradinho II", lat: -15.6420, lng: -47.8150, tipo: "Agência", endereco: "AR 13 Conjunto 01 Lote 02", telefone: "(61) 3591-6600", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 8, esperaMin: 19 },
+      { id: "4190", nome: "Agência Jardim Botânico", uf: "DF", ra: "Jardim Botânico", lat: -15.8720, lng: -47.8200, tipo: "Agência", endereco: "Av. Comercial Lote 22 - Polo de Artesanato", telefone: "(61) 3427-1500", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 6, esperaMin: 10 },
+      { id: "4720", nome: "Agência Itapoã", uf: "DF", ra: "Itapoã", lat: -15.7480, lng: -47.7650, tipo: "Agência", endereco: "Quadra 61 Área Especial 01", telefone: "(61) 3369-9000", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 8, esperaMin: 22 },
+      { id: "1546", nome: "Agência SIA", uf: "DF", ra: "SIA", lat: -15.8170, lng: -47.9620, tipo: "Agência", endereco: "SIA Trecho 3 Lote 625/695 - Ed. CAIXA", telefone: "(61) 3233-9000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 12, esperaMin: 13 },
+      { id: "4788", nome: "Agência Vicente Pires", uf: "DF", ra: "Vicente Pires", lat: -15.8115, lng: -48.0289, tipo: "Agência", endereco: "Rua 05 Chácara 101 Lote 08", telefone: "(61) 3597-1200", horario: "11h às 16h", auto24h: true, acessivel: true, pj: true, penhor: false, habitacao: true, atms: 8, esperaMin: 18 },
+      { id: "9006", nome: "Caminhão CAIXA Fercal", uf: "DF", ra: "Fercal", lat: -15.5980, lng: -47.8820, tipo: "Caminhão", endereco: "DF-150 Km 12 - Próximo à Adm. Regional", telefone: "(61) 4004-0104", horario: "09h às 15h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: false, atms: 2, esperaMin: 12 },
+      { id: "9001", nome: "Caminhão CAIXA Sol Nascente", uf: "DF", ra: "Sol Nascente/Pôr do Sol", lat: -15.8260, lng: -48.1520, tipo: "Caminhão", endereco: "Trecho 2 - Próximo à Administração Regional", telefone: "(61) 4004-0104", horario: "09h às 15h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: false, atms: 4, esperaMin: 15 },
+      { id: "4820", nome: "PAA Arniqueira", uf: "DF", ra: "Arniqueira", lat: -15.8540, lng: -48.0210, tipo: "PAA", endereco: "SHA Conjunto 04 Chácara 24", telefone: "(61) 3562-4100", horario: "11h às 16h", auto24h: true, acessivel: true, pj: false, penhor: false, habitacao: true, atms: 4, esperaMin: 14 },
+      { id: "9008", nome: "Caminhão CAIXA Arapoanga", uf: "DF", ra: "Arapoanga", lat: -15.6310, lng: -47.6980, tipo: "Caminhão", endereco: "Quadra 05 Área Especial - Av. Principal", telefone: "(61) 4004-0104", horario: "09h às 15h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: false, atms: 3, esperaMin: 16 },
+      { id: "9009", nome: "Caminhão CAIXA Água Quente", uf: "DF", ra: "Água Quente", lat: -15.9620, lng: -48.1750, tipo: "Caminhão", endereco: "Área Especial Central - DF-280", telefone: "(61) 4004-0104", horario: "09h às 15h", auto24h: false, acessivel: true, pj: false, penhor: false, habitacao: false, atms: 2, esperaMin: 14 },
+
+      // Unidades Nacionais
+      { id: "0235", nome: "Agência Sé", uf: "SP", ra: "São Paulo (SP)", lat: -23.5498, lng: -46.6340, tipo: "Agência", endereco: "Praça da Sé, 111", telefone: "(11) 3242-1000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 24, esperaMin: 21 },
+      { id: "0180", nome: "Agência Rio Branco", uf: "RJ", ra: "Rio de Janeiro (RJ)", lat: -22.9035, lng: -43.1789, tipo: "Agência", endereco: "Av. Rio Branco, 174", telefone: "(21) 2212-3000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 18, esperaMin: 17 },
+      { id: "0081", nome: "Agência Belo Horizonte Centro", uf: "MG", ra: "Belo Horizonte (MG)", lat: -19.9191, lng: -43.9386, tipo: "Agência", endereco: "Rua Rio de Janeiro, 750", telefone: "(31) 3270-4000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 16, esperaMin: 16 },
+      { id: "0060", nome: "Agência Salvador Comércio", uf: "BA", ra: "Salvador (BA)", lat: -12.9714, lng: -38.5124, tipo: "Agência", endereco: "Rua Miguel Calmon, 555", telefone: "(71) 3243-2000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 15, esperaMin: 20 },
+      { id: "0451", nome: "Agência Porto Alegre Centro", uf: "RS", ra: "Porto Alegre (RS)", lat: -30.0331, lng: -51.2300, tipo: "Agência", endereco: "Rua dos Andradas, 1000", telefone: "(51) 3210-5000", horario: "10h às 16h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 14, esperaMin: 14 },
+      { id: "0501", nome: "Agência Manaus Praça da Polícia", uf: "AM", ra: "Manaus (AM)", lat: -3.1325, lng: -60.0210, tipo: "Agência", endereco: "Rua Guilherme Moreira, 315", telefone: "(92) 3621-1200", horario: "09h às 15h", auto24h: true, acessivel: true, pj: true, penhor: true, habitacao: true, atms: 16, esperaMin: 19 }
+    ];
+
+    // DADOS ANALÍTICOS DE FGTS NAS 35 RAs (Formatados sem precisão excessiva)
+    const FGTS_DATA_DF = [
+      { ra: "Plano Piloto", clt: 265000, saldoMedio: 46500, volumeTotal: 12322500000, arrecadacaoMes: 198000000, cltFormat: "265K", saldoFormat: "R$ 46,5K", volumeFormat: "R$ 12,3B", mesFormat: "R$ 198M" },
+      { ra: "Taguatinga", clt: 122000, saldoMedio: 28400, volumeTotal: 3464800000, arrecadacaoMes: 62000000, cltFormat: "122K", saldoFormat: "R$ 28,4K", volumeFormat: "R$ 3,5B", mesFormat: "R$ 62M" },
+      { ra: "Ceilândia", clt: 148000, saldoMedio: 15200, volumeTotal: 2249600000, arrecadacaoMes: 48500000, cltFormat: "148K", saldoFormat: "R$ 15,2K", volumeFormat: "R$ 2,2B", mesFormat: "R$ 49M" },
+      { ra: "Águas Claras", clt: 84000, saldoMedio: 36200, volumeTotal: 3040800000, arrecadacaoMes: 51200000, cltFormat: "84K", saldoFormat: "R$ 36,2K", volumeFormat: "R$ 3,0B", mesFormat: "R$ 51M" },
+      { ra: "Guará", clt: 58000, saldoMedio: 26800, volumeTotal: 1554400000, arrecadacaoMes: 29000000, cltFormat: "58K", saldoFormat: "R$ 26,8K", volumeFormat: "R$ 1,6B", mesFormat: "R$ 29M" },
+      { ra: "Samambaia", clt: 79000, saldoMedio: 13900, volumeTotal: 1098100000, arrecadacaoMes: 24500000, cltFormat: "79K", saldoFormat: "R$ 13,9K", volumeFormat: "R$ 1,1B", mesFormat: "R$ 25M" },
+      { ra: "Gama", clt: 54000, saldoMedio: 19800, volumeTotal: 1069200000, arrecadacaoMes: 21000000, cltFormat: "54K", saldoFormat: "R$ 19,8K", volumeFormat: "R$ 1,1B", mesFormat: "R$ 21M" },
+      { ra: "Sudoeste/Oct.", clt: 42000, saldoMedio: 52100, volumeTotal: 2188200000, arrecadacaoMes: 36000000, cltFormat: "42K", saldoFormat: "R$ 52,1K", volumeFormat: "R$ 2,2B", mesFormat: "R$ 36M" },
+      { ra: "SIA", clt: 38000, saldoMedio: 31200, volumeTotal: 1185600000, arrecadacaoMes: 34500000, cltFormat: "38K", saldoFormat: "R$ 31,2K", volumeFormat: "R$ 1,2B", mesFormat: "R$ 35M" },
+      { ra: "Sobradinho", clt: 36000, saldoMedio: 22500, volumeTotal: 810000000, arrecadacaoMes: 16500000, cltFormat: "36K", saldoFormat: "R$ 22,5K", volumeFormat: "R$ 810M", mesFormat: "R$ 17M" },
+      { ra: "Planaltina", clt: 41000, saldoMedio: 13200, volumeTotal: 541200000, arrecadacaoMes: 13800000, cltFormat: "41K", saldoFormat: "R$ 13,2K", volumeFormat: "R$ 541M", mesFormat: "R$ 14M" },
+      { ra: "Santa Maria", clt: 46000, saldoMedio: 12400, volumeTotal: 570400000, arrecadacaoMes: 14200000, cltFormat: "46K", saldoFormat: "R$ 12,4K", volumeFormat: "R$ 570M", mesFormat: "R$ 14M" },
+      { ra: "Lago Sul", clt: 16000, saldoMedio: 58400, volumeTotal: 934400000, arrecadacaoMes: 18500000, cltFormat: "16K", saldoFormat: "R$ 58,4K", volumeFormat: "R$ 934M", mesFormat: "R$ 19M" },
+      { ra: "Lago Norte", clt: 14000, saldoMedio: 51200, volumeTotal: 716800000, arrecadacaoMes: 14100000, cltFormat: "14K", saldoFormat: "R$ 51,2K", volumeFormat: "R$ 717M", mesFormat: "R$ 14M" },
+      { ra: "Vicente Pires", clt: 32000, saldoMedio: 27900, volumeTotal: 892800000, arrecadacaoMes: 18200000, cltFormat: "32K", saldoFormat: "R$ 27,9K", volumeFormat: "R$ 893M", mesFormat: "R$ 18M" },
+      { ra: "Jardim Botânico", clt: 18000, saldoMedio: 39500, volumeTotal: 711000000, arrecadacaoMes: 13900000, cltFormat: "18K", saldoFormat: "R$ 39,5K", volumeFormat: "R$ 711M", mesFormat: "R$ 14M" },
+      { ra: "Recanto das Emas", clt: 37000, saldoMedio: 11800, volumeTotal: 436600000, arrecadacaoMes: 11200000, cltFormat: "37K", saldoFormat: "R$ 11,8K", volumeFormat: "R$ 437M", mesFormat: "R$ 11M" },
+      { ra: "São Sebastião", clt: 31000, saldoMedio: 12900, volumeTotal: 399900000, arrecadacaoMes: 9800000, cltFormat: "31K", saldoFormat: "R$ 12,9K", volumeFormat: "R$ 400M", mesFormat: "R$ 10M" },
+      { ra: "Riacho Fundo", clt: 21000, saldoMedio: 17800, volumeTotal: 373800000, arrecadacaoMes: 8400000, cltFormat: "21K", saldoFormat: "R$ 17,8K", volumeFormat: "R$ 374M", mesFormat: "R$ 8M" },
+      { ra: "Riacho Fundo II", clt: 19000, saldoMedio: 12200, volumeTotal: 231800000, arrecadacaoMes: 5900000, cltFormat: "19K", saldoFormat: "R$ 12,2K", volumeFormat: "R$ 232M", mesFormat: "R$ 6M" },
+      { ra: "Paranoá", clt: 22000, saldoMedio: 12500, volumeTotal: 275000000, arrecadacaoMes: 6800000, cltFormat: "22K", saldoFormat: "R$ 12,5K", volumeFormat: "R$ 275M", mesFormat: "R$ 7M" },
+      { ra: "Núcleo Band.", clt: 16000, saldoMedio: 24100, volumeTotal: 385600000, arrecadacaoMes: 8100000, cltFormat: "16K", saldoFormat: "R$ 24,1K", volumeFormat: "R$ 386M", mesFormat: "R$ 8M" },
+      { ra: "Cruzeiro", clt: 18000, saldoMedio: 33400, volumeTotal: 601200000, arrecadacaoMes: 12000000, cltFormat: "18K", saldoFormat: "R$ 33,4K", volumeFormat: "R$ 601M", mesFormat: "R$ 12M" },
+      { ra: "Brazlândia", clt: 17000, saldoMedio: 14600, volumeTotal: 248200000, arrecadacaoMes: 6200000, cltFormat: "17K", saldoFormat: "R$ 14,6K", volumeFormat: "R$ 248M", mesFormat: "R$ 6M" },
+      { ra: "Sobradinho II", clt: 24000, saldoMedio: 14200, volumeTotal: 340800000, arrecadacaoMes: 8200000, cltFormat: "24K", saldoFormat: "R$ 14,2K", volumeFormat: "R$ 341M", mesFormat: "R$ 8M" },
+      { ra: "Itapoã", clt: 18000, saldoMedio: 10400, volumeTotal: 187200000, arrecadacaoMes: 4700000, cltFormat: "18K", saldoFormat: "R$ 10,4K", volumeFormat: "R$ 187M", mesFormat: "R$ 5M" },
+      { ra: "SCIA / Estrutural", clt: 12000, saldoMedio: 9200, volumeTotal: 110400000, arrecadacaoMes: 3100000, cltFormat: "12K", saldoFormat: "R$ 9,2K", volumeFormat: "R$ 110M", mesFormat: "R$ 3M" },
+      { ra: "Sol Nascente/Pôr", clt: 28000, saldoMedio: 9800, volumeTotal: 274400000, arrecadacaoMes: 7100000, cltFormat: "28K", saldoFormat: "R$ 9,8K", volumeFormat: "R$ 274M", mesFormat: "R$ 7M" },
+      { ra: "Arniqueira", clt: 15000, saldoMedio: 25400, volumeTotal: 381000000, arrecadacaoMes: 8900000, cltFormat: "15K", saldoFormat: "R$ 25,4K", volumeFormat: "R$ 381M", mesFormat: "R$ 9M" },
+      { ra: "Park Way", clt: 9000, saldoMedio: 48900, volumeTotal: 440100000, arrecadacaoMes: 9800000, cltFormat: "9K", saldoFormat: "R$ 48,9K", volumeFormat: "R$ 440M", mesFormat: "R$ 10M" },
+      { ra: "Candangolândia", clt: 8000, saldoMedio: 19500, volumeTotal: 156000000, arrecadacaoMes: 3800000, cltFormat: "8K", saldoFormat: "R$ 19,5K", volumeFormat: "R$ 156M", mesFormat: "R$ 4M" },
+      { ra: "Varjão", clt: 5000, saldoMedio: 11200, volumeTotal: 56000000, arrecadacaoMes: 1400000, cltFormat: "5K", saldoFormat: "R$ 11,2K", volumeFormat: "R$ 56M", mesFormat: "R$ 1M" },
+      { ra: "Fercal", clt: 4500, saldoMedio: 15800, volumeTotal: 71100000, arrecadacaoMes: 1800000, cltFormat: "4,5K", saldoFormat: "R$ 15,8K", volumeFormat: "R$ 71M", mesFormat: "R$ 2M" },
+      { ra: "Arapoanga", clt: 11000, saldoMedio: 10100, volumeTotal: 111100000, arrecadacaoMes: 2900000, cltFormat: "11K", saldoFormat: "R$ 10,1K", volumeFormat: "R$ 111M", mesFormat: "R$ 3M" },
+      { ra: "Água Quente", clt: 6000, saldoMedio: 9500, volumeTotal: 57000000, arrecadacaoMes: 1500000, cltFormat: "6K", saldoFormat: "R$ 9,5K", volumeFormat: "R$ 57M", mesFormat: "R$ 1,5M" }
+    ];
+
+    // PRODUTOS ESTRATÉGICOS DA CAIXA
+    const PRODUTOS_CAIXA = [
+      { id: "fgts", nome: "FGTS (Fundo de Garantia)", categoria: "Benefícios & Trabalhador", descricao: "Gestão exclusiva de contas vinculadas, Saque-Aniversário, Habitação e suporte ao trabalhador formal.", destaque: "R$ 7,1B arrecadados/ano no DF" },
+      { id: "habitacao", nome: "Crédito Imobiliário / Habitação", categoria: "Financiamento & Cidadania", descricao: "Líder nacional com recursos SBPE e FGTS. Programa Minha Casa Minha Vida com subsídios.", destaque: "Maior carteira imobiliária da América Latina" },
+      { id: "poupanca", nome: "Poupança & Investimentos CAIXA", categoria: "Captação & Rentabilidade", descricao: "Aplicação financeira tradicional isenta de IR para pessoa física com garantia total do FGC.", destaque: "Mais de 100 milhões de poupadores" },
+      { id: "penhor", nome: "Penhor CAIXA", categoria: "Crédito Ágil Sem Consulta", descricao: "Empréstimo instantâneo sem consulta ao SPC/Serasa com garantia de joias, ouro e relógios.", destaque: "Monopólio federal e exclusividade CAIXA" },
+      { id: "social", nome: "Bolsa Família & Benefícios Sociais", categoria: "Programas de Transferência", descricao: "Operação do Caixa Tem, pagamento do PIS/Abono, Seguro-Desemprego e auxílios de renda.", destaque: "Principal operador de cidadania do Brasil" },
+      { id: "loterias", nome: "Loterias CAIXA", categoria: "Repasse Social & Sorteios", descricao: "Mega-Sena, Quina e Lotofácil com destinação direta para educação, segurança e esporte.", destaque: "Quase 50% da arrecadação repassada à sociedade" }
+    ];
+
+    // ESTADO REATIVO DO DASHBOARD
+    const appState = {
+      recorte: 'DF',
+      ra: 'ALL',
+      tipo: 'ALL',
+      auto24h: false,
+      acessivel: false,
+      pj: false,
+      penhor: false,
+      habitacao: false,
+      search: ''
+    };
+
+    // INICIALIZAÇÃO DO MAPA COM ESTILO NEUTRO
+    const map = L.map('map', {
+      center: [-15.7801, -47.9292],
+      zoom: 10,
+      zoomControl: false,
+      attributionControl: false
+    });
+
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 18
+    }).addTo(map);
+
+    // FUNÇÃO AUXILIAR PARA EXTRAIR SIGLA DO GEOJSON
+    function extractStateUf(feature) {
+      if (!feature) return null;
+      const p = feature.properties || {};
+      const candidate = p.sigla || p.UF_05 || p.cod_uf || p.UF || p.name || feature.id;
+      if (candidate === 'Distrito Federal' || candidate === '53' || candidate === 'DF') return 'DF';
+      if (candidate === 'São Paulo' || candidate === '35' || candidate === 'SP') return 'SP';
+      if (candidate === 'Rio de Janeiro' || candidate === '33' || candidate === 'RJ') return 'RJ';
+      if (candidate === 'Minas Gerais' || candidate === '31' || candidate === 'MG') return 'MG';
+      if (candidate === 'Bahia' || candidate === '29' || candidate === 'BA') return 'BA';
+      if (candidate === 'Rio Grande do Sul' || candidate === '43' || candidate === 'RS') return 'RS';
+      if (candidate === 'Amazonas' || candidate === '13' || candidate === 'AM') return 'AM';
+      if (typeof candidate === 'string' && candidate.length === 2) return candidate.toUpperCase();
+      return p.name || 'Estado';
+    }
+
+    // MALHA VETORIAL DOS ESTADOS COM HOVER E TRANSIÇÕES SUAVES
+    const statesLayerGroup = L.geoJSON(null, {
+      style: {
+        fillColor: '#94a3b8',
+        weight: 1.2,
+        opacity: 0.9,
+        color: '#ffffff',
+        fillOpacity: 0.12
+      },
+      onEachFeature: function(feature, layer) {
+        const uf = extractStateUf(feature);
+        const count = CAIXA_DATA.filter(d => d.uf === uf).length;
+
+        layer.bindTooltip(`<strong>${feature.properties?.name || uf}</strong><br>${count} pontos CAIXA`, {
+          className: 'tufte-tooltip',
+          sticky: true,
+          direction: 'top'
+        });
+
+        layer.on({
+          mouseover: function(e) {
+            e.target.setStyle({
+              fillColor: '#0284c7',
+              fillOpacity: 0.32,
+              weight: 2.2,
+              color: '#0f172a'
+            });
+            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+              e.target.bringToFront();
+            }
+          },
+          mouseout: function(e) {
+            statesLayerGroup.resetStyle(e.target);
+          },
+          click: function(e) {
+            L.DomEvent.stopPropagation(e);
+            if (uf === 'DF') {
+              definirRecorte('DF');
+            } else if (ESTADOS_CENTROS[uf]) {
+              const cfg = ESTADOS_CENTROS[uf];
+              map.flyTo([cfg.lat, cfg.lng], cfg.zoom, { duration: 1.2 });
+              document.getElementById('label-recorte').textContent = `${feature.properties?.name || uf} (${count} un.)`;
+            } else if (e.target.getBounds && e.target.getBounds().isValid()) {
+              map.flyToBounds(e.target.getBounds(), { maxZoom: 8, duration: 1.2, padding: [20, 20] });
+            }
+          }
+        });
+      }
+    }).addTo(map);
+
+    fetch('https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/brazil-states.geojson')
+      .then(res => res.json())
+      .then(data => statesLayerGroup.addData(data))
+      .catch(err => console.warn('GeoJSON fail:', err));
+
+    // CLUSTERING DE AGÊNCIAS
+    const markerClusterGroup = L.markerClusterGroup({
+      showCoverageOnHover: false,
+      maxClusterRadius: 32,
+      iconCreateFunction: function (cluster) {
+        return L.divIcon({
+          html: cluster.getChildCount(),
+          className: 'tufte-cluster',
+          iconSize: L.point(26, 26)
+        });
+      }
+    });
+    map.addLayer(markerClusterGroup);
+
+    // CÍRCULOS DAS 35 RAs
+    const rasLayerGroup = L.layerGroup().addTo(map);
+    function renderRaPolygons() {
+      rasLayerGroup.clearLayers();
+      DF_REGIOES_ADMINISTRATIVAS.forEach(ra => {
+        const count = CAIXA_DATA.filter(d => d.ra === ra.nome).length;
+        const circle = L.circleMarker([ra.lat, ra.lng], {
+          radius: 9,
+          fillColor: count > 0 ? '#0284c7' : '#94a3b8',
+          color: '#ffffff',
+          weight: 1.5,
+          opacity: 1,
+          fillOpacity: 0.65
+        });
+        circle.bindTooltip(`<strong>${ra.nome}</strong><br>${count} unidade(s)`, { className: 'tufte-tooltip', direction: 'top' });
+        circle.on('click', () => {
+          appState.ra = ra.nome;
+          document.getElementById('select-ra-footer').value = ra.nome;
+          document.getElementById('label-recorte').textContent = ra.nome;
+          map.flyTo([ra.lat, ra.lng], 13, { duration: 1.1 });
+          renderizarDashboard();
+        });
+        rasLayerGroup.addLayer(circle);
+      });
+    }
+
+    // RENDERIZAÇÃO CENTRAL DO DASHBOARD (TELA ÚNICA REATIVA)
+    function renderizarDashboard() {
+      const filtradas = CAIXA_DATA.filter(item => {
+        const matchRecorte = (appState.recorte === 'BR') || (appState.recorte === 'DF' && item.uf === 'DF');
+        const matchRa = (appState.ra === 'ALL') || (item.ra === appState.ra);
+        const matchTipo = (appState.tipo === 'ALL') || (item.tipo === appState.tipo);
+        const match24h = !appState.auto24h || item.auto24h;
+        const matchAcess = !appState.acessivel || item.acessivel;
+        const matchPj = !appState.pj || item.pj;
+        const matchPenhor = !appState.penhor || item.penhor;
+        const matchHab = !appState.habitacao || item.habitacao;
+
+        let matchSearch = true;
+        if (appState.search.trim() !== '') {
+          const s = appState.search.toLowerCase();
+          matchSearch = item.nome.toLowerCase().includes(s) ||
+                        item.id.toLowerCase().includes(s) ||
+                        item.ra.toLowerCase().includes(s) ||
+                        item.endereco.toLowerCase().includes(s);
+        }
+
+        return matchRecorte && matchRa && matchTipo && match24h && matchAcess && matchPj && matchPenhor && matchHab && matchSearch;
+      });
+
+      // 1. Métricas da Área Nobre
+      const total = filtradas.length;
+      const count24h = filtradas.filter(d => d.auto24h).length;
+      const pct24h = total > 0 ? Math.round((count24h / total) * 100) : 0;
+      const mediaEspera = total > 0 ? Math.round(filtradas.reduce((a,b) => a + b.esperaMin, 0) / total) : 0;
+
+      document.getElementById('kpi-unidades').textContent = total;
+      document.getElementById('kpi-auto24h').textContent = count24h;
+      document.getElementById('kpi-auto24h-pct').textContent = `${pct24h}% da rede`;
+      document.getElementById('kpi-espera').textContent = `${mediaEspera}m`;
+
+      const deltaEspera = mediaEspera - 15;
+      const deltaEl = document.getElementById('kpi-espera-delta');
+      if (deltaEspera <= 0) {
+        deltaEl.textContent = `${deltaEspera}m vs meta`;
+        deltaEl.className = "text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-1 py-0.5 rounded";
+      } else {
+        deltaEl.textContent = `+${deltaEspera}m vs meta`;
+        deltaEl.className = "text-[10px] font-semibold text-amber-700 bg-amber-50 px-1 py-0.5 rounded";
+      }
+
+      // Bullet Graph de Fila
+      const bulletPct = Math.min(100, Math.round((mediaEspera / 25) * 100));
+      document.getElementById('bullet-espera-fill').style.width = `${bulletPct}%`;
+
+      // 2. Marcadores no Mapa (Símbolos Geométricos Sem Chartjunk)
+      markerClusterGroup.clearLayers();
+      filtradas.forEach(u => {
+        let cor = '#0284c7'; // Agência Padrão
+        if (u.tipo === 'PAA') cor = '#0f172a';
+        if (u.tipo === 'Caminhão') cor = '#ea580c';
+
+        const marker = L.circleMarker([u.lat, u.lng], {
+          radius: 5.5,
+          fillColor: cor,
+          color: '#ffffff',
+          weight: 1.5,
+          opacity: 1,
+          fillOpacity: 0.9
+        });
+
+        marker.bindTooltip(`<strong>${u.nome}</strong><br>${u.ra} • Fila: ${u.esperaMin}m`, {
+          className: 'tufte-tooltip',
+          direction: 'top'
+        });
+
+        marker.on('click', () => abrirModalUnidade(u));
+        markerClusterGroup.addLayer(marker);
+      });
+
+      // 3. Tabela Inferior: Unidades
+      const tbodyUnidades = document.getElementById('tbody-unidades');
+      tbodyUnidades.innerHTML = '';
+      document.getElementById('count-unidades-lista').textContent = `${filtradas.length} un.`;
+
+      filtradas.forEach(u => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 cursor-pointer";
+        tr.innerHTML = `
+          <td class="py-1 font-medium text-slate-800 truncate max-w-[130px]">${u.nome}</td>
+          <td class="py-1 text-slate-500">${u.tipo}</td>
+          <td class="py-1 text-right text-slate-600 font-mono">${u.atms}</td>
+          <td class="py-1 text-right font-semibold ${u.esperaMin > 15 ? 'text-amber-700' : 'text-slate-800'}">${u.esperaMin}m</td>
+        `;
+        tr.onclick = () => {
+          map.flyTo([u.lat, u.lng], 15, { duration: 0.9 });
+          abrirModalUnidade(u);
+        };
+        tbodyUnidades.appendChild(tr);
+      });
+
+      // 4. Tabela Superior: FGTS por RA
+      const tbodyFgts = document.getElementById('tbody-fgts');
+      tbodyFgts.innerHTML = '';
+      FGTS_DATA_DF.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 cursor-pointer";
+        tr.innerHTML = `
+          <td class="py-1 font-medium text-slate-800">${r.ra}</td>
+          <td class="py-1 text-right text-slate-600 font-mono">${r.cltFormat}</td>
+          <td class="py-1 text-right text-slate-900 font-mono font-medium">${r.saldoFormat}</td>
+          <td class="py-1 text-right text-slate-600 font-mono">${r.volumeFormat}</td>
+          <td class="py-1 text-right text-emerald-700 font-mono font-medium">${r.mesFormat}</td>
+        `;
+        tr.onclick = () => {
+          const achou = DF_REGIOES_ADMINISTRATIVAS.find(item => item.nome.includes(r.ra.split('/')[0].split(' ')[0]));
+          if (achou) {
+            appState.ra = achou.nome;
+            document.getElementById('select-ra-footer').value = achou.nome;
+            document.getElementById('label-recorte').textContent = achou.nome;
+            map.flyTo([achou.lat, achou.lng], 13, { duration: 1.1 });
+            renderizarDashboard();
+          }
+        };
+        tbodyFgts.appendChild(tr);
+      });
+    }
+
+    // MODAL DE DETALHES DE UNIDADE
+    function abrirModalUnidade(item) {
+      document.getElementById('modal-unidade-tipo').textContent = item.tipo;
+      document.getElementById('modal-unidade-nome').textContent = item.nome;
+      document.getElementById('modal-unidade-codigo').textContent = `Código: ${item.id} | ${item.ra} - ${item.uf}`;
+      document.getElementById('modal-unidade-endereco').textContent = item.endereco;
+      document.getElementById('modal-unidade-telefone').textContent = item.telefone || '(61) 4004-0104';
+      document.getElementById('modal-unidade-horario').textContent = item.horario;
+      document.getElementById('modal-unidade-atms').textContent = `${item.atms} terminais instalados`;
+      document.getElementById('modal-unidade-espera').textContent = `${item.esperaMin} minutos`;
+
+      const tags = document.getElementById('modal-unidade-tags');
+      tags.innerHTML = '';
+      if (item.auto24h) tags.innerHTML += `<span class="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded text-[10px]">Terminal 24h</span>`;
+      if (item.acessivel) tags.innerHTML += `<span class="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded text-[10px]">Acessibilidade Plena</span>`;
+      if (item.pj) tags.innerHTML += `<span class="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded text-[10px]">Posto PJ</span>`;
+      if (item.penhor) tags.innerHTML += `<span class="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded text-[10px]">Penhor CAIXA</span>`;
+      if (item.habitacao) tags.innerHTML += `<span class="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded text-[10px]">Habitação</span>`;
+
+      document.getElementById('modal-unidade').classList.remove('hidden');
+    }
+
+    document.getElementById('btn-fechar-unidade').addEventListener('click', () => {
+      document.getElementById('modal-unidade').classList.add('hidden');
+    });
+
+    // MODAL DO PORTFÓLIO DE PRODUTOS
+    function abrirModalProdutos() {
+      const container = document.getElementById('container-produtos');
+      container.innerHTML = '';
+      PRODUTOS_CAIXA.forEach(p => {
+        container.innerHTML += `
+          <div class="p-2.5 rounded border border-slate-200 bg-slate-50">
+            <span class="text-[9px] uppercase font-bold text-slate-400 block">${p.categoria}</span>
+            <h4 class="text-xs font-bold text-slate-900 mt-0.5">${p.nome}</h4>
+            <p class="text-[11px] text-slate-600 mt-1 leading-snug">${p.descricao}</p>
+            <span class="text-[10px] font-semibold text-sky-800 block mt-2">${p.destaque}</span>
+          </div>
+        `;
+      });
+      document.getElementById('modal-produtos').classList.remove('hidden');
+    }
+
+    document.getElementById('btn-info-produtos').addEventListener('click', abrirModalProdutos);
+    document.getElementById('btn-fechar-produtos').addEventListener('click', () => {
+      document.getElementById('modal-produtos').classList.add('hidden');
+    });
+
+    // DEFINIÇÃO DO RECORTE TERRITORIAL
+    function definirRecorte(recorte) {
+      appState.recorte = recorte;
+      appState.ra = 'ALL';
+      document.getElementById('select-ra-footer').value = 'ALL';
+
+      if (recorte === 'BR') {
+        document.getElementById('label-recorte').textContent = 'Brasil (Consolidado)';
+        map.flyTo([-14.2350, -51.9253], 4, { duration: 1.2 });
+      } else {
+        document.getElementById('label-recorte').textContent = 'Distrito Federal (35 RAs)';
+        map.flyTo([-15.7801, -47.9292], 10, { duration: 1.2 });
+      }
+      renderizarDashboard();
+    }
+
+    // POPULAR SELETOR DE RAs
+    function initSelectRa() {
+      const select = document.getElementById('select-ra-footer');
+      select.innerHTML = '<option value="ALL">Todas as RAs (DF)</option>';
+      DF_REGIOES_ADMINISTRATIVAS.forEach(r => {
+        const opt = document.createElement('option');
+        opt.value = r.nome;
+        opt.textContent = r.nome;
+        select.appendChild(opt);
+      });
+    }
+
+    // LISTENERS DE INTERAÇÃO E FILTROS (MANTIDOS NOS CANTOS INFERIORES)
+    document.getElementById('btn-visao-br').addEventListener('click', () => definirRecorte('BR'));
+    document.getElementById('btn-visao-df').addEventListener('click', () => definirRecorte('DF'));
+
+    document.getElementById('select-ra-footer').addEventListener('change', (e) => {
+      appState.ra = e.target.value;
+      if (e.target.value === 'ALL') {
+        definirRecorte('DF');
+      } else {
+        const found = DF_REGIOES_ADMINISTRATIVAS.find(r => r.nome === e.target.value);
+        if (found) {
+          document.getElementById('label-recorte').textContent = found.nome;
+          map.flyTo([found.lat, found.lng], 13, { duration: 1.1 });
+        }
+        renderizarDashboard();
+      }
+    });
+
+    document.getElementById('filtro-tipo').addEventListener('change', (e) => {
+      appState.tipo = e.target.value;
+      renderizarDashboard();
+    });
+
+    document.getElementById('filtro-24h').addEventListener('change', (e) => { appState.auto24h = e.target.checked; renderizarDashboard(); });
+    document.getElementById('filtro-acessivel').addEventListener('change', (e) => { appState.acessivel = e.target.checked; renderizarDashboard(); });
+    document.getElementById('filtro-pj').addEventListener('change', (e) => { appState.pj = e.target.checked; renderizarDashboard(); });
+    document.getElementById('filtro-penhor').addEventListener('change', (e) => { appState.penhor = e.target.checked; renderizarDashboard(); });
+    document.getElementById('filtro-habitacao').addEventListener('change', (e) => { appState.habitacao = e.target.checked; renderizarDashboard(); });
+
+    document.getElementById('filtro-busca').addEventListener('input', (e) => {
+      appState.search = e.target.value;
+      renderizarDashboard();
+    });
+
+    document.getElementById('btn-reset-filtros').addEventListener('click', () => {
+      document.getElementById('filtro-busca').value = '';
+      document.getElementById('filtro-tipo').value = 'ALL';
+      document.getElementById('filtro-24h').checked = false;
+      document.getElementById('filtro-acessivel').checked = false;
+      document.getElementById('filtro-pj').checked = false;
+      document.getElementById('filtro-penhor').checked = false;
+      document.getElementById('filtro-habitacao').checked = false;
+
+      appState.search = '';
+      appState.tipo = 'ALL';
+      appState.auto24h = false;
+      appState.acessivel = false;
+      appState.pj = false;
+      appState.penhor = false;
+      appState.habitacao = false;
+
+      definirRecorte('DF');
+    });
+
+    // INICIALIZAÇÃO GERAL
+    window.addEventListener('DOMContentLoaded', () => {
+      initSelectRa();
+      renderRaPolygons();
+      renderizarDashboard();
+      setTimeout(() => map.invalidateSize(), 250);
+    });
+  </script>
+</body>
+</html>
