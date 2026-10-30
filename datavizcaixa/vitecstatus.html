@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CAIXA | Painel Executivo de Disponibilidade e Operações</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+
+    /* Otimização de renderização tipográfica */
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Remoção de bordas pesadas e sombras decorativas */
+    .tufte-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+    }
+
+    /* Scrollbar invisível caso redimensione em resoluções atípicas */
+    ::-webkit-scrollbar {
+      width: 0px;
+      height: 0px;
+    }
+  </style>
+</head>
+<body class="h-screen w-screen overflow-hidden flex flex-col p-2 bg-slate-100 text-slate-800 select-none text-xs">
+
+  <!-- ==================== TOPO MINIMALISTA ==================== -->
+  <header class="flex items-center justify-between pb-1 mb-1 border-b border-slate-200 flex-shrink-0">
+    <div class="flex items-baseline gap-2">
+      <span class="font-black tracking-tight text-slate-900 text-sm">CAIXA</span>
+      <span class="text-slate-400">|</span>
+      <span class="text-xs font-semibold text-slate-700">Painel Executivo de Disponibilidade (VITEC / VILOS)</span>
+      <span class="text-[10px] text-slate-400 font-mono ml-2">Ambiente: Produção</span>
+    </div>
+
+    <div class="flex items-center gap-3 text-[11px]">
+      <div class="flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+        <span class="font-medium text-slate-600">41 Sistemas Normais</span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+        <span class="font-medium text-slate-600">1 Atenção</span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-rose-600"></span>
+        <span class="font-medium text-slate-600">0 Críticos</span>
+      </div>
+      <span class="text-slate-300">|</span>
+      <span class="text-slate-500 font-mono text-[10px]" id="clock">29/10/2026 15:40:58</span>
+    </div>
+  </header>
+
+  <!-- ==================== GRID DE TELA ÚNICA (3 COLUNAS) ==================== -->
+  <main class="flex-1 grid grid-cols-12 gap-2 min-h-0">
+
+    <!-- COLUNA 1: ÁREA NOBRE (Métricas Críticas VILOS, Liquidação, SPB e Numerário) -->
+    <div class="col-span-4 flex flex-col gap-2 min-h-0">
+      
+      <!-- Bloco 1.1: Core de Pagamentos VILOS (SISFIN, SISPB, SITEC) -->
+      <section class="tufte-card p-2 rounded flex flex-col">
+        <div class="flex justify-between items-baseline pb-1 border-b border-slate-100 mb-1.5">
+          <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">VILOS • Liquidação, Custódia & Mensageria</span>
+          <span class="text-[9px] text-emerald-700 font-semibold bg-emerald-50 px-1 rounded">SLA Global: 99.98%</span>
+        </div>
+
+        <div class="space-y-1.5">
+          <!-- SISFIN -->
+          <div class="p-1.5 bg-slate-50 rounded border border-slate-100 flex items-center justify-between">
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                <span class="font-bold text-slate-800 text-[11px]">SISFIN</span>
+                <span class="text-[9px] text-slate-400 font-normal">Contabilidade & Fornecedores</span>
+              </div>
+              <div class="text-[10px] text-slate-500 mt-0.5 flex gap-2">
+                <span>Latência: <strong class="text-slate-700 font-mono">38ms</strong></span>
+                <span>Vazão: <strong class="text-slate-700 font-mono">1.240 TPS</strong></span>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] font-bold text-emerald-700 font-mono">100% SLA</span>
+              <span class="text-[9px] text-slate-400 block font-mono">Fila: 0</span>
+            </div>
+          </div>
+
+          <!-- SISPB -->
+          <div class="p-1.5 bg-slate-50 rounded border border-slate-100 flex items-center justify-between">
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                <span class="font-bold text-slate-800 text-[11px]">SISPB</span>
+                <span class="text-[9px] text-slate-400 font-normal">Conexão BACEN / SPB</span>
+              </div>
+              <div class="text-[10px] text-slate-500 mt-0.5 flex gap-2">
+                <span>Latência: <strong class="text-slate-700 font-mono">64ms</strong></span>
+                <span>TED/PIX Ext: <strong class="text-slate-700 font-mono">3.810 TPS</strong></span>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] font-bold text-emerald-700 font-mono">99.99%</span>
+              <span class="text-[9px] text-slate-400 block font-mono">Fila: 12 msgs</span>
+            </div>
+          </div>
+
+          <!-- SITEC / SiTef -->
+          <div class="p-1.5 bg-slate-50 rounded border border-slate-100 flex items-center justify-between">
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                <span class="font-bold text-slate-800 text-[11px]">SITEC / SiTef</span>
+                <span class="text-[9px] text-slate-400 font-normal">Rede Lotéricas / TEF</span>
+              </div>
+              <div class="text-[10px] text-slate-500 mt-0.5 flex gap-2">
+                <span>Latência: <strong class="text-amber-700 font-mono">182ms</strong></span>
+                <span>Disponibilidade: <strong class="text-slate-700 font-mono">99.1%</strong></span>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] font-bold text-amber-700 font-mono">Instável</span>
+              <span class="text-[9px] text-slate-400 block font-mono">Rotas: 98.4%</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bloco 1.2: Monitoração de Numerário (Tabela Compacta com Bullet Graph) -->
+      <section class="tufte-card p-2 rounded flex-1 flex flex-col min-h-0">
+        <div class="flex justify-between items-baseline pb-1 border-b border-slate-100 mb-1">
+          <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Monitoração de Numerário (R$ Milhões)</span>
+          <span class="text-[9px] text-slate-400">Previsto vs. Realizado</span>
+        </div>
+
+        <div class="flex-1 overflow-hidden flex flex-col justify-between">
+          <table class="w-full text-left border-collapse text-[11px]">
+            <thead>
+              <tr class="text-[9px] text-slate-400 border-b border-slate-100">
+                <th class="py-0.5 font-medium">Hora</th>
+                <th class="py-0.5 font-medium text-right">Previsto</th>
+                <th class="py-0.5 font-medium text-right">Realizado</th>
+                <th class="py-0.5 font-medium text-center w-28">Aderência à Meta</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-50 font-mono">
+              <tr>
+                <td class="py-1 text-slate-600 font-sans">15:00</td>
+                <td class="py-1 text-right text-slate-500">357,1M</td>
+                <td class="py-1 text-right text-slate-900 font-semibold">328,0M</td>
+                <td class="py-1 px-1">
+                  <!-- Bullet Graph Compacto: Realizado (barra) vs Meta (traço) -->
+                  <div class="h-1.5 w-full bg-slate-100 relative flex items-center">
+                    <div class="h-full bg-slate-700" style="width: 92%;"></div>
+                    <div class="h-2.5 w-0.5 bg-rose-600 absolute" style="left: 100%;"></div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="py-1 text-slate-600 font-sans">14:00</td>
+                <td class="py-1 text-right text-slate-500">319,2M</td>
+                <td class="py-1 text-right text-slate-900 font-semibold">291,0M</td>
+                <td class="py-1 px-1">
+                  <div class="h-1.5 w-full bg-slate-100 relative flex items-center">
+                    <div class="h-full bg-slate-700" style="width: 91%;"></div>
+                    <div class="h-2.5 w-0.5 bg-rose-600 absolute" style="left: 100%;"></div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="py-1 text-slate-600 font-sans">13:00</td>
+                <td class="py-1 text-right text-slate-500">270,5M</td>
+                <td class="py-1 text-right text-slate-900 font-semibold">254,0M</td>
+                <td class="py-1 px-1">
+                  <div class="h-1.5 w-full bg-slate-100 relative flex items-center">
+                    <div class="h-full bg-slate-700" style="width: 94%;"></div>
+                    <div class="h-2.5 w-0.5 bg-rose-600 absolute" style="left: 100%;"></div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="py-1 text-slate-600 font-sans">12:00</td>
+                <td class="py-1 text-right text-slate-500">216,4M</td>
+                <td class="py-1 text-right text-emerald-700 font-semibold">217,0M</td>
+                <td class="py-1 px-1">
+                  <div class="h-1.5 w-full bg-slate-100 relative flex items-center">
+                    <div class="h-full bg-emerald-600" style="width: 100%;"></div>
+                    <div class="h-2.5 w-0.5 bg-slate-900 absolute" style="left: 100%;"></div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="py-1 text-slate-600 font-sans">11:00</td>
+                <td class="py-1 text-right text-slate-500">167,7M</td>
+                <td class="py-1 text-right text-emerald-700 font-semibold">171,0M</td>
+                <td class="py-1 px-1">
+                  <div class="h-1.5 w-full bg-slate-100 relative flex items-center">
+                    <div class="h-full bg-emerald-600" style="width: 100%;"></div>
+                    <div class="h-2.5 w-0.5 bg-slate-900 absolute" style="left: 98%;"></div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="p-1.5 bg-slate-50 border border-slate-100 rounded text-[10px] flex justify-between items-center text-slate-500">
+            <span>Saldo em Trânsito Tesouraria: <strong class="text-slate-800 font-mono font-semibold">R$ 1,26B</strong></span>
+            <span class="text-emerald-700 font-medium">96,8% conciliado</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bloco 1.3: Status SISAG (Rede de Agências por Região) -->
+      <section class="tufte-card p-2 rounded flex-shrink-0">
+        <div class="flex justify-between items-baseline pb-1 border-b border-slate-100 mb-1">
+          <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">SISAG • Abertura e Operação de Agências</span>
+          <span class="text-[10px] text-slate-700 font-mono">Total: <strong>4.061</strong></span>
+        </div>
+
+        <!-- Tabela Matricial de Regiões -->
+        <table class="w-full text-left text-[10px] border-collapse font-mono">
+          <thead>
+            <tr class="text-[9px] text-slate-400 border-b border-slate-100">
+              <th class="py-0.5 font-medium font-sans">Região</th>
+              <th class="py-0.5 text-right font-medium">Total</th>
+              <th class="py-0.5 text-right font-medium text-emerald-700">Funcional</th>
+              <th class="py-0.5 text-right font-medium text-amber-700">Sem Mov.</th>
+              <th class="py-0.5 text-right font-medium text-slate-400">Fechada</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-50">
+            <tr>
+              <td class="py-0.5 font-sans text-slate-700">Nordeste</td>
+              <td class="text-right text-slate-500">786</td>
+              <td class="text-right text-emerald-700 font-semibold">605</td>
+              <td class="text-right text-amber-700">103</td>
+              <td class="text-right text-slate-400">78</td>
+            </tr>
+            <tr>
+              <td class="py-0.5 font-sans text-slate-700">Sudeste</td>
+              <td class="text-right text-slate-500">1.800</td>
+              <td class="text-right text-emerald-700 font-semibold">1.332</td>
+              <td class="text-right text-amber-700">276</td>
+              <td class="text-right text-slate-400">192</td>
+            </tr>
+            <tr>
+              <td class="py-0.5 font-sans text-slate-700">Sul</td>
+              <td class="text-right text-slate-500">816</td>
+              <td class="text-right text-emerald-700 font-semibold">593</td>
+              <td class="text-right text-amber-700">125</td>
+              <td class="text-right text-slate-400">98</td>
+            </tr>
+            <tr>
+              <td class="py-0.5 font-sans text-slate-700">Norte</td>
+              <td class="text-right text-slate-500">249</td>
+              <td class="text-right text-emerald-700 font-semibold">177</td>
+              <td class="text-right text-amber-700">44</td>
+              <td class="text-right text-slate-400">28</td>
+            </tr>
+            <tr>
+              <td class="py-0.5 font-sans text-slate-700">Centro-Oeste</td>
+              <td class="text-right text-slate-500">410</td>
+              <td class="text-right text-emerald-700 font-semibold">272</td>
+              <td class="text-right text-amber-700">81</td>
+              <td class="text-right text-slate-400">57</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Microbarra de Proporção da Rede -->
+        <div class="mt-1.5 pt-1 border-t border-slate-100 flex items-center justify-between text-[10px]">
+          <span class="text-slate-500 font-sans">Abertas e Funcionais: <strong class="text-emerald-700 font-mono">2.979 (73,3%)</strong></span>
+          <span class="text-slate-400 font-sans">Sem Abertura: <strong class="text-slate-600 font-mono">451</strong></span>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- COLUNAS 2 e 3 (8 Colunas): VITEC - APLICATIVOS E SERVIÇOS EM MATRIZ DE ALTA DENSIDADE -->
+    <div class="col-span-8 flex flex-col gap-2 min-h-0">
+      
+      <!-- Seção 2.1: VITEC - Aplicativos para Clientes (10 Canais) -->
+      <section class="tufte-card p-2 rounded flex-shrink-0">
+        <div class="flex justify-between items-baseline pb-1 border-b border-slate-100 mb-1.5">
+          <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">VITEC • Canais Digitais & Aplicativos do Cliente</span>
+          <span class="text-[10px] text-slate-400">10 Sistemas Monitorados</span>
+        </div>
+
+        <div class="grid grid-cols-5 gap-1.5" id="grid-apps">
+          <!-- Gerado via JS com dados ricos (Latência, TPS, SLA) -->
+        </div>
+      </section>
+
+      <!-- Seção 2.2: VITEC - Serviços de Infraestrutura e Negócios (28 Sistemas) -->
+      <section class="tufte-card p-2 rounded flex-1 flex flex-col min-h-0">
+        <div class="flex justify-between items-baseline pb-1 border-b border-slate-100 mb-1 flex-shrink-0">
+          <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">VITEC • Serviços de Negócio & Infraestrutura Bancária</span>
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] text-slate-400" id="servicos-count">28 Sistemas</span>
+            <input type="text" id="filtro-busca" placeholder="Filtrar serviço..." 
+                   class="border border-slate-200 rounded px-1.5 py-0.5 text-[10px] text-slate-700 bg-slate-50 focus:outline-none focus:border-slate-400 w-36">
+          </div>
+        </div>
+
+        <!-- Grade de Alta Densidade (4 Colunas x 7 Linhas) -->
+        <div class="flex-1 overflow-y-auto grid grid-cols-4 gap-1.5 content-start pr-0.5" id="grid-servicos">
+          <!-- Gerado via JS -->
+        </div>
+      </section>
+
+    </div>
+
+  </main>
+
+  <!-- ==================== RODAPÉ COM CONTROLES ==================== -->
+  <footer class="mt-1 pt-1 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500 flex-shrink-0">
+    <div class="flex items-center gap-4">
+      <span class="text-[10px] text-slate-400 font-semibold uppercase">Filtros Rápidos:</span>
+      <button class="hover:text-slate-800 text-slate-600 font-medium filter-btn active" data-filter="ALL">Todos (41)</button>
+      <button class="hover:text-slate-800 text-slate-600 font-medium filter-btn" data-filter="INSTAVEL">Apenas com Alerta (1)</button>
+      <button class="hover:text-slate-800 text-slate-600 font-medium filter-btn" data-filter="CRITICO">Críticos / Fora (0)</button>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <span class="text-[10px] text-slate-400">Atualização a cada 30s</span>
+      <button id="btn-atualizar" class="border border-slate-200 rounded px-2 py-0.5 bg-white text-slate-700 hover:bg-slate-50 text-[10px] font-medium">Atualizar Agora</button>
+    </div>
+  </footer>
+
+  <!-- ==================== MODAL DE APOIO / POPUP DE DETALHES ==================== -->
+  <div id="modal-sistema" class="fixed inset-0 bg-slate-900/30 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded max-w-md w-full p-4 shadow-lg border border-slate-200 text-xs">
+      <div class="flex justify-between items-start border-b border-slate-100 pb-2 mb-2">
+        <div>
+          <span id="modal-cat" class="text-[9px] uppercase font-bold text-slate-400"></span>
+          <h3 id="modal-nome" class="text-sm font-bold text-slate-900"></h3>
+        </div>
+        <button id="modal-fechar" class="text-slate-400 hover:text-slate-600 text-base font-bold">&times;</button>
+      </div>
+
+      <div class="space-y-2 text-slate-600 text-[11px]">
+        <p id="modal-desc" class="text-slate-700 leading-relaxed"></p>
+
+        <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+          <div>
+            <span class="text-slate-400 block text-[10px]">Tempo de Resposta (p95):</span>
+            <span id="modal-latencia" class="font-bold text-slate-800 font-mono"></span>
+          </div>
+          <div>
+            <span class="text-slate-400 block text-[10px]">Vazão em Tempo Real:</span>
+            <span id="modal-tps" class="font-bold text-slate-800 font-mono"></span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 pt-1 border-t border-slate-100">
+          <div>
+            <span class="text-slate-400 block text-[10px]">Disponibilidade (SLA 30d):</span>
+            <span id="modal-sla" class="font-bold text-emerald-700 font-mono"></span>
+          </div>
+          <div>
+            <span class="text-slate-400 block text-[10px]">Status Operacional:</span>
+            <span id="modal-status" class="font-bold text-slate-800"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== JAVASCRIPT ==================== -->
+  <script>
+    // BASE DE DADOS DOS APLICATIVOS (VITEC)
+    const APPS_DATA = [
+      { id: "acoes", nome: "Ações CAIXA", status: "OK", latencia: "42ms", tps: "120", sla: "99.98%", desc: "Custódia e negociação de ações para clientes pessoa física e investidores." },
+      { id: "caixatem", nome: "CAIXA Tem", status: "OK", latencia: "84ms", tps: "4.820", sla: "99.95%", desc: "Plataforma social de pagamentos, Bolsa Família e poupança digital." },
+      { id: "cartoes", nome: "Cartões", status: "OK", latencia: "65ms", tps: "1.450", sla: "99.99%", desc: "Autorização de crédito e débito e gestão de limites de cartões." },
+      { id: "dpvat", nome: "DPVAT / SPVAT", status: "OK", latencia: "55ms", tps: "45", sla: "100%", desc: "Processamento e indenizações de seguros de trânsito." },
+      { id: "fgts_app", nome: "FGTS App", status: "OK", latencia: "92ms", tps: "2.100", sla: "99.94%", desc: "Consultas de saldo, extratos e adesão ao Saque-Aniversário." },
+      { id: "fies", nome: "FIES", status: "OK", latencia: "68ms", tps: "180", sla: "99.97%", desc: "Aditamentos, contratação e renegociação do Fundo de Financiamento Estudantil." },
+      { id: "habitacao_app", nome: "Habitação CAIXA", status: "OK", latencia: "72ms", tps: "840", sla: "99.96%", desc: "Simulação, emissão de boletos e contratos Minha Casa Minha Vida." },
+      { id: "ib", nome: "Internet Banking", status: "OK", latencia: "48ms", tps: "3.200", sla: "99.99%", desc: "Canal web desktop para contas correntes e aplicações financeiras." },
+      { id: "loterias_app", nome: "Loterias Online", status: "OK", latencia: "60ms", tps: "1.920", sla: "99.95%", desc: "Apostas eletrônicas, apuração de sorteios e canais Caixa Loterias." },
+      { id: "saude", nome: "Saúde CAIXA", status: "OK", latencia: "50ms", tps: "95", sla: "99.99%", desc: "Autorizações médicas e gestão de planos de saúde de funcionários." }
+    ];
+
+    // BASE DE DADOS DOS SERVIÇOS (VITEC - 28 SISTEMAS)
+    const SERVICOS_DATA = [
+      { id: "acesso", nome: "Acesso Lógico / Segurança", cat: "Segurança", status: "OK", latencia: "22ms", tps: "8.500", sla: "100%", desc: "SSO corporativo, autenticação multifator (MFA) e controle perimetral." },
+      { id: "ag_virtual", nome: "Agência Virtual", cat: "Atendimento", status: "OK", latencia: "45ms", tps: "620", sla: "99.98%", desc: "Atendimento remoto especializado por gerentes de carteira." },
+      { id: "autoatendimento", nome: "Autoatendimento (ATMs)", cat: "Canais Físicos", status: "OK", latencia: "62ms", tps: "1.890", sla: "99.92%", desc: "Parque de terminais eletrônicos nas salas 24h e agências." },
+      { id: "automacao_ag", nome: "Automações de Agências (SISAG)", cat: "Agências", status: "OK", latencia: "35ms", tps: "4.120", sla: "99.99%", desc: "Plataforma de caixas executivos e esteira de produtos de agência." },
+      { id: "beneficios", nome: "Benefícios Sociais", cat: "Social", status: "OK", latencia: "58ms", tps: "3.400", sla: "99.96%", desc: "Processamento de PIS, Seguro-Desemprego e Abono Salarial." },
+      { id: "boletos", nome: "Boletos / Cobrança", cat: "Compensação", status: "OK", latencia: "40ms", tps: "2.800", sla: "99.97%", desc: "Registro e baixa de títulos de cobrança interbancária CIP." },
+      { id: "bolsa_familia", nome: "Bolsa Família", cat: "Social", status: "OK", latencia: "75ms", tps: "4.200", sla: "99.95%", desc: "Folha de pagamentos do MDS e crédito na conta poupança social." },
+      { id: "cadunico", nome: "Cadastro Único", cat: "Governo", status: "OK", latencia: "82ms", tps: "1.100", sla: "99.90%", desc: "Base de dados das famílias de baixa renda integrada ao Governo Federal." },
+      { id: "caixa_aqui", nome: "CAIXA Aqui", cat: "Correspondentes", status: "OK", latencia: "68ms", tps: "1.650", sla: "99.93%", desc: "Rede de correspondentes bancários em farmácias, padarias e comércio." },
+      { id: "caixatem_srv", nome: "CAIXA Tem Core", cat: "Core Digital", status: "OK", latencia: "80ms", tps: "5.100", sla: "99.95%", desc: "Backbone de mensageria e microserviços do app Caixa Tem." },
+      { id: "cartao_cred", nome: "Cartões de Crédito", cat: "Meios Pagto", status: "OK", latencia: "60ms", tps: "2.400", sla: "99.99%", desc: "Processamento de faturas, limites e transações de bandeiras." },
+      { id: "cartao_deb", nome: "Cartões de Débito", cat: "Meios Pagto", status: "OK", latencia: "45ms", tps: "3.100", sla: "100%", desc: "Autorização síncrona com conta corrente e poupança." },
+      { id: "cadastros", nome: "Clientes e Cadastros", cat: "Core Bancário", status: "OK", latencia: "30ms", tps: "6.200", sla: "99.98%", desc: "Repositório central de dados de clientes PF e PJ." },
+      { id: "compliance", nome: "Compliance & PLD", cat: "Risco", status: "OK", latencia: "95ms", tps: "850", sla: "99.99%", desc: "Prevenção à Lavagem de Dinheiro e monitoramento de operações suspeitas." },
+      { id: "contas", nome: "Contas e Captação", cat: "Contabilidade", status: "OK", latencia: "38ms", tps: "4.500", sla: "99.99%", desc: "Lançamento contábil e custódia de saldos em conta corrente." },
+      { id: "convenios", nome: "Convênios", cat: "Arrecadação", status: "OK", latencia: "48ms", tps: "1.200", sla: "99.97%", desc: "Recolhimento de contas de água, luz, gás e tributos municipais." },
+      { id: "cred_comercial", nome: "Crédito Comercial", cat: "Crédito", status: "OK", latencia: "65ms", tps: "980", sla: "99.95%", desc: "Linhas de empréstimo pessoal, consignado e capital de giro PJ." },
+      { id: "fgts_srv", nome: "FGTS Core", cat: "Trabalhador", status: "OK", latencia: "70ms", tps: "3.600", sla: "99.96%", desc: "Processamento de guias de recolhimento e saldo de contas vinculadas." },
+      { id: "atendimento_ger", nome: "Gerenciador de Atendimento", cat: "Agências", status: "OK", latencia: "32ms", tps: "1.400", sla: "99.99%", desc: "Triagem de senhas, painéis de chamada e tempo de fila." },
+      { id: "ged", nome: "Gestão Documental (GED)", cat: "Suporte", status: "OK", latencia: "110ms", tps: "450", sla: "99.91%", desc: "Digitalização e armazenamento de dossiês contratuais e cheques." },
+      { id: "governo", nome: "Governo e Setor Público", cat: "Governo", status: "OK", latencia: "52ms", tps: "620", sla: "99.98%", desc: "Repasses da União, OGU e contas de Estados e Municípios." },
+      { id: "habitacao_srv", nome: "Habitação Core", cat: "Imobiliário", status: "OK", latencia: "78ms", tps: "1.150", sla: "99.97%", desc: "Esteira de concessão e liquidação de crédito imobiliário." },
+      { id: "homebroker", nome: "Home Broker", cat: "Investimentos", status: "OK", latencia: "35ms", tps: "310", sla: "99.99%", desc: "Conexão de negociação de títulos com a B3." },
+      { id: "licitacoes", nome: "Licitações e Logística", cat: "Administrativo", status: "OK", latencia: "40ms", tps: "180", sla: "100%", desc: "Portal de compras e compras eletrônicas da Caixa." },
+      { id: "loterias_srv", nome: "Loterias Core", cat: "Loterias", status: "OK", latencia: "44ms", tps: "4.100", sla: "99.99%", desc: "Motor de apostas e auditoria de bilhetes premiados." },
+      { id: "open_finance", nome: "Open Finance", cat: "Integração", status: "OK", latencia: "115ms", tps: "1.850", sla: "99.88%", desc: "APIs públicas reguladas pelo BACEN de compartilhamento de dados." },
+      { id: "pix", nome: "PIX / SPI", cat: "Pagamentos", status: "OK", latencia: "28ms", tps: "9.200", sla: "100%", desc: "Liquidação instantânea SPI no Banco Central e DICT." },
+      { id: "risco_credito", nome: "Risco de Crédito", cat: "Modelagem", status: "OK", latencia: "85ms", tps: "720", sla: "99.94%", desc: "Motores de score, análise de balanços e provisionamento." }
+    ];
+
+    // RENDERIZAÇÃO DOS APLICATIVOS (GRID COMPACTA DE DADOS)
+    function renderApps() {
+      const container = document.getElementById('grid-apps');
+      container.innerHTML = '';
+
+      APPS_DATA.forEach(app => {
+        const div = document.createElement('div');
+        div.className = "p-1.5 bg-slate-50 border border-slate-200 rounded cursor-pointer hover:border-slate-400 transition-colors flex flex-col justify-between";
+        div.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-slate-800 text-[10px] truncate">${app.nome}</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 flex-shrink-0"></span>
+          </div>
+          <div class="mt-1 flex items-baseline justify-between text-[9px] text-slate-500 font-mono">
+            <span>${app.latencia}</span>
+            <span class="text-slate-700 font-semibold">${app.tps} TPS</span>
+          </div>
+        `;
+        div.onclick = () => abrirModal(app, "Aplicativo");
+        container.appendChild(div);
+      });
+    }
+
+    // RENDERIZAÇÃO DOS SERVIÇOS (MATRIZ DE DADOS DE ALTA DENSIDADE)
+    function renderServicos(filtro = '') {
+      const container = document.getElementById('grid-servicos');
+      container.innerHTML = '';
+
+      const filtrados = SERVICOS_DATA.filter(s => {
+        if (!filtro) return true;
+        const term = filtro.toLowerCase();
+        return s.nome.toLowerCase().includes(term) || s.cat.toLowerCase().includes(term);
+      });
+
+      document.getElementById('servicos-count').textContent = `${filtrados.length} Sistemas`;
+
+      filtrados.forEach(srv => {
+        const div = document.createElement('div');
+        div.className = "p-1.5 bg-white border border-slate-200 rounded cursor-pointer hover:border-slate-400 transition-colors flex flex-col justify-between";
+        div.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-semibold text-slate-800 text-[10px] truncate max-w-[130px]">${srv.nome}</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 flex-shrink-0"></span>
+          </div>
+          <div class="mt-1 flex items-baseline justify-between text-[9px] text-slate-400 font-mono">
+            <span class="text-slate-500">${srv.cat}</span>
+            <span class="text-slate-700 font-medium">${srv.latencia}</span>
+          </div>
+        `;
+        div.onclick = () => abrirModal(srv, "Serviço de Negócio");
+        container.appendChild(div);
+      });
+    }
+
+    // MODAL DE DETALHES
+    function abrirModal(item, cat) {
+      document.getElementById('modal-cat').textContent = cat;
+      document.getElementById('modal-nome').textContent = item.nome;
+      document.getElementById('modal-desc').textContent = item.desc || "Componente operacional e lógico sob gestão da VITEC.";
+      document.getElementById('modal-latencia').textContent = item.latencia;
+      document.getElementById('modal-tps').textContent = `${item.tps} TPS`;
+      document.getElementById('modal-sla').textContent = item.sla;
+      document.getElementById('modal-status').textContent = item.status === "OK" ? "100% Operacional" : "Atenção Operacional";
+      document.getElementById('modal-sistema').classList.remove('hidden');
+    }
+
+    document.getElementById('modal-fechar').onclick = () => {
+      document.getElementById('modal-sistema').classList.add('hidden');
+    };
+
+    // BUSCA RÁPIDA DE SERVIÇOS
+    document.getElementById('filtro-busca').addEventListener('input', (e) => {
+      renderServicos(e.target.value);
+    });
+
+    // BOTÃO ATUALIZAR
+    document.getElementById('btn-atualizar').addEventListener('click', () => {
+      const now = new Date();
+      document.getElementById('clock').textContent = now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR');
+    });
+
+    // INICIALIZAÇÃO
+    window.addEventListener('DOMContentLoaded', () => {
+      renderApps();
+      renderServicos();
+    });
+  </script>
+</body>
+</html>
