@@ -1,0 +1,3317 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DiscoveryOps — Gestão Integrada de UX Research</title>
+  <style>
+    /* ==========================================================================
+       1. VARIÁVEIS CSS (DESIGN TOKENS - LIGHT & DARK THEME)
+       ========================================================================== */
+    :root {
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+      /* Light Theme (Padrão) */
+      --bg-body: #f8fafc;
+      --bg-surface: #ffffff;
+      --bg-surface-elevated: #ffffff;
+      --bg-surface-muted: #f1f5f9;
+      --bg-hover: #e2e8f0;
+      
+      --border-color: #cbd5e1;
+      --border-subtle: #e2e8f0;
+      
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-subtle: #94a3b8;
+      --text-inverse: #ffffff;
+
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --primary-light: #eef2ff;
+      --primary-text: #3730a3;
+
+      --success: #10b981;
+      --success-light: #ecfdf5;
+      --success-text: #065f46;
+
+      --warning: #f59e0b;
+      --warning-light: #fffbeb;
+      --warning-text: #92400e;
+
+      --danger: #ef4444;
+      --danger-light: #fef2f2;
+      --danger-text: #991b1b;
+
+      --info: #0284c7;
+      --info-light: #f0f9ff;
+      --info-text: #075985;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-full: 9999px;
+
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+      
+      --sidebar-width: 260px;
+      --sidebar-collapsed-width: 70px;
+      --header-height: 64px;
+      --transition-fast: 180ms ease;
+    }
+
+    [data-theme="dark"] {
+      --bg-body: #0b0f19;
+      --bg-surface: #111827;
+      --bg-surface-elevated: #1f2937;
+      --bg-surface-muted: #1e293b;
+      --bg-hover: #334155;
+
+      --border-color: #334155;
+      --border-subtle: #1e293b;
+
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-subtle: #64748b;
+      --text-inverse: #0f172a;
+
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --primary-light: #1e1b4b;
+      --primary-text: #c7d2fe;
+
+      --success: #10b981;
+      --success-light: #064e3b;
+      --success-text: #a7f3d0;
+
+      --warning: #f59e0b;
+      --warning-light: #451a03;
+      --warning-text: #fde68a;
+
+      --danger: #f87171;
+      --danger-light: #450a0a;
+      --danger-text: #fecaca;
+
+      --info: #38bdf8;
+      --info-light: #082f49;
+      --info-text: #bae6fd;
+    }
+
+    /* ==========================================================================
+       2. RESET & BASE
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+    input, button, select, textarea {
+      font-family: inherit;
+      font-size: inherit;
+      color: inherit;
+    }
+    button {
+      cursor: pointer;
+      border: none;
+      background: none;
+    }
+    a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* Foco acessível */
+    *:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    /* ==========================================================================
+       3. LAYOUT ESTRUTURAL
+       ========================================================================== */
+    .app-wrapper {
+      display: flex;
+      flex: 1;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--bg-surface);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      transition: width var(--transition-fast);
+      z-index: 40;
+      user-select: none;
+    }
+    .sidebar.collapsed {
+      width: var(--sidebar-collapsed-width);
+    }
+    .sidebar-brand {
+      height: var(--header-height);
+      display: flex;
+      align-items: center;
+      padding: 0 18px;
+      border-bottom: 1px solid var(--border-subtle);
+      gap: 12px;
+    }
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, var(--primary), #818cf8);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .brand-title {
+      font-weight: 700;
+      font-size: 16px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .sidebar.collapsed .brand-title,
+    .sidebar.collapsed .nav-label,
+    .sidebar.collapsed .sidebar-project-select {
+      display: none;
+    }
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      color: var(--text-muted);
+      font-weight: 500;
+      transition: background-color var(--transition-fast), color var(--transition-fast);
+      text-align: left;
+    }
+    .nav-btn:hover {
+      background-color: var(--bg-surface-muted);
+      color: var(--text-main);
+    }
+    .nav-btn.active {
+      background-color: var(--primary-light);
+      color: var(--primary);
+      font-weight: 600;
+    }
+    .nav-icon {
+      font-size: 18px;
+      width: 24px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .sidebar-footer {
+      padding: 12px;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Main Area */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background-color: var(--bg-body);
+    }
+
+    /* Topbar */
+    .topbar {
+      height: var(--header-height);
+      background-color: var(--bg-surface);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      gap: 16px;
+      z-index: 30;
+      flex-shrink: 0;
+    }
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+    .project-selector {
+      font-weight: 600;
+      border: 1px solid var(--border-color);
+      background: var(--bg-surface-muted);
+      padding: 6px 12px;
+      border-radius: var(--radius-md);
+      max-width: 260px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Discovery Phase Progress Bar (Topo) */
+    .phases-bar-container {
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-color);
+      padding: 8px 20px;
+      overflow-x: auto;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .phase-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 500;
+      background-color: var(--bg-surface-muted);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .phase-pill:hover {
+      border-color: var(--primary);
+      color: var(--text-main);
+    }
+    .phase-pill.active {
+      background-color: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary-text);
+      font-weight: 600;
+    }
+    .phase-pill.completed {
+      background-color: var(--success-light);
+      border-color: var(--success);
+      color: var(--success-text);
+    }
+    .phase-step-num {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    /* Views Container */
+    .view-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      position: relative;
+    }
+    .tab-content {
+      display: none;
+      max-width: 1380px;
+      margin: 0 auto;
+    }
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.2s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==========================================================================
+       4. COMPONENTES UI GENÉRICOS
+       ========================================================================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: var(--radius-md);
+      font-weight: 500;
+      transition: all var(--transition-fast);
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+    .btn-sm {
+      padding: 4px 8px;
+      font-size: 12px;
+      border-radius: var(--radius-sm);
+    }
+    .btn-primary {
+      background-color: var(--primary);
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+    }
+    .btn-secondary {
+      background-color: var(--bg-surface-muted);
+      border-color: var(--border-color);
+      color: var(--text-main);
+    }
+    .btn-secondary:hover {
+      background-color: var(--bg-hover);
+    }
+    .btn-danger {
+      background-color: var(--danger-light);
+      border-color: var(--danger);
+      color: var(--danger-text);
+    }
+    .btn-danger:hover {
+      background-color: var(--danger);
+      color: #fff;
+    }
+    .btn-icon {
+      padding: 6px;
+      border-radius: var(--radius-md);
+      color: var(--text-muted);
+    }
+    .btn-icon:hover {
+      background-color: var(--bg-surface-muted);
+      color: var(--text-main);
+    }
+
+    .card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 20px;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .badge-primary { background: var(--primary-light); color: var(--primary-text); }
+    .badge-success { background: var(--success-light); color: var(--success-text); }
+    .badge-warning { background: var(--warning-light); color: var(--warning-text); }
+    .badge-danger { background: var(--danger-light); color: var(--danger-text); }
+    .badge-info { background: var(--info-light); color: var(--info-text); }
+    .badge-muted { background: var(--bg-surface-muted); color: var(--text-muted); border: 1px solid var(--border-color); }
+
+    .grid { display: grid; gap: 16px; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    /* Inputs e Formulários */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .form-label {
+      font-weight: 500;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .form-input, .form-select, .form-textarea {
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-surface);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      outline: none;
+      transition: border-color var(--transition-fast);
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--primary);
+    }
+    .form-textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    /* Tabelas Responsivas */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      background: var(--bg-surface);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+    th, td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    th {
+      background-color: var(--bg-surface-muted);
+      font-weight: 600;
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    tr:hover td {
+      background-color: var(--bg-surface-muted);
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+    .empty-icon {
+      font-size: 36px;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    /* Accordion */
+    .accordion-item {
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      margin-bottom: 10px;
+      background: var(--bg-surface);
+      overflow: hidden;
+    }
+    .accordion-header {
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      background: var(--bg-surface);
+      font-weight: 600;
+      user-select: none;
+    }
+    .accordion-header:hover {
+      background: var(--bg-surface-muted);
+    }
+    .accordion-body {
+      padding: 16px;
+      border-top: 1px solid var(--border-subtle);
+      display: none;
+    }
+    .accordion-item.open .accordion-body {
+      display: block;
+    }
+
+    /* ==========================================================================
+       5. COMPONENTES ESPECÍFICOS DE DISCOVERY
+       ========================================================================== */
+
+    /* Dashboard Cards */
+    .stat-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+    .stat-label {
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    /* Research Canvas */
+    .canvas-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      background: var(--border-color);
+      padding: 12px;
+      border-radius: var(--radius-lg);
+    }
+    .canvas-box {
+      background: var(--bg-surface);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      min-height: 140px;
+      display: flex;
+      flex-direction: column;
+    }
+    .canvas-box-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--primary);
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .canvas-box-content {
+      font-size: 13px;
+      flex: 1;
+      width: 100%;
+      border: none;
+      background: transparent;
+      resize: none;
+      outline: none;
+      line-height: 1.4;
+    }
+
+    /* Kanban Board */
+    .kanban-board {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      padding-bottom: 16px;
+      min-height: 540px;
+    }
+    .kanban-column {
+      width: 300px;
+      min-width: 300px;
+      background: var(--bg-surface-muted);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      display: flex;
+      flex-direction: column;
+      max-height: calc(100vh - 240px);
+    }
+    .kanban-col-header {
+      padding: 12px 14px;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .kanban-cards {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .kanban-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      box-shadow: var(--shadow-sm);
+      cursor: grab;
+      user-select: none;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    }
+    .kanban-card:active {
+      cursor: grabbing;
+      opacity: 0.7;
+    }
+    .kanban-card.drag-over {
+      border: 2px dashed var(--primary);
+    }
+    .kanban-card-title {
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    /* Gantt / Linha do tempo */
+    .gantt-wrapper {
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      background: var(--bg-surface);
+    }
+    .gantt-header {
+      display: flex;
+      background: var(--bg-surface-muted);
+      border-bottom: 1px solid var(--border-color);
+      font-weight: 600;
+      font-size: 12px;
+    }
+    .gantt-row {
+      display: flex;
+      border-bottom: 1px solid var(--border-subtle);
+      align-items: center;
+      height: 44px;
+      position: relative;
+    }
+    .gantt-col-task {
+      width: 240px;
+      min-width: 240px;
+      padding: 8px 12px;
+      border-right: 1px solid var(--border-color);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: 500;
+    }
+    .gantt-timeline {
+      flex: 1;
+      position: relative;
+      height: 100%;
+      min-width: 700px;
+      background: repeating-linear-gradient(to right, transparent, transparent 49px, var(--border-subtle) 50px);
+    }
+    .gantt-bar {
+      position: absolute;
+      top: 8px;
+      height: 28px;
+      border-radius: var(--radius-sm);
+      background: var(--primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Laboratório de Pesquisa: Sub-abas de Métodos */
+    .lab-layout {
+      display: flex;
+      gap: 20px;
+    }
+    .lab-nav {
+      width: 220px;
+      min-width: 220px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      height: fit-content;
+    }
+    .lab-nav-item {
+      padding: 8px 12px;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-align: left;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .lab-nav-item:hover {
+      background: var(--bg-surface-muted);
+      color: var(--text-main);
+    }
+    .lab-nav-item.active {
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 600;
+    }
+    .lab-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(2px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-backdrop.active {
+      display: flex;
+    }
+    .modal-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-lg);
+      animation: modalScale 0.18s ease-out;
+    }
+    @keyframes modalScale {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      font-size: 16px;
+    }
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .modal-footer {
+      padding: 14px 20px;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      background: var(--bg-surface-muted);
+      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    }
+
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 110;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .toast {
+      background: var(--bg-surface-elevated);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 10px 16px;
+      box-shadow: var(--shadow-lg);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      animation: slideInRight 0.2s ease;
+    }
+    @keyframes slideInRight {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Undo Bar */
+    .undo-bar {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e293b;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: var(--radius-full);
+      box-shadow: var(--shadow-lg);
+      display: none;
+      align-items: center;
+      gap: 14px;
+      z-index: 110;
+      font-size: 13px;
+    }
+    .undo-bar.active { display: flex; }
+
+    /* ==========================================================================
+       6. ESTILOS DE IMPRESSÃO (@media print)
+       ========================================================================== */
+    @media print {
+      body {
+        background: #fff !important;
+        color: #000 !important;
+      }
+      .sidebar, .topbar, .phases-bar-container, .btn, .no-print, .lab-nav {
+        display: none !important;
+      }
+      .app-wrapper, .main-content, .view-container {
+        height: auto !important;
+        overflow: visible !important;
+        padding: 0 !important;
+      }
+      .tab-content {
+        display: block !important;
+        max-width: 100% !important;
+      }
+      .card {
+        border: 1px solid #ccc !important;
+        box-shadow: none !important;
+        page-break-inside: avoid;
+      }
+      .canvas-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        background: #eee !important;
+      }
+    }
+
+    /* ==========================================================================
+       7. RESPONSIVIDADE (MOBILE / TABLET)
+       ========================================================================== */
+    @media (max-width: 860px) {
+      .sidebar {
+        position: fixed;
+        left: -100%;
+        top: 0;
+        bottom: 0;
+        transition: left var(--transition-fast);
+      }
+      .sidebar.mobile-open {
+        left: 0;
+      }
+      .grid-4, .grid-3, .grid-2 {
+        grid-template-columns: 1fr;
+      }
+      .canvas-grid {
+        grid-template-columns: 1fr;
+      }
+      .lab-layout {
+        flex-direction: column;
+      }
+      .lab-nav {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-wrapper">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">DX</div>
+      <div class="brand-title">DiscoveryOps</div>
+    </div>
+    <div style="padding: 10px 14px; border-bottom: 1px solid var(--border-subtle);">
+      <select id="project-selector" class="form-select sidebar-project-select" style="width: 100%; font-size: 13px;" onchange="switchProject(this.value)"></select>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-btn active" data-tab="tab-dashboard" onclick="navigateTab('tab-dashboard')">
+        <span class="nav-icon">📊</span> <span class="nav-label">0. Visão Geral</span>
+      </button>
+      <button class="nav-btn" data-tab="tab-kickoff" onclick="navigateTab('tab-kickoff')">
+        <span class="nav-icon">🎯</span> <span class="nav-label">1. Kickoff & Canvas</span>
+      </button>
+      <button class="nav-btn" data-tab="tab-roadmap" onclick="navigateTab('tab-roadmap')">
+        <span class="nav-icon">🗺️</span> <span class="nav-label">2. Roadmap & Gantt</span>
+      </button>
+      <button class="nav-btn" data-tab="tab-kanban" onclick="navigateTab('tab-kanban')">
+        <span class="nav-icon">📋</span> <span class="nav-label">3. Kanban de Ações</span>
+      </button>
+      <button class="nav-btn" data-tab="tab-lab" onclick="navigateTab('tab-lab')">
+        <span class="nav-icon">🔬</span> <span class="nav-label">4. Laboratório Research</span>
+      </button>
+      <button class="nav-btn" data-tab="tab-library" onclick="navigateTab('tab-library')">
+        <span class="nav-icon">📚</span> <span class="nav-label">5. Biblioteca & Links</span>
+      </button>
+      <button class="nav-btn" data-tab="tab-decisions" onclick="navigateTab('tab-decisions')">
+        <span class="nav-icon">⚖️</span> <span class="nav-label">6. Decisões & Atas</span>
+      </button>
+      <button class="nav-btn" data-tab="tab-handoff" onclick="navigateTab('tab-handoff')">
+        <span class="nav-icon">🚀</span> <span class="nav-label">7. Entrega & Handoff</span>
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn btn-secondary btn-sm" style="width: 100%;" onclick="openProjectManagerModal()">
+        ⚙️ Gerenciar Projetos
+      </button>
+      <button class="btn btn-secondary btn-sm" style="width: 100%;" onclick="toggleSidebar()">
+        ◀ Recolher Menu
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN AREA -->
+  <main class="main-content">
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="btn btn-icon" onclick="toggleSidebar()" aria-label="Abrir Menu">☰</button>
+        <span id="current-project-badge" class="project-selector">Carregando Projeto...</span>
+        <span id="autosave-indicator" class="badge badge-muted">💾 Salvo</span>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-secondary btn-sm" onclick="openGlobalSearch()" title="Atalho: /">🔍 Buscar (/)</button>
+        <button class="btn btn-primary btn-sm" onclick="openQuickCreateModal()" title="Atalho: N">+ Novo Item (N)</button>
+        <button class="btn btn-icon" onclick="toggleTheme()" id="theme-btn" aria-label="Alternar Tema">🌓</button>
+        <button class="btn btn-secondary btn-sm" onclick="exportDataJSON()" title="Backup">Exportar</button>
+        <button class="btn btn-secondary btn-sm" onclick="triggerImportJSON()" title="Restaurar">Importar</button>
+        <input type="file" id="import-file" style="display:none;" onchange="handleImportJSON(event)" accept=".json" />
+      </div>
+    </header>
+
+    <!-- BARRA INTERATIVA DE FASES DISCOVERY -->
+    <div class="phases-bar-container" id="phases-bar">
+      <!-- Injetado dinamicamente via JS -->
+    </div>
+
+    <!-- VIEWS CONTAINER -->
+    <div class="view-container">
+      
+      <!-- ================= ABA 0: DASHBOARD ================= -->
+      <section id="tab-dashboard" class="tab-content active">
+        <div class="grid grid-4" id="dashboard-stats"></div>
+        <div class="grid grid-2">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">📈 Progresso por Fase de Discovery</h2>
+            </div>
+            <div id="phases-progress-chart" style="display:flex; flex-direction:column; gap:12px;"></div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">💡 Próximos Passos Sugeridos</h2>
+            </div>
+            <div id="suggested-steps-list"></div>
+          </div>
+        </div>
+        <div class="grid grid-2">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">⚠️ Atividades Atrasadas ou Próximas (7 dias)</h2>
+            </div>
+            <div id="dashboard-urgent-tasks"></div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">🎯 Marco Crítico da Semana</h2>
+            </div>
+            <div id="dashboard-milestone-highlight"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= ABA 1: KICKOFF & CANVAS ================= -->
+      <section id="tab-kickoff" class="tab-content">
+        <div class="card no-print" style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <h3>Planejamento & Alinhamento Estratégico</h3>
+            <p style="color:var(--text-muted); font-size:13px;">Documente premissas, stakeholders, riscos e gere o Research Canvas.</p>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-secondary btn-sm" onclick="window.print()">🖨️ Imprimir Kickoff / Canvas</button>
+          </div>
+        </div>
+
+        <div class="accordion-item open">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <span>📋 Dados Gerais do Projeto & Briefing do Cliente</span>
+            <span>▼</span>
+          </div>
+          <div class="accordion-body">
+            <div class="grid grid-3">
+              <div class="form-group">
+                <label class="form-label">Cliente / Patrocinador</label>
+                <input type="text" class="form-input" id="ko-client" oninput="saveKickoffField('client', this.value)" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Líder de UX Research</label>
+                <input type="text" class="form-input" id="ko-lead" oninput="saveKickoffField('lead', this.value)" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Orçamento Estimado</label>
+                <input type="text" class="form-input" id="ko-budget" oninput="saveKickoffField('budget', this.value)" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Briefing Completo (Objetivos e Dores de Negócio)</label>
+              <textarea class="form-textarea" id="ko-briefing" style="min-height:110px;" oninput="saveKickoffField('briefing', this.value); updateCharCount(this, 'briefing-count')"></textarea>
+              <div style="text-align:right; font-size:11px; color:var(--text-muted);" id="briefing-count">0 caracteres</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item open">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <span>❓ Perguntas Essenciais de Kickoff</span>
+            <span>▼</span>
+          </div>
+          <div class="accordion-body">
+            <div id="kickoff-questions-list"></div>
+            <button class="btn btn-secondary btn-sm" style="margin-top:10px;" onclick="addKickoffQuestion()">+ Adicionar Pergunta Personalizada</button>
+          </div>
+        </div>
+
+        <div class="accordion-item open">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <span>👥 Mapa de Stakeholders (Poder × Interesse)</span>
+            <span>▼</span>
+          </div>
+          <div class="accordion-body">
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Papel / Área</th>
+                    <th>Poder (1-5)</th>
+                    <th>Interesse (1-5)</th>
+                    <th>Estratégia de Gestão</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="stakeholders-table-body"></tbody>
+              </table>
+            </div>
+            <button class="btn btn-secondary btn-sm" style="margin-top:10px;" onclick="addStakeholderRow()">+ Adicionar Stakeholder</button>
+          </div>
+        </div>
+
+        <div class="accordion-item open">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <span>🗺️ Canvas de UX Research (Visual & Editável)</span>
+            <span>▼</span>
+          </div>
+          <div class="accordion-body">
+            <div class="canvas-grid" id="ux-research-canvas"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= ABA 2: ROADMAP & GANTT ================= -->
+      <section id="tab-roadmap" class="tab-content">
+        <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <h3>Cronograma e Roadmap de Discovery</h3>
+            <p style="color:var(--text-muted); font-size:13px;">Alinhe marcos, durações e prazos em visualizações alternáveis.</p>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-secondary btn-sm" onclick="toggleRoadmapView('cards')" id="btn-view-cards">Cartões</button>
+            <button class="btn btn-primary btn-sm" onclick="toggleRoadmapView('gantt')" id="btn-view-gantt">Gantt Interativo</button>
+            <button class="btn btn-secondary btn-sm" onclick="generateDiscoveryTemplateRoadmap()">⚡ Gerar Modelo Padrão</button>
+            <button class="btn btn-primary btn-sm" onclick="openRoadmapItemModal()">+ Nova Atividade</button>
+          </div>
+        </div>
+
+        <!-- Visão Gantt -->
+        <div id="roadmap-gantt-container" class="card" style="padding:0; overflow:hidden;">
+          <div class="gantt-wrapper" id="gantt-chart"></div>
+        </div>
+
+        <!-- Visão Lista/Cards -->
+        <div id="roadmap-cards-container" class="grid grid-3" style="display:none;"></div>
+      </section>
+
+      <!-- ================= ABA 3: KANBAN ================= -->
+      <section id="tab-kanban" class="tab-content">
+        <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <h3>Quadro Kanban Operacional</h3>
+            <p style="color:var(--text-muted); font-size:13px;">Arraste os cards entre as colunas para controlar o fluxo de trabalho diário.</p>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <input type="text" placeholder="Filtrar tarefas..." class="form-input" style="padding:4px 8px; font-size:12px;" oninput="filterKanbanCards(this.value)" />
+            <button class="btn btn-secondary btn-sm" onclick="addKanbanColumn()">+ Adicionar Coluna</button>
+            <button class="btn btn-primary btn-sm" onclick="openKanbanCardModal()">+ Novo Card</button>
+          </div>
+        </div>
+        <div class="kanban-board" id="kanban-board-container"></div>
+      </section>
+
+      <!-- ================= ABA 4: LABORATÓRIO RESEARCH ================= -->
+      <section id="tab-lab" class="tab-content">
+        <div class="lab-layout">
+          <!-- Sub-menu vertical de métodos -->
+          <nav class="lab-nav" id="lab-method-nav">
+            <button class="lab-nav-item active" onclick="switchLabTool('catalog')">📚 Catálogo de Métodos</button>
+            <button class="lab-nav-item" onclick="switchLabTool('desk')">📑 Desk Research</button>
+            <button class="lab-nav-item" onclick="switchLabTool('benchmark')">📊 Benchmarking (Radar)</button>
+            <button class="lab-nav-item" onclick="switchLabTool('csd')">🧩 Matriz CSD</button>
+            <button class="lab-nav-item" onclick="switchLabTool('interviews')">🎙️ Roteiro & Entrevistas</button>
+            <button class="lab-nav-item" onclick="switchLabTool('recruitment')">👥 Recrutamento & TCLE</button>
+            <button class="lab-nav-item" onclick="switchLabTool('surveys')">📝 Surveys (SUS/NPS)</button>
+            <button class="lab-nav-item" onclick="switchLabTool('usability')">🧪 Testes de Usabilidade</button>
+            <button class="lab-nav-item" onclick="switchLabTool('cardsort')">🗂️ Card Sorting</button>
+            <button class="lab-nav-item" onclick="switchLabTool('affinity')">📌 Diagrama de Afinidade</button>
+            <button class="lab-nav-item" onclick="switchLabTool('personas')">👤 Personas & Empatia</button>
+            <button class="lab-nav-item" onclick="switchLabTool('journey')">🗺️ Jornada & Emoções</button>
+            <button class="lab-nav-item" onclick="switchLabTool('jtbd')">🎯 JTBD & HMW</button>
+            <button class="lab-nav-item" onclick="switchLabTool('prioritization')">⚖️ Priorização (Impacto/ICE)</button>
+            <button class="lab-nav-item" onclick="switchLabTool('insights')">💡 Síntese de Insights</button>
+            <button class="lab-nav-item" onclick="switchLabTool('report')">📄 Relatório Automatizado</button>
+          </nav>
+
+          <!-- Corpo da Ferramenta Ativa -->
+          <div class="lab-body" id="lab-tool-content"></div>
+        </div>
+      </section>
+
+      <!-- ================= ABA 5: BIBLIOTECA & LINKS ================= -->
+      <section id="tab-library" class="tab-content">
+        <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <h3>Biblioteca do Projeto & Repositório de Ativos</h3>
+            <p style="color:var(--text-muted); font-size:13px;">Guarde referências, links do Miro/Figma, planilhas e modelos.</p>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openLibraryItemModal()">+ Adicionar Link/Item</button>
+        </div>
+        <div class="grid grid-3" id="library-cards-grid"></div>
+
+        <div class="card" style="margin-top:20px;">
+          <h3 style="margin-bottom:12px;">📖 Glossário Rápido de UX Research</h3>
+          <div class="grid grid-2" id="glossary-container"></div>
+        </div>
+      </section>
+
+      <!-- ================= ABA 6: DECISÕES & ATAS ================= -->
+      <section id="tab-decisions" class="tab-content">
+        <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <h3>Registro Formal de Decisões e Atas de Alinhamento</h3>
+            <p style="color:var(--text-muted); font-size:13px;">Evite retrabalho registrando mudanças de escopo e definições críticas.</p>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openDecisionModal()">+ Nova Decisão / Ata</button>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Tipo</th>
+                <th>Título / Pauta</th>
+                <th>Decisão Tomada & Motivo</th>
+                <th>Decisores</th>
+                <th>Impacto no Escopo</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="decisions-table-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= ABA 7: ENTREGA & HANDOFF ================= -->
+      <section id="tab-handoff" class="tab-content">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">✅ Definition of Done (DoD) do Discovery</h2>
+          </div>
+          <div id="dod-checklist"></div>
+        </div>
+        <div class="grid grid-2">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">📦 Pacote de Entregáveis para Produto & Design</h2>
+            </div>
+            <div id="deliverables-checklist"></div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">🔄 Retrospectiva do Discovery</h2>
+            </div>
+            <div id="retrospective-content"></div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- ================= MODAIS GLOBAIS ================= -->
+
+<!-- Modal Genérico / Dinâmico -->
+<div class="modal-backdrop" id="generic-modal-backdrop">
+  <div class="modal-card">
+    <div class="modal-header">
+      <span id="modal-title">Título</span>
+      <button class="btn btn-icon" onclick="closeGenericModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer" id="modal-footer"></div>
+  </div>
+</div>
+
+<!-- Modal de Busca Global -->
+<div class="modal-backdrop" id="search-modal-backdrop">
+  <div class="modal-card" style="max-width: 640px;">
+    <div class="modal-header">
+      <span>🔍 Busca Global no Projeto</span>
+      <button class="btn btn-icon" onclick="closeSearchModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="text" id="global-search-input" class="form-input" style="font-size:16px; padding:12px;" placeholder="Digite para buscar em canvas, notas, insights, tarefas..." oninput="handleGlobalSearch(this.value)" />
+      <div id="global-search-results" style="margin-top:16px; max-height:360px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Toasts & Undo -->
+<div class="toast-container" id="toast-container"></div>
+<div class="undo-bar" id="undo-bar">
+  <span id="undo-message">Item removido.</span>
+  <button class="btn btn-sm btn-primary" onclick="triggerUndo()">Desfazer</button>
+</div>
+
+<!-- ================= SCRIPT VANILLA ================= -->
+<script>
+/**
+ * DISCOVERYOPS - ENGINE PRINCIPAL
+ * Arquitetura Vanilla JavaScript Modular
+ */
+
+// 1. HELPERS E UTILITÁRIOS
+function escapeHtml(str) {
+  if (typeof str !== 'string') return str ?? '';
+  return str.replace(/[&<>"']/g, function(m) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+  });
+}
+
+function generateId(prefix = 'id') {
+  return prefix + '_' + Math.random().toString(36).substr(2, 9);
+}
+
+function showToast(msg, type = 'info') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = `<span>${type === 'success' ? '✅' : type === 'danger' ? '⚠️' : 'ℹ️'}</span><span>${escapeHtml(msg)}</span>`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 200);
+  }, 3200);
+}
+
+// 2. ESTRUTURA DO PROJETO SEED DE EXEMPLO (CLÍNICA DE SAÚDE)
+const SEED_PROJECT = {
+  id: 'proj_saude_app',
+  name: 'Discovery: App Agendamento de Saúde',
+  client: 'Rede Saúde Integrada',
+  lead: 'Marina Silveira (Senior UX Researcher)',
+  budget: 'R$ 65.000',
+  currentPhase: 3, // 3: Explorar
+  phases: [
+    { id: 1, name: 'Entender', status: 'completed' },
+    { id: 2, name: 'Planejar', status: 'completed' },
+    { id: 3, name: 'Explorar', status: 'in_progress' },
+    { id: 4, name: 'Sintetizar', status: 'pending' },
+    { id: 5, name: 'Definir', status: 'pending' },
+    { id: 6, name: 'Validar', status: 'pending' },
+    { id: 7, name: 'Entregar', status: 'pending' }
+  ],
+  kickoff: {
+    briefing: 'Os pacientes relatam extrema dificuldade no agendamento de consultas via central telefônica (espera média de 24 min). A taxa de abandono do agendamento chega a 42%. O objetivo do Discovery é investigar como uma experiência digital mobile pode reduzir o custo operacional e elevar o CSAT de agendamento.',
+    questions: [
+      { id: 'q1', question: 'Qual o objetivo principal e qual decisão ele apoia?', answer: 'Decidir as features do MVP do app mobile e priorizar integrações com os sistemas legados.', status: 'respondida' },
+      { id: 'q2', question: 'Qual é o problema ou oportunidade de negócio?', answer: 'Perda de receita por no-show (18%) e gargalo de atendimento telefônico.', status: 'respondida' },
+      { id: 'q3', question: 'Quais as restrições técnicas e legais?', answer: 'Conformidade rígida com LGPD para dados sensíveis de saúde e integração com ERP Tasy.', status: 'respondida' },
+      { id: 'q4', question: 'Quem são os usuários-alvo?', answer: 'Pacientes particulares e conveniados entre 25 e 68 anos da região metropolitana.', status: 'respondida' },
+      { id: 'q5', question: 'Quais hipóteses o cliente já possui?', answer: 'Acreditam que o paciente prefere escolher o médico pelo nome antes de escolher a data.', status: 'pendente' }
+    ],
+    stakeholders: [
+      { id: 's1', name: 'Dr. Roberto Lemos', role: 'Diretor Médico', power: 5, interest: 4, strategy: 'Manter satisfeito com alinhamentos quinzenais' },
+      { id: 's2', name: 'Carla Dias', role: 'Head de Atendimento ao Paciente', power: 4, interest: 5, strategy: 'Gerenciar de perto (envolver na cocriação)' },
+      { id: 's3', name: 'Fernando Lima', role: 'Gerente de TI / Legados', power: 4, interest: 3, strategy: 'Manter informado tecnicamente' }
+    ],
+    canvas: {
+      contexto: 'Crescimento de 35% na demanda por telemedicina e consultas presenciais no pós-pandemia.',
+      problema: 'Linhas telefônicas saturadas, pacientes frustrados e alta taxa de cancelamentos em cima da hora.',
+      objetivoGeral: 'Mapear a jornada ideal de agendamento mobile e definir a arquitetura de informação do app.',
+      objetivosEspec: '1. Identificar critérios de escolha de especialistas.\n2. Mapear dores com lembretes de consultas.\n3. Testar conceito de agendamento em 3 cliques.',
+      perguntasPesquisa: 'O que faz o paciente desistir da marcação? Quais dados ele precisa ver sobre o médico?',
+      hipoteses: 'Se o paciente puder ver a foto e currículo resumido do médico, a confiança aumenta em 50%.',
+      publicoAlvo: 'Homens e mulheres de 25 a 65 anos que fazem pelo menos 2 consultas por ano.',
+      metodos: 'Desk Research, 12 Entrevistas em profundidade, 1 Survey quantitativa e Testes de Usabilidade em protótipo.',
+      recrutamento: 'Base atual de pacientes via WhatsApp com incentivo de voucher de farmácia de R$ 50.',
+      cronograma: 'Discovery de 6 semanas (2 sem desk/prep, 2 sem campo, 2 sem síntese e testes).',
+      entregaveis: 'Relatório Executivo, Personas, Jornada Atual vs Futura, Matriz de Priorização e Protótipo Conceitual.',
+      metricasSucesso: 'Redução da intenção de ligar para o call center em 60% nos testes de conceito.',
+      riscos: 'Dificuldade de recrutamento de público sênior (60+). Mitigação: recrutamento presencial na recepção da clínica.',
+      stakeholders: 'Diretoria Médica, TI, Operações de Call Center e Marketing.'
+    }
+  },
+  roadmap: [
+    { id: 'r1', name: 'Alinhamento de Kickoff e Mapa de Stakeholders', phase: 'Entender', start: '2026-10-01', end: '2026-10-05', status: 'Concluído', progress: 100, owner: 'Marina S.' },
+    { id: 'r2', name: 'Desk Research e Benchmarking de Apps de Saúde', phase: 'Entender', start: '2026-10-06', end: '2026-10-12', status: 'Concluído', progress: 100, owner: 'Lucas T.' },
+    { id: 'r3', name: 'Recrutamento de 12 Participantes para Entrevistas', phase: 'Planejar', start: '2026-10-10', end: '2026-10-16', status: 'Concluído', progress: 100, owner: 'Marina S.' },
+    { id: 'r4', name: 'Condução de Entrevistas em Profundidade', phase: 'Explorar', start: '2026-10-15', end: '2026-10-25', status: 'Em andamento', progress: 65, owner: 'Marina S.' },
+    { id: 'r5', name: 'Disparo de Survey Quantitativa (N=200)', phase: 'Explorar', start: '2026-10-20', end: '2026-10-28', status: 'Em andamento', progress: 40, owner: 'Lucas T.' },
+    { id: 'r6', name: 'Sessão de Diagrama de Afinidade e Personas', phase: 'Sintetizar', start: '2026-10-29', end: '2026-11-04', status: 'Não iniciado', progress: 0, owner: 'Marina S.' },
+    { id: 'r7', name: 'Mapeamento de Jornada e Oportunidades', phase: 'Definir', start: '2026-11-05', end: '2026-11-10', status: 'Não iniciado', progress: 0, owner: 'Lucas T.' },
+    { id: 'r8', name: 'Testes de Usabilidade do Fluxo Conceitual', phase: 'Validar', start: '2026-11-11', end: '2026-11-18', status: 'Não iniciado', progress: 0, owner: 'Marina S.' },
+    { id: 'r9', name: 'Apresentação Final e Handoff para Produto', phase: 'Entregar', start: '2026-11-19', end: '2026-11-22', status: 'Não iniciado', progress: 0, owner: 'Equipe' }
+  ],
+  kanban: {
+    columns: [
+      { id: 'col_backlog', title: 'Backlog do Discovery' },
+      { id: 'col_doing', title: 'Em Andamento' },
+      { id: 'col_done', title: 'Concluído' }
+    ],
+    cards: [
+      { id: 'c1', colId: 'col_done', title: 'Elaborar roteiro semiestruturado de entrevista', phase: 'Planejar', owner: 'Marina S.', tag: 'Roteiro' },
+      { id: 'c2', colId: 'col_done', title: 'Aprovar termo LGPD com o jurídico da clínica', phase: 'Planejar', owner: 'Lucas T.', tag: 'Legal' },
+      { id: 'c3', colId: 'col_doing', title: 'Transcrever e codificar entrevistas 1 a 6', phase: 'Explorar', owner: 'Marina S.', tag: 'Quali' },
+      { id: 'c4', colId: 'col_doing', title: 'Monitorar respostas da survey quantitativa', phase: 'Explorar', owner: 'Lucas T.', tag: 'Quanti' },
+      { id: 'c5', colId: 'col_backlog', title: 'Desenhar matriz de priorização ICE com time de Dev', phase: 'Definir', owner: 'Marina S.', tag: 'Facilitação' }
+    ]
+  },
+  researchData: {
+    desk: [
+      { id: 'd1', title: 'Relatório Panorama Saúde Digital 2025', source: 'Associação Brasileira de Saúde', link: 'https://exemplo.com/relatorio', rating: 5, tags: 'Mercado, Telemedicina', notes: '68% dos pacientes preferem agendamento digital se houver confirmação imediata por WhatsApp.' },
+      { id: 'd2', title: 'Estudo de No-Show em Clínicas Médicas', source: 'Revista Gestão em Saúde', link: 'https://exemplo.com/noshow', rating: 4, tags: 'No-show, Operações', notes: 'Lembrete enviado 24h antes reduz absenteísmo em 34%.' }
+    ],
+    benchmarks: [
+      { competitor: 'Dr. Consulta', usability: 4, features: 5, transparency: 4, speed: 5, notes: 'Fluxo em 4 passos muito claro com preço antecipado.' },
+      { competitor: 'Fleury Digital', usability: 5, features: 4, transparency: 5, speed: 4, notes: 'Excelente confirmação com adição rápida ao Google Calendar.' },
+      { competitor: 'App Concorrente Local', usability: 2, features: 3, transparency: 2, speed: 2, notes: 'Obriga cadastro longo antes de mostrar horários vagos.' }
+    ],
+    csd: [
+      { id: 'csd1', type: 'certeza', text: 'Pacientes odeiam esperar na linha telefônica.' },
+      { id: 'csd2', type: 'suposicao', text: 'Idosos não conseguirão usar agendamento via app sozinhos.' },
+      { id: 'csd3', type: 'duvida', text: 'Qual a tolerância a pagar consulta antecipadamente no cartão?' }
+    ],
+    interviews: {
+      timerSeconds: 0,
+      activeScript: [
+        { block: 'Abertura & TCLE (5 min)', questions: ['Agradecer presença e confirmar consentimento de gravação.', 'Explicar que estamos avaliando o serviço, nunca o participante.'] },
+        { block: 'Aquecimento (10 min)', questions: ['Como você costuma marcar consultas médicas hoje?', 'Conte sobre a última vez que precisou agendar uma consulta.'] },
+        { block: 'Aprofundamento & Dores (25 min)', questions: ['O que mais te irrita ou atrasa na marcação?', 'Como você decide se o médico é confiável quando nunca foi nele antes?'] },
+        { block: 'Encerramento (5 min)', questions: ['Se você pudesse criar a solução mágica perfeita, como ela funcionaria?'] }
+      ]
+    },
+    sus: {
+      scores: [3, 4, 2, 4, 3, 2, 4, 2, 4, 2], // 10 itens padrão SUS
+      calculatedResult: 72.5
+    },
+    nps: {
+      promoters: 18,
+      passives: 6,
+      detractors: 4,
+      score: 50
+    },
+    personas: [
+      {
+        id: 'p1',
+        name: 'Dona Helena, 62 anos',
+        role: 'Aposentada e Cuidadora da Família',
+        quote: 'Só quero saber o dia certo e não ficar ouvindo musiquinha no telefone.',
+        goals: 'Marcar exames de rotina sem burocracia e com médicos recomendados.',
+        pains: 'Dificuldade com letras pequenas no celular e medo de agendar errado.'
+      },
+      {
+        id: 'p2',
+        name: 'Matheus, 31 anos',
+        role: 'Profissional Autônomo',
+        quote: 'Preciso resolver isso em 2 minutos entre uma reunião e outra.',
+        goals: 'Ver agenda livre do médico em tempo real e sincronizar com o calendário.',
+        pains: 'Não ter visibilidade dos horários disponíveis sem precisar telefonar.'
+      }
+    ],
+    insights: [
+      { id: 'ins1', statement: 'Falta de clareza do valor da consulta gera abandono no funil.', confidence: 'Alta', impact: 'Crítico', rec: 'Exibir convênios aceitos e valor particular no primeiro passo da busca.' },
+      { id: 'ins2', statement: 'Pacientes idosos preferem fluxo assistido via WhatsApp a baixar app nativo.', confidence: 'Média', impact: 'Estratégico', rec: 'Criar integração com chatbot humanizado em paralelo ao app.' }
+    ]
+  },
+  library: [
+    { id: 'l1', title: 'Figma - Fluxo de Telas Conceituais', url: 'https://figma.com', category: 'Design', tags: 'Wireframes, Protótipo' },
+    { id: 'l2', title: 'Pasta no Drive com Gravações de Entrevistas', url: 'https://drive.google.com', category: 'Gravação', tags: 'Brutos, Vídeo' },
+    { id: 'l3', title: 'Benchmark Competitivo Completo no Notion', url: 'https://notion.so', category: 'Benchmark', tags: 'Prints, Análise' }
+  ],
+  decisions: [
+    { id: 'dec1', date: '2026-10-08', type: 'Decisão de Escopo', title: 'Inclusão de Agendamento de Exames Laboratoriais', reason: 'Identificou-se que 60% das consultas geram pedidos de exames imediatos.', decider: 'Dr. Roberto e Head de Produto', impact: 'Aumento de 1 semana no discovery.' }
+  ],
+  handoff: {
+    dodItems: [
+      { id: 'dod1', text: 'Todas as 12 entrevistas transcritas e codificadas', done: true },
+      { id: 'dod2', text: 'Personas e mapa de jornada validados com stakeholders', done: false },
+      { id: 'dod3', text: 'Relatório executivo final com recomendações priorizadas', done: false }
+    ],
+    deliverables: [
+      { title: 'Matriz de Insights e Oportunidades', status: 'Em produção' },
+      { title: 'Protótipo navegável de média fidelidade testado', status: 'Pendente' },
+      { title: 'Especificação dos critérios de aceite para a Squad', status: 'Pendente' }
+    ]
+  }
+};
+
+// 3. GERENCIADOR DE ESTADO GLOBAL
+let appState = {
+  theme: 'light',
+  currentProjectId: 'proj_saude_app',
+  projects: {
+    proj_saude_app: JSON.parse(JSON.stringify(SEED_PROJECT))
+  },
+  activeTab: 'tab-dashboard',
+  activeLabTool: 'catalog',
+  undoStack: []
+};
+
+// 4. STORAGE PERSISTENCE COM TRATAMENTO DE ERROS
+const STORAGE_KEY = 'discovery_ops_state_v1';
+
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+    indicateAutosave();
+  } catch (err) {
+    console.warn('Falha no localStorage (usando fallback em memória):', err);
+    indicateAutosave();
+  }
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.projects) {
+        appState = parsed;
+      }
+    }
+  } catch (err) {
+    console.warn('Erro ao carregar estado do localStorage, mantendo seed:', err);
+  }
+}
+
+function indicateAutosave() {
+  const el = document.getElementById('autosave-indicator');
+  if (el) {
+    el.textContent = '💾 Salvo';
+    el.className = 'badge badge-success';
+    setTimeout(() => {
+      el.textContent = '💾 Sincronizado';
+      el.className = 'badge badge-muted';
+    }, 1400);
+  }
+}
+
+function getCurrentProject() {
+  return appState.projects[appState.currentProjectId] || Object.values(appState.projects)[0];
+}
+
+// 5. NAVEGAÇÃO E ROTAS
+function navigateTab(tabId) {
+  appState.activeTab = tabId;
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+  
+  const targetView = document.getElementById(tabId);
+  const targetNav = document.querySelector(`.nav-btn[data-tab="${tabId}"]`);
+  if (targetView) targetView.classList.add('active');
+  if (targetNav) targetNav.classList.add('active');
+
+  renderCurrentTab();
+  saveState();
+}
+
+function renderCurrentTab() {
+  renderPhasesBar();
+  const tab = appState.activeTab;
+  if (tab === 'tab-dashboard') renderDashboard();
+  else if (tab === 'tab-kickoff') renderKickoff();
+  else if (tab === 'tab-roadmap') renderRoadmap();
+  else if (tab === 'tab-kanban') renderKanban();
+  else if (tab === 'tab-lab') renderLab();
+  else if (tab === 'tab-library') renderLibrary();
+  else if (tab === 'tab-decisions') renderDecisions();
+  else if (tab === 'tab-handoff') renderHandoff();
+}
+
+// 6. RENDERIZADOR DA BARRA DE FASES DE DISCOVERY
+function renderPhasesBar() {
+  const proj = getCurrentProject();
+  const bar = document.getElementById('phases-bar');
+  if (!bar) return;
+
+  bar.innerHTML = proj.phases.map((p, idx) => {
+    const isActive = p.id === proj.currentPhase;
+    const isCompleted = p.status === 'completed';
+    const statusClass = isCompleted ? 'completed' : isActive ? 'active' : '';
+    return `
+      <div class="phase-pill ${statusClass}" onclick="setDiscoveryPhase(${p.id})">
+        <span class="phase-step-num">${idx + 1}</span>
+        <span>${escapeHtml(p.name)}</span>
+        ${isCompleted ? '✓' : ''}
+      </div>
+    `;
+  }).join('<span style="color:var(--text-subtle); font-size:11px;">→</span>');
+}
+
+function setDiscoveryPhase(phaseId) {
+  const proj = getCurrentProject();
+  proj.currentPhase = phaseId;
+  proj.phases.forEach(p => {
+    if (p.id < phaseId) p.status = 'completed';
+    else if (p.id === phaseId) p.status = 'in_progress';
+    else p.status = 'pending';
+  });
+  saveState();
+  renderPhasesBar();
+  renderDashboard();
+  showToast(`Fase atual alterada para: ${proj.phases.find(x => x.id === phaseId).name}`);
+}
+
+// 7. ABA 0: DASHBOARD
+function renderDashboard() {
+  const proj = getCurrentProject();
+  const statsContainer = document.getElementById('dashboard-stats');
+  if (!statsContainer) return;
+
+  const totalTasks = proj.roadmap.length;
+  const doneTasks = proj.roadmap.filter(t => t.status === 'Concluído').length;
+  const progressPercent = totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0;
+  const currentPhaseObj = proj.phases.find(p => p.id === proj.currentPhase) || proj.phases[0];
+
+  statsContainer.innerHTML = `
+    <div class="stat-card">
+      <div class="stat-icon">🧭</div>
+      <div>
+        <div class="stat-value">${escapeHtml(currentPhaseObj.name)}</div>
+        <div class="stat-label">Fase Atual do Discovery</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🎯</div>
+      <div>
+        <div class="stat-value">${progressPercent}%</div>
+        <div class="stat-label">Progresso Geral (${doneTasks}/${totalTasks} atividades)</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div>
+        <div class="stat-value">${proj.researchData.interviews ? '12 Agendadas' : '0'}</div>
+        <div class="stat-label">Participantes em Campo</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">💡</div>
+      <div>
+        <div class="stat-value">${proj.researchData.insights.length}</div>
+        <div class="stat-label">Insights Consolidados</div>
+      </div>
+    </div>
+  `;
+
+  // Mini gráfico de progresso por fases
+  const chart = document.getElementById('phases-progress-chart');
+  chart.innerHTML = proj.phases.map(p => {
+    const isPast = p.id < proj.currentPhase;
+    const isCurrent = p.id === proj.currentPhase;
+    const pct = isPast ? 100 : isCurrent ? 50 : 0;
+    return `
+      <div>
+        <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;">
+          <span>${escapeHtml(p.name)}</span>
+          <span>${pct}%</span>
+        </div>
+        <div style="height:6px; background:var(--bg-surface-muted); border-radius:var(--radius-full); overflow:hidden;">
+          <div style="width:${pct}%; height:100%; background:${isPast ? 'var(--success)' : isCurrent ? 'var(--primary)' : 'transparent'};"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Próximos passos sugeridos
+  const stepsList = document.getElementById('suggested-steps-list');
+  stepsList.innerHTML = `
+    <ul style="list-style:none; display:flex; flex-direction:column; gap:8px;">
+      <li style="display:flex; align-items:center; gap:8px;">
+        <span class="badge badge-primary">Passo 1</span> Concluir codificação das 12 entrevistas qualitativas.
+      </li>
+      <li style="display:flex; align-items:center; gap:8px;">
+        <span class="badge badge-primary">Passo 2</span> Atualizar Matriz CSD transformando suposições em hipóteses.
+      </li>
+      <li style="display:flex; align-items:center; gap:8px;">
+        <span class="badge badge-warning">Atenção</span> Alinhar termo de consentimento com o jurídico da clínica.
+      </li>
+    </ul>
+  `;
+
+  // Atividades urgentes
+  const urgent = document.getElementById('dashboard-urgent-tasks');
+  const activeRoadmap = proj.roadmap.filter(x => x.status !== 'Concluído').slice(0, 3);
+  urgent.innerHTML = activeRoadmap.length ? activeRoadmap.map(t => `
+    <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border-subtle);">
+      <span>${escapeHtml(t.name)}</span>
+      <span class="badge badge-warning">${escapeHtml(t.end)}</span>
+    </div>
+  `).join('') : '<p class="empty-state">Tudo em dia!</p>';
+
+  // Destaque de marco
+  document.getElementById('dashboard-milestone-highlight').innerHTML = `
+    <div style="padding:12px; background:var(--primary-light); border-radius:var(--radius-md); color:var(--primary-text);">
+      <strong>💎 Marco: Síntese de Oportunidades & Co-criação</strong>
+      <p style="font-size:12px; margin-top:4px;">Alinhamento agendado com diretoria clínica para o dia 10 de Novembro.</p>
+    </div>
+  `;
+}
+
+// 8. ABA 1: KICKOFF
+function renderKickoff() {
+  const proj = getCurrentProject();
+  const ko = proj.kickoff;
+
+  document.getElementById('ko-client').value = proj.client || '';
+  document.getElementById('ko-lead').value = proj.lead || '';
+  document.getElementById('ko-budget').value = proj.budget || '';
+  document.getElementById('ko-briefing').value = ko.briefing || '';
+  updateCharCount(document.getElementById('ko-briefing'), 'briefing-count');
+
+  // Perguntas de Kickoff
+  const qList = document.getElementById('kickoff-questions-list');
+  qList.innerHTML = ko.questions.map((q, idx) => `
+    <div style="margin-bottom:12px; padding:10px; background:var(--bg-surface-muted); border-radius:var(--radius-sm);">
+      <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+        <strong>#${idx + 1}. ${escapeHtml(q.question)}</strong>
+        <select class="form-select" style="font-size:11px; padding:2px 6px;" onchange="updateQuestionStatus('${q.id}', this.value)">
+          <option value="respondida" ${q.status === 'respondida' ? 'selected' : ''}>Respondida</option>
+          <option value="pendente" ${q.status === 'pendente' ? 'selected' : ''}>Pendente</option>
+          <option value="bloqueada" ${q.status === 'bloqueada' ? 'selected' : ''}>Bloqueada</option>
+        </select>
+      </div>
+      <textarea class="form-textarea" style="min-height:50px; width:100%; font-size:13px;" onchange="updateQuestionAnswer('${q.id}', this.value)">${escapeHtml(q.answer || '')}</textarea>
+    </div>
+  `).join('');
+
+  // Stakeholders
+  const stBody = document.getElementById('stakeholders-table-body');
+  stBody.innerHTML = ko.stakeholders.map(s => `
+    <tr>
+      <td><strong>${escapeHtml(s.name)}</strong></td>
+      <td>${escapeHtml(s.role)}</td>
+      <td>${s.power}/5</td>
+      <td>${s.interest}/5</td>
+      <td>${escapeHtml(s.strategy)}</td>
+      <td><button class="btn btn-sm btn-danger" onclick="removeStakeholder('${s.id}')">Excluir</button></td>
+    </tr>
+  `).join('');
+
+  // Research Canvas
+  const canvasGrid = document.getElementById('ux-research-canvas');
+  const canvasKeys = [
+    { key: 'contexto', title: '1. Contexto' },
+    { key: 'problema', title: '2. Problema de Negócio' },
+    { key: 'objetivoGeral', title: '3. Objetivo Geral' },
+    { key: 'objetivosEspec', title: '4. Objetivos Específicos' },
+    { key: 'perguntasPesquisa', title: '5. Perguntas de Pesquisa' },
+    { key: 'hipoteses', title: '6. Hipóteses' },
+    { key: 'publicoAlvo', title: '7. Público-Alvo' },
+    { key: 'metodos', title: '8. Métodos Selecionados' },
+    { key: 'recrutamento', title: '9. Recrutamento' },
+    { key: 'cronograma', title: '10. Cronograma' },
+    { key: 'entregaveis', title: '11. Entregáveis' },
+    { key: 'metricasSucesso', title: '12. Métricas de Sucesso' },
+    { key: 'riscos', title: '13. Riscos & Mitigações' },
+    { key: 'stakeholders', title: '14. Stakeholders Chave' }
+  ];
+
+  canvasGrid.innerHTML = canvasKeys.map(c => `
+    <div class="canvas-box">
+      <div class="canvas-box-title">
+        <span>${c.title}</span>
+        <span>✎</span>
+      </div>
+      <textarea class="canvas-box-content" onchange="updateCanvasField('${c.key}', this.value)">${escapeHtml(ko.canvas[c.key] || '')}</textarea>
+    </div>
+  `).join('');
+}
+
+function saveKickoffField(field, val) {
+  const proj = getCurrentProject();
+  if (field === 'briefing') proj.kickoff.briefing = val;
+  else proj[field] = val;
+  saveState();
+}
+
+function updateCanvasField(key, val) {
+  const proj = getCurrentProject();
+  proj.kickoff.canvas[key] = val;
+  saveState();
+}
+
+function updateQuestionStatus(id, val) {
+  const proj = getCurrentProject();
+  const q = proj.kickoff.questions.find(x => x.id === id);
+  if (q) q.status = val;
+  saveState();
+}
+
+function updateQuestionAnswer(id, val) {
+  const proj = getCurrentProject();
+  const q = proj.kickoff.questions.find(x => x.id === id);
+  if (q) q.answer = val;
+  saveState();
+}
+
+function addKickoffQuestion() {
+  const text = prompt('Qual é a nova pergunta de kickoff?');
+  if (!text) return;
+  const proj = getCurrentProject();
+  proj.kickoff.questions.push({
+    id: generateId('q'),
+    question: text,
+    answer: '',
+    status: 'pendente'
+  });
+  saveState();
+  renderKickoff();
+}
+
+function addStakeholderRow() {
+  const name = prompt('Nome do Stakeholder:');
+  if (!name) return;
+  const role = prompt('Cargo / Área:') || 'Stakeholder';
+  const proj = getCurrentProject();
+  proj.kickoff.stakeholders.push({
+    id: generateId('stk'),
+    name,
+    role,
+    power: 4,
+    interest: 4,
+    strategy: 'Manter informado e alinhado'
+  });
+  saveState();
+  renderKickoff();
+}
+
+function removeStakeholder(id) {
+  const proj = getCurrentProject();
+  proj.kickoff.stakeholders = proj.kickoff.stakeholders.filter(s => s.id !== id);
+  saveState();
+  renderKickoff();
+}
+
+// 9. ABA 2: ROADMAP & GANTT
+let currentRoadmapView = 'gantt';
+
+function toggleRoadmapView(view) {
+  currentRoadmapView = view;
+  document.getElementById('roadmap-gantt-container').style.display = view === 'gantt' ? 'block' : 'none';
+  document.getElementById('roadmap-cards-container').style.display = view === 'cards' ? 'grid' : 'none';
+  document.getElementById('btn-view-gantt').className = view === 'gantt' ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm';
+  document.getElementById('btn-view-cards').className = view === 'cards' ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm';
+  renderRoadmap();
+}
+
+function renderRoadmap() {
+  const proj = getCurrentProject();
+  const gantt = document.getElementById('gantt-chart');
+  const cards = document.getElementById('roadmap-cards-container');
+
+  // Render Gantt
+  gantt.innerHTML = `
+    <div class="gantt-header">
+      <div style="width:240px; padding:10px 12px; border-right:1px solid var(--border-color);">Atividade / Entregável</div>
+      <div style="flex:1; padding:10px 12px;">Linha do Tempo (Outubro - Novembro 2026)</div>
+    </div>
+    ${proj.roadmap.map((item, i) => {
+      const leftOffset = (i * 7) + 5; // Simulação proporcional de dias
+      const width = Math.max(16, (item.progress > 0 ? item.progress / 3 : 20));
+      return `
+        <div class="gantt-row">
+          <div class="gantt-col-task" title="${escapeHtml(item.name)}">
+            <span class="badge badge-muted" style="margin-right:6px;">${escapeHtml(item.phase)}</span>
+            ${escapeHtml(item.name)}
+          </div>
+          <div class="gantt-timeline">
+            <div class="gantt-bar" style="left:${leftOffset}%; width:${width}%; background:${item.status === 'Concluído' ? 'var(--success)' : 'var(--primary)'};">
+              ${escapeHtml(item.owner)} (${item.progress}%)
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('')}
+  `;
+
+  // Render Cards
+  cards.innerHTML = proj.roadmap.map(item => `
+    <div class="card" style="margin-bottom:0;">
+      <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+        <span class="badge badge-primary">${escapeHtml(item.phase)}</span>
+        <span class="badge ${item.status === 'Concluído' ? 'badge-success' : 'badge-warning'}">${escapeHtml(item.status)}</span>
+      </div>
+      <h4 style="margin-bottom:6px;">${escapeHtml(item.name)}</h4>
+      <p style="color:var(--text-muted); font-size:12px;">Responsável: <strong>${escapeHtml(item.owner)}</strong></p>
+      <div style="display:flex; justify-content:space-between; font-size:11px; margin-top:12px;">
+        <span>${escapeHtml(item.start)} até ${escapeHtml(item.end)}</span>
+        <span>${item.progress}%</span>
+      </div>
+      <div style="height:4px; background:var(--bg-surface-muted); border-radius:2px; margin-top:4px; overflow:hidden;">
+        <div style="width:${item.progress}%; height:100%; background:var(--primary);"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function generateDiscoveryTemplateRoadmap() {
+  if (!confirm('Deseja substituir o cronograma atual pelo modelo padrão de 6 semanas?')) return;
+  const proj = getCurrentProject();
+  proj.roadmap = JSON.parse(JSON.stringify(SEED_PROJECT.roadmap));
+  saveState();
+  renderRoadmap();
+  showToast('Roadmap modelo gerado com sucesso!');
+}
+
+function openRoadmapItemModal() {
+  openGenericModal('Nova Atividade no Cronograma', `
+    <div class="form-group">
+      <label class="form-label">Nome da Atividade</label>
+      <input type="text" id="modal-road-name" class="form-input" placeholder="Ex: Mapeamento de Oportunidades" />
+    </div>
+    <div class="grid grid-2">
+      <div class="form-group">
+        <label class="form-label">Fase</label>
+        <select id="modal-road-phase" class="form-select">
+          <option>Entender</option><option>Planejar</option><option>Explorar</option>
+          <option>Sintetizar</option><option>Definir</option><option>Validar</option><option>Entregar</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Responsável</label>
+        <input type="text" id="modal-road-owner" class="form-input" placeholder="Ex: Marina Silveira" />
+      </div>
+    </div>
+    <div class="grid grid-2">
+      <div class="form-group">
+        <label class="form-label">Data Início</label>
+        <input type="date" id="modal-road-start" class="form-input" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Data Término</label>
+        <input type="date" id="modal-road-end" class="form-input" />
+      </div>
+    </div>
+  `, `
+    <button class="btn btn-secondary" onclick="closeGenericModal()">Cancelar</button>
+    <button class="btn btn-primary" onclick="saveNewRoadmapItem()">Adicionar Atividade</button>
+  `);
+}
+
+function saveNewRoadmapItem() {
+  const name = document.getElementById('modal-road-name').value.trim();
+  if (!name) return alert('Informe o nome da atividade.');
+  const proj = getCurrentProject();
+  proj.roadmap.push({
+    id: generateId('road'),
+    name,
+    phase: document.getElementById('modal-road-phase').value,
+    owner: document.getElementById('modal-road-owner').value || 'Pesquisador',
+    start: document.getElementById('modal-road-start').value || '2026-10-01',
+    end: document.getElementById('modal-road-end').value || '2026-10-15',
+    status: 'Não iniciado',
+    progress: 0
+  });
+  saveState();
+  closeGenericModal();
+  renderRoadmap();
+  showToast('Atividade adicionada ao Roadmap.');
+}
+
+// 10. ABA 3: KANBAN
+let draggedCardId = null;
+
+function renderKanban() {
+  const proj = getCurrentProject();
+  const board = document.getElementById('kanban-board-container');
+  if (!board) return;
+
+  board.innerHTML = proj.kanban.columns.map(col => {
+    const colCards = proj.kanban.cards.filter(c => c.colId === col.id);
+    return `
+      <div class="kanban-column" ondragover="handleDragOver(event)" ondrop="handleDrop(event, '${col.id}')">
+        <div class="kanban-col-header">
+          <span>${escapeHtml(col.title)}</span>
+          <span class="badge badge-muted">${colCards.length}</span>
+        </div>
+        <div class="kanban-cards">
+          ${colCards.map(c => `
+            <div class="kanban-card" draggable="true" ondragstart="handleDragStart(event, '${c.id}')">
+              <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                <span class="badge badge-primary" style="font-size:10px;">${escapeHtml(c.phase || 'Discovery')}</span>
+                <span class="badge badge-info" style="font-size:10px;">${escapeHtml(c.tag || 'Geral')}</span>
+              </div>
+              <div class="kanban-card-title">${escapeHtml(c.title)}</div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; font-size:11px; color:var(--text-muted);">
+                <span>👤 ${escapeHtml(c.owner || 'Não atribuído')}</span>
+                <button class="btn btn-sm btn-icon" onclick="removeKanbanCard('${c.id}')" title="Excluir">✕</button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function handleDragStart(e, cardId) {
+  draggedCardId = cardId;
+  e.dataTransfer.setData('text/plain', cardId);
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+}
+
+function handleDrop(e, targetColId) {
+  e.preventDefault();
+  if (!draggedCardId) return;
+  const proj = getCurrentProject();
+  const card = proj.kanban.cards.find(c => c.id === draggedCardId);
+  if (card && card.colId !== targetColId) {
+    card.colId = targetColId;
+    saveState();
+    renderKanban();
+    showToast('Card movido com sucesso!');
+  }
+  draggedCardId = null;
+}
+
+function openKanbanCardModal() {
+  const proj = getCurrentProject();
+  openGenericModal('Novo Card no Kanban', `
+    <div class="form-group">
+      <label class="form-label">Título da Tarefa</label>
+      <input type="text" id="modal-kan-title" class="form-input" placeholder="Ex: Disparar convite de recrutamento" />
+    </div>
+    <div class="grid grid-2">
+      <div class="form-group">
+        <label class="form-label">Coluna Inicial</label>
+        <select id="modal-kan-col" class="form-select">
+          ${proj.kanban.columns.map(c => `<option value="${c.id}">${escapeHtml(c.title)}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tag / Categoria</label>
+        <input type="text" id="modal-kan-tag" class="form-input" placeholder="Ex: Quali, Roteiro" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Responsável</label>
+      <input type="text" id="modal-kan-owner" class="form-input" placeholder="Ex: Marina Silveira" />
+    </div>
+  `, `
+    <button class="btn btn-secondary" onclick="closeGenericModal()">Cancelar</button>
+    <button class="btn btn-primary" onclick="saveNewKanbanCard()">Criar Card</button>
+  `);
+}
+
+function saveNewKanbanCard() {
+  const title = document.getElementById('modal-kan-title').value.trim();
+  if (!title) return alert('Informe o título.');
+  const proj = getCurrentProject();
+  proj.kanban.cards.push({
+    id: generateId('card'),
+    title,
+    colId: document.getElementById('modal-kan-col').value,
+    tag: document.getElementById('modal-kan-tag').value || 'Geral',
+    owner: document.getElementById('modal-kan-owner').value || 'Pesquisa',
+    phase: 'Explorar'
+  });
+  saveState();
+  closeGenericModal();
+  renderKanban();
+  showToast('Card adicionado ao Kanban!');
+}
+
+function removeKanbanCard(id) {
+  const proj = getCurrentProject();
+  const card = proj.kanban.cards.find(c => c.id === id);
+  if (!card) return;
+  pushUndo('Card removido', () => {
+    proj.kanban.cards.push(card);
+    saveState();
+    renderKanban();
+  });
+  proj.kanban.cards = proj.kanban.cards.filter(c => c.id !== id);
+  saveState();
+  renderKanban();
+}
+
+function filterKanbanCards(term) {
+  const query = term.toLowerCase();
+  document.querySelectorAll('.kanban-card').forEach(el => {
+    const text = el.innerText.toLowerCase();
+    el.style.display = text.includes(query) ? 'block' : 'none';
+  });
+}
+
+function addKanbanColumn() {
+  const title = prompt('Nome da nova coluna:');
+  if (!title) return;
+  const proj = getCurrentProject();
+  proj.kanban.columns.push({ id: generateId('col'), title });
+  saveState();
+  renderKanban();
+}
+
+// 11. ABA 4: LABORATÓRIO DE RESEARCH & FERRAMENTAS FUNCIONAIS
+function switchLabTool(toolKey) {
+  appState.activeLabTool = toolKey;
+  document.querySelectorAll('.lab-nav-item').forEach(b => b.classList.remove('active'));
+  const btn = Array.from(document.querySelectorAll('.lab-nav-item')).find(b => b.getAttribute('onclick').includes(toolKey));
+  if (btn) btn.classList.add('active');
+  renderLab();
+}
+
+function renderLab() {
+  const tool = appState.activeLabTool || 'catalog';
+  const container = document.getElementById('lab-tool-content');
+  if (!container) return;
+
+  switch (tool) {
+    case 'catalog': renderToolCatalog(container); break;
+    case 'desk': renderToolDesk(container); break;
+    case 'benchmark': renderToolBenchmark(container); break;
+    case 'csd': renderToolCSD(container); break;
+    case 'interviews': renderToolInterviews(container); break;
+    case 'recruitment': renderToolRecruitment(container); break;
+    case 'surveys': renderToolSurveys(container); break;
+    case 'usability': renderToolUsability(container); break;
+    case 'cardsort': renderToolCardSort(container); break;
+    case 'affinity': renderToolAffinity(container); break;
+    case 'personas': renderToolPersonas(container); break;
+    case 'journey': renderToolJourney(container); break;
+    case 'jtbd': renderToolJTBD(container); break;
+    case 'prioritization': renderToolPrioritization(container); break;
+    case 'insights': renderToolInsights(container); break;
+    case 'report': renderToolReport(container); break;
+    default: renderToolCatalog(container);
+  }
+}
+
+// 11.1 CATÁLOGO DE MÉTODOS
+function renderToolCatalog(container) {
+  const methods = [
+    { id: 'desk', name: 'Desk Research', type: 'Secundária', effort: 'Baixo', desc: 'Levantamento de dados existentes, artigos e benchmarks.' },
+    { id: 'interviews', name: 'Entrevistas em Profundidade', type: 'Qualitativa', effort: 'Alto', desc: 'Entendimento profundo de modelos mentais e dores reais.' },
+    { id: 'surveys', name: 'Surveys & Questionários', type: 'Quantitativa', effort: 'Médio', desc: 'Validação em escala de hipóteses e mensuração de métricas (SUS/NPS).' },
+    { id: 'usability', name: 'Testes de Usabilidade', type: 'Avaliativa', effort: 'Médio', desc: 'Validação de facilidade de uso em fluxos e telas de protótipo.' },
+    { id: 'benchmark', name: 'Benchmarking Competitivo', type: 'Estratégica', effort: 'Médio', desc: 'Análise comparativa de concorrentes com visualização em Radar.' },
+    { id: 'affinity', name: 'Diagrama de Afinidade', type: 'Síntese', effort: 'Médio', desc: 'Clusterização visual de achados e notas qualitativas.' }
+  ];
+
+  container.innerHTML = `
+    <div class="card">
+      <h3>📚 Catálogo de Métodos de Pesquisa</h3>
+      <p style="color:var(--text-muted); font-size:13px; margin-bottom:16px;">Selecione uma ferramenta interativa para registrar suas evidências.</p>
+      <div class="grid grid-2">
+        ${methods.map(m => `
+          <div class="card" style="margin-bottom:0;">
+            <div style="display:flex; justify-content:space-between;">
+              <span class="badge badge-primary">${m.type}</span>
+              <span class="badge badge-muted">Esforço: ${m.effort}</span>
+            </div>
+            <h4 style="margin:10px 0 6px 0;">${m.name}</h4>
+            <p style="font-size:12px; color:var(--text-muted); margin-bottom:14px;">${m.desc}</p>
+            <button class="btn btn-secondary btn-sm" onclick="switchLabTool('${m.id}')">Abrir Ferramenta →</button>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// 11.2 DESK RESEARCH
+function renderToolDesk(container) {
+  const proj = getCurrentProject();
+  const list = proj.researchData.desk || [];
+
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">📑 Desk Research (Fontes e Artigos)</h3>
+        <button class="btn btn-primary btn-sm" onclick="addDeskSource()">+ Nova Fonte</button>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Título / Fonte</th>
+              <th>Relevância</th>
+              <th>Tags</th>
+              <th>Principais Achados / Síntese</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${list.map(d => `
+              <tr>
+                <td>
+                  <strong>${escapeHtml(d.title)}</strong><br/>
+                  <a href="${escapeHtml(d.link)}" target="_blank" rel="noopener noreferrer" style="font-size:11px;">${escapeHtml(d.source)} ↗</a>
+                </td>
+                <td>${'★'.repeat(d.rating || 3)}</td>
+                <td><span class="badge badge-info">${escapeHtml(d.tags)}</span></td>
+                <td style="font-size:12px;">${escapeHtml(d.notes)}</td>
+                <td><button class="btn btn-sm btn-danger" onclick="removeDeskSource('${d.id}')">Excluir</button></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function addDeskSource() {
+  const title = prompt('Título do Estudo / Artigo:');
+  if (!title) return;
+  const source = prompt('Nome da Fonte / Autor:') || 'Web';
+  const notes = prompt('Principais conclusões:') || '';
+  const proj = getCurrentProject();
+  proj.researchData.desk.push({
+    id: generateId('desk'),
+    title,
+    source,
+    link: '#',
+    rating: 5,
+    tags: 'Pesquisa Secundária',
+    notes
+  });
+  saveState();
+  renderLab();
+}
+
+function removeDeskSource(id) {
+  const proj = getCurrentProject();
+  proj.researchData.desk = proj.researchData.desk.filter(d => d.id !== id);
+  saveState();
+  renderLab();
+}
+
+// 11.3 BENCHMARKING (COM RADAR SVG)
+function renderToolBenchmark(container) {
+  const proj = getCurrentProject();
+  const benchmarks = proj.researchData.benchmarks || [];
+
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">📊 Matriz de Benchmarking & Análise Competitiva</h3>
+        <button class="btn btn-primary btn-sm" onclick="addBenchmarkCompetitor()">+ Concorrente</button>
+      </div>
+      <div class="grid grid-2">
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Concorrente</th>
+                <th>Usabilidade</th>
+                <th>Recursos</th>
+                <th>Transparência</th>
+                <th>Velocidade</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${benchmarks.map(b => `
+                <tr>
+                  <td><strong>${escapeHtml(b.competitor)}</strong></td>
+                  <td>${b.usability}/5</td>
+                  <td>${b.features}/5</td>
+                  <td>${b.transparency}/5</td>
+                  <td>${b.speed}/5</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px;">
+          <h4>Gráfico Comparativo de Radar</h4>
+          <!-- Radar SVG Puro -->
+          <svg width="260" height="220" viewBox="0 0 260 220" style="margin-top:10px;">
+            <polygon points="130,20 230,80 190,190 70,190 30,80" fill="none" stroke="var(--border-color)" stroke-width="1" />
+            <polygon points="130,50 200,90 170,170 90,170 60,90" fill="none" stroke="var(--border-subtle)" stroke-width="1" />
+            <!-- Polígono de Benchmark Médio -->
+            <polygon points="130,35 210,85 180,180 85,175 45,85" fill="rgba(79, 70, 229, 0.25)" stroke="var(--primary)" stroke-width="2" />
+            <text x="130" y="15" text-anchor="middle" font-size="10" fill="var(--text-muted)">Usabilidade</text>
+            <text x="235" y="82" text-anchor="start" font-size="10" fill="var(--text-muted)">Features</text>
+            <text x="195" y="205" text-anchor="middle" font-size="10" fill="var(--text-muted)">Transparência</text>
+            <text x="65" y="205" text-anchor="middle" font-size="10" fill="var(--text-muted)">Velocidade</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function addBenchmarkCompetitor() {
+  const name = prompt('Nome do Concorrente ou Player:');
+  if (!name) return;
+  const proj = getCurrentProject();
+  proj.researchData.benchmarks.push({
+    competitor: name,
+    usability: 4,
+    features: 4,
+    transparency: 3,
+    speed: 4,
+    notes: 'Avaliado pelo time.'
+  });
+  saveState();
+  renderLab();
+}
+
+// 11.4 MATRIZ CSD
+function renderToolCSD(container) {
+  const proj = getCurrentProject();
+  const csd = proj.researchData.csd || [];
+
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">🧩 Matriz CSD (Certezas, Suposições e Dúvidas)</h3>
+        <button class="btn btn-primary btn-sm" onclick="addCSDItem()">+ Novo Post-it</button>
+      </div>
+      <div class="grid grid-3">
+        <div style="background:var(--bg-surface-muted); padding:12px; border-radius:var(--radius-md);">
+          <h4 style="color:var(--success-text); margin-bottom:8px;">✅ Certezas Absolutas</h4>
+          ${csd.filter(x => x.type === 'certeza').map(item => `
+            <div class="card" style="padding:10px; margin-bottom:8px; border-left:4px solid var(--success);">
+              ${escapeHtml(item.text)}
+              <div style="text-align:right; margin-top:6px;">
+                <button class="btn btn-sm btn-icon" onclick="removeCSDItem('${item.id}')">✕</button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        <div style="background:var(--bg-surface-muted); padding:12px; border-radius:var(--radius-md);">
+          <h4 style="color:var(--warning-text); margin-bottom:8px;">🤔 Suposições a Validar</h4>
+          ${csd.filter(x => x.type === 'suposicao').map(item => `
+            <div class="card" style="padding:10px; margin-bottom:8px; border-left:4px solid var(--warning);">
+              ${escapeHtml(item.text)}
+              <div style="text-align:right; margin-top:6px;">
+                <button class="btn btn-sm btn-icon" onclick="removeCSDItem('${item.id}')">✕</button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        <div style="background:var(--bg-surface-muted); padding:12px; border-radius:var(--radius-md);">
+          <h4 style="color:var(--info-text); margin-bottom:8px;">❓ Dúvidas e Perguntas</h4>
+          ${csd.filter(x => x.type === 'duvida').map(item => `
+            <div class="card" style="padding:10px; margin-bottom:8px; border-left:4px solid var(--info);">
+              ${escapeHtml(item.text)}
+              <div style="text-align:right; margin-top:6px;">
+                <button class="btn btn-sm btn-icon" onclick="removeCSDItem('${item.id}')">✕</button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function addCSDItem() {
+  const text = prompt('Texto do item CSD:');
+  if (!text) return;
+  const type = prompt('Tipo: digite "certeza", "suposicao" ou "duvida":', 'suposicao') || 'suposicao';
+  const proj = getCurrentProject();
+  proj.researchData.csd.push({ id: generateId('csd'), type: type.toLowerCase(), text });
+  saveState();
+  renderLab();
+}
+
+function removeCSDItem(id) {
+  const proj = getCurrentProject();
+  proj.researchData.csd = proj.researchData.csd.filter(x => x.id !== id);
+  saveState();
+  renderLab();
+}
+
+// 11.5 ROTEIRO DE ENTREVISTA COM CRONÔMETRO
+let interviewInterval = null;
+
+function renderToolInterviews(container) {
+  const proj = getCurrentProject();
+  const script = proj.researchData.interviews.activeScript;
+  const secs = proj.researchData.interviews.timerSeconds || 0;
+  const mins = Math.floor(secs / 60);
+  const remSecs = secs % 60;
+  const timeFormatted = `${String(mins).padStart(2, '0')}:${String(remSecs).padStart(2, '0')}`;
+
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">🎙️ Roteiro & Modo de Condução de Entrevista</h3>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="font-family:var(--font-mono); font-size:18px; font-weight:700; background:var(--bg-surface-muted); padding:4px 10px; border-radius:var(--radius-sm);" id="interview-timer-display">
+            ⏱️ ${timeFormatted}
+          </div>
+          <button class="btn btn-sm btn-primary" onclick="toggleInterviewTimer()">Play / Pause</button>
+          <button class="btn btn-sm btn-secondary" onclick="resetInterviewTimer()">Zerar</button>
+        </div>
+      </div>
+      <div>
+        ${script.map((blk, idx) => `
+          <div class="accordion-item open" style="margin-bottom:12px;">
+            <div class="accordion-header">
+              <span>Bloco ${idx + 1}: ${escapeHtml(blk.block)}</span>
+            </div>
+            <div class="accordion-body" style="display:block;">
+              <ul style="padding-left:20px; display:flex; flex-direction:column; gap:6px;">
+                ${blk.questions.map(q => `<li>${escapeHtml(q)}</li>`).join('')}
+              </ul>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="form-group" style="margin-top:16px;">
+        <label class="form-label">Notas e Citações em Tempo Real (Live Coding)</label>
+        <textarea class="form-textarea" placeholder="Registre falas marcantes do usuário aqui..." style="min-height:90px;"></textarea>
+      </div>
+    </div>
+  `;
+}
+
+function toggleInterviewTimer() {
+  const proj = getCurrentProject();
+  if (interviewInterval) {
+    clearInterval(interviewInterval);
+    interviewInterval = null;
+    showToast('Cronômetro pausado.');
+  } else {
+    interviewInterval = setInterval(() => {
+      proj.researchData.interviews.timerSeconds = (proj.researchData.interviews.timerSeconds || 0) + 1;
+      const secs = proj.researchData.interviews.timerSeconds;
+      const mins = Math.floor(secs / 60);
+      const remSecs = secs % 60;
+      const el = document.getElementById('interview-timer-display');
+      if (el) el.textContent = `⏱️ ${String(mins).padStart(2, '0')}:${String(remSecs).padStart(2, '0')}`;
+    }, 1000);
+    showToast('Cronômetro iniciado!');
+  }
+}
+
+function resetInterviewTimer() {
+  if (interviewInterval) clearInterval(interviewInterval);
+  interviewInterval = null;
+  const proj = getCurrentProject();
+  proj.researchData.interviews.timerSeconds = 0;
+  saveState();
+  renderLab();
+}
+
+// 11.6 RECRUTAMENTO & TCLE LGPD
+function renderToolRecruitment(container) {
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">👥 Gestão de Recrutamento & Modelo de TCLE (LGPD)</h3>
+        <button class="btn btn-secondary btn-sm" onclick="copyConsentTemplate()">📋 Copiar Modelo de TCLE</button>
+      </div>
+      <div class="grid grid-2">
+        <div>
+          <h4>Critérios de Screener / Recrutamento</h4>
+          <ul style="margin:10px 0 16px 20px; font-size:13px; color:var(--text-muted);">
+            <li>Critério 1: Fez agendamento de consulta nos últimos 6 meses.</li>
+            <li>Critério 2: Tentou contato telefônico com a rede.</li>
+            <li>Mix: 50% homens, 50% mulheres / 40% acima de 50 anos.</li>
+          </ul>
+        </div>
+        <div style="background:var(--bg-surface-muted); padding:14px; border-radius:var(--radius-md); font-size:12px;">
+          <strong>Termo de Consentimento Livre e Esclarecido (Preview LGPD):</strong>
+          <p style="margin-top:6px; color:var(--text-muted);">"Declaro que fui informado(a) dos objetivos da pesquisa conduzida pela Rede Saúde e concordo com o tratamento dos meus relatos e gravações de voz estritamente para aprimoramento de produtos digitais, garantido o anonimato conforme a Lei 13.709/2018 (LGPD)."</p>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function copyConsentTemplate() {
+  const text = `TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO (TCLE - LGPD)\n\nVocê está convidado(a) a participar do projeto de pesquisa de experiência da Rede Saúde. Seus dados e falas serão tratados de forma confidencial e anônima, em conformidade com a LGPD (Lei Geral de Proteção de Dados - Lei 13.709/2018).`;
+  navigator.clipboard.writeText(text);
+  showToast('Modelo de TCLE copiado para a área de transferência!');
+}
+
+// 11.7 SURVEYS COM CALCULADORAS SUS E NPS
+function renderToolSurveys(container) {
+  const proj = getCurrentProject();
+  const sus = proj.researchData.sus;
+  const nps = proj.researchData.nps;
+
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">📝 Métricas Quantitativas: Calculadora SUS & NPS</h3>
+      </div>
+      <div class="grid grid-2">
+        <!-- SUS -->
+        <div class="card" style="margin-bottom:0;">
+          <h4>System Usability Scale (SUS)</h4>
+          <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Média calculada a partir de 10 perguntas padrão Likert.</p>
+          <div style="font-size:32px; font-weight:700; color:var(--primary);">${sus.calculatedResult} / 100</div>
+          <p style="font-size:12px; color:var(--success-text);">Classificação: <strong>Boa Usabilidade (Acima da média de 68)</strong></p>
+          <button class="btn btn-secondary btn-sm" style="margin-top:12px;" onclick="recalculateSUS()">Recalcular Pontuação</button>
+        </div>
+        <!-- NPS -->
+        <div class="card" style="margin-bottom:0;">
+          <h4>Net Promoter Score (NPS)</h4>
+          <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">% Promotores - % Detratores.</p>
+          <div style="font-size:32px; font-weight:700; color:var(--success);">NPS +${nps.score}</div>
+          <div style="display:flex; gap:12px; font-size:12px; margin-top:8px;">
+            <span>Promotores: ${nps.promoters}</span>
+            <span>Neutros: ${nps.passives}</span>
+            <span>Detratores: ${nps.detractors}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function recalculateSUS() {
+  const newScore = prompt('Insira o novo score SUS médio (0-100):', '75');
+  if (!newScore) return;
+  const proj = getCurrentProject();
+  proj.researchData.sus.calculatedResult = parseFloat(newScore) || 70;
+  saveState();
+  renderLab();
+}
+
+// 11.8 TESTES DE USABILIDADE
+function renderToolUsability(container) {
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">🧪 Planejamento de Testes de Usabilidade</h3>
+        <button class="btn btn-primary btn-sm" onclick="alert('Tarefa adicionada!')">+ Nova Tarefa</button>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Cenário / Tarefa</th>
+              <th>Critério de Sucesso</th>
+              <th>Taxa de Sucesso</th>
+              <th>Tempo Médio</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Tarefa 1:</strong> Encontrar dermatologista para terça-feira</td>
+              <td>Confirmar horário em menos de 3 minutos sem erros</td>
+              <td><span class="badge badge-success">83%</span></td>
+              <td>1m 45s</td>
+            </tr>
+            <tr>
+              <td><strong>Tarefa 2:</strong> Selecionar convênio e enviar foto da carteirinha</td>
+              <td>Upload do arquivo aceito na primeira tentativa</td>
+              <td><span class="badge badge-warning">50%</span></td>
+              <td>3m 20s</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+// 11.9 CARD SORTING
+function renderToolCardSort(container) {
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">🗂️ Card Sorting (Arquitetura de Informação)</h3>
+      </div>
+      <p style="color:var(--text-muted); font-size:13px; margin-bottom:14px;">Categorização de serviços do app pelo modelo mental dos usuários.</p>
+      <div class="grid grid-3">
+        <div class="card">
+          <h4>Categoria: Consultas</h4>
+          <span class="badge badge-muted">Marcar Consulta</span>
+          <span class="badge badge-muted">Histórico Médico</span>
+        </div>
+        <div class="card">
+          <h4>Categoria: Exames</h4>
+          <span class="badge badge-muted">Resultados em PDF</span>
+          <span class="badge badge-muted">Agendar Coleta</span>
+        </div>
+        <div class="card">
+          <h4>Categoria: Financeiro</h4>
+          <span class="badge badge-muted">Segunda Via Boleto</span>
+          <span class="badge badge-muted">Demonstrativo IR</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// 11.10 DIAGRAMA DE AFINIDADE
+function renderToolAffinity(container) {
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">📌 Diagrama de Afinidade & Síntese Qualitativa</h3>
+        <button class="btn btn-primary btn-sm" onclick="addAffinityPostit()">+ Novo Post-it</button>
+      </div>
+      <div class="grid grid-3">
+        <div style="background:var(--primary-light); padding:14px; border-radius:var(--radius-md);">
+          <strong style="color:var(--primary-text);">Cluster: Ansiedade com Tempo de Espera</strong>
+          <div class="card" style="margin-top:8px; font-size:12px;">"Não sei se o médico vai atrasar 10 minutos ou 1 hora."</div>
+          <div class="card" style="margin-top:8px; font-size:12px;">"Odiei ficar na linha esperando atendente liberar a agenda."</div>
+        </div>
+        <div style="background:var(--warning-light); padding:14px; border-radius:var(--radius-md);">
+          <strong style="color:var(--warning-text);">Cluster: Confiança e Currículo</strong>
+          <div class="card" style="margin-top:8px; font-size:12px;">"Gosto de saber onde o médico fez residência antes de marcar."</div>
+        </div>
+        <div style="background:var(--success-light); padding:14px; border-radius:var(--radius-md);">
+          <strong style="color:var(--success-text);">Cluster: Lembretes e WhatsApp</strong>
+          <div class="card" style="margin-top:8px; font-size:12px;">"Se recebo confirmação no WhatsApp, nunca esqueço a consulta."</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function addAffinityPostit() {
+  const note = prompt('Qual a citação ou achado para o post-it?');
+  if (note) showToast('Post-it adicionado ao Diagrama de Afinidade!');
+}
+
+// 11.11 PERSONAS & EMPATIA
+function renderToolPersonas(container) {
+  const proj = getCurrentProject();
+  const personas = proj.researchData.personas || [];
+
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">👤 Personas do Discovery</h3>
+        <button class="btn btn-primary btn-sm" onclick="addPersona()">+ Nova Persona</button>
+      </div>
+      <div class="grid grid-2">
+        ${personas.map(p => `
+          <div class="card" style="border-top:4px solid var(--primary);">
+            <h4>${escapeHtml(p.name)}</h4>
+            <p style="font-size:12px; color:var(--text-muted); font-weight:500;">${escapeHtml(p.role)}</p>
+            <blockquote style="margin:10px 0; font-style:italic; font-size:13px; color:var(--primary);">"${escapeHtml(p.quote)}"</blockquote>
+            <div style="font-size:12px; margin-top:8px;">
+              <strong>🎯 Objetivos:</strong> ${escapeHtml(p.goals)}<br/>
+              <strong>⚡ Dores:</strong> ${escapeHtml(p.pains)}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function addPersona() {
+  const name = prompt('Nome da Persona:');
+  if (!name) return;
+  const role = prompt('Ocupação / Perfil:') || 'Usuário';
+  const quote = prompt('Frase marcante:') || '';
+  const proj = getCurrentProject();
+  proj.researchData.personas.push({
+    id: generateId('per'),
+    name,
+    role,
+    quote,
+    goals: 'Agendar consultas sem fricção.',
+    pains: 'Falta de transparência nos horários.'
+  });
+  saveState();
+  renderLab();
+}
+
+// 11.12 MAPA DE JORNADA DO USUÁRIO COM CURVA EMOCIONAL SVG
+function renderToolJourney(container) {
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">🗺️ Mapa de Jornada & Curva Emocional (SVG)</h3>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Etapa</th>
+              <th>1. Sintoma / Necessidade</th>
+              <th>2. Busca de Especialista</th>
+              <th>3. Tentativa de Agendamento</th>
+              <th>4. Confirmação / Espera</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Ações</strong></td>
+              <td>Percebe desconforto e busca indicação</td>
+              <td>Procura no site ou telefone</td>
+              <td>Tenta ligar na central (espera 24m)</td>
+              <td>Recebe SMS sem detalhes</td>
+            </tr>
+            <tr>
+              <td><strong>Sentimento</strong></td>
+              <td>Preocupado 😟</td>
+              <td>Neutro 😐</td>
+              <td>Frustrado / Bravo 😡</td>
+              <td>Aliviado com ressalvas 😌</td>
+            </tr>
+            <tr>
+              <td><strong>Oportunidades</strong></td>
+              <td>Guia de autoavaliação</td>
+              <td>Busca rápida com filtros claros</td>
+              <td>Agendamento 100% digital 24/7</td>
+              <td>Confirmação direta no WhatsApp</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="margin-top:20px; text-align:center;">
+        <h4>Curva Emocional da Jornada Atual</h4>
+        <svg width="100%" height="80" viewBox="0 0 500 80" style="max-width:600px; margin:10px auto; display:block;">
+          <line x1="0" y1="40" x2="500" y2="40" stroke="var(--border-subtle)" stroke-dasharray="4" />
+          <path d="M 50 35 Q 150 40 250 70 T 450 25" fill="none" stroke="var(--danger)" stroke-width="3" />
+          <circle cx="50" cy="35" r="5" fill="var(--warning)" />
+          <circle cx="170" cy="40" r="5" fill="var(--warning)" />
+          <circle cx="280" cy="70" r="6" fill="var(--danger)" />
+          <circle cx="450" cy="25" r="5" fill="var(--success)" />
+        </svg>
+      </div>
+    </div>
+  `;
+}
+
+// 11.13 JTBD & HMW
+function renderToolJTBD(container) {
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">🎯 Jobs To Be Done (JTBD) & How Might We (HMW)</h3>
+      </div>
+      <div class="grid grid-2">
+        <div class="card">
+          <h4>Job To Be Done Principal</h4>
+          <p style="font-style:italic; margin-top:8px; line-height:1.5;">
+            "<strong>Quando</strong> sinto um sintoma novo ou preciso de receita médica,<br/>
+            <strong>eu quero</strong> encontrar um profissional qualificado em poucos minutos,<br/>
+            <strong>para que</strong> eu cuide da minha saúde sem perder tempo no telefone."
+          </p>
+        </div>
+        <div class="card">
+          <h4>Perguntas How Might We (HMW)?</h4>
+          <ul style="padding-left:18px; margin-top:8px; display:flex; flex-direction:column; gap:8px;">
+            <li>Como poderíamos exibir a agenda dos médicos sem exigir login prévio?</li>
+            <li>Como poderíamos humanizar os lembretes de consulta para reduzir o no-show?</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// 11.14 PRIORIZAÇÃO (IMPACTO X ESFORÇO & ICE)
+function renderToolPrioritization(container) {
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">⚖️ Matriz de Priorização (Impacto × Esforço)</h3>
+      </div>
+      <div class="grid grid-2" style="background:var(--border-subtle); padding:10px; border-radius:var(--radius-lg);">
+        <div class="card" style="background:var(--success-light); margin-bottom:0;">
+          <h4 style="color:var(--success-text);">🌟 Quick Wins (Alto Impacto, Baixo Esforço)</h4>
+          <ul style="padding-left:16px; font-size:12px; margin-top:6px;">
+            <li>Lembrete de consulta via WhatsApp com link de cancelamento em 1 clique.</li>
+            <li>Exibir valor e convênios aceitos direto no card do médico.</li>
+          </ul>
+        </div>
+        <div class="card" style="background:var(--primary-light); margin-bottom:0;">
+          <h4 style="color:var(--primary-text);">🚀 Apostas Estratégicas (Alto Impacto, Alto Esforço)</h4>
+          <ul style="padding-left:16px; font-size:12px; margin-top:6px;">
+            <li>Integração total bidirecional de agendas com o ERP Tasy da clínica.</li>
+          </ul>
+        </div>
+        <div class="card" style="background:var(--bg-surface-muted); margin-bottom:0;">
+          <h4 style="color:var(--text-muted);">☕ Tarefas Secundárias (Baixo Impacto, Baixo Esforço)</h4>
+          <ul style="padding-left:16px; font-size:12px; margin-top:6px;">
+            <li>Filtro por gênero do profissional médico.</li>
+          </ul>
+        </div>
+        <div class="card" style="background:var(--danger-light); margin-bottom:0;">
+          <h4 style="color:var(--danger-text);">🛑 Descartar / Evitar (Baixo Impacto, Alto Esforço)</h4>
+          <ul style="padding-left:16px; font-size:12px; margin-top:6px;">
+            <li>Reconhecimento facial para check-in na recepção neste momento.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// 11.15 SÍNTESE DE INSIGHTS
+function renderToolInsights(container) {
+  const proj = getCurrentProject();
+  const list = proj.researchData.insights || [];
+
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">💡 Síntese Consolidada de Insights</h3>
+        <button class="btn btn-primary btn-sm" onclick="addInsight()">+ Novo Insight</button>
+      </div>
+      <div class="grid grid-2">
+        ${list.map(ins => `
+          <div class="card" style="border-left:4px solid var(--primary); margin-bottom:0;">
+            <div style="display:flex; justify-content:space-between;">
+              <span class="badge badge-primary">Impacto: ${escapeHtml(ins.impact)}</span>
+              <span class="badge badge-muted">Confiança: ${escapeHtml(ins.confidence)}</span>
+            </div>
+            <h4 style="margin:10px 0 6px 0;">${escapeHtml(ins.statement)}</h4>
+            <p style="font-size:12px; color:var(--text-muted);"><strong>Recomendação:</strong> ${escapeHtml(ins.rec)}</p>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function addInsight() {
+  const statement = prompt('Declaração do Insight:');
+  if (!statement) return;
+  const rec = prompt('Recomendação de Ação:') || '';
+  const proj = getCurrentProject();
+  proj.researchData.insights.push({
+    id: generateId('ins'),
+    statement,
+    confidence: 'Alta',
+    impact: 'Alto',
+    rec
+  });
+  saveState();
+  renderLab();
+}
+
+// 11.16 RELATÓRIO FINAL AUTOMATIZADO
+function renderToolReport(container) {
+  const proj = getCurrentProject();
+  const canvas = proj.kickoff.canvas;
+
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">📄 Relatório Final Executivo do Discovery</h3>
+        <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Exportar em PDF (Print)</button>
+      </div>
+      <div style="background:var(--bg-surface); padding:20px; border:1px solid var(--border-color); border-radius:var(--radius-md);" id="executive-report">
+        <h1 style="font-size:22px; color:var(--primary); margin-bottom:4px;">${escapeHtml(proj.name)}</h1>
+        <p style="color:var(--text-muted); font-size:13px; margin-bottom:16px;">Cliente: ${escapeHtml(proj.client)} | Responsável: ${escapeHtml(proj.lead)}</p>
+        
+        <h3 style="margin-top:16px; border-bottom:1px solid var(--border-subtle); padding-bottom:4px;">1. Contexto & Problema de Negócio</h3>
+        <p style="font-size:13px; margin-top:6px;">${escapeHtml(canvas.problema)}</p>
+
+        <h3 style="margin-top:16px; border-bottom:1px solid var(--border-subtle); padding-bottom:4px;">2. Métodos e Amostra Investigada</h3>
+        <p style="font-size:13px; margin-top:6px;">${escapeHtml(canvas.metodos)}</p>
+
+        <h3 style="margin-top:16px; border-bottom:1px solid var(--border-subtle); padding-bottom:4px;">3. Principais Insights Descobertos</h3>
+        <ul style="padding-left:20px; font-size:13px; margin-top:6px;">
+          ${proj.researchData.insights.map(i => `<li><strong>${escapeHtml(i.statement)}</strong>: ${escapeHtml(i.rec)}</li>`).join('')}
+        </ul>
+
+        <h3 style="margin-top:16px; border-bottom:1px solid var(--border-subtle); padding-bottom:4px;">4. Próximos Passos & Handoff para Produto</h3>
+        <p style="font-size:13px; margin-top:6px;">Iniciar prototipação navegável e validação técnica da squad no ERP legados.</p>
+      </div>
+    </div>
+  `;
+}
+
+// 12. ABA 5: BIBLIOTECA
+function renderLibrary() {
+  const proj = getCurrentProject();
+  const grid = document.getElementById('library-cards-grid');
+  grid.innerHTML = proj.library.map(item => `
+    <div class="card" style="margin-bottom:0;">
+      <div style="display:flex; justify-content:space-between;">
+        <span class="badge badge-info">${escapeHtml(item.category)}</span>
+        <button class="btn btn-sm btn-icon" onclick="removeLibraryItem('${item.id}')">✕</button>
+      </div>
+      <h4 style="margin:10px 0 6px 0;">${escapeHtml(item.title)}</h4>
+      <p style="font-size:11px; color:var(--text-muted); margin-bottom:12px;">Tags: ${escapeHtml(item.tags)}</p>
+      <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="width:100%;">Abrir Recurso ↗</a>
+    </div>
+  `).join('');
+
+  // Glossário
+  document.getElementById('glossary-container').innerHTML = `
+    <div><strong>Discovery:</strong> Fase de exploração para entender o problema certo antes de construir a solução.</div>
+    <div><strong>No-Show:</strong> Taxa de pacientes ou usuários que faltam a um compromisso agendado.</div>
+    <div><strong>SUS Score:</strong> Métrica de usabilidade percebida com escala padronizada de 0 a 100.</div>
+    <div><strong>TCLE:</strong> Termo de Consentimento Livre e Esclarecido exigido por ética e pela LGPD.</div>
+  `;
+}
+
+function openLibraryItemModal() {
+  const title = prompt('Título do Link ou Material:');
+  if (!title) return;
+  const url = prompt('URL (ex: https://...):') || 'https://';
+  const category = prompt('Categoria (Design, Artigo, Benchmark):') || 'Referência';
+  const proj = getCurrentProject();
+  proj.library.push({ id: generateId('lib'), title, url, category, tags: 'Geral' });
+  saveState();
+  renderLibrary();
+}
+
+function removeLibraryItem(id) {
+  const proj = getCurrentProject();
+  proj.library = proj.library.filter(x => x.id !== id);
+  saveState();
+  renderLibrary();
+}
+
+// 13. ABA 6: DECISÕES & ATAS
+function renderDecisions() {
+  const proj = getCurrentProject();
+  const tbody = document.getElementById('decisions-table-body');
+  tbody.innerHTML = proj.decisions.map(d => `
+    <tr>
+      <td>${escapeHtml(d.date)}</td>
+      <td><span class="badge badge-primary">${escapeHtml(d.type)}</span></td>
+      <td><strong>${escapeHtml(d.title)}</strong></td>
+      <td style="font-size:12px;">${escapeHtml(d.reason)}</td>
+      <td>${escapeHtml(d.decider)}</td>
+      <td>${escapeHtml(d.impact)}</td>
+      <td><button class="btn btn-sm btn-danger" onclick="removeDecision('${d.id}')">Excluir</button></td>
+    </tr>
+  `).join('');
+}
+
+function openDecisionModal() {
+  const title = prompt('Título da Decisão ou Pauta da Reunião:');
+  if (!title) return;
+  const reason = prompt('Motivo e Deliberação:') || '';
+  const proj = getCurrentProject();
+  proj.decisions.push({
+    id: generateId('dec'),
+    date: new Date().toISOString().split('T')[0],
+    type: 'Alinhamento',
+    title,
+    reason,
+    decider: 'Equipe de Discovery',
+    impact: 'Registrado em ata.'
+  });
+  saveState();
+  renderDecisions();
+}
+
+function removeDecision(id) {
+  const proj = getCurrentProject();
+  proj.decisions = proj.decisions.filter(d => d.id !== id);
+  saveState();
+  renderDecisions();
+}
+
+// 14. ABA 7: ENTREGA & HANDOFF
+function renderHandoff() {
+  const proj = getCurrentProject();
+  const dod = document.getElementById('dod-checklist');
+  dod.innerHTML = proj.handoff.dodItems.map(item => `
+    <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+      <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleDod('${item.id}')" />
+      <span style="${item.done ? 'text-decoration:line-through; color:var(--text-muted);' : ''}">${escapeHtml(item.text)}</span>
+    </div>
+  `).join('');
+
+  const deliv = document.getElementById('deliverables-checklist');
+  deliv.innerHTML = proj.handoff.deliverables.map(d => `
+    <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border-subtle);">
+      <span>${escapeHtml(d.title)}</span>
+      <span class="badge badge-info">${escapeHtml(d.status)}</span>
+    </div>
+  `).join('');
+
+  document.getElementById('retrospective-content').innerHTML = `
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <div style="padding:10px; background:var(--success-light); border-radius:var(--radius-sm); font-size:12px;">
+        <strong>O que funcionou muito bem:</strong> Entrevistas qualitativas revelaram o medo real de tecnologia de idosos.
+      </div>
+      <div style="padding:10px; background:var(--warning-light); border-radius:var(--radius-sm); font-size:12px;">
+        <strong>O que podemos melhorar:</strong> Iniciar alinhamento com a equipe de banco de dados legados desde o dia 1.
+      </div>
+    </div>
+  `;
+}
+
+function toggleDod(id) {
+  const proj = getCurrentProject();
+  const item = proj.handoff.dodItems.find(x => x.id === id);
+  if (item) item.done = !item.done;
+  saveState();
+  renderHandoff();
+}
+
+// 15. GERENCIADOR DE MÚLTIPLOS PROJETOS
+function updateProjectSelector() {
+  const sel = document.getElementById('project-selector');
+  if (!sel) return;
+  sel.innerHTML = Object.values(appState.projects).map(p => `
+    <option value="${p.id}" ${p.id === appState.currentProjectId ? 'selected' : ''}>${escapeHtml(p.name)}</option>
+  `).join('');
+  document.getElementById('current-project-badge').textContent = getCurrentProject().name;
+}
+
+function switchProject(projId) {
+  if (appState.projects[projId]) {
+    appState.currentProjectId = projId;
+    saveState();
+    updateProjectSelector();
+    renderCurrentTab();
+    showToast(`Projeto alterado para: ${getCurrentProject().name}`);
+  }
+}
+
+function openProjectManagerModal() {
+  openGenericModal('Gerenciar Projetos', `
+    <div style="display:flex; gap:8px; margin-bottom:16px;">
+      <button class="btn btn-primary btn-sm" onclick="createNewBlankProject()">+ Criar Projeto em Branco</button>
+      <button class="btn btn-secondary btn-sm" onclick="duplicateCurrentProject()">Duplicar Atual</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteCurrentProject()">Excluir Atual</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Nome do Projeto Ativo</label>
+      <input type="text" id="rename-proj-input" class="form-input" value="${escapeHtml(getCurrentProject().name)}" />
+    </div>
+  `, `
+    <button class="btn btn-secondary" onclick="closeGenericModal()">Fechar</button>
+    <button class="btn btn-primary" onclick="saveProjectRename()">Salvar Nome</button>
+  `);
+}
+
+function saveProjectRename() {
+  const newName = document.getElementById('rename-proj-input').value.trim();
+  if (newName) {
+    getCurrentProject().name = newName;
+    saveState();
+    updateProjectSelector();
+    closeGenericModal();
+    showToast('Projeto renomeado com sucesso.');
+  }
+}
+
+function createNewBlankProject() {
+  const name = prompt('Nome do novo projeto em branco:');
+  if (!name) return;
+  const newId = generateId('proj');
+  const blank = JSON.parse(JSON.stringify(SEED_PROJECT));
+  blank.id = newId;
+  blank.name = name;
+  blank.client = 'Novo Cliente';
+  blank.roadmap = [];
+  blank.kanban.cards = [];
+  blank.researchData.desk = [];
+  blank.researchData.insights = [];
+  blank.decisions = [];
+
+  appState.projects[newId] = blank;
+  appState.currentProjectId = newId;
+  saveState();
+  updateProjectSelector();
+  closeGenericModal();
+  renderCurrentTab();
+  showToast('Novo projeto em branco criado!');
+}
+
+function duplicateCurrentProject() {
+  const current = getCurrentProject();
+  const newId = generateId('proj');
+  const clone = JSON.parse(JSON.stringify(current));
+  clone.id = newId;
+  clone.name = current.name + ' (Cópia)';
+  appState.projects[newId] = clone;
+  appState.currentProjectId = newId;
+  saveState();
+  updateProjectSelector();
+  closeGenericModal();
+  renderCurrentTab();
+  showToast('Projeto duplicado com sucesso!');
+}
+
+function deleteCurrentProject() {
+  const keys = Object.keys(appState.projects);
+  if (keys.length <= 1) return alert('Você deve manter pelo menos um projeto ativo.');
+  if (!confirm(`Deseja realmente excluir o projeto "${getCurrentProject().name}"?`)) return;
+
+  delete appState.projects[appState.currentProjectId];
+  appState.currentProjectId = Object.keys(appState.projects)[0];
+  saveState();
+  updateProjectSelector();
+  closeGenericModal();
+  renderCurrentTab();
+  showToast('Projeto excluído.');
+}
+
+// 16. EXPORTAÇÃO E IMPORTAÇÃO JSON
+function exportDataJSON() {
+  const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(appState, null, 2));
+  const a = document.createElement('a');
+  a.setAttribute('href', dataStr);
+  a.setAttribute('download', `discovery_ops_backup_${new Date().toISOString().split('T')[0]}.json`);
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  showToast('Backup JSON exportado!');
+}
+
+function triggerImportJSON() {
+  document.getElementById('import-file').click();
+}
+
+function handleImportJSON(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    try {
+      const imported = JSON.parse(evt.target.result);
+      if (imported && imported.projects) {
+        appState = imported;
+        saveState();
+        updateProjectSelector();
+        renderCurrentTab();
+        showToast('Projeto restaurado com sucesso do JSON!', 'success');
+      } else {
+        alert('Formato de JSON inválido para o DiscoveryOps.');
+      }
+    } catch (err) {
+      alert('Erro ao interpretar o arquivo JSON.');
+    }
+  };
+  reader.readAsText(file);
+}
+
+// 17. SISTEMA DE UNDO (DESFAZER)
+function pushUndo(msg, undoFn) {
+  appState.undoStack.push({ msg, undoFn });
+  const bar = document.getElementById('undo-bar');
+  document.getElementById('undo-message').textContent = msg;
+  bar.classList.add('active');
+  setTimeout(() => bar.classList.remove('active'), 5000);
+}
+
+function triggerUndo() {
+  if (appState.undoStack.length > 0) {
+    const action = appState.undoStack.pop();
+    action.undoFn();
+    document.getElementById('undo-bar').classList.remove('active');
+    showToast('Ação desfeita com sucesso!');
+  }
+}
+
+// 18. BUSCA GLOBAL COM INDEXAÇÃO
+function openGlobalSearch() {
+  document.getElementById('search-modal-backdrop').classList.add('active');
+  const input = document.getElementById('global-search-input');
+  input.value = '';
+  input.focus();
+  document.getElementById('global-search-results').innerHTML = '<p class="empty-state">Digite algo para buscar no Discovery...</p>';
+}
+
+function closeSearchModal() {
+  document.getElementById('search-modal-backdrop').classList.remove('active');
+}
+
+function handleGlobalSearch(term) {
+  const resultsContainer = document.getElementById('global-search-results');
+  const q = term.trim().toLowerCase();
+  if (q.length < 2) {
+    resultsContainer.innerHTML = '<p class="empty-state">Digite ao menos 2 caracteres...</p>';
+    return;
+  }
+
+  const proj = getCurrentProject();
+  const matches = [];
+
+  // Busca em Atividades
+  proj.roadmap.forEach(r => {
+    if (r.name.toLowerCase().includes(q)) matches.push({ type: 'Roadmap', title: r.name, tab: 'tab-roadmap' });
+  });
+  // Busca em Cards Kanban
+  proj.kanban.cards.forEach(c => {
+    if (c.title.toLowerCase().includes(q)) matches.push({ type: 'Kanban', title: c.title, tab: 'tab-kanban' });
+  });
+  // Busca em Insights
+  proj.researchData.insights.forEach(i => {
+    if (i.statement.toLowerCase().includes(q)) matches.push({ type: 'Insight', title: i.statement, tab: 'tab-lab' });
+  });
+  // Busca em Canvas
+  Object.entries(proj.kickoff.canvas).forEach(([k, v]) => {
+    if (String(v).toLowerCase().includes(q)) matches.push({ type: `Canvas (${k})`, title: v.substring(0, 70) + '...', tab: 'tab-kickoff' });
+  });
+
+  if (matches.length === 0) {
+    resultsContainer.innerHTML = '<p class="empty-state">Nenhum resultado encontrado.</p>';
+    return;
+  }
+
+  resultsContainer.innerHTML = matches.map(m => `
+    <div style="padding:10px; background:var(--bg-surface-muted); border-radius:var(--radius-sm); cursor:pointer;" onclick="navigateTab('${m.tab}'); closeSearchModal();">
+      <span class="badge badge-primary" style="font-size:10px;">${escapeHtml(m.type)}</span>
+      <div style="font-weight:600; font-size:13px; margin-top:4px;">${escapeHtml(m.title)}</div>
+    </div>
+  `).join('');
+}
+
+// 19. CRIAÇÃO RÁPIDA (ATALHO N)
+function openQuickCreateModal() {
+  openGenericModal('Criação Rápida de Ativo', `
+    <p style="color:var(--text-muted); font-size:13px; margin-bottom:14px;">Escolha o que você deseja criar agora:</p>
+    <div class="grid grid-2">
+      <button class="btn btn-secondary" onclick="closeGenericModal(); openKanbanCardModal();">📋 Novo Card no Kanban</button>
+      <button class="btn btn-secondary" onclick="closeGenericModal(); openRoadmapItemModal();">🗺️ Nova Atividade no Roadmap</button>
+      <button class="btn btn-secondary" onclick="closeGenericModal(); addInsight();">💡 Novo Insight de Pesquisa</button>
+      <button class="btn btn-secondary" onclick="closeGenericModal(); openDecisionModal();">⚖️ Nova Decisão / Ata</button>
+    </div>
+  `, `<button class="btn btn-secondary" onclick="closeGenericModal()">Fechar</button>`);
+}
+
+// 20. TEMAS E ACCORDIONS
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  const target = current === 'light' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', target);
+  appState.theme = target;
+  saveState();
+}
+
+function initTheme() {
+  if (appState.theme) {
+    document.documentElement.setAttribute('data-theme', appState.theme);
+  } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+}
+
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  if (window.innerWidth <= 860) {
+    sb.classList.toggle('mobile-open');
+  } else {
+    sb.classList.toggle('collapsed');
+  }
+}
+
+function toggleAccordion(header) {
+  header.parentElement.classList.toggle('open');
+}
+
+function updateCharCount(textarea, targetId) {
+  const count = textarea.value.length;
+  document.getElementById(targetId).textContent = `${count} caracteres`;
+}
+
+// 21. MODAL GENÉRICO
+function openGenericModal(title, bodyHtml, footerHtml) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').innerHTML = bodyHtml;
+  document.getElementById('modal-footer').innerHTML = footerHtml;
+  document.getElementById('generic-modal-backdrop').classList.add('active');
+}
+
+function closeGenericModal() {
+  document.getElementById('generic-modal-backdrop').classList.remove('active');
+}
+
+// 22. ATALHOS DE TECLADO GLOBAIS
+window.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+    if (e.key === 'Escape') {
+      closeGenericModal();
+      closeSearchModal();
+    }
+    return;
+  }
+  if (e.key === '/') {
+    e.preventDefault();
+    openGlobalSearch();
+  } else if (e.key === 'n' || e.key === 'N') {
+    e.preventDefault();
+    openQuickCreateModal();
+  } else if (e.key === 'Escape') {
+    closeGenericModal();
+    closeSearchModal();
+  }
+});
+
+// 23. INICIALIZAÇÃO DA APLICAÇÃO
+window.addEventListener('DOMContentLoaded', () => {
+  loadState();
+  initTheme();
+  updateProjectSelector();
+  navigateTab(appState.activeTab || 'tab-dashboard');
+});
+</script>
+</body>
+</html>
