@@ -1960,10 +1960,12 @@
         return div;
       }
 
-      function renderizarTodosCardsKanban() {
+       function renderizarTodosCardsKanban() {
         const containerTodo = document.getElementById('kanban-container-todo');
         const containerInprog = document.getElementById('kanban-container-inprogress');
         const containerDone = document.getElementById('kanban-container-done');
+
+        if (!containerTodo || !containerInprog || !containerDone) return;
 
         containerTodo.innerHTML = '';
         containerInprog.innerHTML = '';
@@ -1973,7 +1975,11 @@
         const tagFiltro = document.getElementById('kanban-filter-tag')?.value || 'todas';
 
         kanbanCards.forEach(card => {
-          const matchBusca = card.title.toLowerCase().includes(busca) || (card.desc && card.desc.toLowerCase().includes(busca));
+          if (!card) return;
+          const cardTitle = (card.title || '').toLowerCase();
+          const cardDesc = (card.desc || '').toLowerCase();
+
+          const matchBusca = cardTitle.includes(busca) || cardDesc.includes(busca);
           const matchTag = tagFiltro === 'todas' || card.tag === tagFiltro;
 
           if (matchBusca && matchTag) {
@@ -2260,137 +2266,180 @@
       if (uxFilterFase) uxFilterFase.addEventListener('change', filtrarUxCards);
 
       // --- SERIALIZAÇÃO E CARREGAMENTO GERAL ---
-      function obterDadosFormulario() {
+       function obterDadosFormulario() {
         return {
-          colaborador: document.getElementById('colaborador-nome').value,
-          gestor: document.getElementById('gestor-nome').value,
-          data: document.getElementById('sessao-data').value,
-          temaPrincipal: document.getElementById('sentimento-tema-principal').value,
+          colaborador: document.getElementById('colaborador-nome')?.value || '',
+          gestor: document.getElementById('gestor-nome')?.value || '',
+          data: document.getElementById('sessao-data')?.value || '',
+          temaPrincipal: document.getElementById('sentimento-tema-principal')?.value || '',
           expectativas: {
-            expectativa: document.getElementById('exp-expectativa').value,
-            passado: document.getElementById('exp-passado').value,
-            tratamento: document.getElementById('exp-tratamento').value,
-            feedback: document.getElementById('exp-feedback').value,
-            apoio: document.getElementById('exp-apoio').value,
-            conflitos: document.getElementById('exp-conflitos').value
+            expectativa: document.getElementById('exp-expectativa')?.value || '',
+            passado: document.getElementById('exp-passado')?.value || '',
+            tratamento: document.getElementById('exp-tratamento')?.value || '',
+            feedback: document.getElementById('exp-feedback')?.value || '',
+            apoio: document.getElementById('exp-apoio')?.value || '',
+            conflitos: document.getElementById('exp-conflitos')?.value || ''
           },
           temasNovos: Array.from(document.querySelectorAll('.tema-input-novos')).map(i => i.value),
           temasAndamento: Array.from(document.querySelectorAll('.tema-input-andamento')).map(i => i.value),
           temasFinalizados: Array.from(document.querySelectorAll('.tema-input-finalizados')).map(i => i.value),
           entregas: Array.from(document.querySelectorAll('#tbody-entregas tr')).map(row => ({
-            projeto: row.querySelector('.ent-projeto').value,
-            papel: row.querySelector('.ent-papel').value,
-            entrega: row.querySelector('.ent-entrega').value,
-            impacto: row.querySelector('.ent-impacto').value,
-            link: row.querySelector('.ent-link').value
+            projeto: row.querySelector('.ent-projeto')?.value || '',
+            papel: row.querySelector('.ent-papel')?.value || '',
+            entrega: row.querySelector('.ent-entrega')?.value || '',
+            impacto: row.querySelector('.ent-impacto')?.value || 'Médio Impacto',
+            link: row.querySelector('.ent-link')?.value || ''
           })),
           pdis: Array.from(document.querySelectorAll('.card-pdi-item')).map(card => ({
-            meta: card.querySelector('.pdi-meta').value,
-            apoio: card.querySelector('.pdi-apoio').value,
-            progresso: card.querySelector('.pdi-range').value,
+            meta: card.querySelector('.pdi-meta')?.value || '',
+            apoio: card.querySelector('.pdi-apoio')?.value || '',
+            progresso: card.querySelector('.pdi-range')?.value || 0,
             submetas: Array.from(card.querySelectorAll('.submeta-item')).map(sub => ({
-              texto: sub.querySelector('.submeta-text').value,
-              concluida: sub.querySelector('.submeta-check').checked
+              texto: sub.querySelector('.submeta-text')?.value || '',
+              concluida: !!sub.querySelector('.submeta-check')?.checked
             }))
           })),
           feedbacksPdf: Array.from(document.querySelectorAll('.card-feedback-pdf-item')).map(card => ({
-            tipo: card.querySelector('.fb-tipo').value,
-            pessoa: card.querySelector('.fb-pessoa').value,
-            data: card.querySelector('.fb-data').value,
-            situacao: card.querySelector('.fb-situacao').value,
-            acao: card.querySelector('.fb-acao').value,
-            resultado: card.querySelector('.fb-resultado').value,
-            acaoAlt: card.querySelector('.fb-acao-alt').value,
-            resAlt: card.querySelector('.fb-res-alt').value
+            tipo: card.querySelector('.fb-tipo')?.value || 'Positivo',
+            pessoa: card.querySelector('.fb-pessoa')?.value || '',
+            data: card.querySelector('.fb-data')?.value || '',
+            situacao: card.querySelector('.fb-situacao')?.value || '',
+            acao: card.querySelector('.fb-acao')?.value || '',
+            resultado: card.querySelector('.fb-resultado')?.value || '',
+            acaoAlt: card.querySelector('.fb-acao-alt')?.value || '',
+            resAlt: card.querySelector('.fb-res-alt')?.value || ''
           })),
           sbis: Array.from(document.querySelectorAll('.card-sbi-item')).map(card => ({
-            situacao: card.querySelector('.sbi-situacao').value,
-            comportamento: card.querySelector('.sbi-comportamento').value,
-            resultado: card.querySelector('.sbi-resultado').value,
-            melhoria: card.querySelector('.sbi-melhoria').value,
-            resultadoEsperado: card.querySelector('.sbi-resultado-esperado').value
+            situacao: card.querySelector('.sbi-situacao')?.value || '',
+            comportamento: card.querySelector('.sbi-comportamento')?.value || '',
+            resultado: card.querySelector('.sbi-resultado')?.value || '',
+            melhoria: card.querySelector('.sbi-melhoria')?.value || '',
+            resultadoEsperado: card.querySelector('.sbi-resultado-esperado')?.value || ''
           })),
           acoesLiderado: Array.from(document.querySelectorAll('#tbody-acoes tr')).map(row => ({
-            tarefa: row.querySelector('.acao-tarefa').value,
-            prazo: row.querySelector('.acao-prazo').value,
-            status: row.querySelector('.acao-status').value
+            tarefa: row.querySelector('.acao-tarefa')?.value || '',
+            prazo: row.querySelector('.acao-prazo')?.value || '',
+            status: row.querySelector('.acao-status')?.value || 'Pendente'
           })),
-          kanbanCards: kanbanCards,
+          kanbanCards: Array.isArray(kanbanCards) ? kanbanCards : [],
           uxStages: Array.from(document.querySelectorAll('.card-ux-stage-item')).map(card => ({
-            projeto: card.querySelector('.ux-stage-projeto').value,
-            fase: card.querySelector('.ux-stage-fase').value,
-            metodo: card.querySelector('.ux-stage-metodo').value,
-            amostra: card.querySelector('.ux-stage-amostra').value,
-            metricas: card.querySelector('.ux-stage-metricas').value,
-            linkDocs: card.querySelector('.ux-stage-link').value,
-            severidade: card.querySelector('.ux-stage-severidade').value,
-            checklists: Array.from(card.querySelectorAll('.submeta-item')).map(item => ({
-              text: item.querySelector('.ux-check-text').value,
-              done: item.querySelector('.ux-check-done').checked
+            projeto: card.querySelector('.ux-stage-projeto')?.value || '',
+            fase: card.querySelector('.ux-stage-fase')?.value || 'planejamento',
+            metodo: card.querySelector('.ux-stage-metodo')?.value || '',
+            amostra: card.querySelector('.ux-stage-amostra')?.value || '',
+            metricas: card.querySelector('.ux-stage-metricas')?.value || '',
+            linkDocs: card.querySelector('.ux-stage-link')?.value || '',
+            severidade: card.querySelector('.ux-stage-severidade')?.value || 'Média',
+            checklists: Array.from(card.querySelectorAll('.ux-stage-checklist-box .submeta-item')).map(item => ({
+              text: item.querySelector('.ux-check-text')?.value || '',
+              done: !!item.querySelector('.ux-check-done')?.checked
             }))
           }))
         };
       }
 
       function preencherFormulario(data) {
-        if (!data) return;
+        if (!data || typeof data !== 'object') return;
 
-        if (data.colaborador) document.getElementById('colaborador-nome').value = data.colaborador;
-        if (data.gestor) document.getElementById('gestor-nome').value = data.gestor;
-        if (data.data) document.getElementById('sessao-data').value = data.data;
-        if (data.temaPrincipal) document.getElementById('sentimento-tema-principal').value = data.temaPrincipal;
-
-        if (data.expectativas) {
-          if (data.expectativas.expectativa) document.getElementById('exp-expectativa').value = data.expectativas.expectativa;
-          if (data.expectativas.passado) document.getElementById('exp-passado').value = data.expectativas.passado;
-          if (data.expectativas.tratamento) document.getElementById('exp-tratamento').value = data.expectativas.tratamento;
-          if (data.expectativas.feedback) document.getElementById('exp-feedback').value = data.expectativas.feedback;
-          if (data.expectativas.apoio) document.getElementById('exp-apoio').value = data.expectativas.apoio;
-          if (data.expectativas.conflitos) document.getElementById('exp-conflitos').value = data.expectativas.conflitos;
+        if (document.getElementById('colaborador-nome')) {
+          document.getElementById('colaborador-nome').value = data.colaborador || '';
+        }
+        if (document.getElementById('gestor-nome')) {
+          document.getElementById('gestor-nome').value = data.gestor || '';
+        }
+        if (document.getElementById('sessao-data')) {
+          document.getElementById('sessao-data').value = data.data || today;
+        }
+        if (document.getElementById('sentimento-tema-principal')) {
+          document.getElementById('sentimento-tema-principal').value = data.temaPrincipal || '';
         }
 
-        document.getElementById('container-temas-novos').innerHTML = '';
-        document.getElementById('container-temas-andamento').innerHTML = '';
-        document.getElementById('container-temas-finalizados').innerHTML = '';
-        tbodyEntregas.innerHTML = '';
-        containerPdi.innerHTML = '';
-        containerFeedbacksPdf.innerHTML = '';
-        containerSbi.innerHTML = '';
-        tbodyAcoes.innerHTML = '';
-        containerUxStages.innerHTML = '';
+        if (data.expectativas && typeof data.expectativas === 'object') {
+          if (document.getElementById('exp-expectativa')) document.getElementById('exp-expectativa').value = data.expectativas.expectativa || '';
+          if (document.getElementById('exp-passado')) document.getElementById('exp-passado').value = data.expectativas.passado || '';
+          if (document.getElementById('exp-tratamento')) document.getElementById('exp-tratamento').value = data.expectativas.tratamento || '';
+          if (document.getElementById('exp-feedback')) document.getElementById('exp-feedback').value = data.expectativas.feedback || '';
+          if (document.getElementById('exp-apoio')) document.getElementById('exp-apoio').value = data.expectativas.apoio || '';
+          if (document.getElementById('exp-conflitos')) document.getElementById('exp-conflitos').value = data.expectativas.conflitos || '';
+        }
 
-        if (data.temasNovos?.length) data.temasNovos.forEach(t => adicionarTema('novos', t));
-        if (data.temasAndamento?.length) data.temasAndamento.forEach(t => adicionarTema('andamento', t));
-        if (data.temasFinalizados?.length) data.temasFinalizados.forEach(t => adicionarTema('finalizados', t));
+        // Limpeza dos containers
+        const cNovos = document.getElementById('container-temas-novos');
+        const cAndam = document.getElementById('container-temas-andamento');
+        const cFin = document.getElementById('container-temas-finalizados');
+        if (cNovos) cNovos.innerHTML = '';
+        if (cAndam) cAndam.innerHTML = '';
+        if (cFin) cFin.innerHTML = '';
 
-        if (data.entregas?.length) data.entregas.forEach(e => criarLinhaEntrega(e));
-        else criarLinhaEntrega();
+        if (tbodyEntregas) tbodyEntregas.innerHTML = '';
+        if (containerPdi) containerPdi.innerHTML = '';
+        if (containerFeedbacksPdf) containerFeedbacksPdf.innerHTML = '';
+        if (containerSbi) containerSbi.innerHTML = '';
+        if (tbodyAcoes) tbodyAcoes.innerHTML = '';
+        if (containerUxStages) containerUxStages.innerHTML = '';
 
-        if (data.pdis?.length) data.pdis.forEach(p => criarCardPdi(p));
-        else criarCardPdi();
+        // Temas
+        if (Array.isArray(data.temasNovos) && data.temasNovos.length) {
+          data.temasNovos.forEach(t => adicionarTema('novos', t));
+        }
+        if (Array.isArray(data.temasAndamento) && data.temasAndamento.length) {
+          data.temasAndamento.forEach(t => adicionarTema('andamento', t));
+        }
+        if (Array.isArray(data.temasFinalizados) && data.temasFinalizados.length) {
+          data.temasFinalizados.forEach(t => adicionarTema('finalizados', t));
+        }
 
-        if (data.feedbacksPdf?.length) data.feedbacksPdf.forEach(f => criarCardFeedbackPdf(f));
-        if (data.sbis?.length) data.sbis.forEach(s => criarCardSbi(s));
-        else criarCardSbi();
+        // Entregas
+        if (Array.isArray(data.entregas) && data.entregas.length) {
+          data.entregas.forEach(e => criarLinhaEntrega(e));
+        } else {
+          criarLinhaEntrega();
+        }
 
-        if (data.acoesLiderado?.length) data.acoesLiderado.forEach(a => criarLinhaAcao(a));
-        else criarLinhaAcao();
+        // PDIs
+        if (Array.isArray(data.pdis) && data.pdis.length) {
+          data.pdis.forEach(p => criarCardPdi(p));
+        } else {
+          criarCardPdi();
+        }
 
-        if (data.kanbanCards?.length) {
+        // Feedbacks
+        if (Array.isArray(data.feedbacksPdf) && data.feedbacksPdf.length) {
+          data.feedbacksPdf.forEach(f => criarCardFeedbackPdf(f));
+        }
+
+        // SBIs
+        if (Array.isArray(data.sbis) && data.sbis.length) {
+          data.sbis.forEach(s => criarCardSbi(s));
+        } else {
+          criarCardSbi();
+        }
+
+        // Compromissos
+        if (Array.isArray(data.acoesLiderado) && data.acoesLiderado.length) {
+          data.acoesLiderado.forEach(a => criarLinhaAcao(a));
+        } else {
+          criarLinhaAcao();
+        }
+
+        // Kanban
+        if (Array.isArray(data.kanbanCards) && data.kanbanCards.length) {
           kanbanCards = data.kanbanCards;
           salvarKanbanNoStorage();
           renderizarTodosCardsKanban();
         }
 
-        if (data.uxStages?.length) {
+        // UX Research
+        if (Array.isArray(data.uxStages) && data.uxStages.length) {
           data.uxStages.forEach(stg => criarCardUxStage(stg));
         } else {
           getInitialUxStages().forEach(stg => criarCardUxStage(stg));
         }
 
-        atualizarHudStats();
+        if (typeof atualizarHudStats === 'function') {
+          atualizarHudStats();
+        }
       }
-
       function salvarTudo(notificar = true) {
         const formData = obterDadosFormulario();
         localStorage.setItem('zelda_1on1_final_data_v6_enhanced', JSON.stringify(formData));
@@ -2476,7 +2525,7 @@
       });
 
       // Exportar / Importar JSON
-      const btnExportJson = document.getElementById('btn-export-json');
+       const btnExportJson = document.getElementById('btn-export-json');
       const inputImportJson = document.getElementById('input-import-json');
 
       if (btnExportJson) {
@@ -2491,7 +2540,7 @@
           const blob = new Blob([JSON.stringify(dadosCompletos, null, 2)], { type: 'application/json' });
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
-          const dataSessao = document.getElementById('sessao-data').value || today;
+          const dataSessao = document.getElementById('sessao-data')?.value || today;
           a.href = url;
           a.download = `1on1_zelda_backup_${dataSessao}.json`;
           a.click();
@@ -2509,19 +2558,33 @@
           reader.onload = (event) => {
             try {
               const parsed = JSON.parse(event.target.result);
-              if (parsed.formulario) {
-                preencherFormulario(parsed.formulario);
-                if (parsed.historicoSentimentos) {
-                  localStorage.setItem('zelda_1on1_sentiment_history_v6', JSON.stringify(parsed.historicoSentimentos));
-                  renderHistoricoSentimentos();
-                }
-                salvarTudo(false);
-                showZeldaToast('📥 Dados importados com sucesso!');
-              } else {
-                alert('Arquivo JSON não possui formato compatível.');
+
+              // Aceita tanto o JSON envelopado quanto direto da raiz
+              const dadosFormulario = parsed.formulario || (parsed.colaborador !== undefined || parsed.entregas !== undefined ? parsed : null);
+
+              if (!dadosFormulario) {
+                throw new Error('Formato de arquivo JSON incompatível.');
               }
+
+              // 1. Preenche a interface
+              preencherFormulario(dadosFormulario);
+
+              // 2. Restaura histórico de sentimentos se existir no backup
+              const historico = parsed.historicoSentimentos || dadosFormulario.historicoSentimentos;
+              if (Array.isArray(historico)) {
+                localStorage.setItem('zelda_1on1_sentiment_history_v6', JSON.stringify(historico));
+                renderHistoricoSentimentos();
+              }
+
+              // 3. Salva os novos dados sem disparar alerta
+              salvarTudo(false);
+              showZeldaToast('📥 Dados importados com sucesso!');
             } catch (err) {
-              alert('Erro ao processar JSON: ' + err.message);
+              console.error('Falha ao importar backup:', err);
+              alert('Erro ao carregar o arquivo JSON: ' + err.message);
+            } finally {
+              // Limpa o valor para permitir carregar o mesmo arquivo novamente
+              e.target.value = '';
             }
           };
           reader.readAsText(file);
