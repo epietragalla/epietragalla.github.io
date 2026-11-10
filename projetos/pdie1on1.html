@@ -1,0 +1,2553 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema 1:1 Zelda ALttP - PDI, Kanban & UX Research HQ</title>
+  
+  <!-- Fontes do Google -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       1. VARIÁVEIS E PALETA ZELDA A LINK TO THE PAST (SNES)
+       ========================================================================== */
+    :root {
+      --bg-zelda-grass: #306820;
+      --zelda-dark-slate: #0b1c10;
+      --zelda-green-dark: #12381b;
+      --zelda-green-mid: #256b36;
+      --zelda-green-light: #52a44b;
+      --zelda-gold-dark: #916800;
+      --zelda-gold: #f8b800;
+      --zelda-gold-light: #fce479;
+      --zelda-red: #d82818;
+      --zelda-red-dark: #7a0d0d;
+      --zelda-blue: #1c5298;
+      --zelda-blue-dark: #0d2a50;
+      --zelda-purple: #5b1e6d;
+
+      --bg-parchment: #f5eedc;
+      --bg-parchment-card: #e9dec9;
+      --border-wood: #442a15;
+      --border-wood-shadow: #211308;
+      --text-dark: #1f1710;
+      --text-light: #fefefe;
+
+      --font-pixel: 'Press Start 2P', monospace;
+      --font-retro: 'VT323', monospace;
+      --font-body: 'Roboto', sans-serif;
+
+      --box-pixel-shadow: 4px 4px 0px rgba(0,0,0,0.35);
+      --box-pixel-border: 4px solid var(--border-wood);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-zelda-grass);
+      background-image: 
+        radial-gradient(#3c7e28 15%, transparent 16%),
+        radial-gradient(#275719 15%, transparent 16%);
+      background-size: 32px 32px;
+      background-position: 0 0, 16px 16px;
+      color: var(--text-dark);
+      font-family: var(--font-body);
+      line-height: 1.5;
+      padding: 1.2rem;
+      min-height: 100vh;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--zelda-gold);
+      outline-offset: 2px;
+    }
+
+    /* Container Pergaminho Master */
+    .quest-container {
+      max-width: 1240px;
+      margin: 0 auto;
+      background-color: var(--bg-parchment);
+      border: 8px solid var(--border-wood);
+      outline: 4px solid #754b23;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.65), inset 0 0 20px rgba(92, 59, 29, 0.25);
+      padding: 1.8rem;
+      border-radius: 4px;
+      position: relative;
+    }
+
+    /* HUD Retrô do Topo */
+    .snes-hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #000;
+      border: 3px solid var(--zelda-gold);
+      color: #fff;
+      padding: 0.6rem 1rem;
+      font-family: var(--font-pixel);
+      font-size: 0.68rem;
+      margin-bottom: 1.2rem;
+      box-shadow: var(--box-pixel-shadow);
+      flex-wrap: wrap;
+      gap: 0.8rem;
+    }
+
+    .hud-hearts {
+      color: var(--zelda-red);
+      font-size: 0.95rem;
+      letter-spacing: 2px;
+    }
+
+    .hud-stat {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .hud-rupee {
+      color: #55efc4;
+      font-weight: bold;
+    }
+
+    /* Cabeçalho */
+    header.header-1on1 {
+      background: linear-gradient(180deg, var(--zelda-green-dark) 0%, #0d2412 100%);
+      color: var(--zelda-gold);
+      border: 5px solid var(--zelda-gold);
+      padding: 1.5rem;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--box-pixel-shadow);
+      border-radius: 2px;
+    }
+
+    header.header-1on1 h1 {
+      font-family: var(--font-pixel);
+      font-size: 1.15rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 1.2rem;
+      text-shadow: 3px 3px #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+
+    .header-inputs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0,0,0,0.35);
+      padding: 0.8rem;
+      border: 2px dashed var(--zelda-gold-dark);
+      border-radius: 4px;
+    }
+
+    .header-inputs label {
+      font-family: var(--font-retro);
+      font-size: 1.35rem;
+      color: var(--text-light);
+      margin-right: 0.4rem;
+    }
+
+    .header-inputs input {
+      padding: 0.4rem 0.6rem;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      border: 2px solid var(--zelda-gold);
+      background: #fff;
+      color: var(--text-dark);
+      font-weight: 700;
+      border-radius: 2px;
+    }
+
+    /* Sistema de Navegação em Abas */
+    .tabs-nav {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 5px solid var(--border-wood);
+      padding-bottom: 0;
+      flex-wrap: wrap;
+    }
+
+    .tab-button {
+      background-color: #beaa92;
+      color: #2b190a;
+      font-family: var(--font-pixel);
+      font-size: 0.7rem;
+      padding: 0.85rem 1.4rem;
+      border: 3px solid var(--border-wood);
+      border-bottom: none;
+      cursor: pointer;
+      text-transform: uppercase;
+      border-radius: 6px 6px 0 0;
+      transition: all 0.15s ease;
+      box-shadow: inset 0 2px 0 rgba(255,255,255,0.4);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .tab-button:hover {
+      background-color: #d8c8b4;
+      transform: translateY(-2px);
+    }
+
+    .tab-button.active {
+      background-color: var(--bg-parchment);
+      color: var(--zelda-green-dark);
+      border-color: var(--border-wood);
+      border-top: 5px solid var(--zelda-gold);
+      margin-bottom: -5px;
+      padding-top: 0.95rem;
+      font-weight: bold;
+      box-shadow: 0 -3px 0 var(--border-wood);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: tabFadeIn 0.25s ease-out;
+    }
+
+    @keyframes tabFadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Zelda Box Containers */
+    .zelda-box {
+      background-color: var(--bg-parchment-card);
+      border: var(--box-pixel-border);
+      box-shadow: var(--box-pixel-shadow);
+      padding: 1.4rem;
+      margin-bottom: 2rem;
+      border-radius: 4px;
+      position: relative;
+    }
+
+    .zelda-box-title {
+      font-family: var(--font-pixel);
+      font-size: 0.82rem;
+      color: var(--zelda-green-dark);
+      border-bottom: 3px double var(--border-wood);
+      padding-bottom: 0.6rem;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .consultancy-badge {
+      font-family: var(--font-retro);
+      font-size: 1.15rem;
+      background-color: var(--zelda-gold);
+      color: var(--zelda-green-dark);
+      padding: 0.15rem 0.6rem;
+      border: 1px solid var(--border-wood);
+      margin-left: auto;
+      font-weight: bold;
+      border-radius: 3px;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+      color: var(--text-dark);
+      font-size: 0.9rem;
+    }
+
+    input[type="text"], input[type="date"], select, textarea, input[type="range"] {
+      width: 100%;
+      padding: 0.6rem;
+      border: 2px solid var(--border-wood);
+      background-color: #fff;
+      color: var(--text-dark);
+      font-family: var(--font-body);
+      font-size: 0.92rem;
+      border-radius: 2px;
+      margin-bottom: 0.8rem;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 75px;
+    }
+
+    /* Botões */
+    .btn-zelda {
+      background-color: var(--zelda-green-mid);
+      color: var(--zelda-gold-light);
+      font-family: var(--font-pixel);
+      font-size: 0.65rem;
+      padding: 0.65rem 1rem;
+      border: 3px solid var(--zelda-gold);
+      box-shadow: 3px 3px 0px #000;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.1s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      text-decoration: none;
+    }
+
+    .btn-zelda:hover, .btn-zelda:focus-visible {
+      background-color: var(--zelda-green-light);
+      color: #fff;
+      transform: translate(-1px, -1px);
+      box-shadow: 4px 4px 0px #000;
+    }
+
+    .btn-zelda:active {
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0px #000;
+    }
+
+    .btn-danger {
+      background-color: var(--zelda-red);
+      color: #fff;
+      border-color: #fff;
+    }
+
+    .btn-danger:hover {
+      background-color: var(--zelda-red-dark);
+    }
+
+    .btn-blue {
+      background-color: var(--zelda-blue);
+      color: #fff;
+      border-color: var(--zelda-gold);
+    }
+
+    .btn-blue:hover {
+      background-color: #123e75;
+    }
+
+    .btn-small {
+      padding: 0.35rem 0.6rem;
+      font-size: 0.58rem;
+      box-shadow: 2px 2px 0 #000;
+    }
+
+    /* Sentimentos */
+    .feelings-picker {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 0.8rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .feeling-option {
+      background: #fff;
+      border: 3px solid var(--border-wood);
+      padding: 0.8rem 0.4rem;
+      text-align: center;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: 0.15s;
+      position: relative;
+    }
+
+    .feeling-option:hover {
+      background-color: var(--zelda-gold-light);
+      transform: translateY(-2px);
+    }
+
+    .feeling-option input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .feeling-option.selected {
+      border-color: var(--zelda-green-mid);
+      background-color: #d1f2d9;
+      box-shadow: inset 0 0 0 2px var(--zelda-green-dark);
+      transform: scale(1.03);
+    }
+
+    .feeling-emoji {
+      font-size: 2rem;
+      display: block;
+      margin-bottom: 0.2rem;
+    }
+
+    .feeling-label {
+      font-family: var(--font-retro);
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .sentiment-history {
+      margin-top: 1.5rem;
+      border-top: 2px dashed var(--border-wood);
+      padding-top: 1rem;
+    }
+
+    .sentiment-history-title {
+      font-family: var(--font-pixel);
+      font-size: 0.72rem;
+      color: var(--zelda-green-dark);
+      margin-bottom: 0.8rem;
+    }
+
+    .sentiment-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      max-height: 280px;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+    }
+
+    .timeline-card {
+      background: #fff;
+      border: 2px solid var(--border-wood);
+      padding: 0.8rem;
+      border-left: 6px solid var(--zelda-green-mid);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+    }
+
+    /* Tabelas */
+    .table-wrapper {
+      overflow-x: auto;
+      margin-bottom: 1rem;
+      border: 2px solid var(--border-wood);
+      box-shadow: var(--box-pixel-shadow);
+    }
+
+    table.zelda-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      min-width: 650px;
+    }
+
+    table.zelda-table th {
+      background-color: var(--zelda-green-dark);
+      color: var(--zelda-gold);
+      font-family: var(--font-pixel);
+      font-size: 0.62rem;
+      padding: 0.75rem 0.5rem;
+      text-align: left;
+      border: 1px solid var(--border-wood);
+    }
+
+    table.zelda-table td {
+      border: 1px solid var(--border-wood);
+      padding: 0.4rem;
+      vertical-align: middle;
+    }
+
+    table.zelda-table input, table.zelda-table select {
+      margin-bottom: 0;
+      padding: 0.4rem;
+      font-size: 0.85rem;
+    }
+
+    /* Cards Dinâmicos */
+    .dynamic-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    .dynamic-card {
+      background: #fff;
+      border: 3px solid var(--border-wood);
+      padding: 1.2rem;
+      border-radius: 4px;
+      position: relative;
+      box-shadow: var(--box-pixel-shadow);
+    }
+
+    .dynamic-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.8rem;
+      border-bottom: 2px dashed var(--border-wood);
+      padding-bottom: 0.4rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .dynamic-card-title {
+      font-family: var(--font-pixel);
+      font-size: 0.7rem;
+      color: var(--zelda-purple);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    /* Barra de Progresso PDI */
+    .pdi-progress-container {
+      background: #ddd;
+      border: 2px solid var(--border-wood);
+      border-radius: 3px;
+      overflow: hidden;
+      height: 22px;
+      position: relative;
+      margin-top: 0.3rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .pdi-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #1b5e20, var(--zelda-green-mid), var(--zelda-gold));
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .pdi-progress-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: var(--font-pixel);
+      font-size: 0.58rem;
+      color: #000;
+      font-weight: bold;
+    }
+
+    .submeta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.4rem;
+      background: #fbfbfb;
+      padding: 0.35rem 0.6rem;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+    }
+
+    .submeta-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      margin-bottom: 0;
+      accent-color: var(--zelda-green-mid);
+    }
+
+    .submeta-item input[type="text"] {
+      margin-bottom: 0;
+      flex: 1;
+      padding: 0.3rem 0.5rem;
+      font-size: 0.85rem;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 1rem;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.8rem;
+    }
+
+    /* ==========================================================================
+       KANBAN ESTILO SNES TRELLO
+       ========================================================================== */
+    .kanban-toolbar {
+      display: flex;
+      gap: 0.8rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+      background: #e2d7c5;
+      padding: 0.8rem;
+      border: 2px solid var(--border-wood);
+    }
+
+    .kanban-toolbar input, .kanban-toolbar select {
+      margin-bottom: 0;
+      font-size: 0.85rem;
+      padding: 0.4rem;
+    }
+
+    .kanban-board {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 1.2rem;
+      align-items: start;
+    }
+
+    .kanban-column {
+      background-color: #dcd0be;
+      border: 3px solid var(--border-wood);
+      border-radius: 4px;
+      padding: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--box-pixel-shadow);
+      min-height: 490px;
+    }
+
+    .kanban-column-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.8rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 2px solid var(--border-wood);
+    }
+
+    .kanban-column-title {
+      font-family: var(--font-pixel);
+      font-size: 0.7rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .kanban-col-todo .kanban-column-title { color: var(--zelda-red-dark); }
+    .kanban-col-progress .kanban-column-title { color: var(--zelda-blue); }
+    .kanban-col-done .kanban-column-title { color: var(--zelda-green-dark); }
+
+    .kanban-badge-count {
+      font-family: var(--font-retro);
+      font-size: 1.3rem;
+      font-weight: bold;
+      background: #fff;
+      border: 2px solid var(--border-wood);
+      padding: 0 0.5rem;
+      border-radius: 3px;
+    }
+
+    .kanban-cards-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      flex-grow: 1;
+      min-height: 400px;
+      padding: 0.3rem 0;
+      transition: background-color 0.2s ease;
+    }
+
+    .kanban-cards-container.drag-over {
+      background-color: rgba(248, 208, 56, 0.3);
+      border: 2px dashed var(--zelda-gold-dark);
+      border-radius: 4px;
+    }
+
+    .kanban-card {
+      background: #ffffff;
+      border: 2px solid var(--border-wood);
+      border-radius: 4px;
+      padding: 0.8rem;
+      cursor: grab;
+      user-select: none;
+      box-shadow: 2px 2px 0px rgba(0,0,0,0.2);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      position: relative;
+    }
+
+    .kanban-card:hover {
+      box-shadow: 3px 3px 0px rgba(0,0,0,0.35);
+      transform: translateY(-2px);
+    }
+
+    .kanban-card:active {
+      cursor: grabbing;
+    }
+
+    .kanban-card.dragging {
+      opacity: 0.45;
+      transform: rotate(2deg) scale(0.98);
+      border: 2px dashed var(--zelda-gold-dark);
+    }
+
+    .kanban-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .kanban-tag {
+      font-size: 0.62rem;
+      font-weight: 800;
+      padding: 0.15rem 0.4rem;
+      border-radius: 3px;
+      text-transform: uppercase;
+      font-family: var(--font-body);
+      border: 1px solid rgba(0,0,0,0.2);
+    }
+
+    .tag-design { background-color: #ffcdd2; color: #b71c1c; }
+    .tag-dev { background-color: #c8e6c9; color: #1b5e20; }
+    .tag-research { background-color: #bbdefb; color: #0d47a1; }
+    .tag-ops { background-color: #e1bee7; color: #4a148c; }
+    .tag-urgente { background-color: #ffe082; color: #e65100; font-weight: 900; }
+
+    .kanban-card-title {
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 0.3rem;
+      color: #111;
+    }
+
+    .kanban-card-desc {
+      font-size: 0.82rem;
+      color: #555;
+      margin-bottom: 0.6rem;
+      white-space: pre-wrap;
+    }
+
+    .kanban-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #e0e0e0;
+      padding-top: 0.4rem;
+      font-size: 0.72rem;
+      color: #666;
+    }
+
+    .kanban-card-actions {
+      display: flex;
+      gap: 0.3rem;
+    }
+
+    .kanban-card-actions button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 0.85rem;
+      padding: 0 0.2rem;
+      transition: transform 0.1s;
+    }
+
+    .kanban-card-actions button:hover {
+      transform: scale(1.25);
+    }
+
+    /* Modal do Kanban */
+    .kanban-modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      padding: 1rem;
+    }
+
+    .kanban-modal-overlay.hidden {
+      display: none;
+    }
+
+    .kanban-modal {
+      background: var(--bg-parchment);
+      border: 6px solid var(--border-wood);
+      border-radius: 4px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.85);
+      max-width: 600px;
+      width: 100%;
+      max-height: 92vh;
+      overflow-y: auto;
+      padding: 1.5rem;
+    }
+
+    /* Accordions & Guias */
+    details.zelda-accordion {
+      background: #fff;
+      border: 2px solid var(--border-wood);
+      padding: 0.8rem;
+      margin-bottom: 0.6rem;
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+    }
+
+    details.zelda-accordion summary {
+      font-family: var(--font-pixel);
+      font-size: 0.65rem;
+      color: var(--zelda-blue);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    details.zelda-accordion ul {
+      margin-top: 0.8rem;
+      padding-left: 1.2rem;
+    }
+
+    .actions-footer {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      justify-content: space-between;
+      margin-top: 2rem;
+      padding-top: 1.2rem;
+      border-top: 4px double var(--border-wood);
+    }
+
+    /* Notificações Toasts Retrô */
+    #zelda-toast {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: #000;
+      color: var(--zelda-gold);
+      border: 3px solid var(--zelda-gold);
+      padding: 0.8rem 1.4rem;
+      font-family: var(--font-pixel);
+      font-size: 0.7rem;
+      box-shadow: 5px 5px 0 #222;
+      z-index: 10000;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+
+    #zelda-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media print {
+      body { background: #fff; padding: 0; }
+      .snes-hud, .tabs-nav, .btn-zelda, .actions-footer, details.zelda-accordion, .kanban-toolbar, .kanban-card-actions {
+        display: none !important;
+      }
+      .quest-container { border: none; box-shadow: none; padding: 0; }
+      .tab-content { display: block !important; margin-bottom: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOAST RETRÔ -->
+  <div id="zelda-toast" role="status" aria-live="polite">🛡️ Jogo Salvo com Sucesso!</div>
+
+  <main class="quest-container" role="main">
+    
+    <!-- SNES HUD ZELDA ALTTP -->
+    <div class="snes-hud" aria-label="Status do Herói">
+      <div class="hud-stat">
+        <span>HERÓI:</span>
+        <span id="hud-hero-name" style="color:var(--zelda-gold-light);">ESTÉFANO</span>
+      </div>
+      <div class="hud-stat">
+        <span>RUPEES:</span>
+        <span class="hud-rupee" id="hud-rupees-val">💎 999</span>
+      </div>
+      <div class="hud-stat">
+        <span>QUESTS CONCLUÍDAS:</span>
+        <span id="hud-quests-val" style="color:#55efc4;">0/0</span>
+      </div>
+      <div class="hud-stat">
+        <span>VIDA:</span>
+        <span class="hud-hearts" aria-label="Três corações">❤️❤️❤️</span>
+      </div>
+    </div>
+
+    <!-- CABEÇALHO -->
+    <header class="header-1on1" role="banner">
+      <h1>🗡️ QUEST DE DESENVOLVIMENTO & UX RESEARCH HQ 🛡️</h1>
+      <div class="header-inputs">
+        <div>
+          <label for="colaborador-nome">HERÓI / LIDERADO:</label>
+          <input type="text" id="colaborador-nome" value="Estéfano" aria-required="true">
+        </div>
+        <div>
+          <label for="gestor-nome">MESTRE / LÍDER:</label>
+          <input type="text" id="gestor-nome" value="Polli" aria-required="true">
+        </div>
+        <div>
+          <label for="sessao-data">DATA DA QUEST:</label>
+          <input type="date" id="sessao-data" aria-required="true">
+        </div>
+      </div>
+    </header>
+
+    <!-- NAVEGAÇÃO DE ABAS RETRÔ -->
+    <nav class="tabs-nav" aria-label="Navegação das Quests">
+      <button type="button" class="tab-button active" data-tab="tab-pdi">
+        🗡️ PDI & FEEDBACK 1:1
+      </button>
+      <button type="button" class="tab-button" data-tab="tab-kanban">
+        📋 QUADRO KANBAN
+      </button>
+      <button type="button" class="tab-button" data-tab="tab-uxresearch">
+        🔍 ETAPAS DE UX RESEARCH
+      </button>
+    </nav>
+
+    <!-- ========================================================================
+         ABA 1: PDI, FEEDBACK E GESTÃO 1:1
+         ======================================================================== -->
+    <div id="tab-pdi" class="tab-content active">
+
+      <!-- MÓDULO 1: HUMOR & SENTIMENTOS -->
+      <section class="zelda-box" aria-labelledby="sec-sentimentos">
+        <h2 id="sec-sentimentos" class="zelda-box-title">
+          <span>❤️</span> 1. COMO VOCÊ ESTÁ SE SENTINDO ESTA SEMANA?
+          <span class="consultancy-badge">Gallup Pulse & 1:1 Doc</span>
+        </h2>
+
+        <fieldset style="border: none;">
+          <legend class="sr-only">Selecione seu sentimento para a sessão</legend>
+          <div class="feelings-picker" id="feelings-options">
+            <label class="feeling-option">
+              <input type="radio" name="sentimento" value="Empolgado" data-emoji="🤩">
+              <span class="feeling-emoji" aria-hidden="true">🤩</span>
+              <span class="feeling-label">Empolgado</span>
+            </label>
+            <label class="feeling-option">
+              <input type="radio" name="sentimento" value="Feliz" data-emoji="😊">
+              <span class="feeling-emoji" aria-hidden="true">😊</span>
+              <span class="feeling-label">Feliz</span>
+            </label>
+            <label class="feeling-option">
+              <input type="radio" name="sentimento" value="Neutro" data-emoji="😐">
+              <span class="feeling-emoji" aria-hidden="true">😐</span>
+              <span class="feeling-label">Neutro</span>
+            </label>
+            <label class="feeling-option">
+              <input type="radio" name="sentimento" value="Triste" data-emoji="😥">
+              <span class="feeling-emoji" aria-hidden="true">😥</span>
+              <span class="feeling-label">Triste</span>
+            </label>
+            <label class="feeling-option">
+              <input type="radio" name="sentimento" value="Nervoso/Frustrado" data-emoji="😤">
+              <span class="feeling-emoji" aria-hidden="true">😤</span>
+              <span class="feeling-label">Nervoso</span>
+            </label>
+            <label class="feeling-option">
+              <input type="radio" name="sentimento" value="Outro" data-emoji="🌀">
+              <span class="feeling-emoji" aria-hidden="true">🌀</span>
+              <span class="feeling-label">Outro</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <label for="sentimento-tema-principal">🎯 Tema Mais Importante da Conversa de Hoje:</label>
+        <input type="text" id="sentimento-tema-principal" placeholder="Ex: Futuro profissional, Retomar testes de UX, Alinhamento de escopo...">
+
+        <label for="sentimento-motivo">Contexto & Fatores do Sentimento:</label>
+        <textarea id="sentimento-motivo" placeholder="Descreva brevemente sua semana, desafios, sucessos ou cansaço..."></textarea>
+
+        <button type="button" class="btn-zelda" id="btn-salvar-sentimento">
+          💾 Registrar Sentimento no Histórico
+        </button>
+
+        <div class="sentiment-history">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem; flex-wrap:wrap; gap:0.5rem;">
+            <h3 class="sentiment-history-title">📜 HISTÓRICO DE HUMOR & PRIORIDADES:</h3>
+            <div style="display:flex; gap:0.4rem; align-items:center;">
+              <label for="filtro-humor" style="margin-bottom:0; font-size:0.8rem;">Filtrar:</label>
+              <select id="filtro-humor" style="width:auto; margin-bottom:0; padding:0.2rem 0.5rem; font-size:0.8rem;">
+                <option value="todos">Todos</option>
+                <option value="Empolgado">🤩 Empolgado</option>
+                <option value="Feliz">😊 Feliz</option>
+                <option value="Neutro">😐 Neutro</option>
+                <option value="Triste">😥 Triste</option>
+                <option value="Nervoso/Frustrado">😤 Nervoso/Frustrado</option>
+              </select>
+            </div>
+          </div>
+          <div class="sentiment-timeline" id="sentiment-timeline-container"></div>
+        </div>
+      </section>
+
+      <!-- MÓDULO 2: GESTÃO DE TEMAS -->
+      <section class="zelda-box" aria-labelledby="sec-temas-pdf">
+        <h2 id="sec-temas-pdf" class="zelda-box-title">
+          <span>📜</span> 2. PAUTA DE TEMAS (NOVOS, EM ANDAMENTO & FINALIZADOS)
+          <span class="consultancy-badge">Doc 1:1 Matriz</span>
+        </h2>
+        <p style="font-size: 0.9rem; margin-bottom: 1rem;">Organize a pauta para garantir que nenhum assunto estratégico seja esquecido.</p>
+
+        <div class="grid-2">
+          <div class="dynamic-card">
+            <div class="dynamic-card-header">
+              <span class="dynamic-card-title">✨ TEMAS NOVOS (Hoje)</span>
+              <button type="button" class="btn-zelda btn-small" onclick="adicionarTema('novos')">➕ Adicionar</button>
+            </div>
+            <div id="container-temas-novos" class="dynamic-list"></div>
+          </div>
+
+          <div class="dynamic-card">
+            <div class="dynamic-card-header">
+              <span class="dynamic-card-title">⏳ TEMAS EM ANDAMENTO</span>
+              <button type="button" class="btn-zelda btn-small" onclick="adicionarTema('andamento')">➕ Adicionar</button>
+            </div>
+            <div id="container-temas-andamento" class="dynamic-list"></div>
+          </div>
+        </div>
+
+        <div class="dynamic-card" style="margin-top: 1rem;">
+          <div class="dynamic-card-header">
+            <span class="dynamic-card-title">🏁 TEMAS / PROJETOS FINALIZADOS</span>
+            <button type="button" class="btn-zelda btn-small" onclick="adicionarTema('finalizados')">➕ Adicionar</button>
+          </div>
+          <div id="container-temas-finalizados" class="dynamic-list"></div>
+        </div>
+      </section>
+
+      <!-- MÓDULO 3: ENTREGAS, MEU PAPEL E IMPACTO -->
+      <section class="zelda-box" aria-labelledby="sec-entregas">
+        <h2 id="sec-entregas" class="zelda-box-title">
+          <span>💎</span> 3. ENTREGAS, MEU PAPEL E IMPACTO DO TRABALHO
+          <span class="consultancy-badge">Value Proposition</span>
+        </h2>
+        <p style="font-size: 0.88rem; margin-bottom: 1rem;">Demonstre as entregas práticas e o valor gerado para as squads e clientes.</p>
+
+        <div class="table-wrapper">
+          <table class="zelda-table" id="table-entregas">
+            <thead>
+              <tr>
+                <th scope="col">PROJETO / SQUAD</th>
+                <th scope="col">MEU PAPEL</th>
+                <th scope="col">ENTREGA PRINCIPAL</th>
+                <th scope="col">IMPACTO GERADO</th>
+                <th scope="col">EVIDÊNCIA / LINK</th>
+                <th scope="col" style="text-align: center; width: 60px;">AÇÃO</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-entregas"></tbody>
+          </table>
+        </div>
+
+        <button type="button" class="btn-zelda" id="btn-add-entrega">
+          ➕ Inserir Nova Entrega
+        </button>
+      </section>
+
+      <!-- MÓDULO 4: PLANO DE DESENVOLVIMENTO INDIVIDUAL (PDI) -->
+      <section class="zelda-box" aria-labelledby="sec-pdi">
+        <h2 id="sec-pdi" class="zelda-box-title">
+          <span>🗡️</span> 4. PLANO DE DESENVOLVIMENTO INDIVIDUAL (PDI COM SUB-METAS)
+          <span class="consultancy-badge">McKinsey / 70-20-10</span>
+        </h2>
+        <p style="font-size: 0.88rem; margin-bottom: 1rem;">
+          Marque os checkboxes das submetas para calcular o progresso da meta automaticamente ou ajuste pelo slider:
+        </p>
+
+        <div id="container-pdi" class="dynamic-list"></div>
+
+        <button type="button" class="btn-zelda" id="btn-add-pdi">
+          ➕ Adicionar Novo PDI
+        </button>
+      </section>
+
+      <!-- MÓDULO 5: COMBINADOS DE LIDERANÇA & EXPECTATIVAS -->
+      <section class="zelda-box" aria-labelledby="sec-combinados">
+        <h2 id="sec-combinados" class="zelda-box-title">
+          <span>🤝</span> 5. COMBINADOS & EXPECTATIVAS MÚTUAS
+          <span class="consultancy-badge">Pacto de Confiança</span>
+        </h2>
+
+        <details class="zelda-accordion" open>
+          <summary>🛡️ Princípios do(a) Líder (Combinados da Gestão)</summary>
+          <ul style="line-height: 1.8; font-size: 0.88rem;">
+            <li>1. <strong>Protagonismo:</strong> Você é dono da sua carreira. Traga suas próprias pautas para a conversa.</li>
+            <li>2. <strong>Transparência & Curiosidade:</strong> Seja transparente, dedicado e disposto a aprender com erros.</li>
+            <li>3. <strong>Padrões de Qualidade:</strong> Não entregue nada na dúvida (ex: componentes fora dos padrões do Design System).</li>
+            <li>4. <strong>Comunicação Ativa:</strong> Não espere tempo demais para pedir ajuda.</li>
+            <li>5. <strong>Líder Executor & Facilitador:</strong> Disponível para destravar impedimentos operacionais e políticos.</li>
+            <li>6. <strong>Feedback Bidirecional:</strong> Sua visão crítica sobre minha liderança é essencial para meu crescimento.</li>
+            <li>7. <strong>Presença Ativa:</strong> Câmera ligada nas reuniões remotas para maior conexão humana.</li>
+          </ul>
+        </details>
+
+        <div class="dynamic-card" style="margin-top: 1rem;">
+          <h3 class="dynamic-card-title" style="margin-bottom: 0.8rem; color: var(--zelda-green-dark);">
+            🎯 Para o liderado é essencial que: (Expectativas Editáveis)
+          </h3>
+          <div class="grid-2">
+            <div>
+              <label for="exp-expectativa">Expectativa central com o Líder:</label>
+              <input type="text" id="exp-expectativa" value="Que me ajude e oriente nas dificuldades e direções estratégicas.">
+
+              <label for="exp-passado">O que não pode se repetir do passado?</label>
+              <input type="text" id="exp-passado" value="Falta de clareza no feedback e desalinhamento de expectativas.">
+
+              <label for="exp-tratamento">Como você espera ser tratado?</label>
+              <input type="text" id="exp-tratamento" value="Com respeito, empatia e abertura para escuta ativa.">
+            </div>
+            <div>
+              <label for="exp-feedback">Formato ideal para receber Feedback:</label>
+              <input type="text" id="exp-feedback" value="Direto e pontual nas sessões de 1:1, com base em exemplos claros.">
+
+              <label for="exp-apoio">Do que você precisa para se sentir apoiado(a)?</label>
+              <input type="text" id="exp-apoio" value="Saber que a liderança está acessível e me defende tecnicamente nas decisões.">
+
+              <label for="exp-conflitos">Resolução de eventuais conflitos:</label>
+              <input type="text" id="exp-conflitos" value="Conversa aberta e franca logo após o ocorrido, sem postergar.">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MÓDULO 6: FEEDBACKS DO PDF (MODELO STAR / SBI) -->
+      <!-- <section class="zelda-box" aria-labelledby="sec-feedbacks-pdf">
+        <h2 id="sec-feedbacks-pdf" class="zelda-box-title">
+          <span>⭐</span> 6. REGISTRO DE FEEDBACKS (POSITIVOS & DESENVOLVIMENTO)
+          <span class="consultancy-badge">STAR / SBI Method</span>
+        </h2>
+        <p style="font-size: 0.88rem; margin-bottom: 1rem;">
+          Mantenha a memória de elogios técnicos e pontos onde houve orientação corretiva.
+        </p>
+
+        <div id="container-feedbacks-pdf" class="dynamic-list"></div>
+
+        <button type="button" class="btn-zelda" id="btn-add-feedback-pdf">
+          ➕ Adicionar Registro de Feedback
+        </button>
+      </section> -->
+
+      <!-- MÓDULO 7: ANÁLISE DE MELHORIAS (SBI) -->
+      <section class="zelda-box" aria-labelledby="sec-melhorias">
+        <h2 id="sec-melhorias" class="zelda-box-title">
+          <span>🔥</span> 7. SITUAÇÕES OBSERVADAS & PLANOS DE MELHORIA
+          <span class="consultancy-badge">Continuous Improvement</span>
+        </h2>
+        <p style="font-size: 0.88rem; margin-bottom: 1rem;">
+          Estruture situações em que os resultados ficaram abaixo da expectativa e trace contramedidas.
+        </p>
+
+        <div id="container-sbi" class="dynamic-list"></div>
+
+        <button type="button" class="btn-zelda" id="btn-add-sbi">
+          ➕ Nova Análise de Melhoria
+        </button>
+      </section>
+
+      <!-- MÓDULO 8: COMPROMISSOS DO LIDERADO -->
+      <section class="zelda-box" aria-labelledby="sec-compromissos">
+        <h2 id="sec-compromissos" class="zelda-box-title">
+          <span>🛡️</span> 8. PLANO DE AÇÃO DO LIDERADO (ATÉ A PRÓXIMA SESSÃO)
+          <span class="consultancy-badge">Action Oriented</span>
+        </h2>
+
+        <div class="table-wrapper">
+          <table class="zelda-table" id="table-acoes">
+            <thead>
+              <tr>
+                <th scope="col" style="width: 45%;">AÇÃO / COMPROMISSO DO LIDERADO</th>
+                <th scope="col" style="width: 25%;">PRAZO LIMITE</th>
+                <th scope="col" style="width: 20%;">STATUS ATUAL</th>
+                <th scope="col" style="text-align: center; width: 10%;">AÇÃO</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-acoes"></tbody>
+          </table>
+        </div>
+
+        <button type="button" class="btn-zelda" id="btn-add-acao">
+          ➕ Inserir Novo Compromisso
+        </button>
+      </section>
+
+    </div>
+
+    <!-- ========================================================================
+         ABA 2: QUADRO KANBAN RETRO TRELLO
+         ======================================================================== -->
+    <div id="tab-kanban" class="tab-content">
+      <section class="zelda-box" aria-labelledby="sec-kanban-full">
+        <div class="dynamic-card-header" style="border-bottom: 3px double var(--border-wood); padding-bottom: 0.6rem; margin-bottom: 1rem;">
+          <h2 id="sec-kanban-full" class="zelda-box-title" style="border-bottom: none; padding-bottom: 0; margin-bottom: 0;">
+            <span>📋</span> QUADRO KANBAN DA JORNADA
+          </h2>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <span class="consultancy-badge">Agile Sprint</span>
+            <button type="button" class="btn-zelda btn-small" id="btn-abrir-novo-card-kanban">
+              ➕ Novo Card
+            </button>
+          </div>
+        </div>
+
+        <!-- Toolbar de Filtro do Kanban -->
+        <div class="kanban-toolbar">
+          <div style="flex:1; min-width: 200px;">
+            <input type="text" id="kanban-search" placeholder="🔍 Buscar tarefa por texto...">
+          </div>
+          <div>
+            <select id="kanban-filter-tag">
+              <option value="todas">🏷️ Todas as Etiquetas</option>
+              <option value="tag-research">Pesquisa UX</option>
+              <option value="tag-ops">DesignOps</option>
+              <option value="tag-design">Discovery</option>
+              <option value="tag-dev">Teste de Usabilidade</option>
+              <option value="tag-urgente">🔥 Urgente</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="kanban-board">
+          <!-- Coluna: A Fazer -->
+          <div class="kanban-column kanban-col-todo" data-status="todo">
+            <div class="kanban-column-header">
+              <span class="kanban-column-title">⏳ A FAZER</span>
+              <span class="kanban-badge-count" id="count-kanban-todo">0</span>
+            </div>
+            <div class="kanban-cards-container" id="kanban-container-todo" data-status="todo"></div>
+          </div>
+
+          <!-- Coluna: Fazendo -->
+          <div class="kanban-column kanban-col-progress" data-status="inprogress">
+            <div class="kanban-column-header">
+              <span class="kanban-column-title">⚔️ FAZENDO</span>
+              <span class="kanban-badge-count" id="count-kanban-inprogress">0</span>
+            </div>
+            <div class="kanban-cards-container" id="kanban-container-inprogress" data-status="inprogress"></div>
+          </div>
+
+          <!-- Coluna: Feito -->
+          <div class="kanban-column kanban-col-done" data-status="done">
+            <div class="kanban-column-header">
+              <span class="kanban-column-title">✅ FEITO</span>
+              <span class="kanban-badge-count" id="count-kanban-done">0</span>
+            </div>
+            <div class="kanban-cards-container" id="kanban-container-done" data-status="done"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ========================================================================
+         ABA 3: ETAPAS DE UX RESEARCH & DISCOVERY HUB
+         ======================================================================== -->
+    <div id="tab-uxresearch" class="tab-content">
+      <section class="zelda-box" aria-labelledby="sec-uxresearch-header">
+        <div class="dynamic-card-header" style="border-bottom: 3px double var(--border-wood); padding-bottom: 0.6rem; margin-bottom: 1rem;">
+          <h2 id="sec-uxresearch-header" class="zelda-box-title" style="border-bottom: none; padding-bottom: 0; margin-bottom: 0;">
+            <span>🔍</span> ETAPAS DO PROCESSO DE UX RESEARCH & DISCOVERY
+          </h2>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <span class="consultancy-badge">DesignOps Hub</span>
+            <button type="button" class="btn-zelda btn-small" id="btn-add-ux-stage">
+              ➕ Nova Pesquisa UX
+            </button>
+          </div>
+        </div>
+        
+        <!-- Filtro Rápido de Pesquisas -->
+        <div class="kanban-toolbar">
+          <div style="flex:1; min-width: 220px;">
+            <input type="text" id="ux-search-input" placeholder="🔍 Filtrar projetos de pesquisa...">
+          </div>
+          <div>
+            <select id="ux-filter-fase">
+              <option value="todas">Todas as Fases</option>
+              <option value="planejamento">1. Planejamento</option>
+              <option value="recrutamento">2. Recrutamento</option>
+              <option value="conducao">3. Condução</option>
+              <option value="analise">4. Síntese</option>
+              <option value="concluido">5. Concluído</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Container de Cards de Pesquisa UX -->
+        <div id="container-ux-stages" class="dynamic-list"></div>
+      </section>
+    </div>
+
+    <!-- GUIA DE PERGUNTAS E FACILITAÇÃO 1:1 -->
+    <!-- <section class="zelda-box" aria-labelledby="sec-dicas">
+      <h2 id="sec-dicas" class="zelda-box-title">
+        <span>💡</span> GUIA DE PERGUNTAS PODEROSAS PARA O 1:1
+      </h2>
+
+      <details class="zelda-accordion">
+        <summary>Alinhamento de Carreira & Crescimento</summary>
+        <ul>
+          <li>Quais atividades da sua rotina recente mais geraram energia para você?</li>
+          <li>Como você enxerga o impacto do seu papel nas entregas da empresa hoje?</li>
+          <li>O que precisamos ajustar no seu plano de desenvolvimento para alcançar o próximo nível?</li>
+        </ul>
+      </details>
+
+      <details class="zelda-accordion">
+        <summary>Desbloqueios & Autonomia Operacional</summary>
+        <ul>
+          <li>Existe algum processo, decisão ou pessoa que está atrasando suas entregas?</li>
+          <li>Em qual projeto ou decisão você sente que precisa de mais suporte da liderança?</li>
+          <li>O que eu, como líder, posso fazer mais (ou parar de fazer) para te ajudar?</li>
+        </ul>
+      </details>
+    </section> -->
+
+    <!-- RODAPÉ COM EXPORTAÇÃO/IMPORTAÇÃO E ATALHOS -->
+    <footer class="actions-footer" role="contentinfo">
+      <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+        <button type="button" class="btn-zelda btn-danger" id="btn-limpar">
+          🗑️ Resetar Tudo
+        </button>
+        <button type="button" class="btn-zelda btn-blue" id="btn-export-json">
+          📦 Exportar Backup JSON
+        </button>
+        <label class="btn-zelda btn-blue" style="margin-bottom:0; cursor:pointer;">
+          📥 Importar Backup JSON
+          <input type="file" id="input-import-json" accept=".json" class="sr-only">
+        </label>
+      </div>
+
+      <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+        <button type="button" class="btn-zelda" id="btn-salvar-tudo">
+          💾 Salvar Sessão (Ctrl+S)
+        </button>
+        <button type="button" class="btn-zelda" id="btn-imprimir">
+          🖨️ Gerar PDF / Imprimir
+        </button>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- MODAL DO KANBAN -->
+  <div id="modal-kanban" class="kanban-modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-kanban-titulo">
+    <div class="kanban-modal">
+      <div class="dynamic-card-header">
+        <h3 id="modal-kanban-titulo" class="kanban-modal-title">🗡️ EDITAR CARD KANBAN</h3>
+        <button type="button" id="btn-fechar-modal-kanban" style="background:none; border:none; font-size:1.2rem; cursor:pointer; font-weight:bold;">✕</button>
+      </div>
+
+      <input type="hidden" id="modal-card-id">
+
+      <label for="modal-card-title">Título da Tarefa:</label>
+      <input type="text" id="modal-card-title" placeholder="Ex: Mapear testes de usabilidade do SGPJ...">
+
+      <label for="modal-card-desc">Descrição / Escopo da Tarefa:</label>
+      <textarea id="modal-card-desc" rows="3" placeholder="Insira o escopo, notas ou links de apoio..."></textarea>
+
+      <div class="grid-2">
+        <div>
+          <label for="modal-card-col">Status / Coluna:</label>
+          <select id="modal-card-col">
+            <option value="todo">⏳ A Fazer</option>
+            <option value="inprogress">⚔️ Fazendo</option>
+            <option value="done">✅ Feito</option>
+          </select>
+        </div>
+        <div>
+          <label for="modal-card-due">Data Limite / Prazo:</label>
+          <input type="date" id="modal-card-due">
+        </div>
+      </div>
+
+      <label for="modal-card-tag">Etiqueta Principal (Tag):</label>
+      <select id="modal-card-tag">
+        <option value="tag-research">Pesquisa UX (Azul)</option>
+        <option value="tag-ops">DesignOps (Roxo)</option>
+        <option value="tag-design">Discovery (Vermelho Claro)</option>
+        <option value="tag-dev">Teste de Usabilidade (Verde)</option>
+        <option value="tag-urgente">🔥 Urgente / Prioritário (Amarelo)</option>
+      </select>
+
+      <div style="margin-top: 1rem; border-top: 1px dashed var(--border-wood); padding-top: 0.8rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.5rem;">
+          <label style="margin-bottom:0;">Sub-tarefas (Checklist):</label>
+          <button type="button" class="btn-zelda btn-small" id="btn-add-modal-check">➕ Item</button>
+        </div>
+        <div id="modal-checklist-container" style="display:flex; flex-direction:column; gap:0.4rem;"></div>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:0.8rem; margin-top:1.5rem; border-top: 2px solid var(--border-wood); padding-top:1rem;">
+        <button type="button" class="btn-zelda btn-danger btn-small" id="btn-cancelar-modal-kanban">Cancelar</button>
+        <button type="button" class="btn-zelda btn-small" id="btn-salvar-modal-kanban">💾 Salvar Tarefa</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const today = new Date().toISOString().split('T')[0];
+      const dataInput = document.getElementById('sessao-data');
+      if (dataInput && !dataInput.value) dataInput.value = today;
+
+      // Toast Retrô
+      function showZeldaToast(message) {
+        const toast = document.getElementById('zelda-toast');
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2600);
+      }
+
+      // HUD Sync
+      function atualizarHudStats() {
+        const heroNameInput = document.getElementById('colaborador-nome');
+        if (heroNameInput) {
+          document.getElementById('hud-hero-name').textContent = heroNameInput.value.toUpperCase() || 'HERÓI';
+        }
+
+        const totalCards = kanbanCards.length;
+        const doneCards = kanbanCards.filter(c => c.status === 'done').length;
+        document.getElementById('hud-quests-val').textContent = `${doneCards}/${totalCards}`;
+      }
+
+      document.getElementById('colaborador-nome').addEventListener('input', atualizarHudStats);
+
+      // Controle de Navegação de Abas
+      const tabButtons = document.querySelectorAll('.tab-button');
+      const tabContents = document.querySelectorAll('.tab-content');
+
+      tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          tabButtons.forEach(b => b.classList.remove('active'));
+          tabContents.forEach(c => c.classList.remove('active'));
+
+          btn.classList.add('active');
+          const targetTabId = btn.getAttribute('data-tab');
+          const targetContent = document.getElementById(targetTabId);
+          if (targetContent) targetContent.classList.add('active');
+        });
+      });
+
+      // --- MÓDULO 1: SENTIMENTOS & HISTÓRICO ---
+      const feelingOptions = document.querySelectorAll('.feeling-option');
+      feelingOptions.forEach(option => {
+        option.addEventListener('click', () => {
+          feelingOptions.forEach(opt => opt.classList.remove('selected'));
+          option.classList.add('selected');
+          const radio = option.querySelector('input[type="radio"]');
+          if (radio) radio.checked = true;
+        });
+      });
+
+      const btnSalvarSentimento = document.getElementById('btn-salvar-sentimento');
+      const sentimentTimelineContainer = document.getElementById('sentiment-timeline-container');
+      const filtroHumor = document.getElementById('filtro-humor');
+
+      function getHistoricoSentimentos() {
+        const saved = localStorage.getItem('zelda_1on1_sentiment_history_v6');
+        if (saved) return JSON.parse(saved);
+
+        return [
+          {
+            sentimento: "Nervoso/Frustrado",
+            emoji: "😤",
+            tema: "Futuro profissional & prazos",
+            motivo: "Alinhamento das expectativas futuras de carreira e ritmo acelerado de entregas.",
+            data: "08/10/2026"
+          },
+          {
+            sentimento: "Feliz",
+            emoji: "😊",
+            tema: "Retomada da pesquisa em UX",
+            motivo: "Evolução nas pesquisas de usabilidade do Super gerenciador PJ.",
+            data: "24/04/2026"
+          },
+          {
+            sentimento: "Triste",
+            emoji: "😥",
+            tema: "Bloqueio Operacional",
+            motivo: "Pausas e despriorizações temporárias nos testes do início do ano.",
+            data: "15/01/2026"
+          }
+        ];
+      }
+
+      function renderHistoricoSentimentos() {
+        const history = getHistoricoSentimentos();
+        const filtro = filtroHumor ? filtroHumor.value : 'todos';
+        const filtrados = filtro === 'todos' ? history : history.filter(h => h.sentimento === filtro);
+
+        if (filtrados.length === 0) {
+          sentimentTimelineContainer.innerHTML = `<p style="font-size: 0.9rem; color: #666; font-style: italic;">Nenhum registro encontrado para este filtro.</p>`;
+          return;
+        }
+
+        sentimentTimelineContainer.innerHTML = filtrados.map((item, index) => `
+          <div class="timeline-card">
+            <div style="display:flex; align-items:flex-start; gap:0.8rem;">
+              <span style="font-size: 2rem;">${item.emoji}</span>
+              <div>
+                <strong>${item.sentimento}</strong>
+                ${item.tema ? `<p style="font-size: 0.85rem; font-weight: bold; color: var(--zelda-purple); margin-top: 0.2rem;">🎯 Foco: ${item.tema}</p>` : ''}
+                <p style="font-size: 0.88rem; margin-top: 0.2rem;">${item.motivo || '<em>Sem observações adicionais</em>'}</p>
+              </div>
+            </div>
+            <div style="text-align: right; white-space: nowrap;">
+              <span style="font-family: var(--font-retro); font-size: 1.15rem; color: #555;">${item.data}</span>
+              <button type="button" onclick="deletarItemSentimento(${index})" style="background:none; border:none; color: var(--zelda-red); cursor:pointer; font-size:0.8rem; display:block; margin-top:0.3rem;">❌ Excluir</button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      if (filtroHumor) {
+        filtroHumor.addEventListener('change', renderHistoricoSentimentos);
+      }
+
+      window.deletarItemSentimento = function(index) {
+        const history = getHistoricoSentimentos();
+        history.splice(index, 1);
+        localStorage.setItem('zelda_1on1_sentiment_history_v6', JSON.stringify(history));
+        renderHistoricoSentimentos();
+        showZeldaToast('Registro de humor removido!');
+      };
+
+      if (btnSalvarSentimento) {
+        btnSalvarSentimento.addEventListener('click', () => {
+          const selectedRadio = document.querySelector('input[name="sentimento"]:checked');
+          const motivo = document.getElementById('sentimento-motivo').value;
+          const tema = document.getElementById('sentimento-tema-principal').value;
+          const dataSessao = document.getElementById('sessao-data').value || today;
+
+          if (!selectedRadio) {
+            alert('Por favor, selecione um sentimento para registrar!');
+            return;
+          }
+
+          const novoRegistro = {
+            sentimento: selectedRadio.value,
+            emoji: selectedRadio.getAttribute('data-emoji') || '😊',
+            tema: tema,
+            motivo: motivo,
+            data: dataSessao
+          };
+
+          const history = getHistoricoSentimentos();
+          history.unshift(novoRegistro);
+          localStorage.setItem('zelda_1on1_sentiment_history_v6', JSON.stringify(history));
+          
+          document.getElementById('sentimento-motivo').value = '';
+          renderHistoricoSentimentos();
+          showZeldaToast('❤️ Sentimento salvo com sucesso!');
+        });
+      }
+
+      // --- MÓDULO 2: TEMAS DA REUNIÃO ---
+      window.adicionarTema = function(tipo, texto = '') {
+        const container = document.getElementById(`container-temas-${tipo}`);
+        const div = document.createElement('div');
+        div.className = 'dynamic-card-item';
+        div.style.cssText = 'display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem;';
+        div.innerHTML = `
+          <input type="text" class="tema-input-${tipo}" value="${texto}" placeholder="Descreva o tema / projeto..." style="margin-bottom:0;">
+          <button type="button" class="btn-zelda btn-danger btn-small" onclick="this.parentElement.remove()">✕</button>
+        `;
+        container.appendChild(div);
+      };
+
+      // --- MÓDULO 3: ENTREGAS, PAPEL E IMPACTO ---
+      const tbodyEntregas = document.getElementById('tbody-entregas');
+      const btnAddEntrega = document.getElementById('btn-add-entrega');
+
+      function criarLinhaEntrega(dados = {}) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><input type="text" class="ent-projeto" value="${dados.projeto || ''}" placeholder="Ex: Super gerenciador PJ"></td>
+          <td><input type="text" class="ent-papel" value="${dados.papel || ''}" placeholder="Ex: UX Researcher / Lead"></td>
+          <td><input type="text" class="ent-entrega" value="${dados.entrega || ''}" placeholder="Ex: Teste de usabilidade e relatório final"></td>
+          <td>
+            <select class="ent-impacto">
+              <option value="Alto Impacto" ${dados.impacto === 'Alto Impacto' ? 'selected' : ''}>💎 Alto Impacto</option>
+              <option value="Médio Impacto" ${dados.impacto === 'Médio Impacto' ? 'selected' : ''}>🗡️ Médio Impacto</option>
+              <option value="Baixo Impacto" ${dados.impacto === 'Baixo Impacto' ? 'selected' : ''}>🟢 Baixo Impacto</option>
+              <option value="Suporte / Rotina" ${dados.impacto === 'Suporte / Rotina' ? 'selected' : ''}>🛡️ Operacional / Suporte</option>
+            </select>
+          </td>
+          <td><input type="text" class="ent-link" value="${dados.link || ''}" placeholder="URL Figma, Jira..."></td>
+          <td style="text-align: center;">
+            <button type="button" class="btn-zelda btn-danger btn-small btn-remove-row">✖</button>
+          </td>
+        `;
+        tr.querySelector('.btn-remove-row').addEventListener('click', () => tr.remove());
+        tbodyEntregas.appendChild(tr);
+      }
+
+      if (btnAddEntrega) btnAddEntrega.addEventListener('click', () => criarLinhaEntrega());
+
+      // --- MÓDULO 4: PLANO DE DESENVOLVIMENTO INDIVIDUAL (PDI) ---
+      const containerPdi = document.getElementById('container-pdi');
+      const btnAddPdi = document.getElementById('btn-add-pdi');
+
+      function criarCardPdi(dados = {}) {
+        const card = document.createElement('div');
+        card.className = 'dynamic-card card-pdi-item';
+        const progresso = dados.progresso !== undefined ? dados.progresso : 50;
+
+        card.innerHTML = `
+          <div class="dynamic-card-header">
+            <span class="dynamic-card-title">🎯 OBJETIVO DE DESENVOLVIMENTO</span>
+            <button type="button" class="btn-zelda btn-danger btn-small btn-remove-card">✕ Remover</button>
+          </div>
+          
+          <div class="grid-2">
+            <div>
+              <label>Meta / Habilidade a Desenvolver:</label>
+              <input type="text" class="pdi-meta" value="${dados.meta || ''}" placeholder="Ex: Condução de testes de usabilidade, DesignOps...">
+            </div>
+            <div>
+              <label>Como a Liderança / Empresa vai Apoiar:</label>
+              <input type="text" class="pdi-apoio" value="${dados.apoio || ''}" placeholder="Ex: Espaço na agenda, mentoria técnica, cursos...">
+            </div>
+          </div>
+
+          <div style="margin-top: 0.6rem; border-top: 1px dashed var(--border-wood); padding-top: 0.6rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.4rem;">
+              <span style="font-family: var(--font-pixel); font-size: 0.65rem; color: var(--zelda-green-dark);">✅ SUB-METAS & EVIDÊNCIAS PRÁTICAS</span>
+              <button type="button" class="btn-zelda btn-small btn-add-submeta">➕ Nova Sub-meta</button>
+            </div>
+            <div class="pdi-submetas-container"></div>
+          </div>
+
+          <label style="margin-top: 0.6rem;">Progresso Calculado: <span class="pdi-label-val font-bold">${progresso}%</span></label>
+          <div class="pdi-progress-container">
+            <div class="pdi-progress-bar" style="width: ${progresso}%;"></div>
+            <div class="pdi-progress-text">${progresso}%</div>
+          </div>
+          <input type="range" min="0" max="100" value="${progresso}" class="pdi-range" style="margin-bottom:0;">
+        `;
+
+        const submetasContainer = card.querySelector('.pdi-submetas-container');
+        const range = card.querySelector('.pdi-range');
+        const bar = card.querySelector('.pdi-progress-bar');
+        const text = card.querySelector('.pdi-progress-text');
+        const labelVal = card.querySelector('.pdi-label-val');
+
+        function atualizarProgressoPorSubmetas() {
+          const checks = submetasContainer.querySelectorAll('.submeta-check');
+          if (checks.length > 0) {
+            const checkedCount = submetasContainer.querySelectorAll('.submeta-check:checked').length;
+            const pct = Math.round((checkedCount / checks.length) * 100);
+            range.value = pct;
+            bar.style.width = pct + '%';
+            text.textContent = pct + '%';
+            labelVal.textContent = pct + '%';
+          }
+        }
+
+        function adicionarSubmetaItem(subTexto = '', concluida = false) {
+          const subDiv = document.createElement('div');
+          subDiv.className = 'submeta-item';
+          subDiv.innerHTML = `
+            <input type="checkbox" class="submeta-check" ${concluida ? 'checked' : ''}>
+            <input type="text" class="submeta-text" value="${subTexto}" placeholder="Descreva a sub-etapa prática...">
+            <button type="button" class="btn-zelda btn-danger btn-small" style="padding:0.2rem 0.4rem;" onclick="this.parentElement.remove(); atualizarProgressoPorSubmetas();">✕</button>
+          `;
+          subDiv.querySelector('.submeta-check').addEventListener('change', atualizarProgressoPorSubmetas);
+          submetasContainer.appendChild(subDiv);
+          atualizarProgressoPorSubmetas();
+        }
+
+        card.querySelector('.btn-add-submeta').addEventListener('click', () => adicionarSubmetaItem());
+
+        if (dados.submetas && dados.submetas.length > 0) {
+          dados.submetas.forEach(s => adicionarSubmetaItem(s.texto, s.concluida));
+        }
+
+        range.addEventListener('input', (e) => {
+          const val = e.target.value;
+          bar.style.width = val + '%';
+          text.textContent = val + '%';
+          labelVal.textContent = val + '%';
+        });
+
+        card.querySelector('.btn-remove-card').addEventListener('click', () => card.remove());
+        containerPdi.appendChild(card);
+      }
+
+      if (btnAddPdi) btnAddPdi.addEventListener('click', () => criarCardPdi());
+
+      // --- MÓDULO 6: FEEDBACKS (MODELO STAR / SBI) ---
+      const containerFeedbacksPdf = document.getElementById('container-feedbacks-pdf');
+      const btnAddFeedbackPdf = document.getElementById('btn-add-feedback-pdf');
+
+      function criarCardFeedbackPdf(dados = {}) {
+        const card = document.createElement('div');
+        card.className = 'dynamic-card card-feedback-pdf-item';
+        card.innerHTML = `
+          <div class="dynamic-card-header">
+            <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+              <select class="fb-tipo" style="width: auto; margin-bottom: 0; padding: 0.25rem 0.5rem; font-weight: bold;">
+                <option value="Positivo" ${dados.tipo === 'Positivo' ? 'selected' : ''}>🌟 Feedback Positivo</option>
+                <option value="Desenvolvimento" ${dados.tipo === 'Desenvolvimento' ? 'selected' : ''}>🌱 Feedback de Desenvolvimento</option>
+              </select>
+              <input type="text" class="fb-pessoa" value="${dados.pessoa || ''}" placeholder="Origem / Para quem" style="margin-bottom: 0; width: 180px;">
+              <input type="text" class="fb-data" value="${dados.data || ''}" placeholder="Data (Ex: 15 de Jan)" style="margin-bottom: 0; width: 140px;">
+            </div>
+            <button type="button" class="btn-zelda btn-danger btn-small btn-remove-card">✕ Remover</button>
+          </div>
+
+          <label>Situação / Desafio:</label>
+          <textarea class="fb-situacao" placeholder="Qual era o contexto, desafio técnico ou tarefa?">${dados.situacao || ''}</textarea>
+
+          <div class="grid-2">
+            <div>
+              <label>Ação Praticada (O que foi realizado):</label>
+              <textarea class="fb-acao" placeholder="Qual atitude ou entrega foi observada?">${dados.acao || ''}</textarea>
+            </div>
+            <div>
+              <label>Resultado / Impacto:</label>
+              <textarea class="fb-resultado" placeholder="Qual foi o impacto positivo ou problema decorrente?">${dados.resultado || ''}</textarea>
+            </div>
+          </div>
+
+          <div style="margin-top: 0.5rem; border-top: 1px dashed #ccc; padding-top: 0.5rem;">
+            <div class="grid-2">
+              <div>
+                <label>Ação Alternativa (Se desenvolvimento):</label>
+                <input type="text" class="fb-acao-alt" value="${dados.acaoAlt || ''}" placeholder="O que fazer diferente numa próxima oportunidade?">
+              </div>
+              <div>
+                <label>Resultado Esperado Futuro:</label>
+                <input type="text" class="fb-res-alt" value="${dados.resAlt || ''}" placeholder="Qual resultado ideal almejado?">
+              </div>
+            </div>
+          </div>
+        `;
+        card.querySelector('.btn-remove-card').addEventListener('click', () => card.remove());
+        containerFeedbacksPdf.appendChild(card);
+      }
+
+      if (btnAddFeedbackPdf) btnAddFeedbackPdf.addEventListener('click', () => criarCardFeedbackPdf());
+
+      // --- MÓDULO 7: ANÁLISE DE MELHORIAS (SBI) ---
+      const containerSbi = document.getElementById('container-sbi');
+      const btnAddSbi = document.getElementById('btn-add-sbi');
+
+      function criarCardSbi(dados = {}) {
+        const card = document.createElement('div');
+        card.className = 'dynamic-card card-sbi-item';
+        card.innerHTML = `
+          <div class="dynamic-card-header">
+            <span class="dynamic-card-title">🔥 SITUAÇÃO OBSERVADA & APRENDIZADO</span>
+            <button type="button" class="btn-zelda btn-danger btn-small btn-remove-card">✕ Remover</button>
+          </div>
+
+          <div class="grid-2">
+            <div style="background: #fff8f0; padding: 0.8rem; border: 1px solid #ffd8a8; border-radius: 4px;">
+              <h4 style="font-family: var(--font-pixel); font-size: 0.65rem; color: var(--zelda-red); margin-bottom: 0.5rem;">SITUAÇÃO OCORRIDA</h4>
+              
+              <label>Situação / Momento:</label>
+              <textarea class="sbi-situacao" placeholder="Onde e quando ocorreu?">${dados.situacao || ''}</textarea>
+
+              <label>Comportamento:</label>
+              <textarea class="sbi-comportamento" placeholder="O que foi feito ou dito?">${dados.comportamento || ''}</textarea>
+
+              <label>Impacto Gerado:</label>
+              <textarea class="sbi-resultado" placeholder="Qual foi a dor gerada?">${dados.resultado || ''}</textarea>
+            </div>
+
+            <div style="background: #f0fdf4; padding: 0.8rem; border: 1px solid #bbf7d0; border-radius: 4px;">
+              <h4 style="font-family: var(--font-pixel); font-size: 0.65rem; color: var(--zelda-green-mid); margin-bottom: 0.5rem;">PLANO DE MELHORIA</h4>
+              
+              <label>Ação Recomendada para o Futuro:</label>
+              <textarea class="sbi-melhoria" placeholder="Como agir na próxima vez?">${dados.melhoria || ''}</textarea>
+
+              <label>Resultado Esperado:</label>
+              <textarea class="sbi-resultado-esperado" placeholder="Qual o desfecho esperado de sucesso?">${dados.resultadoEsperado || ''}</textarea>
+            </div>
+          </div>
+        `;
+        card.querySelector('.btn-remove-card').addEventListener('click', () => card.remove());
+        containerSbi.appendChild(card);
+      }
+
+      if (btnAddSbi) btnAddSbi.addEventListener('click', () => criarCardSbi());
+
+      // --- MÓDULO 8: COMPROMISSOS DO LIDERADO ---
+      const tbodyAcoes = document.getElementById('tbody-acoes');
+      const btnAddAcao = document.getElementById('btn-add-acao');
+
+      function criarLinhaAcao(dados = {}) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><input type="text" class="acao-tarefa" value="${dados.tarefa || ''}" placeholder="Descreva o compromisso do liderado..."></td>
+          <td><input type="date" class="acao-prazo" value="${dados.prazo || today}"></td>
+          <td>
+            <select class="acao-status">
+              <option value="Pendente" ${dados.status === 'Pendente' ? 'selected' : ''}>⏳ Pendente</option>
+              <option value="Em Andamento" ${dados.status === 'Em Andamento' ? 'selected' : ''}>⚔️ Em Andamento</option>
+              <option value="Concluído" ${dados.status === 'Concluído' ? 'selected' : ''}>✅ Concluído</option>
+            </select>
+          </td>
+          <td style="text-align: center;">
+            <button type="button" class="btn-zelda btn-danger btn-small btn-remove-row">✖</button>
+          </td>
+        `;
+        tr.querySelector('.btn-remove-row').addEventListener('click', () => tr.remove());
+        tbodyAcoes.appendChild(tr);
+      }
+
+      if (btnAddAcao) btnAddAcao.addEventListener('click', () => criarLinhaAcao());
+
+      // ========================================================================
+      // --- ABA 2: KANBAN SNES TRELLO ---
+      // ========================================================================
+      let kanbanCards = [];
+
+      function getInitialKanbanCards() {
+        return [
+          {
+            id: 'k1',
+            status: 'todo',
+            title: 'Testes de Usabilidade SGPJ',
+            desc: 'Conduzir as entrevistas e preparar o roteiro para os fluxos pendentes.',
+            tag: 'tag-research',
+            dueDate: '2026-11-20',
+            checklist: [
+              { text: 'Alinhar com a Juliana', done: true },
+              { text: 'Configurar gravador de tela', done: false },
+              { text: 'Convidar os 5 participantes', done: false }
+            ]
+          },
+          {
+            id: 'k2',
+            status: 'inprogress',
+            title: 'Documentação do Método Pure',
+            desc: 'Finalização do manual para os avaliadores técnicos da sprint.',
+            tag: 'tag-ops',
+            dueDate: '2026-11-15',
+            checklist: [
+              { text: 'Elaborar doc inicial', done: true },
+              { text: 'Treinamento dos avaliadores', done: true },
+              { text: 'Apresentar relatório piloto', done: false }
+            ]
+          },
+          {
+            id: 'k3',
+            status: 'done',
+            title: 'Entrevistas Move Brasil (Jan/Fev)',
+            desc: 'Pesquisa concluída e apresentada aos stakeholders da diretoria.',
+            tag: 'tag-design',
+            dueDate: '2026-03-30',
+            checklist: [
+              { text: 'Cronograma e roteiro', done: true },
+              { text: 'Apresentação executiva', done: true }
+            ]
+          }
+        ];
+      }
+
+      function salvarKanbanNoStorage() {
+        localStorage.setItem('zelda_1on1_kanban_cards_v6', JSON.stringify(kanbanCards));
+        atualizarContadoresKanban();
+        atualizarHudStats();
+      }
+
+      function carregarKanbanDoStorage() {
+        const saved = localStorage.getItem('zelda_1on1_kanban_cards_v6');
+        kanbanCards = saved ? JSON.parse(saved) : getInitialKanbanCards();
+        renderizarTodosCardsKanban();
+      }
+
+      function atualizarContadoresKanban() {
+        document.getElementById('count-kanban-todo').textContent = kanbanCards.filter(c => c.status === 'todo').length;
+        document.getElementById('count-kanban-inprogress').textContent = kanbanCards.filter(c => c.status === 'inprogress').length;
+        document.getElementById('count-kanban-done').textContent = kanbanCards.filter(c => c.status === 'done').length;
+      }
+
+      function renderizarCardKanban(card) {
+        const div = document.createElement('div');
+        div.className = 'kanban-card';
+        div.setAttribute('draggable', 'true');
+        div.setAttribute('data-id', card.id);
+
+        const totalCheck = card.checklist ? card.checklist.length : 0;
+        const doneCheck = card.checklist ? card.checklist.filter(i => i.done).length : 0;
+        const pctCheck = totalCheck > 0 ? Math.round((doneCheck / totalCheck) * 100) : 0;
+
+        let tagNome = 'Tarefa';
+        if (card.tag === 'tag-design') tagNome = 'Discovery';
+        else if (card.tag === 'tag-research') tagNome = 'Pesquisa UX';
+        else if (card.tag === 'tag-dev') tagNome = 'Teste de Usabilidade';
+        else if (card.tag === 'tag-ops') tagNome = 'DesignOps';
+        else if (card.tag === 'tag-urgente') tagNome = '🔥 Urgente';
+
+        div.innerHTML = `
+          <div class="kanban-tags">
+            <span class="kanban-tag ${card.tag || 'tag-research'}">${tagNome}</span>
+          </div>
+          <div class="kanban-card-title">${card.title}</div>
+          ${card.desc ? `<div class="kanban-card-desc">${card.desc}</div>` : ''}
+
+          ${totalCheck > 0 ? `
+            <div style="margin-bottom:0.5rem;">
+              <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:#444; margin-bottom:0.2rem;">
+                <span>☑️ Checklist</span>
+                <span>${doneCheck}/${totalCheck} (${pctCheck}%)</span>
+              </div>
+              <div style="background:#e0e0e0; height:6px; border-radius:3px; overflow:hidden;">
+                <div style="background:var(--zelda-green-mid); height:100%; width:${pctCheck}%;"></div>
+              </div>
+            </div>
+          ` : ''}
+
+          <div class="kanban-card-footer">
+            <span>${card.dueDate ? `📅 ${card.dueDate}` : '📅 Sem prazo'}</span>
+            <div class="kanban-card-actions">
+              <button type="button" class="btn-mover-card" title="Avançar Coluna">⏩</button>
+              <button type="button" class="btn-editar-card" title="Editar card">✏️</button>
+              <button type="button" class="btn-excluir-card" title="Excluir card">🗑️</button>
+            </div>
+          </div>
+        `;
+
+        div.addEventListener('dragstart', (e) => {
+          div.classList.add('dragging');
+          e.dataTransfer.setData('text/plain', card.id);
+          e.dataTransfer.effectAllowed = 'move';
+        });
+
+        div.addEventListener('dragend', () => {
+          div.classList.remove('dragging');
+          document.querySelectorAll('.kanban-cards-container').forEach(c => c.classList.remove('drag-over'));
+        });
+
+        div.querySelector('.btn-mover-card').addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (card.status === 'todo') card.status = 'inprogress';
+          else if (card.status === 'inprogress') card.status = 'done';
+          else if (card.status === 'done') card.status = 'todo';
+          salvarKanbanNoStorage();
+          renderizarTodosCardsKanban();
+        });
+
+        div.querySelector('.btn-editar-card').addEventListener('click', (e) => {
+          e.stopPropagation();
+          abrirModalKanban(card.id);
+        });
+
+        div.querySelector('.btn-excluir-card').addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (confirm('Deseja excluir este card do Kanban?')) {
+            kanbanCards = kanbanCards.filter(c => c.id !== card.id);
+            salvarKanbanNoStorage();
+            renderizarTodosCardsKanban();
+          }
+        });
+
+        return div;
+      }
+
+      function renderizarTodosCardsKanban() {
+        const containerTodo = document.getElementById('kanban-container-todo');
+        const containerInprog = document.getElementById('kanban-container-inprogress');
+        const containerDone = document.getElementById('kanban-container-done');
+
+        containerTodo.innerHTML = '';
+        containerInprog.innerHTML = '';
+        containerDone.innerHTML = '';
+
+        const busca = document.getElementById('kanban-search')?.value.toLowerCase() || '';
+        const tagFiltro = document.getElementById('kanban-filter-tag')?.value || 'todas';
+
+        kanbanCards.forEach(card => {
+          const matchBusca = card.title.toLowerCase().includes(busca) || (card.desc && card.desc.toLowerCase().includes(busca));
+          const matchTag = tagFiltro === 'todas' || card.tag === tagFiltro;
+
+          if (matchBusca && matchTag) {
+            const cardEl = renderizarCardKanban(card);
+            if (card.status === 'todo') containerTodo.appendChild(cardEl);
+            else if (card.status === 'inprogress') containerInprog.appendChild(cardEl);
+            else if (card.status === 'done') containerDone.appendChild(cardEl);
+          }
+        });
+
+        atualizarContadoresKanban();
+      }
+
+      document.getElementById('kanban-search')?.addEventListener('input', renderizarTodosCardsKanban);
+      document.getElementById('kanban-filter-tag')?.addEventListener('change', renderizarTodosCardsKanban);
+
+      // Drag and Drop
+      const kanbanDropContainers = document.querySelectorAll('.kanban-cards-container');
+      kanbanDropContainers.forEach(container => {
+        container.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          container.classList.add('drag-over');
+        });
+        container.addEventListener('dragleave', () => container.classList.remove('drag-over'));
+        container.addEventListener('drop', (e) => {
+          e.preventDefault();
+          container.classList.remove('drag-over');
+          const cardId = e.dataTransfer.getData('text/plain');
+          const novoStatus = container.getAttribute('data-status');
+          const card = kanbanCards.find(c => c.id === cardId);
+          if (card && card.status !== novoStatus) {
+            card.status = novoStatus;
+            salvarKanbanNoStorage();
+            renderizarTodosCardsKanban();
+          }
+        });
+      });
+
+      // Modal Kanban
+      const modalKanban = document.getElementById('modal-kanban');
+      const btnAbrirNovoCardKanban = document.getElementById('btn-abrir-novo-card-kanban');
+      const btnFecharModalKanban = document.getElementById('btn-fechar-modal-kanban');
+      const btnCancelarModalKanban = document.getElementById('btn-cancelar-modal-kanban');
+      const btnSalvarModalKanban = document.getElementById('btn-salvar-modal-kanban');
+      const btnAddModalCheck = document.getElementById('btn-add-modal-check');
+      const modalChecklistContainer = document.getElementById('modal-checklist-container');
+
+      function abrirModalKanban(cardId = null) {
+        modalChecklistContainer.innerHTML = '';
+        if (cardId) {
+          const card = kanbanCards.find(c => c.id === cardId);
+          if (!card) return;
+          document.getElementById('modal-kanban-titulo').textContent = '🗡️ EDITAR CARD KANBAN';
+          document.getElementById('modal-card-id').value = card.id;
+          document.getElementById('modal-card-title').value = card.title || '';
+          document.getElementById('modal-card-desc').value = card.desc || '';
+          document.getElementById('modal-card-col').value = card.status || 'todo';
+          document.getElementById('modal-card-due').value = card.dueDate || today;
+          document.getElementById('modal-card-tag').value = card.tag || 'tag-research';
+
+          if (card.checklist) {
+            card.checklist.forEach(item => adicionarItemChecklistModal(item.text, item.done));
+          }
+        } else {
+          document.getElementById('modal-kanban-titulo').textContent = '🗡️ NOVO CARD KANBAN';
+          document.getElementById('modal-card-id').value = '';
+          document.getElementById('modal-card-title').value = '';
+          document.getElementById('modal-card-desc').value = '';
+          document.getElementById('modal-card-col').value = 'todo';
+          document.getElementById('modal-card-due').value = today;
+          document.getElementById('modal-card-tag').value = 'tag-research';
+        }
+        modalKanban.classList.remove('hidden');
+      }
+
+      function fecharModalKanban() {
+        modalKanban.classList.add('hidden');
+      }
+
+      function adicionarItemChecklistModal(texto = '', marcado = false) {
+        const div = document.createElement('div');
+        div.style.cssText = 'display:flex; align-items:center; gap:0.5rem;';
+        div.innerHTML = `
+          <input type="checkbox" class="modal-check-done" ${marcado ? 'checked' : ''} style="width:18px; height:18px; margin:0;">
+          <input type="text" class="modal-check-text" value="${texto}" placeholder="Descreva a sub-tarefa..." style="margin:0; padding:0.3rem; flex:1;">
+          <button type="button" class="btn-zelda btn-danger btn-small" style="padding:0.2rem 0.4rem;" onclick="this.parentElement.remove()">✕</button>
+        `;
+        modalChecklistContainer.appendChild(div);
+      }
+
+      btnAddModalCheck.addEventListener('click', () => adicionarItemChecklistModal());
+      btnAbrirNovoCardKanban.addEventListener('click', () => abrirModalKanban());
+      btnFecharModalKanban.addEventListener('click', fecharModalKanban);
+      btnCancelarModalKanban.addEventListener('click', fecharModalKanban);
+
+      btnSalvarModalKanban.addEventListener('click', () => {
+        const title = document.getElementById('modal-card-title').value.trim();
+        if (!title) {
+          alert('Por favor, informe o título do card!');
+          return;
+        }
+
+        const id = document.getElementById('modal-card-id').value;
+        const desc = document.getElementById('modal-card-desc').value;
+        const status = document.getElementById('modal-card-col').value;
+        const dueDate = document.getElementById('modal-card-due').value;
+        const tag = document.getElementById('modal-card-tag').value;
+
+        const checklist = [];
+        modalChecklistContainer.querySelectorAll('div').forEach(itemDiv => {
+          const done = itemDiv.querySelector('.modal-check-done').checked;
+          const text = itemDiv.querySelector('.modal-check-text').value.trim();
+          if (text) checklist.push({ text, done });
+        });
+
+        if (id) {
+          const index = kanbanCards.findIndex(c => c.id === id);
+          if (index !== -1) kanbanCards[index] = { ...kanbanCards[index], title, desc, status, dueDate, tag, checklist };
+        } else {
+          kanbanCards.push({ id: 'card_' + Date.now(), title, desc, status, dueDate, tag, checklist });
+        }
+
+        salvarKanbanNoStorage();
+        renderizarTodosCardsKanban();
+        fecharModalKanban();
+        showZeldaToast('📋 Tarefa Kanban salva!');
+      });
+
+      // ========================================================================
+      // --- ABA 3: ETAPAS DE UX RESEARCH & DISCOVERY HUB ---
+      // ========================================================================
+      const containerUxStages = document.getElementById('container-ux-stages');
+      const btnAddUxStage = document.getElementById('btn-add-ux-stage');
+
+      function getInitialUxStages() {
+        return [
+          {
+            projeto: 'Super gerenciador PJ - Testes de Usabilidade',
+            fase: 'conducao',
+            metodo: 'Teste Moderado Remoto (Home & Pagamentos)',
+            amostra: '5 Usuários PJ (Motos e Carros)',
+            metricas: 'Taxa de Sucesso (TSR) & Tempo por Tarefa',
+            linkDocs: 'https://figma.com/@sgpj-prototipo',
+            severidade: 'Alta',
+            checklists: [
+              { text: 'Compreensão do sistema e jornadas a serem testadas', done: true },
+              { text: 'Criação de roteiro de testes e tarefas', done: true },
+              { text: 'Organização e recrutamento dos participantes', done: true },
+              { text: 'Aplicação dos testes com moderação gravada', done: true },
+              { text: 'Criação e entrega do relatório final com recomendações', done: false }
+            ]
+          },
+          {
+            projeto: 'Método Pure - Avaliação Heurística',
+            fase: 'planejamento',
+            metodo: 'Avaliação Heurística Especializada / Pure Score',
+            amostra: '3 Avaliadores Internos (UX Leads)',
+            metricas: 'Pure Score de Dificuldade Cognitiva (1 a 3)',
+            linkDocs: 'https://notion.so/metodo-pure-docs',
+            severidade: 'Média',
+            checklists: [
+              { text: 'Entendimento detalhado das matrizes do método Pure', done: true },
+              { text: 'Elaboração da documentação e matriz de severidade', done: true },
+              { text: 'Treinamento dos avaliadores técnicos', done: false },
+              { text: 'Aplicação do método no projeto piloto', done: false },
+              { text: 'Apresentação do relatório de diagnóstico', done: false }
+            ]
+          }
+        ];
+      }
+
+      function criarCardUxStage(dados = {}) {
+        const card = document.createElement('div');
+        card.className = 'dynamic-card card-ux-stage-item';
+        const faseSelecionada = dados.fase || 'planejamento';
+
+        card.innerHTML = `
+          <div class="dynamic-card-header">
+            <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+              <span class="dynamic-card-title">🔬 INICIATIVA DE PESQUISA UX</span>
+              <select class="ux-stage-fase" style="width:auto; margin:0; padding:0.25rem 0.5rem; font-weight:bold;">
+                <option value="planejamento" ${faseSelecionada === 'planejamento' ? 'selected' : ''}>📋 1. Planejamento & Desk</option>
+                <option value="recrutamento" ${faseSelecionada === 'recrutamento' ? 'selected' : ''}>👥 2. Recrutamento & Triagem</option>
+                <option value="conducao" ${faseSelecionada === 'conducao' ? 'selected' : ''}>🎙️ 3. Condução / Testes</option>
+                <option value="analise" ${faseSelecionada === 'analise' ? 'selected' : ''}>📊 4. Síntese & Análise</option>
+                <option value="concluido" ${faseSelecionada === 'concluido' ? 'selected' : ''}>🏁 5. Concluído & Apresentado</option>
+              </select>
+            </div>
+            <button type="button" class="btn-zelda btn-danger btn-small btn-remove-ux-stage">✕ Remover</button>
+          </div>
+
+          <div class="grid-2">
+            <div>
+              <label>Nome do Projeto / Iniciativa de UX:</label>
+              <input type="text" class="ux-stage-projeto" value="${dados.projeto || ''}" placeholder="Ex: SGPJ Usabilidade Fase 2">
+
+              <label>Metodologia de Pesquisa Utilizada:</label>
+              <input type="text" class="ux-stage-metodo" value="${dados.metodo || ''}" placeholder="Ex: Entrevistas semiestruturadas, Teste Moderado, Pure...">
+            </div>
+            <div>
+              <label>Amostra & Perfil de Participantes:</label>
+              <input type="text" class="ux-stage-amostra" value="${dados.amostra || ''}" placeholder="Ex: 8 Entregadores e 5 Revendedores">
+
+              <label>Métricas Chave / KPIs Observados:</label>
+              <input type="text" class="ux-stage-metricas" value="${dados.metricas || ''}" placeholder="Ex: Taxa de Sucesso, SUS, Dores críticas...">
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div>
+              <label>Link do Repositório / Documento / Miro / Figma:</label>
+              <input type="text" class="ux-stage-link" value="${dados.linkDocs || ''}" placeholder="Ex: Link do Notion, Miro ou Drive...">
+            </div>
+            <div>
+              <label>Severidade / Prioridade do Estudo:</label>
+              <select class="ux-stage-severidade">
+                <option value="Crítica" ${dados.severidade === 'Crítica' ? 'selected' : ''}>🔥 Crítica (Bloqueante)</option>
+                <option value="Alta" ${dados.severidade === 'Alta' ? 'selected' : ''}>⚠️ Alta Prioridade</option>
+                <option value="Média" ${dados.severidade === 'Média' ? 'selected' : ''}>🛡️ Média</option>
+                <option value="Baixa" ${dados.severidade === 'Baixa' ? 'selected' : ''}>🟢 Baixa / Oportunidade</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-top: 0.6rem; border-top: 1px dashed var(--border-wood); padding-top: 0.6rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.4rem;">
+              <span style="font-family: var(--font-pixel); font-size: 0.65rem; color: var(--zelda-blue);">📋 CHECKLIST DE ENTREGÁVEIS DA PESQUISA</span>
+              <button type="button" class="btn-zelda btn-small btn-add-ux-check">➕ Novo Entregável</button>
+            </div>
+            <div class="ux-stage-checklist-box"></div>
+          </div>
+        `;
+
+        const checkContainer = card.querySelector('.ux-stage-checklist-box');
+
+        function adicionarItemCheckUx(texto = '', marcado = false) {
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'submeta-item';
+          itemDiv.innerHTML = `
+            <input type="checkbox" class="ux-check-done" ${marcado ? 'checked' : ''}>
+            <input type="text" class="ux-check-text" value="${texto}" placeholder="Entregável da etapa (ex: Roteiro validado, Gravações, Relatório final)...">
+            <button type="button" class="btn-zelda btn-danger btn-small" style="padding:0.2rem 0.4rem;" onclick="this.parentElement.remove()">✕</button>
+          `;
+          checkContainer.appendChild(itemDiv);
+        }
+
+        card.querySelector('.btn-add-ux-check').addEventListener('click', () => adicionarItemCheckUx());
+
+        if (dados.checklists && dados.checklists.length > 0) {
+          dados.checklists.forEach(c => adicionarItemCheckUx(c.text, c.done));
+        } else {
+          adicionarItemCheckUx('Alinhamento e roteiro aprovado', false);
+          adicionarItemCheckUx('Condução das sessões de pesquisa', false);
+          adicionarItemCheckUx('Relatório final e recomendações', false);
+        }
+
+        card.querySelector('.btn-remove-ux-stage').addEventListener('click', () => card.remove());
+        containerUxStages.appendChild(card);
+      }
+
+      if (btnAddUxStage) btnAddUxStage.addEventListener('click', () => criarCardUxStage());
+
+      // Filtro de UX Research
+      const uxSearchInput = document.getElementById('ux-search-input');
+      const uxFilterFase = document.getElementById('ux-filter-fase');
+
+      function filtrarUxCards() {
+        const query = uxSearchInput ? uxSearchInput.value.toLowerCase() : '';
+        const fase = uxFilterFase ? uxFilterFase.value : 'todas';
+
+        document.querySelectorAll('.card-ux-stage-item').forEach(card => {
+          const titulo = card.querySelector('.ux-stage-projeto').value.toLowerCase();
+          const metodo = card.querySelector('.ux-stage-metodo').value.toLowerCase();
+          const cardFase = card.querySelector('.ux-stage-fase').value;
+
+          const matchText = titulo.includes(query) || metodo.includes(query);
+          const matchFase = fase === 'todas' || cardFase === fase;
+
+          card.style.display = (matchText && matchFase) ? 'block' : 'none';
+        });
+      }
+
+      if (uxSearchInput) uxSearchInput.addEventListener('input', filtrarUxCards);
+      if (uxFilterFase) uxFilterFase.addEventListener('change', filtrarUxCards);
+
+      // --- SERIALIZAÇÃO E CARREGAMENTO GERAL ---
+      function obterDadosFormulario() {
+        return {
+          colaborador: document.getElementById('colaborador-nome').value,
+          gestor: document.getElementById('gestor-nome').value,
+          data: document.getElementById('sessao-data').value,
+          temaPrincipal: document.getElementById('sentimento-tema-principal').value,
+          expectativas: {
+            expectativa: document.getElementById('exp-expectativa').value,
+            passado: document.getElementById('exp-passado').value,
+            tratamento: document.getElementById('exp-tratamento').value,
+            feedback: document.getElementById('exp-feedback').value,
+            apoio: document.getElementById('exp-apoio').value,
+            conflitos: document.getElementById('exp-conflitos').value
+          },
+          temasNovos: Array.from(document.querySelectorAll('.tema-input-novos')).map(i => i.value),
+          temasAndamento: Array.from(document.querySelectorAll('.tema-input-andamento')).map(i => i.value),
+          temasFinalizados: Array.from(document.querySelectorAll('.tema-input-finalizados')).map(i => i.value),
+          entregas: Array.from(document.querySelectorAll('#tbody-entregas tr')).map(row => ({
+            projeto: row.querySelector('.ent-projeto').value,
+            papel: row.querySelector('.ent-papel').value,
+            entrega: row.querySelector('.ent-entrega').value,
+            impacto: row.querySelector('.ent-impacto').value,
+            link: row.querySelector('.ent-link').value
+          })),
+          pdis: Array.from(document.querySelectorAll('.card-pdi-item')).map(card => ({
+            meta: card.querySelector('.pdi-meta').value,
+            apoio: card.querySelector('.pdi-apoio').value,
+            progresso: card.querySelector('.pdi-range').value,
+            submetas: Array.from(card.querySelectorAll('.submeta-item')).map(sub => ({
+              texto: sub.querySelector('.submeta-text').value,
+              concluida: sub.querySelector('.submeta-check').checked
+            }))
+          })),
+          feedbacksPdf: Array.from(document.querySelectorAll('.card-feedback-pdf-item')).map(card => ({
+            tipo: card.querySelector('.fb-tipo').value,
+            pessoa: card.querySelector('.fb-pessoa').value,
+            data: card.querySelector('.fb-data').value,
+            situacao: card.querySelector('.fb-situacao').value,
+            acao: card.querySelector('.fb-acao').value,
+            resultado: card.querySelector('.fb-resultado').value,
+            acaoAlt: card.querySelector('.fb-acao-alt').value,
+            resAlt: card.querySelector('.fb-res-alt').value
+          })),
+          sbis: Array.from(document.querySelectorAll('.card-sbi-item')).map(card => ({
+            situacao: card.querySelector('.sbi-situacao').value,
+            comportamento: card.querySelector('.sbi-comportamento').value,
+            resultado: card.querySelector('.sbi-resultado').value,
+            melhoria: card.querySelector('.sbi-melhoria').value,
+            resultadoEsperado: card.querySelector('.sbi-resultado-esperado').value
+          })),
+          acoesLiderado: Array.from(document.querySelectorAll('#tbody-acoes tr')).map(row => ({
+            tarefa: row.querySelector('.acao-tarefa').value,
+            prazo: row.querySelector('.acao-prazo').value,
+            status: row.querySelector('.acao-status').value
+          })),
+          kanbanCards: kanbanCards,
+          uxStages: Array.from(document.querySelectorAll('.card-ux-stage-item')).map(card => ({
+            projeto: card.querySelector('.ux-stage-projeto').value,
+            fase: card.querySelector('.ux-stage-fase').value,
+            metodo: card.querySelector('.ux-stage-metodo').value,
+            amostra: card.querySelector('.ux-stage-amostra').value,
+            metricas: card.querySelector('.ux-stage-metricas').value,
+            linkDocs: card.querySelector('.ux-stage-link').value,
+            severidade: card.querySelector('.ux-stage-severidade').value,
+            checklists: Array.from(card.querySelectorAll('.submeta-item')).map(item => ({
+              text: item.querySelector('.ux-check-text').value,
+              done: item.querySelector('.ux-check-done').checked
+            }))
+          }))
+        };
+      }
+
+      function preencherFormulario(data) {
+        if (!data) return;
+
+        if (data.colaborador) document.getElementById('colaborador-nome').value = data.colaborador;
+        if (data.gestor) document.getElementById('gestor-nome').value = data.gestor;
+        if (data.data) document.getElementById('sessao-data').value = data.data;
+        if (data.temaPrincipal) document.getElementById('sentimento-tema-principal').value = data.temaPrincipal;
+
+        if (data.expectativas) {
+          if (data.expectativas.expectativa) document.getElementById('exp-expectativa').value = data.expectativas.expectativa;
+          if (data.expectativas.passado) document.getElementById('exp-passado').value = data.expectativas.passado;
+          if (data.expectativas.tratamento) document.getElementById('exp-tratamento').value = data.expectativas.tratamento;
+          if (data.expectativas.feedback) document.getElementById('exp-feedback').value = data.expectativas.feedback;
+          if (data.expectativas.apoio) document.getElementById('exp-apoio').value = data.expectativas.apoio;
+          if (data.expectativas.conflitos) document.getElementById('exp-conflitos').value = data.expectativas.conflitos;
+        }
+
+        document.getElementById('container-temas-novos').innerHTML = '';
+        document.getElementById('container-temas-andamento').innerHTML = '';
+        document.getElementById('container-temas-finalizados').innerHTML = '';
+        tbodyEntregas.innerHTML = '';
+        containerPdi.innerHTML = '';
+        containerFeedbacksPdf.innerHTML = '';
+        containerSbi.innerHTML = '';
+        tbodyAcoes.innerHTML = '';
+        containerUxStages.innerHTML = '';
+
+        if (data.temasNovos?.length) data.temasNovos.forEach(t => adicionarTema('novos', t));
+        if (data.temasAndamento?.length) data.temasAndamento.forEach(t => adicionarTema('andamento', t));
+        if (data.temasFinalizados?.length) data.temasFinalizados.forEach(t => adicionarTema('finalizados', t));
+
+        if (data.entregas?.length) data.entregas.forEach(e => criarLinhaEntrega(e));
+        else criarLinhaEntrega();
+
+        if (data.pdis?.length) data.pdis.forEach(p => criarCardPdi(p));
+        else criarCardPdi();
+
+        if (data.feedbacksPdf?.length) data.feedbacksPdf.forEach(f => criarCardFeedbackPdf(f));
+        if (data.sbis?.length) data.sbis.forEach(s => criarCardSbi(s));
+        else criarCardSbi();
+
+        if (data.acoesLiderado?.length) data.acoesLiderado.forEach(a => criarLinhaAcao(a));
+        else criarLinhaAcao();
+
+        if (data.kanbanCards?.length) {
+          kanbanCards = data.kanbanCards;
+          salvarKanbanNoStorage();
+          renderizarTodosCardsKanban();
+        }
+
+        if (data.uxStages?.length) {
+          data.uxStages.forEach(stg => criarCardUxStage(stg));
+        } else {
+          getInitialUxStages().forEach(stg => criarCardUxStage(stg));
+        }
+
+        atualizarHudStats();
+      }
+
+      function salvarTudo(notificar = true) {
+        const formData = obterDadosFormulario();
+        localStorage.setItem('zelda_1on1_final_data_v6_enhanced', JSON.stringify(formData));
+        salvarKanbanNoStorage();
+        if (notificar) showZeldaToast('💾 Sessão completa salva no navegador!');
+      }
+
+      function carregarTudo() {
+        renderHistoricoSentimentos();
+        carregarKanbanDoStorage();
+
+        const saved = localStorage.getItem('zelda_1on1_final_data_v6_enhanced');
+
+        if (!saved) {
+          adicionarTema('novos', 'Condução de entrevistas do teste de usabilidade do SGPJ');
+          adicionarTema('novos', 'Dar oportunidade para a Juliana conduzir os testes e ajudá-la');
+          adicionarTema('novos', 'Padronização dos testes de usabilidade / DesignOps');
+          
+          adicionarTema('andamento', 'Método Pure - Junho/Outubro: Elaboração de doc e treinamento');
+          
+          adicionarTema('finalizados', 'Super gerenciador PJ - Fase 1 e 2 (Testes e relatórios)');
+          adicionarTema('finalizados', 'Move Brasil - Janeiro/Fevereiro (Cronograma e entrevistas)');
+
+          criarLinhaEntrega({ projeto: 'Super gerenciador PJ', papel: 'UX Lead / Researcher', entrega: 'Testes de usabilidade Fase 1 e 2', impacto: 'Alto Impacto', link: 'https://figma.com/file/sgpj' });
+          criarLinhaEntrega({ projeto: 'Move Brasil', papel: 'Pesquisador UX', entrega: 'Roteiros e entrevistas com revendedores', impacto: 'Médio Impacto', link: 'https://miro.com/movebrasil' });
+          criarLinhaEntrega({ projeto: 'Design Tokens Repo', papel: 'Suporte', entrega: 'Limpeza de assets legados', impacto: 'Baixo Impacto', link: '' });
+
+          criarCardPdi({
+            meta: 'Liderar padronização de testes em DesignOps',
+            apoio: 'Autonomia para propor o framework e apoio nos alinhamentos',
+            progresso: 66,
+            submetas: [
+              { texto: 'Mapear roteiros atuais de usabilidade', concluida: true },
+              { texto: 'Criar template unificado no Notion/Figma', concluida: true },
+              { texto: 'Capacitar os demais designers da equipe', concluida: false }
+            ]
+          });
+
+          criarCardPdi({
+            meta: 'Condução de testes do SGPJ e mentoria de pares',
+            apoio: 'Espaço nas agendas para reuniões de repasse',
+            progresso: 50,
+            submetas: [
+              { texto: 'Passagem de conhecimento para a Juliana', concluida: true },
+              { texto: 'Acompanhamento da primeira sessão liderada por ela', concluida: false }
+            ]
+          });
+
+          criarCardFeedbackPdf({
+            tipo: 'Positivo',
+            pessoa: 'MAX',
+            data: '15 de jan de 2026',
+            situacao: 'Desafio na validação dos testes com entregadores e revendedores.',
+            acao: 'Criação ágil do roteiro e condução sem atrasos.',
+            resultado: 'Entrega com alta clareza de dados e aprovação unânime dos stakeholders.'
+          });
+
+          criarCardSbi({
+            situacao: 'Prazo curto para apresentação dos testes do SGPJ.',
+            comportamento: 'Validação realizada sem checklist prévio com o time técnico.',
+            resultado: 'Necessidade de pequeno retrabalho no protótipo.',
+            melhoria: 'Alinhar as diretrizes do teste 48h antes com o time de engenharia.',
+            resultadoEsperado: 'Entrega fluida sem surpresas técnicas de última hora.'
+          });
+
+          criarLinhaAcao({ tarefa: 'Finalizar documentação do Método Pure', prazo: today, status: 'Em Andamento' });
+          criarLinhaAcao({ tarefa: 'Reunião de alinhamento com a Juliana para testes', prazo: today, status: 'Pendente' });
+
+          getInitialUxStages().forEach(stg => criarCardUxStage(stg));
+          atualizarHudStats();
+          return;
+        }
+
+        preencherFormulario(JSON.parse(saved));
+      }
+
+      // Atalho de Teclado Ctrl + S
+      window.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+          e.preventDefault();
+          salvarTudo(true);
+        }
+      });
+
+      // Exportar / Importar JSON
+      const btnExportJson = document.getElementById('btn-export-json');
+      const inputImportJson = document.getElementById('input-import-json');
+
+      if (btnExportJson) {
+        btnExportJson.addEventListener('click', () => {
+          const dadosCompletos = {
+            formulario: obterDadosFormulario(),
+            historicoSentimentos: getHistoricoSentimentos(),
+            versao: '1:1-Zelda-ALttP-v6-Enhanced',
+            exportadoEm: new Date().toISOString()
+          };
+
+          const blob = new Blob([JSON.stringify(dadosCompletos, null, 2)], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          const dataSessao = document.getElementById('sessao-data').value || today;
+          a.href = url;
+          a.download = `1on1_zelda_backup_${dataSessao}.json`;
+          a.click();
+          URL.revokeObjectURL(url);
+          showZeldaToast('📦 Backup exportado com sucesso!');
+        });
+      }
+
+      if (inputImportJson) {
+        inputImportJson.addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            try {
+              const parsed = JSON.parse(event.target.result);
+              if (parsed.formulario) {
+                preencherFormulario(parsed.formulario);
+                if (parsed.historicoSentimentos) {
+                  localStorage.setItem('zelda_1on1_sentiment_history_v6', JSON.stringify(parsed.historicoSentimentos));
+                  renderHistoricoSentimentos();
+                }
+                salvarTudo(false);
+                showZeldaToast('📥 Dados importados com sucesso!');
+              } else {
+                alert('Arquivo JSON não possui formato compatível.');
+              }
+            } catch (err) {
+              alert('Erro ao processar JSON: ' + err.message);
+            }
+          };
+          reader.readAsText(file);
+        });
+      }
+
+      const btnSalvarTudo = document.getElementById('btn-salvar-tudo');
+      if (btnSalvarTudo) btnSalvarTudo.addEventListener('click', () => salvarTudo(true));
+
+      const btnLimpar = document.getElementById('btn-limpar');
+      if (btnLimpar) {
+        btnLimpar.addEventListener('click', () => {
+          if (confirm('Deseja realmente resetar e limpar todos os dados salvos?')) {
+            localStorage.removeItem('zelda_1on1_final_data_v6_enhanced');
+            localStorage.removeItem('zelda_1on1_sentiment_history_v6');
+            localStorage.removeItem('zelda_1on1_kanban_cards_v6');
+            location.reload();
+          }
+        });
+      }
+
+      const btnImprimir = document.getElementById('btn-imprimir');
+      if (btnImprimir) btnImprimir.addEventListener('click', () => window.print());
+
+      carregarTudo();
+    });
+  </script>
+</body>
+</html>
