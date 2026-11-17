@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOVE Brasil (CAIXA) — UX Research Case Study | Estéfano Pietragalla</title>
+    <meta name="description"
+        content="Estudo de UX Research exploratório e estruturante para o Programa MOVE Brasil da CAIXA, focado em financiamento de motos e carros para trabalhadores de aplicativos (Gig Economy).">
+    <meta name="keywords"
+        content="UX Research, Research Ops, Discovery, MOVE Brasil, CAIXA, Gig Economy, Estéfano Pietragalla, Portfólio UX">
+    <meta name="author" content="Estéfano Pietragalla">
+    <meta name="robots" content="index, follow">
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Programa MOVE Brasil (CAIXA) | Estéfano Pietragalla">
+    <meta property="og:description"
+        content="Como conduzimos a descoberta estratégica de UX Research para viabilizar o acesso ao crédito de veículos para motoboys e motoristas de aplicativos.">
+    <meta property="og:image" content="imagens/cover_movebrasil.webp">
+    <meta property="og:url" content="https://epietragalla.com/movebrasil.html">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cascadia+Code:wght@400;600;700&family=Hanken+Grotesk:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Estéfano Pietragalla",
+      "jobTitle": "Senior UX Researcher & Product Designer Specialist",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Brasília",
+        "addressRegion": "DF",
+        "addressCountry": "BR"
+      }
+    }
+    </script>
+
+    <!-- Estilos pontuais exclusivos dos componentes deste case (integrados às variáveis do style.css) -->
+    <style>
+        .case-section {
+            padding: 90px 0;
+            border-top: 1px solid var(--timeline-line);
+            position: relative;
+        }
+
+        .main-section-heading {
+            font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+            line-height: 1.2;
+            margin-bottom: 24px;
+        }
+
+        .bullet-list {
+            list-style-type: disc;
+            padding-left: 20px;
+            margin-top: 16px;
+            color: var(--text-secondary);
+            font-size: 0.96rem;
+            line-height: 1.75;
+        }
+
+        .bullet-list li {
+            margin-bottom: 10px;
+        }
+
+        .bullet-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .bullet-list li strong {
+            color: var(--text-primary);
+        }
+
+        .grid-2-cols {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        .grid-3-cols {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .grid-4-cols {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        /* Badges de Status do Roadmap */
+        .status-badge {
+            display: inline-block;
+            font-family: 'Cascadia Code', monospace;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 50px;
+            margin-bottom: 12px;
+        }
+
+        .status-done {
+            background: rgba(16, 185, 129, 0.14);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.35);
+        }
+
+        .status-paused {
+            background: rgba(245, 158, 11, 0.14);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.35);
+        }
+
+        .status-cancel {
+            background: var(--tag-bg);
+            color: var(--accent-color);
+            border: 1px solid var(--accent-color);
+        }
+
+        /* Barras de Progresso Comparativas */
+        .stat-bar-group {
+            margin-bottom: 16px;
+        }
+
+        .stat-bar-header {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Cascadia Code', monospace;
+            font-size: 0.82rem;
+            margin-bottom: 6px;
+        }
+
+        .stat-bar-track {
+            width: 100%;
+            height: 10px;
+            background: var(--timeline-line);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .stat-bar-fill {
+            height: 100%;
+            background: var(--accent-color);
+            border-radius: 6px;
+        }
+
+        /* Abas Interativas */
+        .tabs-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 1px solid var(--timeline-line);
+            color: var(--text-secondary);
+            font-family: 'Cascadia Code', monospace;
+            font-size: 0.84rem;
+            font-weight: 600;
+            padding: 10px 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .tab-btn.active,
+        .tab-btn:hover {
+            border-color: var(--accent-color);
+            color: var(--text-primary);
+            background-color: var(--tag-bg);
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        /* Tabela de Cotação de Mercado */
+        .table-responsive-scroll {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid var(--timeline-line);
+        }
+
+        .indicators-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.92rem;
+        }
+
+        .indicators-table th {
+            font-family: 'Cascadia Code', monospace;
+            font-size: 0.78rem;
+            color: var(--accent-color);
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--timeline-line);
+            white-space: nowrap;
+        }
+
+        .indicators-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--timeline-line);
+            color: var(--text-secondary);
+        }
+
+        .indicators-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .td-indicator {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .price-over {
+            color: var(--accent-color);
+            font-family: 'Cascadia Code', monospace;
+            font-weight: 600;
+        }
+
+        .price-ok {
+            color: #10b981;
+            font-family: 'Cascadia Code', monospace;
+            font-weight: 600;
+        }
+
+        @media (max-width: 900px) {
+            .grid-3-cols,
+            .grid-4-cols {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 680px) {
+            .grid-2-cols,
+            .grid-3-cols,
+            .grid-4-cols {
+                grid-template-columns: 1fr;
+            }
+            .case-section {
+                padding: 65px 0;
+            }
+        }
+    </style>
+</head>
+
+<body id="body">
+
+    <header id="main-header">
+        <nav>
+            <a href="index.html" class="logo">epietragalla<span class="text-accent">.</span></a>
+            <div class="nav-links">
+                <a href="index.html#sobre">sobre</a>
+                <a href="index.html#o-que-faco">o que faço</a>
+                <a href="index.html#carreira">minha jornada</a>
+                <a href="index.html#cases">projetos</a>
+                <a href="index.html#acredito">o que acredito</a>
+                <a href="index.html#laboratorio">laboratório</a>
+                <a href="#contato">contato</a>
+            </div>
+            <div class="nav-actions">
+                <button id="theme-toggle" class="theme-toggle" aria-label="Alternar tema">🌓</button>
+                <a href="#contato" class="nav-btn">Vamos conversar</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- HERO DO CASE STUDY -->
+        <section id="hero" class="hero" style="min-height: auto; height: auto; padding: 70px 0 80px 0;">
+            <div id="parallax-shapes-container" class="parallax-shapes-container"></div>
+            <div class="container animate-on-scroll fade-up" style="position: relative; z-index: 2;">
+
+                <p class="hero-role-tag" style="margin-bottom: 16px;">
+                    — CASE STUDY &middot; PROGRAMA MOVE BRASIL (CAIXA) &middot; UX RESEARCH &amp; DISCOVERY &middot; 2025–2026 —
+                </p>
+
+                <h1 class="display-large hero-name" style="font-size: clamp(2.2rem, 4.8vw, 3.8rem); line-height: 1.12; margin-bottom: 22px;">
+                    Avaliação do Programa <span class="text-accent italic">MOVE Brasil</span> — Crédito de veículos para a Gig Economy<span class="dot1">.</span>
+                </h1>
+
+                <p style="max-width: 900px; font-size: 1.3rem; font-weight: 600; margin-bottom: 20px;">
+                    Pesquisa exploratória e estruturante conduzida pelo Capítulo de UX (GECPA 04 / Research Ops) para viabilizar o financiamento de motos e carros no CAIXA TEM.
+                </p>
+
+                <p class="sobre-bio" style="max-width: 880px; font-size: 1.05rem;">
+                    Como apoiar trabalhadores autônomos de aplicativos (motoboys, entregadores e motoristas) que fogem ao modelo tradicional de análise de crédito por não possuírem renda formal comprovada? Neste estudo de descoberta, investigamos a realidade de quem trabalha nas ruas e de quem vende os veículos, confrontando as regras iniciais do programa com os preços reais do mercado brasileiro.
+                </p>
+
+                <div style="width: 100%; height: 1px; background: var(--timeline-line); margin: 32px 0;"></div>
+
+                <div class="tag-list grid-cascade" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 24px;">
+                    <div>
+                        <span class="small-title text-accent" style="display: block; font-size: 0.8rem; letter-spacing: 1px; font-family: 'Cascadia Code', monospace;">CLIENTE / CONTEXTO</span>
+                        <span style="font-weight: 700;">CAIXA (GECPA 04 &middot; CAIXA TEM)</span>
+                    </div>
+                    <div>
+                        <span class="small-title text-accent" style="display: block; font-size: 0.8rem; letter-spacing: 1px; font-family: 'Cascadia Code', monospace;">MEU PAPEL</span>
+                        <span style="font-weight: 700;">Pesquisador de UX (UX Researcher)</span>
+                    </div>
+                    <div>
+                        <span class="small-title text-accent" style="display: block; font-size: 0.8rem; letter-spacing: 1px; font-family: 'Cascadia Code', monospace;">TIME DE PESQUISA</span>
+                        <span style="font-weight: 700;">1 Líder + 6 UX Researchers</span>
+                    </div>
+                    <div>
+                        <span class="small-title text-accent" style="display: block; font-size: 0.8rem; letter-spacing: 1px; font-family: 'Cascadia Code', monospace;">JANELA DO PROJETO</span>
+                        <span style="font-weight: 700;">Dez/2025 — Fev/2026 (Pausado)</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SEÇÃO 01: CONTEXTO & MERCADO -->
+        <section id="contexto" class="case-section">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll fade-up"><span class="text-accent">01 —</span> contexto &amp; panorama de mercado</h2>
+                <h3 class="main-section-heading animate-on-scroll fade-up">Girando a economia em 2 e 4 rodas</h3>
+
+                <p class="sobre-bio animate-on-scroll fade-up" style="max-width: 900px; font-size: 1.1rem;">
+                    O trabalho mediado por plataformas digitais consolidou-se como fonte de sustento para milhões de brasileiros. Contudo, a informalidade e a variabilidade da renda criam uma barreira estrutural no sistema financeiro tradicional: o trabalhador depende do veículo para gerar renda, mas não consegue comprovar renda formal para financiá-lo.
+                </p>
+
+                <!-- Macro números de mercado -->
+                <div class="metrics-grid grid-cascade animate-on-scroll fade-up" style="margin: 40px 0;">
+                    <div class="metric-item">
+                        <span class="big-number">385<span class="text-accent" style="font-size: 1.5rem;">mil</span></span>
+                        <span class="small-title text-accent">Motoboys</span>
+                        <span class="small-desc">estimativa atuando em plataformas de entrega</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="big-number">878<span class="text-accent" style="font-size: 1.5rem;">mil</span></span>
+                        <span class="small-title text-accent">Motoristas</span>
+                        <span class="small-desc">estimativa atuando em apps de mobilidade/entrega</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="big-number">71,1<span class="text-accent" style="font-size: 1.5rem;">%</span></span>
+                        <span class="small-title text-accent">Informalidade</span>
+                        <span class="small-desc">trabalhadores de apps sem vínculo formal</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="big-number">20–35<span class="text-accent" style="font-size: 1.5rem;">%</span></span>
+                        <span class="small-title text-accent">Comprometimento</span>
+                        <span class="small-desc">do faturamento mensal gasto com parcela</span>
+                    </div>
+                </div>
+
+                <!-- Preferência de marcas no mercado -->
+                <div class="grid-2-cols grid-cascade animate-on-scroll fade-up">
+                    <div class="belief-box">
+                        <p class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace; margin-bottom: 16px;">MARKET SHARE &middot; PREFERÊNCIA ENTRE ENTREGADORES (MOTOS)</p>
+                        <div class="stat-bar-group">
+                            <div class="stat-bar-header"><span>1º Honda</span><span>77,24%</span></div>
+                            <div class="stat-bar-track"><div class="stat-bar-fill" style="width: 77.24%;"></div></div>
+                        </div>
+                        <div class="stat-bar-group">
+                            <div class="stat-bar-header"><span>2º Yamaha</span><span>14,76%</span></div>
+                            <div class="stat-bar-track"><div class="stat-bar-fill" style="width: 14.76%;"></div></div>
+                        </div>
+                        <div class="stat-bar-group" style="margin-bottom: 0;">
+                            <div class="stat-bar-header"><span>3º Mottu (Aluguel)</span><span>4,40%</span></div>
+                            <div class="stat-bar-track"><div class="stat-bar-fill" style="width: 4.4%;"></div></div>
+                        </div>
+                    </div>
+
+                    <div class="belief-box">
+                        <p class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace; margin-bottom: 16px;">MARKET SHARE &middot; PREFERÊNCIA ENTRE MOTORISTAS (CARROS)</p>
+                        <div class="stat-bar-group">
+                            <div class="stat-bar-header"><span>1º Fiat</span><span>20,93%</span></div>
+                            <div class="stat-bar-track"><div class="stat-bar-fill" style="width: 20.93%;"></div></div>
+                        </div>
+                        <div class="stat-bar-group">
+                            <div class="stat-bar-header"><span>2º Volkswagen</span><span>17,11%</span></div>
+                            <div class="stat-bar-track"><div class="stat-bar-fill" style="width: 17.11%;"></div></div>
+                        </div>
+                        <div class="stat-bar-group" style="margin-bottom: 0;">
+                            <div class="stat-bar-header"><span>3º Chevrolet</span><span>10,82%</span></div>
+                            <div class="stat-bar-track"><div class="stat-bar-fill" style="width: 10.82%;"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 02: OBJETIVO & ESCOPO -->
+        <section id="objetivo" class="case-section">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll fade-up"><span class="text-accent">02 —</span> objetivo &amp; escopo</h2>
+                <h3 class="main-section-heading animate-on-scroll fade-up">Desmistificando o crédito para quem vive das ruas</h3>
+
+                <div class="quote-wrapper animate-on-scroll fade-up" style="margin: 30px 0; border-left: 4px solid var(--accent-color); padding: 25px; border-radius: 8px; max-width: 100%; text-align: left;">
+                    <p style="font-size: 0.9rem; font-family: 'Cascadia Code', monospace; color: var(--accent-color); margin-bottom: 10px;">OBJETIVO GERAL</p>
+                    <blockquote class="quote-text" style="font-size: 1.35rem; font-style: normal; line-height: 1.45; margin-bottom: 0;">
+                        "Apoiar a CAIXA na compreensão das oportunidades, desafios e caminhos estratégicos para atender trabalhadores autônomos da Gig Economy por meio de financiamento de veículos, estruturando soluções prioritariamente no CAIXA TEM."
+                    </blockquote>
+                </div>
+
+                <div class="grid-3-cols grid-cascade animate-on-scroll fade-up">
+                    <div class="belief-box">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">01 / ENTREGÁVEL MVP</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">Relatório Estratégico MOVE Brasil</h4>
+                        <p class="belief-desc">
+                            Diagnóstico completo sobre como o programa pode atuar junto a trabalhadores (motoboys, entregadores e motoristas) e comerciantes (concessionárias e lojas de seminovos).
+                        </p>
+                    </div>
+
+                    <div class="belief-box">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">02 / RECORTE DA AMOSTRA</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">Motos (Concluído) vs. Carros (Parcial)</h4>
+                        <p class="belief-desc">
+                            A frente de <strong>Motos</strong> foi 100% concluída em 13/02/2026. A frente de <strong>Carros</strong> foi interrompida antes do mínimo viável devido à pausa institucional do projeto em 25/02/2026 (amostra coletada: 2/10 motoristas e 3/10 comerciantes).
+                        </p>
+                    </div>
+
+                    <div class="belief-box">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">03 / FORA DE ESCOPO</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">Segmento de Caminhões</h4>
+                        <p class="belief-desc">
+                            Embora o programa governamental também preveja linha para caminhões, a pesquisa para esse modal não chegou a ser iniciada antes da pausa do cronograma.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 03: PROCESSO & ROADMAP -->
+        <section id="processo" class="case-section">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll fade-up"><span class="text-accent">03 —</span> processo &amp; governança</h2>
+                <h3 class="main-section-heading animate-on-scroll fade-up">Organização do time e Roadmap de Pesquisa</h3>
+
+                <p class="sobre-bio animate-on-scroll fade-up" style="max-width: 900px; font-size: 1.1rem;">
+                    O projeto iniciou em <strong>12/12/2025</strong> com ritos contínuos entre stakeholders da CAIXA, comunidades de UX e construção da Matriz CSD (Certezas, Suposições e Dúvidas), partindo de um briefing estruturado com a alta gestão para alinhamento de KPIs.
+                </p>
+
+                <div class="grid-4-cols grid-cascade animate-on-scroll fade-up">
+                    <div class="belief-box">
+                        <span class="status-badge status-done">✓ CONCLUÍDA</span>
+                        <p class="case-meta" style="font-family: 'Cascadia Code', monospace;">DEZEMBRO 2025</p>
+                        <h4 class="belief-title" style="margin-top: 8px;">Fase 1: Start &amp; Briefing</h4>
+                        <p class="belief-desc">Entrevistas com lideranças de TI e Negócios, Matriz CSD e entrega do plano inicial em 30/12/2025.</p>
+                    </div>
+
+                    <div class="belief-box">
+                        <span class="status-badge status-done">✓ CONCLUÍDA</span>
+                        <p class="case-meta" style="font-family: 'Cascadia Code', monospace;">JAN — FEV 2026</p>
+                        <h4 class="belief-title" style="margin-top: 8px;">Entregável 2: Descoberta MOTO</h4>
+                        <p class="belief-desc">26 entrevistas em profundidade (16 motoboys + 10 comerciantes), cotação nacional e jornada atual. Entregue em 13/02/2026.</p>
+                    </div>
+
+                    <div class="belief-box">
+                        <span class="status-badge status-paused">II PAUSADA (25/02)</span>
+                        <p class="case-meta" style="font-family: 'Cascadia Code', monospace;">FEVEREIRO 2026</p>
+                        <h4 class="belief-title" style="margin-top: 8px;">Entregável 3: Descoberta CARRO</h4>
+                        <p class="belief-desc">5 entrevistas realizadas (2 motoristas + 3 comerciantes em Sorocaba/SP) antes da pausa do projeto.</p>
+                    </div>
+
+                    <div class="belief-box">
+                        <span class="status-badge status-cancel">✕ NÃO REALIZADA</span>
+                        <p class="case-meta" style="font-family: 'Cascadia Code', monospace;">MAR — MAI 2026</p>
+                        <h4 class="belief-title" style="margin-top: 8px;">Fase 3: Ideação &amp; Caminhões</h4>
+                        <p class="belief-desc">Desenho das Jornadas Ideais (Moto, Carro e Caminhão) previstos até maio/2026, suspensos pela pausa.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 04: DESCOBERTA — ENTREVISTAS EM PROFUNDIDADE -->
+        <section id="pesquisa" class="case-section">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll fade-up"><span class="text-accent">04 —</span> descoberta: entrevistas em profundidade</h2>
+                <h3 class="main-section-heading animate-on-scroll fade-up">Os dois lados do balcão: quem pilota e quem vende</h3>
+
+                <p class="sobre-bio animate-on-scroll fade-up" style="max-width: 900px; font-size: 1.1rem;">
+                    Para ter uma visão sistêmica da cadeia de financiamento, entrevistamos <strong>31 participantes</strong> no total (entre DF, GO e SP), divididos entre trabalhadores que usam o veículo como ferramenta de sustento e lojistas/concessionárias que operam as vendas na ponta.
+                </p>
+
+                <!-- Navegação por Abas -->
+                <div class="tabs-nav animate-on-scroll fade-up" role="tablist">
+                    <button class="tab-btn active" data-tab="tab-motoboys">1. Motoboys (n=16)</button>
+                    <button class="tab-btn" data-tab="tab-lojistas-moto">2. Lojistas de Moto (n=10)</button>
+                    <button class="tab-btn" data-tab="tab-motoristas">3. Motoristas de App (n=2)</button>
+                    <button class="tab-btn" data-tab="tab-lojistas-carro">4. Lojistas de Carro (n=3)</button>
+                </div>
+
+                <!-- ABA 1: MOTOBOYS -->
+                <div id="tab-motoboys" class="tab-panel active belief-box" style="transform: none;">
+                    <div class="grid-2-cols">
+                        <div>
+                            <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">PERFIL DOS TRABALHADORES &middot; DF, GO E SP</span>
+                            <h4 class="belief-title" style="margin-top: 10px;">A moto é a fonte principal de sustento e desejo de emancipação</h4>
+                            <ul class="bullet-list">
+                                <li><strong>Demografia:</strong> 100% homens; 56% jovens adultos (25 a 36 anos) e 25% jovens (18 a 24 anos).</li>
+                                <li><strong>Renda mensal:</strong> 56% ganham de 1 a 3 salários mínimos; 25% até 1 salário mínimo.</li>
+                                <li><strong>Multi-aplicativos:</strong> Trabalham em média em <strong>4 apps simultaneamente</strong> (iFood 26%, 99 17%, Uber 12%, Rappi 12%).</li>
+                                <li><strong>Dependência do ativo:</strong> 75% têm a moto como ocupação principal e 19% usam veículos de terceiros para trabalhar.</li>
+                                <li><strong>Modelos mais usados:</strong> Predomínio de <strong>160cc (38%)</strong> — Honda Fan, Cargo, Start e Bros.</li>
+                            </ul>
+                        </div>
+                        <div style="padding: 24px; border-radius: 8px; border: 1px solid var(--timeline-line);">
+                            <p class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace; margin-bottom: 14px;">IMPACTO DA PROPOSTA MOVE BRASIL NA INTENÇÃO DE COMPRA</p>
+                            <p class="belief-desc" style="margin-bottom: 18px;">
+                                Antes de conhecerem o programa, a maioria descartava trocar de moto devido à falta de capital e nome negativado. Após a apresentação das condições do MOVE Brasil, o cenário inverteu:
+                            </p>
+                            <div class="stat-bar-group">
+                                <div class="stat-bar-header"><span>Antes do MOVE Brasil (Tinham interesse)</span><span>44%</span></div>
+                                <div class="stat-bar-track"><div class="stat-bar-fill" style="width: 44%; background: var(--text-secondary);"></div></div>
+                            </div>
+                            <div class="stat-bar-group">
+                                <div class="stat-bar-header"><span>Após conhecer o MOVE Brasil (Interessados)</span><span>63%</span></div>
+                                <div class="stat-bar-track"><div class="stat-bar-fill" style="width: 63%;"></div></div>
+                            </div>
+                            <p style="font-size: 0.9rem; margin-top: 18px; font-weight: 600;">
+                                Entre os interessados: 50% trocariam a moto atual e 50% comprariam um 2º veículo (moto ou carro) para ampliar a renda ou empregar familiares.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ABA 2: LOJISTAS DE MOTO -->
+                <div id="tab-lojistas-moto" class="tab-panel belief-box" style="transform: none;">
+                    <div class="grid-2-cols">
+                        <div>
+                            <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">5 CONCESSIONÁRIAS 0KM + 5 LOJAS SEMINOVOS</span>
+                            <h4 class="belief-title" style="margin-top: 10px;">A barreira do cadastro reprovado e o recurso aos "laranjas"</h4>
+                            <ul class="bullet-list">
+                                <li><strong>Peso da Gig Economy:</strong> 44% das vendas têm finalidade de trabalho (32% PF em aplicativos + 12% PJ entregas).</li>
+                                <li><strong>Meio de acesso:</strong> 90% afirmam que o financiamento é a via mais acessível para esse público.</li>
+                                <li><strong>Gargalo crítico:</strong> <strong>69% das vendas perdidas</strong> ocorrem por restrições no cadastro/score do cliente.</li>
+                                <li><strong>Contorno informal:</strong> Metade dos lojistas relata realizar vendas financiadas no CPF de terceiros (familiares/amigos) porque o condutor real está negativado.</li>
+                            </ul>
+                        </div>
+                        <div style="padding: 24px; border-radius: 8px; border: 1px solid var(--timeline-line);">
+                            <p class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace; margin-bottom: 14px;">O QUE OS LOJISTAS PEDEM À CAIXA</p>
+                            <p class="belief-desc">
+                                Os comerciantes consideram os juros do MOVE Brasil muito competitivos frente ao mercado, mas alertam para dois pontos operacionais:
+                            </p>
+                            <ul class="bullet-list">
+                                <li><strong>Integração ágil:</strong> Sugerem que a CAIXA utilize uma plataforma multi-bancos semelhante às que já operam na loja para evitar burocracia e demora na liberação do pagamento.</li>
+                                <li><strong>Concorrência com locadoras:</strong> Sem aprovação simplificada, o lojista perde o cliente para empresas de aluguel de motos (ex: Mottu), que não exigem score bancário.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ABA 3: MOTORISTAS DE APP -->
+                <div id="tab-motoristas" class="tab-panel belief-box" style="transform: none;">
+                    <div class="grid-2-cols">
+                        <div>
+                            <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">AMOSTRA PARCIAL (n=2) &middot; SÃO PAULO/SP</span>
+                            <h4 class="belief-title" style="margin-top: 10px;">"Pés no chão evita quedas bruscas"</h4>
+                            <ul class="bullet-list">
+                                <li><strong>Perfil:</strong> Homens acima de 37 anos, renda entre 1 e 3 salários mínimos, atuando há menos de 3 anos nos apps (Uber, 99, Lalamove).</li>
+                                <li><strong>Papel dos apps:</strong> Para 50% é ocupação principal; para os outros 50% funciona como complementação de renda.</li>
+                                <li><strong>Veículos atuais:</strong> Adquiridos antes do ingresso nos aplicativos (Chevrolet Onix LT 2019 e Hyundai HB20 2017).</li>
+                            </ul>
+                        </div>
+                        <div style="padding: 24px; border-radius: 8px; border: 1px solid var(--timeline-line);">
+                            <p class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace; margin-bottom: 14px;">MOTOBOYS VS. MOTORISTAS: MENTALIDADES DISTINTAS</p>
+                            <p class="belief-desc" style="line-height: 1.75;">
+                                Enquanto <strong>motoboys</strong> enxergam o programa como oportunidade imediata de expandir patrimônio e montar pequena frota, os <strong>motoristas de carro</strong> mostram-se mais cautelosos (50% de interesse antes e depois de conhecer o programa). Eles priorizam estabilidade financeira antes de assumir novas parcelas, exigindo juros muito baixos e facilidade real de pagamento.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ABA 4: LOJISTAS DE CARRO -->
+                <div id="tab-lojistas-carro" class="tab-panel belief-box" style="transform: none;">
+                    <div class="grid-2-cols">
+                        <div>
+                            <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">AMOSTRA PARCIAL (n=3) &middot; SOROCABA/SP</span>
+                            <h4 class="belief-title" style="margin-top: 10px;">O choque com os bancos das montadoras (Taxa Zero)</h4>
+                            <ul class="bullet-list">
+                                <li><strong>Estabelecimentos:</strong> 2 concessionárias 0km (Chevrolet e Peugeot) e 1 loja de seminovos/usados.</li>
+                                <li><strong>Modelos mais buscados:</strong> Chevrolet Onix (40%), Peugeot 208 (20%), Hyundai HB20 (20%) e Fiat Argo (20%).</li>
+                                <li><strong>Vendas perdidas:</strong> 63% das vendas não concretizadas ocorrem por restrição cadastral do comprador.</li>
+                                <li><strong>Desgaste do ativo:</strong> Lojistas relatam dificuldade na revenda de carros e motos oriundos de apps devido à alta quilometragem e desgaste severo.</li>
+                            </ul>
+                        </div>
+                        <div style="padding: 24px; border-radius: 8px; border: 1px solid var(--timeline-line);">
+                            <p class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace; margin-bottom: 14px;">POR QUE AS CONCESSIONÁRIAS 0KM NÃO SE EMPOLGAM?</p>
+                            <p class="belief-desc" style="line-height: 1.75;">
+                                Em lojas de seminovos, a taxa do MOVE Brasil (até 13,5% a.a.) é excelente frente aos 27%–29% a.a. do mercado. Porém, nas <strong>concessionárias 0km</strong>, os bancos próprios das montadoras (ex: Banco GM) oferecem <strong>taxa 0%</strong> mediante 60% de entrada — e os vendedores chegam a sugerir empréstimo consignado de familiares para cobrir essa entrada. Além disso, pedem um sistema que deixe transparente a comissão/retorno real do lojista.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 05: MAPEAMENTO DA JORNADA ATUAL -->
+        <section id="jornada" class="case-section">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll fade-up"><span class="text-accent">05 —</span> jornada atual (as-is)</h2>
+                <h3 class="main-section-heading animate-on-scroll fade-up">Uma jornada burocrática e excludente</h3>
+
+                <p class="sobre-bio animate-on-scroll fade-up" style="max-width: 900px; font-size: 1.1rem;">
+                    Após a pesquisa de campo de motos, mapeamos o fluxo completo de aquisição nas lojas através dos quatro métodos de pagamento existentes, expondo os pontos de ruptura tanto para o trabalhador quanto para o comerciante:
+                </p>
+
+                <div class="grid-3-cols grid-cascade animate-on-scroll fade-up">
+                    <div class="belief-box" style="border-left: 4px solid var(--accent-color);">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">MODALIDADE 01</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">Financiamento Tradicional</h4>
+                        <ul class="bullet-list">
+                            <li><strong>Dor do Cliente:</strong> Exigência de entrada alta (15% a 20%) e reprovação imediata por score baixo/restrição, obrigando o uso de CPF de terceiros.</li>
+                            <li><strong>Dor do Lojista:</strong> Malabarismo manual entre múltiplos sistemas bancários e atrasos na liberação do recurso no caixa da loja.</li>
+                        </ul>
+                    </div>
+
+                    <div class="belief-box" style="border-left: 4px solid var(--accent-color);">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">MODALIDADE 02</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">Consórcio</h4>
+                        <ul class="bullet-list">
+                            <li><strong>Dor do Cliente:</strong> Também barra restrições cadastrais e depende de sorteio ou lances altos (inviáveis para quem precisa trabalhar imediatamente).</li>
+                            <li><strong>Dor do Lojista:</strong> Exige trâmite adicional de transferência e faturamento no CNPJ da loja para liberar a carta de crédito.</li>
+                        </ul>
+                    </div>
+
+                    <div class="belief-box" style="border-left: 4px solid var(--accent-color);">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">MODALIDADE 03</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">À Vista / Cartão Parcelado</h4>
+                        <ul class="bullet-list">
+                            <li><strong>Fluxo:</strong> É o único caminho simples e sem análise de crédito bancário (PIX, dinheiro, débito ou limite no cartão), porém inacessível à vasta maioria dos trabalhadores informais que não possuem reserva financeira ou limite alto.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 06: PROPOSTA DE VALOR VS. REALIDADE DE MERCADO -->
+        <section id="regras-mercado" class="case-section">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll fade-up"><span class="text-accent">06 —</span> diagnóstico crítico: regras vs. realidade</h2>
+                <h3 class="main-section-heading animate-on-scroll fade-up">Como o MOVE Brasil ajuda — e onde o teto de preço trava o programa</h3>
+
+                <p class="sobre-bio animate-on-scroll fade-up" style="max-width: 900px; font-size: 1.1rem;">
+                    O programa traz diferenciais poderosos para destravar o crédito na base da pirâmide, mas o cruzamento com cotações reais em concessionárias de 5 regiões do Brasil revelou uma defasagem crítica nos tetos estipulados para motocicletas.
+                </p>
+
+                <!-- Comparativo O que Resolve -->
+                <div class="grid-3-cols grid-cascade animate-on-scroll fade-up" style="margin-bottom: 40px;">
+                    <div class="belief-box">
+                        <span class="case-meta" style="font-family: 'Cascadia Code', monospace; color: #10b981;">✓ DIFERENCIAL 01</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">Inclusão de Negativados</h4>
+                        <p class="belief-desc">
+                            Assume o risco de crédito para score baixo ou nome restrito, permitindo que o próprio condutor seja o titular do bem (fim dos "laranjas").
+                        </p>
+                    </div>
+                    <div class="belief-box">
+                        <span class="case-meta" style="font-family: 'Cascadia Code', monospace; color: #10b981;">✓ DIFERENCIAL 02</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">Entrada de 10% + Juros Baixos</h4>
+                        <p class="belief-desc">
+                            Reduz a entrada de 15–20% para <strong>10%</strong> e fixa juros máximos de <strong>14,7% a.a.</strong> (motos) e <strong>13,5% a.a.</strong> (carros), abaixo da média de mercado.
+                        </p>
+                    </div>
+                    <div class="belief-box">
+                        <span class="case-meta" style="font-family: 'Cascadia Code', monospace; color: #10b981;">✓ DIFERENCIAL 03</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">Segurança ao Lojista</h4>
+                        <p class="belief-desc">
+                            Pagamento garantido diretamente pela CAIXA e trava de não revenda por 2 anos, incentivando manutenção e fidelização para futura troca.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Alerta de Defasagem de Teto -->
+                <div class="quote-wrapper animate-on-scroll fade-up" style="margin: 30px 0; border-left: 4px solid var(--accent-color); padding: 25px; border-radius: 8px; max-width: 100%; text-align: left;">
+                    <p style="font-size: 0.9rem; font-family: 'Cascadia Code', monospace; color: var(--accent-color); margin-bottom: 10px;">O GRANDE ACHADO DA PESQUISA</p>
+                    <blockquote class="quote-text" style="font-size: 1.25rem; font-style: normal; line-height: 1.45; margin-bottom: 0;">
+                        As regras definem teto de até <strong>R$ 15 mil</strong> (Perfil A: Street 125cc ou scooters 110–125cc) e até <strong>R$ 20 mil</strong> (Perfil B: Street 160cc). Porém, as motos 125cc Street foram descontinuadas pelas montadoras e os modelos 160cc preferidos pelos motoboys ultrapassam R$ 20 mil na maioria das capitais.
+                    </blockquote>
+                </div>
+
+                <!-- Tabela de Cotação Nacional -->
+                <div class="animate-on-scroll fade-up" style="margin-top: 32px;">
+                    <p class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace; margin-bottom: 14px;">
+                        COTAÇÃO DE MERCADO (FEV/2026) &middot; MODELOS MAIS USADOS E VENDIDOS VS. TETO DE R$ 20.000
+                    </p>
+                    <div class="table-responsive-scroll">
+                        <table class="indicators-table">
+                            <thead>
+                                <tr>
+                                    <th align="left">MARCA / MODELO</th>
+                                    <th align="left">CILINDRADA</th>
+                                    <th align="left">SOROCABA/SP</th>
+                                    <th align="left">BRASÍLIA/DF</th>
+                                    <th align="left">RECIFE/PE</th>
+                                    <th align="right">ENQUADRAMENTO (TETO R$ 20K)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="td-indicator">Honda Elite (Scooter)</td>
+                                    <td>125cc</td>
+                                    <td>R$ 15.420</td>
+                                    <td>R$ 14.620</td>
+                                    <td>R$ 15.500</td>
+                                    <td align="right" class="price-ok">Dentro (Porém baixa adesão)</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-indicator">Honda Start 160</td>
+                                    <td>160cc</td>
+                                    <td>R$ 19.069</td>
+                                    <td>R$ 19.990</td>
+                                    <td>R$ 19.000</td>
+                                    <td align="right" class="price-ok">No limite do teto</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-indicator">Honda Cargo 160</td>
+                                    <td>160cc</td>
+                                    <td class="price-over">R$ 20.269</td>
+                                    <td>R$ 18.880</td>
+                                    <td class="price-over">R$ 20.500</td>
+                                    <td align="right" class="price-over">Estoura teto em SP/PE</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-indicator">Honda Fan 160 (Mais usada)</td>
+                                    <td>160cc</td>
+                                    <td class="price-over">R$ 20.789</td>
+                                    <td class="price-over">R$ 21.890</td>
+                                    <td class="price-over">R$ 20.800</td>
+                                    <td align="right" class="price-over">Acima do teto</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-indicator">Honda Titan 160</td>
+                                    <td>160cc</td>
+                                    <td class="price-over">R$ 22.399</td>
+                                    <td class="price-over">R$ 23.390</td>
+                                    <td class="price-over">R$ 22.300</td>
+                                    <td align="right" class="price-over">Acima do teto</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-indicator">Yamaha Factor 150</td>
+                                    <td>150cc</td>
+                                    <td class="price-over">R$ 20.264</td>
+                                    <td>R$ 17.690</td>
+                                    <td class="price-over">R$ 20.490</td>
+                                    <td align="right" class="price-over">Estoura teto em SP/PE/RS</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-indicator">Yamaha Fazer FZ15</td>
+                                    <td>150cc</td>
+                                    <td class="price-over">R$ 23.490</td>
+                                    <td class="price-over">R$ 22.227</td>
+                                    <td class="price-over">R$ 23.390</td>
+                                    <td align="right" class="price-over">Acima do teto</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-indicator">Bajaj Dominar 160 / Suzuki DK160</td>
+                                    <td>160cc</td>
+                                    <td>R$ 19.150 / R$ 16.950</td>
+                                    <td>R$ 19.150 / R$ 18.690</td>
+                                    <td>R$ 19.150 / —</td>
+                                    <td align="right" class="price-ok">Dentro do teto</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-indicator">Carros: Onix LT / HB20 / Argo / 208</td>
+                                    <td>1.0 Manual</td>
+                                    <td>R$ 89.990 a R$ 96.940</td>
+                                    <td>—</td>
+                                    <td>—</td>
+                                    <td align="right" class="price-ok">Dentro do teto de R$ 100k</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="case-meta" style="font-family: 'Cascadia Code', monospace; margin-top: 12px;">
+                        Benchmarking institucional (Fev/2026): Nenhum banco comercial (CAIXA, Banco do Brasil ou BNDES) havia operacionalizado o MOVE Brasil para motos/carros até a conclusão desta etapa.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 07: CONCLUSÕES E INSIGHTS ESTRATÉGICOS -->
+        <section id="insights" class="case-section">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll fade-up"><span class="text-accent">07 —</span> conclusões &amp; recomendações estratégicas</h2>
+                <h3 class="main-section-heading animate-on-scroll fade-up">Três pilares para tornar o MOVE Brasil viável na ponta</h3>
+
+                <div class="grid-3-cols grid-cascade animate-on-scroll fade-up">
+                    <!-- Pilar 1 -->
+                    <div class="belief-box">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">01 / CAPACIDADE DE COMPRA</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">O trabalhador vai conseguir comprar?</h4>
+                        <ul class="bullet-list">
+                            <li><strong>Revisão do Teto de Crédito:</strong> Ampliar a margem das motos de R$ 20 mil para <strong>R$ 25 mil a R$ 30 mil</strong> (ou incluir seminovos), cobrindo as 160cc que realmente sustentam o trabalho diário.</li>
+                            <li><strong>Alívio na Parcela (IPI):</strong> Uma moto de R$ 25 mil em 60x gera parcela base de R$ 416 sem juros — pesada para renda variável. Articular isenção/redução de impostos (como IPI em 2008) reduz o valor financiado.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Pilar 2 -->
+                    <div class="belief-box">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">02 / CONVERSÃO NA LOJA</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">O comerciante terá a venda garantida?</h4>
+                        <ul class="bullet-list">
+                            <li><strong>Fluxo Digital Ágil:</strong> Integrar a aprovação e o pagamento CAIXA em plataformas ágeis já familiares aos lojistas, vencendo a velocidade das locadoras e bancos de montadoras.</li>
+                            <li><strong>Combo de Acessórios:</strong> Permitir usar o saldo remanescente até o teto de crédito para financiar itens essenciais de trabalho (capacete, baú, capa de chuva; ou alarme/trava elétrica em carros).</li>
+                        </ul>
+                    </div>
+
+                    <!-- Pilar 3 -->
+                    <div class="belief-box">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">03 / SUSTENTABILIDADE &amp; PÓS-VENDA</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">Como garantir um pós-venda seguro?</h4>
+                        <ul class="bullet-list">
+                            <li><strong>Documentação Inclusa:</strong> Embutir custos iniciais (emplacamento, IPVA, vistoria/transferência) no crédito ou via parceria com Detran, evitando retenção do veículo em blitze.</li>
+                            <li><strong>Seguro CAIXA Gig Economy:</strong> Criar seguro auto/moto sob medida para trabalhadores de apps, protegendo sua renda contra sinistros e dias parados em oficina.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 08: O QUE APRENDI -->
+        <section id="retrospectiva" class="case-section">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll fade-up"><span class="text-accent">08 —</span> reflexões &amp; aprendizados</h2>
+                <h3 class="main-section-heading animate-on-scroll fade-up">O valor do Research Ops em políticas públicas e crédito</h3>
+
+                <div class="grid-2-cols grid-cascade animate-on-scroll fade-up">
+                    <div class="belief-box">
+                        <h4 class="belief-title">Triangulação entre Campo e Dados de Mercado</h4>
+                        <p class="belief-desc">
+                            Ouvir os usuários mostrou o desejo genuíno de sair do aluguel e do CPF de terceiros; porém, foi o cruzamento das entrevistas com a tabela de preços reais em cinco capitais que evitou o risco de lançar um produto financeiro com teto defasado frente à realidade das concessionárias.
+                        </p>
+                    </div>
+
+                    <div class="belief-box">
+                        <h4 class="belief-title">Transparência Metodológica em Cenários de Pausa</h4>
+                        <p class="belief-desc">
+                            Quando o projeto foi pausado em fevereiro de 2026, documentar com rigor o que estava estatisticamente e qualitativamente saturado (Motos) versus o que era apenas indicativo preliminar (Carros, n=5) garantiu integridade científica para futuras retomadas da CAIXA.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Links de Navegação entre Cases -->
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; width: 100%; margin-top: 60px; padding-top: 28px; border-top: 1px solid var(--timeline-line);"
+                    class="animate-on-scroll fade-up">
+                    <a href="conectatcu.html" class="nav-btn">&larr; Projeto Anterior: CONECTA-TCU</a>
+                    <a href="designopstcu.html" class="nav-btn">Próximo Projeto: DesignOps-TCU &rarr;</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO CONTATO -->
+        <section id="contato" class="contato">
+            <div class="container contato-content">
+                <div class="contato-left animate-on-scroll fade-right">
+                    <h2 class="contato-title">Vamos conversar<span class="dot1">.</span></h2>
+                </div>
+                <div class="contato-right animate-on-scroll fade-left">
+                    <ul class="contact-list">
+                        <li class="contact-item animate-on-scroll fade-up">
+                            <svg class="contact-arrow" viewBox="0 0 24 24">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                            <a href="mailto:epietragalla@gmail.com">epietragalla@gmail.com</a>
+                        </li>
+                        <li class="contact-item animate-on-scroll fade-up">
+                            <svg class="contact-arrow" viewBox="0 0 24 24">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                            <a href="https://wa.me/5561981794586" target="_blank">(61) 98179-4586</a>
+                        </li>
+                        <li class="contact-item animate-on-scroll fade-up">
+                            <svg class="contact-arrow" viewBox="0 0 24 24">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                            <a href="https://www.linkedin.com/in/epietragalla/" target="_blank">LinkedIn</a>
+                        </li>
+                        <li class="contact-item animate-on-scroll fade-up">
+                            <svg class="contact-arrow" viewBox="0 0 24 24">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                            <a href="https://epietragalla.medium.com/" target="_blank">Medium</a>
+                        </li>
+                        <li class="contact-item animate-on-scroll fade-up">
+                            <svg class="contact-arrow" viewBox="0 0 24 24">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                            <a href="cvepietragalla.pdf" target="_blank">Curriculum Vitae</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="container animate-on-scroll fade-up">
+        <p>© 2026 Estéfano Pietragalla · Brasília, DF — Brasil</p>
+    </footer>
+
+    <script>
+        // Alternador de Tema Dark / Light (usa classes do style.css)
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.getElementById('body');
+
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            body.classList.add(savedTheme);
+            updateToggleButton(savedTheme);
+        } else {
+            body.classList.add('dark-mode');
+            updateToggleButton('dark-mode');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.add('theme-blur');
+            setTimeout(() => {
+                if (body.classList.contains('light-mode')) {
+                    body.classList.remove('light-mode');
+                    body.classList.add('dark-mode');
+                    localStorage.setItem('theme', 'dark-mode');
+                    updateToggleButton('dark-mode');
+                } else {
+                    body.classList.remove('dark-mode');
+                    body.classList.add('light-mode');
+                    localStorage.setItem('theme', 'light-mode');
+                    updateToggleButton('light-mode');
+                }
+            }, 250);
+            setTimeout(() => {
+                body.classList.remove('theme-blur');
+            }, 500);
+        });
+
+        function updateToggleButton(theme) {
+            if (theme === 'dark-mode') {
+                themeToggle.innerHTML = `
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.22" x2="5.64" y2="17.78"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                `;
+            } else {
+                themeToggle.innerHTML = `
+                    <svg viewBox="0 0 24 24">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                `;
+            }
+        }
+
+        // Estilo no Header ao Rolar
+        const header = document.getElementById('main-header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // Abas Interativas da Pesquisa de Campo
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const tabPanels = document.querySelectorAll('.tab-panel');
+
+        tabButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetId = btn.getAttribute('data-tab');
+
+                tabButtons.forEach(b => b.classList.remove('active'));
+                tabPanels.forEach(p => p.classList.remove('active'));
+
+                btn.classList.add('active');
+                document.getElementById(targetId).classList.add('active');
+            });
+        });
+
+        // Efeito Parallax Geométrico (usa .p-shape do style.css)
+        const shapeConfig = {
+            containerId: 'parallax-shapes-container',
+            count: 15,
+            minSize: 40,
+            maxSize: 240,
+            minOpacity: 0.2,
+            maxOpacity: 0.12,
+            minSpeed: 0.05,
+            maxSpeed: 0.25,
+            types: ['square', 'triangle', 'hexagon']
+        };
+
+        const shapeContainer = document.getElementById(shapeConfig.containerId);
+        const shapes = [];
+        const random = (min, max) => Math.random() * (max - min) + min;
+
+        const initGeometricShapes = () => {
+            shapeContainer.innerHTML = '';
+            shapes.length = 0;
+
+            for (let i = 0; i < shapeConfig.count; i++) {
+                const type = shapeConfig.types[Math.floor(Math.random() * shapeConfig.types.length)];
+                const size = random(shapeConfig.minSize, shapeConfig.maxSize);
+                const opacity = random(shapeConfig.minOpacity, shapeConfig.maxOpacity);
+                const speed = random(shapeConfig.minSpeed, shapeConfig.maxSpeed);
+                const left = random(0, 95);
+                const initialTop = Math.random() < 0.65 ? random(0, 120) : random(120, 400);
+
+                const shapeEl = document.createElement('div');
+                shapeEl.className = `p-shape ${type}`;
+                shapeEl.style.width = `${size}px`;
+                shapeEl.style.height = `${size}px`;
+
+                const randomRotation = Math.floor(random(0, 360));
+                shapeEl.style.opacity = opacity;
+                shapeEl.style.left = `${left}%`;
+                shapeEl.style.top = `${initialTop}%`;
+                shapeEl.style.transform = `rotate(${randomRotation}deg)`;
+
+                shapeContainer.appendChild(shapeEl);
+
+                shapes.push({
+                    el: shapeEl,
+                    speed: speed,
+                    initialTop: initialTop,
+                    rotation: randomRotation
+                });
+            }
+        };
+
+        const updateParallaxShapes = () => {
+            const scrollY = window.scrollY;
+            shapes.forEach(shape => {
+                const yOffset = scrollY * shape.speed;
+                shape.el.style.transform = `translate3d(0, ${-yOffset}px, 0) rotate(${shape.rotation}deg)`;
+            });
+        };
+
+        initGeometricShapes();
+        window.addEventListener('scroll', updateParallaxShapes);
+        window.addEventListener('resize', initGeometricShapes);
+
+        // Observador de Interseção para Animações ao Rolar (usa .animate-on-scroll e .is-visible do style.css)
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.15
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+    </script>
+</body>
+
+</html>
