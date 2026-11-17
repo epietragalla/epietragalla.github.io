@@ -1,0 +1,3133 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UX Research Portfolio — Marlon Lemes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
+  <style>
+    /* ==========================================================================
+       VARIÁVEIS DE COR DO PDF ORIGINAL + LIGHT / DARK MODE (BASE VERSÃO 1)
+       ========================================================================== */
+    :root {
+      --pink: #EC167F;
+      --pink-soft: rgba(236, 22, 127, 0.12);
+      --orange: #F47920;
+      --orange-soft: rgba(244, 121, 32, 0.12);
+      --blue: #1B66B1;
+      --blue-bright: #1948E6;
+      --blue-soft: rgba(27, 102, 177, 0.12);
+      --green-opp: #63F53B;
+      --red-bug: #EA3323;
+      --blue-chart: #4285F4;
+      --green-chart: #7CB342;
+
+      /* Light Mode */
+      --bg-page: #F8F9FB;
+      --bg-surface: #FFFFFF;
+      --bg-surface-alt: #F0F2F5;
+      --bg-pill-gray: #ECEEEF;
+      --bg-pill-blue: #DCE7F9;
+      --bg-pill-orange: #FCE0C5;
+      --text-primary: #2D3139;
+      --text-secondary: #5E6470;
+      --text-muted: #8C93A0;
+      --border-color: #E2E5EB;
+      --shadow-soft: 0 8px 24px rgba(17, 24, 39, 0.05);
+      --shadow-elevated: 0 18px 40px rgba(17, 24, 39, 0.08);
+      --placeholder-bg: #F3F4F6;
+      --placeholder-border: #CBD5E1;
+    }
+
+    [data-theme="dark"] {
+      --bg-page: #0B0E14;
+      --bg-surface: #131822;
+      --bg-surface-alt: #1C2331;
+      --bg-pill-gray: #242C3D;
+      --bg-pill-blue: #1B3050;
+      --bg-pill-orange: #462912;
+      --text-primary: #F0F3F6;
+      --text-secondary: #B1BAC4;
+      --text-muted: #7D8590;
+      --border-color: #2A3241;
+      --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.35);
+      --shadow-elevated: 0 18px 42px rgba(0, 0, 0, 0.5);
+      --placeholder-bg: #19202C;
+      --placeholder-border: #374151;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-page);
+      color: var(--text-primary);
+      line-height: 1.65;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      overflow-x: hidden;
+    }
+
+    /* Barra de progresso de leitura no topo */
+    .reading-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      width: 0%;
+      background: linear-gradient(90deg, var(--pink), var(--orange), var(--blue));
+      z-index: 2000;
+      transition: width 0.08s linear;
+    }
+
+    /* Tooltip interativo para gráficos e timeline */
+    .floating-tip {
+      position: fixed;
+      pointer-events: none;
+      background: #111827;
+      color: #FFFFFF;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.4rem 0.75rem;
+      border-radius: 8px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+      opacity: 0;
+      transform: translate(-50%, -125%);
+      transition: opacity 0.15s ease;
+      z-index: 2500;
+      white-space: nowrap;
+    }
+
+    /* ==========================================================================
+       NAVEGAÇÃO FLUTUANTE (ESTILO LANDING PAGE)
+       ========================================================================== */
+    .navbar {
+      position: fixed;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(1160px, calc(100% - 2rem));
+      z-index: 1500;
+      background: color-mix(in srgb, var(--bg-surface) 84%, transparent);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--border-color);
+      border-radius: 999px;
+      padding: 0.6rem 1.35rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      box-shadow: var(--shadow-soft);
+      transition: all 0.3s ease;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .nav-dots {
+      display: flex;
+      gap: 4px;
+    }
+
+    .nav-dots span {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      transition: transform 0.25s ease;
+    }
+
+    .nav-brand:hover .nav-dots span:nth-child(1) { transform: translateY(-3px); }
+    .nav-brand:hover .nav-dots span:nth-child(2) { transform: translateY(3px); }
+    .nav-brand:hover .nav-dots span:nth-child(3) { transform: translateY(-3px); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-secondary);
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0.38rem 0.85rem;
+      border-radius: 999px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--pink);
+      background: var(--pink-soft);
+    }
+
+    .theme-toggle {
+      background: var(--bg-surface-alt);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 0.42rem 0.85rem;
+      border-radius: 999px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: all 0.2s ease;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--pink);
+      transform: scale(1.03);
+    }
+
+    /* ==========================================================================
+       ESTRUTURA FLUIDA DE LANDING PAGE (SEM SLIDES)
+       ========================================================================== */
+    .page-wrapper {
+      width: 100%;
+    }
+
+    .section-band {
+      padding: 6rem 1.5rem;
+      position: relative;
+    }
+
+    .section-band.alt-bg {
+      background-color: var(--bg-surface);
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .section-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+    }
+
+    .breadcrumb {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 3.8vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      margin-bottom: 1.5rem;
+      line-height: 1.15;
+    }
+
+    .sub-heading {
+      font-size: clamp(1.45rem, 2.5vw, 1.95rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.25rem;
+      line-height: 1.25;
+    }
+
+    .title-pink { color: var(--pink); }
+    .title-orange { color: var(--orange); }
+    .title-blue { color: var(--blue); }
+
+    /* Animação Reveal suave ao rolar */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .reveal.in-view {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ==========================================================================
+       PLACEHOLDERS PARA FOTOS NÃO REPRODUZÍVEIS
+       ========================================================================== */
+    .photo-placeholder {
+      background: var(--placeholder-bg);
+      border: 2px dashed var(--placeholder-border);
+      border-radius: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 1.5rem;
+      color: var(--text-muted);
+      gap: 0.5rem;
+      min-height: 200px;
+      transition: border-color 0.25s ease, transform 0.25s ease;
+    }
+
+    .photo-placeholder:hover {
+      border-color: var(--pink);
+    }
+
+    .photo-placeholder svg {
+      width: 34px;
+      height: 34px;
+      opacity: 0.75;
+    }
+
+    .photo-placeholder strong {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .photo-placeholder span {
+      font-size: 0.75rem;
+      max-width: 260px;
+    }
+
+    /* ==========================================================================
+       1. HERO SECTION (FLUIDA E INTERATIVA)
+       ========================================================================== */
+    .hero-section {
+      min-height: 92vh;
+      display: flex;
+      align-items: center;
+      padding: 8rem 1.5rem 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-grid {
+      max-width: 1160px;
+      margin: 0 auto;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .hero-kicker {
+      font-size: clamp(1.1rem, 2vw, 1.45rem);
+      font-weight: 500;
+      color: var(--text-secondary);
+      letter-spacing: 0.08em;
+      margin-bottom: 0.35rem;
+    }
+
+    .hero-name {
+      font-size: clamp(3.2rem, 6.8vw, 5.4rem);
+      font-weight: 800;
+      color: var(--pink);
+      line-height: 1.03;
+      letter-spacing: -0.035em;
+      margin-bottom: 0.75rem;
+    }
+
+    .hero-role {
+      font-size: clamp(1.25rem, 2.2vw, 1.75rem);
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .hero-cta {
+      background: var(--pink);
+      color: #FFFFFF;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.92rem;
+      padding: 0.85rem 1.65rem;
+      border-radius: 999px;
+      box-shadow: 0 10px 24px rgba(236, 22, 127, 0.28);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .hero-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 28px rgba(236, 22, 127, 0.38);
+    }
+
+    .hero-date-pill {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      padding: 0.55rem 1.1rem;
+      border-radius: 999px;
+    }
+
+    .sticky-cluster {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      transform: rotate(-5deg);
+      transition: transform 0.2s ease-out;
+    }
+
+    .postit {
+      padding: 12px;
+      font-size: 0.7rem;
+      font-weight: 800;
+      line-height: 1.3;
+      color: #1F2937;
+      border-radius: 4px;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.11);
+      min-height: 100px;
+      display: flex;
+      align-items: flex-start;
+      text-transform: uppercase;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+      cursor: default;
+      user-select: none;
+    }
+
+    .postit:hover {
+      transform: scale(1.08) rotate(0deg) !important;
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18);
+      z-index: 5;
+    }
+
+    .pi-pink { background: #FF6EB4; transform: rotate(2deg); }
+    .pi-yellow { background: #FFF066; transform: rotate(-3deg); }
+    .pi-green { background: #A7F370; transform: rotate(1deg); }
+    .pi-blue { background: #7DD3FC; transform: rotate(-2deg); }
+    .pi-orange { background: #FDBA74; transform: rotate(3deg); }
+
+    /* ==========================================================================
+       2. SOBRE & HABILIDADES
+       ========================================================================== */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 310px 1fr;
+      gap: 3.5rem;
+      align-items: center;
+      margin-bottom: 4.5rem;
+    }
+
+    .avatar-ring {
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      border-left: 16px solid var(--pink);
+      border-bottom: 10px solid var(--pink);
+      padding: 6px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.35s ease;
+    }
+
+    .avatar-ring:hover {
+      transform: rotate(-4deg) scale(1.02);
+    }
+
+    .avatar-ring .photo-placeholder {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      min-height: unset;
+    }
+
+    .checklist {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem 1.5rem;
+    }
+
+    .checklist li {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      padding: 0.45rem 0.65rem;
+      border-radius: 10px;
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+
+    .checklist li:hover {
+      background: var(--bg-surface-alt);
+      transform: translateX(4px);
+    }
+
+    .check-box {
+      width: 24px;
+      height: 24px;
+      background: var(--pink);
+      color: #fff;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .skills-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.35rem;
+    }
+
+    .skills-list li {
+      position: relative;
+      padding: 1.35rem 1.5rem 1.35rem 2.35rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      font-size: 1.02rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      box-shadow: var(--shadow-soft);
+      transition: transform 0.25s ease, border-color 0.25s ease;
+    }
+
+    .skills-list li:hover {
+      transform: translateY(-3px);
+      border-color: var(--pink);
+    }
+
+    .skills-list li::before {
+      content: "•";
+      position: absolute;
+      left: 1rem;
+      top: 1.1rem;
+      color: var(--pink);
+      font-size: 1.6rem;
+      line-height: 1;
+    }
+
+    /* ==========================================================================
+       3. TRAJETÓRIA & ALGUNS CLIENTES
+       ========================================================================== */
+    .timeline-scroll {
+      overflow-x: auto;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 22px;
+      padding: 2rem;
+      box-shadow: var(--shadow-soft);
+      margin-bottom: 4.5rem;
+    }
+
+    .timeline-canvas {
+      min-width: 980px;
+      position: relative;
+      padding: 0.5rem 0;
+    }
+
+    .tl-zones {
+      display: grid;
+      grid-template-columns: 28% 34% 38%;
+      margin-bottom: 0.5rem;
+    }
+
+    .tl-zone-box {
+      border-left: 2px dashed var(--text-muted);
+      padding-left: 0.75rem;
+    }
+
+    .tl-zone-label {
+      display: inline-block;
+      border: 1.5px dashed var(--text-muted);
+      padding: 0.25rem 0.9rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+    }
+
+    .tl-grid {
+      display: grid;
+      grid-template-columns: repeat(9, 1fr);
+      gap: 0.5rem;
+      align-items: end;
+      text-align: center;
+      position: relative;
+    }
+
+    .tl-course-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      padding-bottom: 0.75rem;
+    }
+
+    .edu-badge {
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 0.7rem;
+      letter-spacing: 0.03em;
+    }
+
+    .tl-line-row {
+      display: grid;
+      grid-template-columns: repeat(9, 1fr);
+      align-items: center;
+      position: relative;
+      margin: 0.5rem 0;
+    }
+
+    .tl-line-row::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      border-top: 2px dotted var(--text-muted);
+      z-index: 0;
+    }
+
+    .tl-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+      border: 2px solid var(--bg-surface);
+      box-shadow: 0 0 0 2px currentColor;
+      transition: transform 0.2s ease;
+      cursor: pointer;
+    }
+
+    .tl-dot:hover {
+      transform: scale(1.35);
+    }
+
+    .tl-role-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      padding-top: 0.5rem;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    .tl-year {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .company-tag {
+      font-weight: 800;
+      font-size: 0.95rem;
+      margin-top: 0.2rem;
+    }
+
+    .role-pill-orange {
+      background: var(--orange);
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      width: 100%;
+    }
+
+    .role-pill-blue {
+      background: #2563EB;
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      width: 100%;
+    }
+
+    .clients-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1.15rem;
+      align-items: center;
+      justify-items: center;
+    }
+
+    .client-logo-box {
+      width: 100%;
+      height: 74px;
+      border-radius: 14px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.02rem;
+      letter-spacing: 0.03em;
+      padding: 0.5rem;
+      text-align: center;
+      box-shadow: var(--shadow-soft);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .client-logo-box:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-elevated);
+    }
+
+    .client-logo-box small {
+      font-size: 0.55rem;
+      font-weight: 600;
+      opacity: 0.75;
+    }
+
+    /* ==========================================================================
+       4. COMO EU TRABALHO & MÉTODOS
+       ========================================================================== */
+    .lead-paragraph {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      max-width: 880px;
+      margin-bottom: 2rem;
+    }
+
+    .metaball-svg-wrap {
+      width: 100%;
+      max-width: 960px;
+      margin: 1rem auto 1.25rem;
+    }
+
+    .meta-node {
+      cursor: pointer;
+      transition: filter 0.25s ease;
+    }
+
+    .meta-node:hover {
+      filter: brightness(1.08);
+    }
+
+    .meta-caption {
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      background: var(--bg-surface-alt);
+      padding: 0.75rem 1.25rem;
+      border-radius: 12px;
+      margin-bottom: 3.5rem;
+      border: 1px solid var(--border-color);
+    }
+
+    .process-4-cols {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 4.5rem;
+    }
+
+    .process-col {
+      background: var(--bg-surface-alt);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 1.65rem;
+      transition: transform 0.25s ease;
+    }
+
+    .process-col:hover {
+      transform: translateY(-4px);
+    }
+
+    .process-col h3 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--pink);
+      margin-bottom: 1.1rem;
+    }
+
+    .process-col ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .process-col li {
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      padding-left: 1.1rem;
+      position: relative;
+      line-height: 1.45;
+    }
+
+    .process-col li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--pink);
+      font-weight: 800;
+    }
+
+    .method-filters {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.25rem;
+    }
+
+    .m-filter-btn {
+      background: var(--bg-surface-alt);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 0.45rem 1rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .m-filter-btn.active,
+    .m-filter-btn:hover {
+      background: var(--pink);
+      border-color: var(--pink);
+      color: #FFFFFF;
+    }
+
+    .methods-matrix {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 2rem;
+      position: relative;
+    }
+
+    .methods-matrix::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      border-left: 2px dotted var(--border-color);
+      z-index: 0;
+    }
+
+    .method-col {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+      position: relative;
+      z-index: 1;
+      transition: opacity 0.3s ease;
+    }
+
+    .method-col.dimmed {
+      opacity: 0.25;
+    }
+
+    .method-col-header {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 0.25rem;
+    }
+
+    .method-pill {
+      padding: 0.9rem 1.1rem;
+      border-radius: 12px;
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 600;
+      line-height: 1.35;
+      min-height: 62px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease;
+    }
+
+    .method-pill:hover {
+      transform: scale(1.02);
+    }
+
+    .pill-quali {
+      background: var(--bg-pill-orange);
+      color: var(--text-primary);
+    }
+
+    .pill-hybrid {
+      background: var(--bg-pill-gray);
+      color: var(--text-primary);
+    }
+
+    .pill-quanti-soft {
+      background: var(--bg-pill-blue);
+      color: var(--text-primary);
+    }
+
+    .pill-quanti-pink {
+      background: var(--pink);
+      color: #FFFFFF;
+    }
+
+    /* ==========================================================================
+       5. ESTUDOS DE CASO (FLUXO CONTÍNUO DE PORTFÓLIO)
+       ========================================================================== */
+    .cases-hub-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      margin-bottom: 4.5rem;
+    }
+
+    .case-medallion {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .case-medallion:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-elevated);
+    }
+
+    .medallion-top {
+      height: 145px;
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      padding: 1.25rem;
+    }
+
+    .medallion-badge {
+      width: 82px;
+      height: 82px;
+      border-radius: 50%;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      margin: -41px auto 0;
+      position: relative;
+      z-index: 2;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+      line-height: 1.1;
+    }
+
+    .medallion-badge small {
+      font-size: 0.55rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .medallion-badge strong {
+      font-size: 1.45rem;
+      font-weight: 800;
+    }
+
+    .medallion-body {
+      padding: 1.25rem 1.5rem 2rem;
+      text-align: center;
+    }
+
+    .medallion-body h3 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 0.45rem;
+    }
+
+    .medallion-body p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    /* Bloco de cada Estudo de Caso na Landing Page */
+    .case-chapter {
+      padding: 4.5rem 0;
+      border-top: 2px solid var(--border-color);
+    }
+
+    .case-banner-header {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem;
+      align-items: center;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 26px;
+      padding: 2.75rem;
+      margin-bottom: 3rem;
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .case-accent-stripe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 8px;
+    }
+
+    .bar-pink { background: var(--pink); }
+    .bar-orange { background: var(--orange); }
+    .bar-blue { background: var(--blue); }
+
+    .case-cover-left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 1.15rem;
+    }
+
+    .case-cover-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      line-height: 1.1;
+    }
+
+    .case-cover-circle small {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .case-cover-circle strong {
+      font-size: 2.2rem;
+      font-weight: 800;
+    }
+
+    .case-cover-title {
+      font-size: clamp(1.9rem, 3.2vw, 2.75rem);
+      font-weight: 800;
+      line-height: 1.15;
+    }
+
+    .case-cover-sub {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .case-sub-block {
+      margin-bottom: 3.5rem;
+    }
+
+    .overview-layout {
+      display: grid;
+      grid-template-columns: 1.25fr 0.85fr;
+      gap: 2.5rem;
+      align-items: start;
+    }
+
+    .overview-text p {
+      margin-bottom: 1.1rem;
+      color: var(--text-secondary);
+      font-size: 1.02rem;
+    }
+
+    .overview-numbered {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin: 1.25rem 0 1.75rem;
+    }
+
+    .overview-numbered li {
+      display: flex;
+      gap: 0.85rem;
+      color: var(--text-secondary);
+      font-size: 0.98rem;
+    }
+
+    .num-accent {
+      font-weight: 800;
+      font-size: 1.05rem;
+    }
+
+    /* Barra de Etapa do Processo */
+    .stage-tracker {
+      margin-top: 1.75rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .stage-tracker-label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .stage-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      max-width: 420px;
+    }
+
+    .stage-line::before {
+      content: "";
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      top: 14px;
+      height: 2px;
+      background: var(--border-color);
+      z-index: 0;
+    }
+
+    .stage-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.45rem;
+      position: relative;
+      z-index: 1;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .stage-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--bg-surface);
+      border: 2px solid var(--border-color);
+    }
+
+    .stage-node.active-orange { color: var(--orange); font-weight: 800; }
+    .stage-node.active-orange .stage-dot { background: var(--orange); border-color: var(--orange); }
+
+    .stage-node.active-pink { color: var(--pink); font-weight: 800; }
+    .stage-node.active-pink .stage-dot { background: var(--pink); border-color: var(--pink); }
+
+    .stage-node.active-blue { color: var(--blue); font-weight: 800; }
+    .stage-node.active-blue .stage-dot { background: var(--blue); border-color: var(--blue); }
+
+    /* Estrutura da Pesquisa (3 blocos) */
+    .research-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .research-row {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 1.5rem;
+      align-items: center;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .research-q {
+      font-size: 0.96rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .research-step-banner {
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.85rem;
+      letter-spacing: 0.04em;
+      padding: 0.45rem 1rem;
+      border-radius: 8px;
+      text-align: center;
+      margin-bottom: 0.85rem;
+      text-transform: uppercase;
+    }
+
+    .research-bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .research-bullets li {
+      padding-left: 1rem;
+      position: relative;
+    }
+
+    .research-bullets li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      font-weight: 800;
+    }
+
+    /* ==========================================================================
+       GRÁFICOS REPRODUZIDOS EM CÓDIGO (UI INK MACHINE, JORNADA, GOOMER CHARTS)
+       ========================================================================== */
+    .ui-mockup-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.15rem;
+      margin-top: 1.5rem;
+    }
+
+    .mini-app-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.05rem;
+      font-size: 0.78rem;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .mini-app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 800;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 0.65rem;
+    }
+
+    .kpi-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .kpi-box {
+      background: var(--bg-surface-alt);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.55rem;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .kpi-box strong {
+      font-size: 1.15rem;
+      color: var(--blue);
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      margin-bottom: 1.15rem;
+      background: var(--bg-surface);
+    }
+
+    .data-table th, .data-table td {
+      border: 1px solid var(--border-color);
+      padding: 0.55rem 0.75rem;
+      text-align: center;
+    }
+
+    .data-table th {
+      background: var(--bg-surface-alt);
+      font-weight: 700;
+    }
+
+    .data-table tr.meta-row {
+      background: var(--blue-soft);
+      font-weight: 800;
+      color: var(--blue);
+    }
+
+    .cat-card {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: 1rem;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .cat-badge {
+      padding: 0.85rem;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      text-align: center;
+      color: #111827;
+    }
+
+    .quote-box {
+      background: var(--blue-soft);
+      border-left: 5px solid var(--blue);
+      padding: 1.5rem;
+      border-radius: 14px;
+      margin-top: 1.5rem;
+    }
+
+    .quote-box p {
+      font-style: italic;
+      font-size: 1.02rem;
+      color: var(--text-primary);
+      margin-bottom: 0.75rem;
+    }
+
+    .quote-author {
+      font-weight: 800;
+      color: var(--blue);
+      font-size: 0.9rem;
+    }
+
+    /* ==========================================================================
+       6. CONTATO / ENCERRAMENTO (FOOTER FLUIDO)
+       ========================================================================== */
+    .contact-footer {
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border-color);
+      padding: 6rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .contact-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 260px 1fr auto;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .contact-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      margin-top: 1.25rem;
+    }
+
+    .contact-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1rem;
+      background: none;
+      border: none;
+      font-family: inherit;
+      cursor: pointer;
+      text-align: left;
+      padding: 0.35rem 0.65rem;
+      margin-left: -0.65rem;
+      border-radius: 10px;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .contact-item:hover {
+      background: var(--bg-surface-alt);
+      color: var(--pink);
+    }
+
+    /* ==========================================================================
+       RESPONSIVIDADE
+       ========================================================================== */
+    @media (max-width: 960px) {
+      .hero-grid,
+      .about-grid,
+      .case-banner-header,
+      .overview-layout,
+      .research-row,
+      .contact-inner {
+        grid-template-columns: 1fr;
+      }
+      .checklist,
+      .skills-list {
+        grid-template-columns: 1fr;
+      }
+      .process-4-cols {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .methods-matrix {
+        grid-template-columns: 1fr;
+      }
+      .methods-matrix::after {
+        display: none;
+      }
+      .cases-hub-grid {
+        grid-template-columns: 1fr;
+      }
+      .sticky-cluster {
+        transform: rotate(0deg);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .nav-links {
+        display: none;
+      }
+      .process-4-cols {
+        grid-template-columns: 1fr;
+      }
+      .section-band {
+        padding: 4rem 1.25rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barra de progresso de leitura -->
+  <div class="reading-progress" id="readingProgress"></div>
+
+  <!-- Tooltip interativo -->
+  <div class="floating-tip" id="floatingTip"></div>
+
+  <!-- NAVEGAÇÃO FLUTUANTE -->
+  <nav class="navbar">
+    <a href="#capa" class="nav-brand">
+      <div class="nav-dots">
+        <span style="background: var(--pink);"></span>
+        <span style="background: var(--orange);"></span>
+        <span style="background: var(--blue);"></span>
+      </div>
+      <span>Marlon Lemes • UX Research</span>
+    </a>
+
+    <div class="nav-links">
+      <a href="#sobre">Sobre</a>
+      <a href="#trajetoria">Trajetória</a>
+      <a href="#metodos">Como Trabalho</a>
+      <a href="#cases">Cases</a>
+      <a href="#contato">Contato</a>
+    </div>
+
+    <button class="theme-toggle" id="themeBtn" aria-label="Alternar tema">
+      <span id="themeIcon">🌙</span>
+      <span id="themeText">Dark Mode</span>
+    </button>
+  </nav>
+
+  <main class="page-wrapper">
+
+    <!-- ======================================================================
+         1. HERO SECTION
+         ====================================================================== -->
+    <section id="capa" class="hero-section">
+      <div class="hero-grid">
+        <div class="reveal">
+          <p class="hero-kicker">UX RESEARCH PORTFOLIO</p>
+          <h1 class="hero-name">Marlon Lemes</h1>
+          <p class="hero-role">UX Researcher</p>
+
+          <div class="hero-actions">
+            <a href="#cases" class="hero-cta">Ver Estudos de Caso ↓</a>
+            <span class="hero-date-pill">Novembro, 2023</span>
+          </div>
+        </div>
+
+        <!-- Post-its fiéis ao PDF com microinteração -->
+        <div class="sticky-cluster reveal" id="heroBoard" aria-hidden="true">
+          <div class="postit pi-pink">1. ZEPLIN</div>
+          <div class="postit pi-yellow">2. ENTREGA DOS TEXTOS</div>
+          <div class="postit pi-pink">CARD<br>TIMESOME</div>
+          <div class="postit pi-green">FLUXO ASA</div>
+          <div class="postit pi-yellow">1. CRIAR TODOS CASOS DE USO E CORNER CASE</div>
+          <div class="postit pi-blue">ESTEIRA<br>RÉPLICA</div>
+          <div class="postit pi-orange">IMPACTO</div>
+          <div class="postit pi-pink">2. ZEPLIN</div>
+          <div class="postit pi-yellow">DISCOVERY</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         2. SOBRE & HABILIDADES
+         ====================================================================== -->
+    <section id="sobre" class="section-band alt-bg">
+      <div class="section-inner">
+        <div class="reveal">
+          <p class="breadcrumb">Sobre /</p>
+          <h2 class="section-title title-pink">Marlon Lemes...</h2>
+
+          <div class="about-grid">
+            <div class="avatar-ring">
+              <div class="photo-placeholder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <circle cx="12" cy="8" r="4"></circle>
+                  <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
+                </svg>
+                <strong>Foto de Perfil</strong>
+                <span>Espaço reservado para inserir a foto circular do Marlon Lemes</span>
+              </div>
+            </div>
+
+            <ul class="checklist">
+              <li><span class="check-box">✓</span> Sorocabano</li>
+              <li><span class="check-box">✓</span> 11123 dias de idade</li>
+              <li><span class="check-box">✓</span> Tina e Black Philip</li>
+              <li><span class="check-box">✓</span> Games #RPG</li>
+              <li><span class="check-box">✓</span> Viajar</li>
+              <li><span class="check-box">✓</span> Café &amp; Cerveja</li>
+              <li><span class="check-box">✓</span> Pesquisa &amp; Design</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="reveal">
+          <p class="breadcrumb">Sobre /</p>
+          <h3 class="sub-heading title-pink">UX Research - Principais habilidades</h3>
+
+          <ul class="skills-list">
+            <li>Planejar e executar pesquisas estratégicas quanti e quali: entrevistas, pesquisa de mercado, testes de usabilidade, entre outras;</li>
+            <li>Dar suporte e mentoria aos PMs e PDs na definição e análise de pesquisas;</li>
+            <li>Transformar os dados coletados nas pesquisas em insights relevantes para a estratégia de produto;</li>
+            <li>Suporte na construção de roadmaps e OKR das squads.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         3. TRAJETÓRIA & ALGUNS CLIENTES
+         ====================================================================== -->
+    <section id="trajetoria" class="section-band">
+      <div class="section-inner">
+        <div class="reveal">
+          <p class="breadcrumb">Sobre /</p>
+          <h2 class="section-title title-pink">Breve trajetória...</h2>
+
+          <div class="timeline-scroll">
+            <div class="timeline-canvas">
+              <!-- Zonas Superiores -->
+              <div class="tl-zones">
+                <div></div>
+                <div class="tl-zone-box">
+                  <span class="tl-zone-label">USABILIDADE</span>
+                </div>
+                <div class="tl-zone-box">
+                  <span class="tl-zone-label">DESIGN &gt; RESEARCH</span>
+                </div>
+              </div>
+
+              <!-- Linha de Cursos -->
+              <div class="tl-grid">
+                <div class="tl-course-item">
+                  <span>Cursos Web Design/ Developer</span>
+                </div>
+                <div class="tl-course-item">
+                  <span>Cursos ActionScript 3 / OOP</span>
+                </div>
+                <div class="tl-course-item"></div>
+                <div class="tl-course-item">
+                  <span class="edu-badge" style="background:#FDE047; color:#1E3A8A;">UNISO</span>
+                  <span>Graduação Design Gráfico</span>
+                </div>
+                <div class="tl-course-item">
+                  <span>Curso de Arq. de informação</span>
+                </div>
+                <div class="tl-course-item">
+                  <span class="edu-badge" style="background:#DBEAFE; color:#1E3A8A;">Universidade POSITIVO</span>
+                  <span>Esp. Design Centrado Usuário</span>
+                </div>
+                <div class="tl-course-item"></div>
+                <div class="tl-course-item"></div>
+                <div class="tl-course-item">
+                  <span class="edu-badge" style="background:#B91C1C; color:#FFFFFF;">ESPM</span>
+                  <span>MBA Pesquisa de Mercado &amp; Consumer Insights</span>
+                </div>
+              </div>
+
+              <!-- Pontos da Linha Superior (CURSOS) -->
+              <div style="font-size:0.7rem; font-weight:800; color:var(--text-muted); margin-bottom:2px;">CURSOS</div>
+              <div class="tl-line-row">
+                <div><div class="tl-dot" style="background:#FDE68A; color:#F59E0B;" data-tip="Cursos Web Design/ Developer"></div></div>
+                <div><div class="tl-dot" style="background:#FDBA74; color:#EA580C;" data-tip="Cursos ActionScript 3 / OOP"></div></div>
+                <div><div class="tl-dot" style="background:#FDBA74; color:#EA580C;" data-tip="Cursos ActionScript 3 / OOP"></div></div>
+                <div><div class="tl-dot" style="background:#FCA5A5; color:#DC2626;" data-tip="UNISO — Graduação Design Gráfico"></div></div>
+                <div><div class="tl-dot" style="background:#F87171; color:#B91C1C;" data-tip="Curso de Arq. de informação"></div></div>
+                <div><div class="tl-dot" style="background:#1D4ED8; color:#1E40AF;" data-tip="Universidade POSITIVO — Esp. Design Centrado Usuário"></div></div>
+                <div></div>
+                <div></div>
+                <div><div class="tl-dot" style="background:#DC2626; color:#991B1B;" data-tip="ESPM — MBA Pesquisa de Mercado & Consumer Insights"></div></div>
+              </div>
+
+              <!-- Pontos da Linha Inferior (CARGOS) -->
+              <div style="font-size:0.7rem; font-weight:800; color:var(--text-muted); margin-top:8px;">CARGOS</div>
+              <div class="tl-line-row">
+                <div><div class="tl-dot" style="background:#9CA3AF; color:#6B7280;" data-tip="(2004 / 2005) Web Designer/Developer"></div></div>
+                <div><div class="tl-dot" style="background:#9CA3AF; color:#6B7280;" data-tip="(2005 / 2008) Flash Developer"></div></div>
+                <div><div class="tl-dot" style="background:#9CA3AF; color:#6B7280;" data-tip="(2008 / 2012) Diretor de arte / Web Designer"></div></div>
+                <div></div>
+                <div></div>
+                <div><div class="tl-dot" style="background:#3B82F6; color:#F97316;" data-tip="(2012 / 2021) CESAR — UX, Design Thinking, Inovação"></div></div>
+                <div><div class="tl-dot" style="background:#2563EB; color:#1D4ED8;" data-tip="2021.1 Cielo — UX Research, Service Design"></div></div>
+                <div><div class="tl-dot" style="background:#1D4ED8; color:#1E40AF;" data-tip="2021.2 Goomer — UX Research"></div></div>
+                <div><div class="tl-dot" style="background:#1E3A8A; color:#172554;" data-tip="2022 / 2023 Dasa — UX Research"></div></div>
+              </div>
+
+              <!-- Detalhes dos Cargos -->
+              <div class="tl-grid" style="align-items: start;">
+                <div class="tl-role-item">
+                  <span class="tl-year">(2004 / 2005)</span>
+                  <strong>Web Designer/Developer</strong>
+                </div>
+                <div class="tl-role-item">
+                  <span class="tl-year">(2005 / 2008)</span>
+                  <strong>Flash Developer</strong>
+                </div>
+                <div class="tl-role-item">
+                  <span class="tl-year">(2008 / 2012)</span>
+                  <strong>Diretor de arte / Web Designer</strong>
+                </div>
+                <div></div>
+                <div></div>
+                <div class="tl-role-item">
+                  <span class="tl-year">(2012 / 2021)</span>
+                  <span class="company-tag" style="color:#F47920;">C·E·S·A·R</span>
+                  <span class="role-pill-orange">UX</span>
+                  <span class="role-pill-orange">Design Thinking</span>
+                  <span class="role-pill-orange">Inovação</span>
+                </div>
+                <div class="tl-role-item">
+                  <span class="tl-year">2021.1</span>
+                  <span class="company-tag" style="color:#0EA5E9;">cielo</span>
+                  <span class="role-pill-blue">UX Research</span>
+                  <span class="role-pill-blue">Service Design</span>
+                </div>
+                <div class="tl-role-item">
+                  <span class="tl-year">2021.2</span>
+                  <span class="company-tag" style="color:#2563EB;">goomer</span>
+                  <span class="role-pill-blue">UX Research</span>
+                </div>
+                <div class="tl-role-item">
+                  <span class="tl-year">2022 / 2023</span>
+                  <span class="company-tag" style="color:#1E3A8A;">Dasa</span>
+                  <span class="role-pill-blue">UX Research</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="reveal">
+          <p class="breadcrumb">Sobre /</p>
+          <h3 class="sub-heading title-pink">Alguns clientes</h3>
+
+          <div class="clients-grid">
+            <div class="client-logo-box" style="color:#0284C7;">cielo</div>
+            <div class="client-logo-box" style="color:#1E3A8A;">FCA<small>FIAT CHRYSLER AUTOMOBILES</small></div>
+            <div class="client-logo-box" style="color:#0096D6;">hp</div>
+            <div class="client-logo-box" style="color:#003399;">EPSON</div>
+            <div class="client-logo-box" style="color:#007DB8;">DELL</div>
+            <div class="client-logo-box" style="color:#A50034;">LG</div>
+            <div class="client-logo-box" style="color:#E2231A;">Lenovo</div>
+            <div class="client-logo-box" style="color:#0072CE;">Algar Tech</div>
+            <div class="client-logo-box" style="color:#E11D48;">bam</div>
+            <div class="client-logo-box" style="color:#0F766E;">Prysmian<small>Group</small></div>
+            <div class="client-logo-box" style="color:#7C3AED;">Grupo Cia de Talentos</div>
+            <div class="client-logo-box" style="color:#0284C7;">NET<small>O MUNDO É DOS NETS</small></div>
+            <div class="client-logo-box" style="color:#B45309;">Deca</div>
+            <div class="client-logo-box" style="color:#EA580C;">Coferly</div>
+            <div class="client-logo-box" style="color:#1D4ED8;">Kimberly-Clark</div>
+            <div class="client-logo-box" style="color:#0369A1;">comgas</div>
+            <div class="client-logo-box" style="color:#15803D;">NEOENERGIA</div>
+            <div class="client-logo-box" style="color:#1E40AF;">FUNDAÇÃO TELEFÔNICA</div>
+            <div class="client-logo-box" style="color:#7E22CE;">vivo</div>
+            <div class="client-logo-box" style="color:#EA580C;">foco<small>aluguel de carros</small></div>
+            <div class="client-logo-box" style="color:#0D9488;">MAGNAMED</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         4. COMO EU TRABALHO & MÉTODOS
+         ====================================================================== -->
+    <section id="metodos" class="section-band alt-bg">
+      <div class="section-inner">
+        <div class="reveal">
+          <p class="breadcrumb">Sobre /</p>
+          <h2 class="section-title title-pink">Como eu trabalho?</h2>
+
+          <p class="lead-paragraph">
+            Tenho experiência em realizar pesquisas para todas as etapas do processo de desenvolvimento de produtos: desde explorações abertas na fase de Discovery até pesquisas orientadas para validação na fase de Delivery.
+          </p>
+
+          <!-- Gráfico SVG fiel às 3 esferas conectadas do PDF -->
+          <div class="metaball-svg-wrap">
+            <svg viewBox="0 0 960 280" width="100%" height="auto" role="img" aria-label="Diagrama Discovery, Design e Experimentação, Delivery e Otimização">
+              <defs>
+                <linearGradient id="gradPinkOrange" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#EC167F" />
+                  <stop offset="100%" stop-color="#F47920" />
+                </linearGradient>
+                <linearGradient id="gradOrangeBlue" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#F47920" />
+                  <stop offset="100%" stop-color="#1B66B1" />
+                </linearGradient>
+              </defs>
+
+              <path d="M 240,85 Q 315,120 390,85 L 390,195 Q 315,160 240,195 Z" fill="url(#gradPinkOrange)" />
+              <path d="M 570,85 Q 645,120 720,85 L 720,195 Q 645,160 570,195 Z" fill="url(#gradOrangeBlue)" />
+
+              <g class="meta-node" data-phase="discovery">
+                <circle cx="145" cy="140" r="125" fill="#EC167F" />
+                <text x="145" y="147" text-anchor="middle" fill="#FFFFFF" font-family="Plus Jakarta Sans, sans-serif" font-size="24" font-weight="600">Discovery</text>
+              </g>
+
+              <g class="meta-node" data-phase="design">
+                <circle cx="480" cy="140" r="125" fill="#F47920" />
+                <text x="480" y="132" text-anchor="middle" fill="#FFFFFF" font-family="Plus Jakarta Sans, sans-serif" font-size="23" font-weight="600">Design &amp;</text>
+                <text x="480" y="162" text-anchor="middle" fill="#FFFFFF" font-family="Plus Jakarta Sans, sans-serif" font-size="23" font-weight="600">Experimentação</text>
+              </g>
+
+              <g class="meta-node" data-phase="delivery">
+                <circle cx="815" cy="140" r="125" fill="#1B66B1" />
+                <text x="815" y="132" text-anchor="middle" fill="#FFFFFF" font-family="Plus Jakarta Sans, sans-serif" font-size="23" font-weight="600">Delivery &amp;</text>
+                <text x="815" y="162" text-anchor="middle" fill="#FFFFFF" font-family="Plus Jakarta Sans, sans-serif" font-size="23" font-weight="600">Otimização</text>
+              </g>
+            </svg>
+          </div>
+          <div class="meta-caption" id="metaCaption">
+            Clique ou passe o mouse sobre uma das esferas acima para destacar a atuação em cada etapa.
+          </div>
+
+          <!-- 4 Colunas de Processo -->
+          <div class="process-4-cols">
+            <div class="process-col">
+              <h3>Planejamento</h3>
+              <ul>
+                <li>Entendimento do problema de negócio</li>
+                <li>Definição do objetivo da pesquisa</li>
+                <li>Definição dos métodos de pesquisa adequados</li>
+                <li>Definição do perfil</li>
+                <li>Cronograma e acompanhamento</li>
+              </ul>
+            </div>
+
+            <div class="process-col">
+              <h3>Execução</h3>
+              <ul>
+                <li>Criação de roteiro e questionários</li>
+                <li>Recrutamento e seleção de participantes</li>
+                <li>Contratação de serviços de recrutamento e parcerias</li>
+                <li>Coleta dos dados em entrevistas ou questionários</li>
+              </ul>
+            </div>
+
+            <div class="process-col">
+              <h3>Análise</h3>
+              <ul>
+                <li>Compilação das notas e dados das entrevistas</li>
+                <li>Análise inicial dos dados e preparação de workshop de síntese</li>
+                <li>Workshop de síntese com os stakeholders envolvidos</li>
+                <li>Fechamento da Análise e Relatório</li>
+                <li>Análises de dados e de testes (individual)</li>
+              </ul>
+            </div>
+
+            <div class="process-col">
+              <h3>Apresentação</h3>
+              <ul>
+                <li>Relatório e apresentação para o time de produto, focando nos insights acionáveis</li>
+                <li>Sumário executivo para stakeholders e C-Levels</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quais métodos eu uso? -->
+        <div class="reveal">
+          <p class="breadcrumb">Sobre /</p>
+          <h3 class="sub-heading title-pink">Quais métodos eu uso?</h3>
+
+          <p class="lead-paragraph">
+            Eu utilizo um amplo conjunto de ferramentas de métodos de pesquisa de UX. Eu seleciono o método apropriado com base na contribuição das partes interessadas e nas questões de pesquisa que estamos tentando responder.
+          </p>
+
+          <div class="method-filters">
+            <button class="m-filter-btn active" data-target="all">Todos</button>
+            <button class="m-filter-btn" data-target="quali">Qualitativo</button>
+            <button class="m-filter-btn" data-target="hybrid">Híbrido</button>
+            <button class="m-filter-btn" data-target="quanti">Quantitativo</button>
+          </div>
+
+          <div class="methods-matrix">
+            <div class="method-col" data-group="quali">
+              <div class="method-col-header" style="color: var(--orange);">Qualitativo</div>
+              <div class="method-pill pill-quali">Pesquisa de campo / Observação</div>
+              <div class="method-pill pill-quali">Entrevistas (em contexto, laboratório e Remoto)</div>
+              <div class="method-pill pill-quali"><em>Shadowing</em></div>
+              <div class="method-pill pill-quali">Teste de "Mágico de Oz"</div>
+              <div class="method-pill pill-quali">Facilitação de Workshops (co-design, design sprint etc)</div>
+            </div>
+
+            <div class="method-col" data-group="hybrid" style="padding-top: 2.3rem;">
+              <div class="method-pill pill-hybrid">Desk Research</div>
+              <div class="method-pill pill-hybrid">Teste de Usabilidade (em laboratório e remoto)</div>
+              <div class="method-pill pill-hybrid">Teste e Validação de Conceito</div>
+              <div class="method-pill pill-hybrid">Mapeamento de Jornada</div>
+              <div class="method-pill pill-hybrid">Criação de Personas e Segmentação</div>
+            </div>
+
+            <div class="method-col" data-group="quanti">
+              <div class="method-col-header" style="color: var(--blue); text-align: right;">Quantitativo</div>
+              <div class="method-pill pill-quanti-soft">Product Analytics (GA, Hotjar)</div>
+              <div class="method-pill pill-quanti-soft">Surveys e Questionários</div>
+              <div class="method-pill pill-quanti-soft"><em>Fakedoor</em></div>
+              <div class="method-pill pill-quanti-pink">Teste A/B</div>
+              <div class="method-pill pill-quanti-pink">Análises Estatísticas</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         5. CASES (HUB + ESTUDOS DE CASO EM FLUXO CONTÍNUO)
+         ====================================================================== -->
+    <section id="cases" class="section-band">
+      <div class="section-inner">
+        <div class="reveal">
+          <h2 class="section-title title-pink">Cases</h2>
+
+          <div class="cases-hub-grid">
+            <a href="#case-01" class="case-medallion">
+              <div class="medallion-top" style="background: linear-gradient(135deg, #F59E0B, #D97706);">
+                <span style="color:#fff; font-weight:800; font-size:0.95rem;">Coferly</span>
+              </div>
+              <div class="medallion-badge" style="background: var(--orange);">
+                <small>ESTUDO<br>DE CASO</small>
+                <strong>01</strong>
+              </div>
+              <div class="medallion-body">
+                <h3 style="color: var(--orange);">Ink-Machine</h3>
+                <p>Problem Discovery / Teste de Conceito</p>
+              </div>
+            </a>
+
+            <a href="#case-02" class="case-medallion">
+              <div class="medallion-top" style="background: linear-gradient(135deg, #F472B6, #EC167F);">
+                <span style="color:#fff; font-weight:800; font-size:0.85rem;">Kimberly-Clark<br><small style="font-weight:400;">Essencial para uma vida melhor</small></span>
+              </div>
+              <div class="medallion-badge" style="background: var(--pink);">
+                <small>ESTUDO<br>DE CASO</small>
+                <strong>02</strong>
+              </div>
+              <div class="medallion-body">
+                <h3 style="color: var(--pink);">Plataforma de Engajamento</h3>
+                <p>Personas &amp; Jornada<br>Testes de Usabilidade</p>
+              </div>
+            </a>
+
+            <a href="#case-03" class="case-medallion">
+              <div class="medallion-top" style="background: linear-gradient(135deg, #2563EB, #1948E6);">
+                <span style="color:#fff; font-weight:800; font-size:1.1rem;">goomer</span>
+              </div>
+              <div class="medallion-badge" style="background: var(--blue);">
+                <small>ESTUDO<br>DE CASO</small>
+                <strong>03</strong>
+              </div>
+              <div class="medallion-body">
+                <h3 style="color: var(--blue);">Análise da Conversão do Cadastro</h3>
+                <p>Product / Behaviour Analytics</p>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- ====================================================================
+             ESTUDO DE CASO 01 — INK-MACHINE
+             ==================================================================== -->
+        <article id="case-01" class="case-chapter">
+          <div class="case-banner-header reveal">
+            <div class="case-accent-stripe bar-orange"></div>
+            <div class="case-cover-left">
+              <div style="font-weight:800; font-size:1.5rem; color:var(--orange);">Coferly</div>
+              <div class="case-cover-circle" style="background: var(--orange);">
+                <small>ESTUDO<br>DE CASO</small>
+                <strong>01</strong>
+              </div>
+              <h3 class="case-cover-title title-orange">Ink-Machine</h3>
+              <p class="case-cover-sub">Problem Discovery / Teste de Conceito</p>
+            </div>
+
+            <div class="photo-placeholder" style="min-height: 300px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <path d="M21 15l-5-5L5 21"></path>
+              </svg>
+              <strong>Imagem Capa Case 01 (Ink-Machine)</strong>
+              <span>Espaço reservado para foto de aplicação de coloração capilar</span>
+            </div>
+          </div>
+
+          <!-- Overview do Projeto -->
+          <div class="case-sub-block reveal">
+            <div class="overview-layout">
+              <div class="overview-text">
+                <p class="breadcrumb">Estudo de Caso 1 / Ink-Machine</p>
+                <h4 class="sub-heading title-orange">Overview do Projeto</h4>
+
+                <p>Em outubro de 2018, a Coferly procurou CESAR para ajudá-los no seguinte desafio: <strong>Quais são as oportunidades de inovação no mercado de coloração de cabelos?</strong></p>
+                <p>As pesquisas que realizei para este projeto foram focadas em:</p>
+
+                <ol class="overview-numbered">
+                  <li>
+                    <span class="num-accent title-orange">1.</span>
+                    <span><strong>Entrevistas em Profundidade:</strong> Compreender os hábitos e necessidades de pessoas cabeleireiras coloristas e gestoras de salão, visando identificar problemas e oportunidades relacionados ao processo de coloração.</span>
+                  </li>
+                  <li>
+                    <span class="num-accent title-orange">2.</span>
+                    <span><strong>Teste de Conceito:</strong> Testar o conceito e aceitação de uma hipótese de solução sugerida pelo cliente no início do projeto, por meio de um protótipo junto aos salões e seus atores (gestores e cabeleireiros).</span>
+                  </li>
+                </ol>
+
+                <p>Havia um problema de negócio claro e uma hipótese de solução, portanto o objetivo era entender se havia oportunidade para tal.</p>
+                <p>Apesar de haver uma hipótese inicial, o cliente estava aberto a descartá-la e seguir em novas oportunidades. Neste sentido, nosso foco era encontrar problemas reais a serem resolvidos.</p>
+
+                <div class="stage-tracker">
+                  <div class="stage-tracker-label">Etapa do processo de desenvolvimento do produto?</div>
+                  <div class="stage-line">
+                    <div class="stage-node active-orange"><div class="stage-dot"></div><span>Discovery</span></div>
+                    <div class="stage-node"><div class="stage-dot"></div><span>Design</span></div>
+                    <div class="stage-node"><div class="stage-dot"></div><span>Delivery</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display:flex; flex-direction:column; gap:1rem;">
+                <div class="photo-placeholder" style="min-height: 200px;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <path d="M21 15l-5-5L5 21"></path>
+                  </svg>
+                  <strong>Foto de Salão de Beleza</strong>
+                  <span>Espaço reservado para fotografia de atendimento no salão (filtro laranja)</span>
+                </div>
+
+                <div class="photo-placeholder" style="min-height: 200px;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <path d="M21 15l-5-5L5 21"></path>
+                  </svg>
+                  <strong>Foto Preparo de Tinta</strong>
+                  <span>Espaço reservado para foto de tubo de tinta e cumbuca (filtro laranja)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Estrutura da Pesquisa -->
+          <div class="case-sub-block reveal">
+            <p class="breadcrumb">Estudo de Caso 1 / Ink-Machine</p>
+            <h4 class="sub-heading title-orange">Estrutura da Pesquisa</h4>
+
+            <div class="research-rows">
+              <div class="research-row">
+                <div class="research-q">
+                  Qual é o problema de negócio? Quais eram as oportunidades ou hipóteses que o cliente já tem para este problema? Qual problema do cliente ou usuário irá resolver?
+                </div>
+                <div>
+                  <div class="research-step-banner" style="background: var(--orange);">WS DE IMERSÃO</div>
+                  <ul class="research-bullets">
+                    <li>Convidamos representantes de cada área para compartilhar seus conhecimentos e expectativas em relação ao projeto, visando um alinhamento geral entre todos envolvidos sobre o problema e a hipótese inicial.</li>
+                    <li>A principal atividade foi traçar os perfis de interesse para a investigação subsequente, utilizando o Canvas de Proposta de Valor.</li>
+                  </ul>
+                  <div class="photo-placeholder" style="min-height: 90px; margin-top: 0.75rem; padding: 0.75rem;">
+                    <strong>Fotos Workshop Value Proposition Canvas</strong>
+                    <span>Espaço para fotos dos post-its no Canvas</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="research-row">
+                <div class="research-q">
+                  Como é feito e percebido o processo de coloração? Quais os desafios que os cabeleireiros coloristas enfrentam neste processo? E os gestores de salão, como percebem esse processo?
+                </div>
+                <div>
+                  <div class="research-step-banner" style="background: var(--orange);">ENTREVISTAS EM PROFUNDIDADE</div>
+                  <ul class="research-bullets">
+                    <li>Visitamos 24 participantes, entre gestores, cabeleireiros, coloristas de diversos níveis de experiência e especialistas no assunto em Sorocaba e São Paulo, no local onde trabalham.</li>
+                    <li>Questionamos sobre o processo de coloração, materiais utilizados e os principais desafios envolvidos.</li>
+                  </ul>
+                  <div class="photo-placeholder" style="min-height: 90px; margin-top: 0.75rem; padding: 0.75rem;">
+                    <strong>Fotos Entrevistas &amp; Matriz de Post-its</strong>
+                    <span>Espaço para fotos da tabela de colorimetria e mural de síntese</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="research-row">
+                <div class="research-q">
+                  Os clientes percebem valor na solução? Acham fácil de entender e usar? Se mostram interessados em utilizar? Quais as possíveis preocupações os clientes teriam?
+                </div>
+                <div>
+                  <div class="research-step-banner" style="background: var(--orange);">TESTE DE CONCEITO</div>
+                  <ul class="research-bullets">
+                    <li>Stakeholders da Coferly queriam testar a proposta de valor de sua hipótese de solução (misturador de tintas) ainda em fase de conceito.</li>
+                    <li>Criamos um protótipo físico, de baixa fidelidade, e apresentamos para os clientes por meio de visitas aos salões.</li>
+                  </ul>
+                  <div class="photo-placeholder" style="min-height: 90px; margin-top: 0.75rem; padding: 0.75rem;">
+                    <strong>Foto Teste em Campo com Protótipo</strong>
+                    <span>Espaço para foto do participante testando o protótipo em salão</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Teste de Conceito -->
+          <div class="case-sub-block reveal">
+            <p class="breadcrumb">Estudo de Caso 1 / Ink-Machine</p>
+            <h4 class="sub-heading title-orange">Teste de Conceito</h4>
+
+            <div class="overview-layout">
+              <div class="overview-text">
+                <p>Usamos o Teste de Conceito para testar os recursos que o equipamento viria a oferecer e seu valor agregado.</p>
+                <p>Criamos um protótipo com papelão, com o objetivo de simular o aspecto espacial do produto e sua alocação dentro do salão e um protótipo digital, em tablet, onde eram apresentados seus recursos.</p>
+                <p>Levamos o protótipo para 12 salões na cidade de São Paulo e Sorocaba, sendo 6 deles de pequeno e médio porte, e 6 grandes salões, entre eles Jacques Janine.</p>
+                <p>No teste, apresentamos o conceito do protótipo, e pedimos aos participantes para realizarem tarefas através do tablet, este acoplado ao protótipo em papelão. Ao final, os participantes do teste eram questionados em relação às suas percepções sobre o conceito e como poderia agregar valor aos seus negócios, seus pontos fortes e fracos.</p>
+              </div>
+
+              <div class="photo-placeholder" style="min-height: 260px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <path d="M21 15l-5-5L5 21"></path>
+                </svg>
+                <strong>Protótipo Físico de Papelão + Tablet</strong>
+                <span>Espaço para foto da caixa marrom de papelão com iPad acoplado</span>
+              </div>
+            </div>
+
+            <!-- Telas/Gráficos do Tablet -->
+            <div class="ui-mockup-grid">
+              <div class="mini-app-card">
+                <div class="mini-app-header">
+                  <span>Ink Machine Gun</span>
+                  <span style="color:var(--text-muted);">Ago ▾</span>
+                </div>
+                <div class="kpi-pair">
+                  <div class="kpi-box"><strong>158</strong><span>Clientes Atendidos</span></div>
+                  <div class="kpi-box"><strong>26</strong><span>Cores Criadas</span></div>
+                </div>
+                <div style="font-weight:700; margin-bottom:4px;">Cores Mais Produzidas</div>
+                <svg viewBox="0 0 240 120" width="100%" height="auto">
+                  <text x="5" y="20" font-size="8" fill="#888">350</text>
+                  <text x="5" y="55" font-size="8" fill="#888">175</text>
+                  <text x="10" y="90" font-size="8" fill="#888">75</text>
+                  <line x1="25" y1="95" x2="230" y2="95" stroke="#ccc" />
+                  <rect x="32" y="15" width="14" height="80" fill="#1E88E5" data-tip="Cor 6.0: 350" />
+                  <rect x="56" y="15" width="14" height="80" fill="#1E88E5" data-tip="Cor 8.1: 350" />
+                  <rect x="80" y="35" width="14" height="60" fill="#1E88E5" data-tip="Cor 7.4" />
+                  <rect x="104" y="30" width="14" height="65" fill="#1E88E5" data-tip="Cor 9.4" />
+                  <rect x="128" y="55" width="14" height="40" fill="#1E88E5" data-tip="Cor 12.0" />
+                  <rect x="152" y="45" width="14" height="50" fill="#1E88E5" data-tip="Cor 8.7" />
+                  <rect x="176" y="70" width="14" height="25" fill="#1E88E5" data-tip="Cor 4.5" />
+                  <rect x="200" y="78" width="14" height="17" fill="#1E88E5" data-tip="Cor 9.1" />
+                  <text x="32" y="108" font-size="7" fill="#666">6.0  8.1  7.4  9.4 12.0  8.7  4.5  9.1</text>
+                </svg>
+              </div>
+
+              <div class="mini-app-card">
+                <div class="mini-app-header">
+                  <span>Nível de corante disponível</span>
+                  <span style="background:#009688; color:#fff; padding:2px 6px; border-radius:4px; font-size:0.65rem;">VER +</span>
+                </div>
+                <svg viewBox="0 0 240 130" width="100%" height="auto">
+                  <text x="2" y="20" font-size="8" fill="#888">100</text>
+                  <text x="6" y="62" font-size="8" fill="#888">50</text>
+                  <text x="10" y="105" font-size="8" fill="#888">0</text>
+                  <line x1="22" y1="105" x2="235" y2="105" stroke="#ccc" />
+                  <rect x="28" y="25" width="5" height="80" fill="#1E88E5" />
+                  <rect x="38" y="55" width="5" height="50" fill="#1E88E5" />
+                  <rect x="48" y="70" width="5" height="35" fill="#1E88E5" />
+                  <rect x="58" y="82" width="5" height="23" fill="#1E88E5" />
+                  <rect x="68" y="65" width="5" height="40" fill="#1E88E5" />
+                  <rect x="78" y="15" width="5" height="90" fill="#1E88E5" />
+                  <rect x="88" y="25" width="5" height="80" fill="#1E88E5" />
+                  <rect x="98" y="75" width="5" height="30" fill="#1E88E5" />
+                  <rect x="108" y="82" width="5" height="23" fill="#1E88E5" />
+                  <rect x="118" y="88" width="5" height="17" fill="#1E88E5" />
+                  <rect x="128" y="92" width="5" height="13" fill="#1E88E5" />
+                  <rect x="138" y="15" width="5" height="90" fill="#1E88E5" />
+                  <rect x="148" y="55" width="5" height="50" fill="#1E88E5" />
+                  <rect x="158" y="32" width="5" height="73" fill="#1E88E5" />
+                  <rect x="168" y="78" width="5" height="27" fill="#1E88E5" />
+                  <rect x="178" y="85" width="5" height="20" fill="#1E88E5" />
+                  <rect x="188" y="68" width="5" height="37" fill="#1E88E5" />
+                  <rect x="198" y="25" width="5" height="80" fill="#1E88E5" />
+                  <rect x="208" y="72" width="5" height="33" fill="#1E88E5" />
+                  <line x1="22" y1="74" x2="235" y2="74" stroke="#EF4444" stroke-width="1.5" />
+                </svg>
+              </div>
+
+              <div class="mini-app-card">
+                <div class="mini-app-header">
+                  <span>Nível de cor disponível</span>
+                  <span style="background:#009688; color:#fff; padding:2px 6px; border-radius:4px; font-size:0.65rem;">VER +</span>
+                </div>
+                <svg viewBox="0 0 240 90" width="100%" height="auto">
+                  <rect x="30" y="15" width="8" height="65" fill="#1E88E5" />
+                  <rect x="48" y="38" width="8" height="42" fill="#1E88E5" />
+                  <rect x="66" y="56" width="8" height="24" fill="#1E88E5" />
+                  <rect x="84" y="60" width="8" height="20" fill="#1E88E5" />
+                  <rect x="102" y="63" width="8" height="17" fill="#1E88E5" />
+                  <rect x="120" y="54" width="8" height="26" fill="#1E88E5" />
+                  <rect x="138" y="8" width="8" height="72" fill="#1E88E5" />
+                  <rect x="156" y="48" width="8" height="32" fill="#1E88E5" />
+                  <rect x="174" y="16" width="8" height="64" fill="#1E88E5" />
+                  <rect x="192" y="38" width="8" height="42" fill="#1E88E5" />
+                  <line x1="20" y1="53" x2="220" y2="53" stroke="#EF4444" stroke-width="1.5" />
+                </svg>
+                <div style="font-weight:700; margin: 6px 0 4px; display:flex; justify-content:space-between;">
+                  <span>Últimos Atendimentos</span>
+                  <span style="background:#009688; color:#fff; padding:1px 5px; border-radius:3px; font-size:0.6rem;">VER +</span>
+                </div>
+                <div style="font-size:0.65rem; color:var(--text-secondary); line-height:1.45;">
+                  03/11 • Raquel • 7.4 • 60g • Samuel<br>
+                  03/11 • Maria • 8.1 • 30g • João<br>
+                  03/11 • Claudia • 6.0 • 120g • Luís
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Principais Insights & Resultados de Negócio -->
+          <div class="case-sub-block reveal" style="margin-bottom:0;">
+            <div class="overview-layout" style="margin-bottom: 2.5rem;">
+              <div>
+                <p class="breadcrumb">Estudo de Caso 1 / Ink-Machine</p>
+                <h4 class="sub-heading title-orange">Principais Insights</h4>
+
+                <ul class="skills-list" style="grid-template-columns: 1fr;">
+                  <li style="--pink: var(--orange);">O valor em ter um produto que forneça a coloração já misturada é percebido por cabeleireiros com menor experiência. Cabeleireiros e coloristas com maior experiência entendem que deixar de realizar a mistura manualmente prejudica o valor percebido do seu trabalho pelos clientes;</li>
+                  <li style="--pink: var(--orange);">O problema de negócio é praticamente inexistente, até para os especialistas;</li>
+                  <li style="--pink: var(--orange);">O desperdício e a reposição de material é um dos principais problemas dos salões quando se trata do processo de coloração. O desperdício ocorre por medirem as soluções geralmente "no olho";</li>
+                  <li style="--pink: var(--orange);">A gestão e controle do estoque foram vistos como diferenciais da solução, no sentido de reduzir o desperdício e com isso aumentar a margem de lucros;</li>
+                  <li style="--pink: var(--orange);">Os clientes acreditam que a solução pode trazer mais valor agregado para o salão e se mostraram interessados em adquirir a solução quando lançada.</li>
+                </ul>
+              </div>
+
+              <div class="photo-placeholder" style="min-height: 360px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <path d="M21 15l-5-5L5 21"></path>
+                </svg>
+                <strong>Render 3D do Equipamento Ink-Machine</strong>
+                <span>Espaço para imagem industrial do equipamento final</span>
+              </div>
+            </div>
+
+            <div class="overview-layout">
+              <div class="overview-text">
+                <p class="breadcrumb">Estudo de Caso 1 / Ink-Machine</p>
+                <h4 class="sub-heading title-orange">Resultados de Negócio</h4>
+
+                <p>Por conta desta pesquisa, a ideia inicial de focar no misturador de tintas como um grande diferencial foi deixada em segundo plano, direcionando os esforços de design do produto na facilidade de troca dos tubos de coloração.</p>
+                <p>Além disso, um novo projeto de serviço de distribuição das colorações para a gestão do estoque foi iniciado, junto a uma pesquisa de mercado focada em market-size.</p>
+              </div>
+
+              <div class="photo-placeholder" style="min-height: 280px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <path d="M21 15l-5-5L5 21"></path>
+                </svg>
+                <strong>Detalhe dos Tubos com QR Code</strong>
+                <span>Espaço para imagem do compartimento interno de tubos de coloração</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- ====================================================================
+             ESTUDO DE CASO 02 — PLATAFORMA DE ENGAJAMENTO
+             ==================================================================== -->
+        <article id="case-02" class="case-chapter">
+          <div class="case-banner-header reveal">
+            <div class="case-accent-stripe bar-pink"></div>
+            <div class="case-cover-left">
+              <div style="font-weight:800; font-size:1.35rem; color:var(--blue);">
+                Kimberly-Clark<br>
+                <small style="font-size:0.75rem; font-weight:500; color:var(--text-muted);">Essencial para uma vida melhor</small>
+              </div>
+              <div class="case-cover-circle" style="background: var(--pink);">
+                <small>ESTUDO<br>DE CASO</small>
+                <strong>02</strong>
+              </div>
+              <h3 class="case-cover-title title-pink">Plataforma de Engajamento</h3>
+              <p class="case-cover-sub">Personas &amp; Jornada<br>Testes de Usabilidade</p>
+            </div>
+
+            <div class="photo-placeholder" style="min-height: 300px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <path d="M21 15l-5-5L5 21"></path>
+              </svg>
+              <strong>Imagem Capa Case 02 (Kimberly-Clark / Intimus)</strong>
+              <span>Espaço reservado para fotografia temática com calendário menstrual</span>
+            </div>
+          </div>
+
+          <!-- Overview do Projeto -->
+          <div class="case-sub-block reveal">
+            <div class="overview-layout">
+              <div class="overview-text">
+                <p class="breadcrumb">Estudo de Caso 2 / Plataforma de Engajamento</p>
+                <h4 class="sub-heading title-pink">Overview do Projeto</h4>
+
+                <p>Entre 2019 e 2020, a Kimberly Clark buscava identificar novas oportunidades de negócio através de uma solução que fortalecesse o engajamento das consumidoras da marca Intimus. Por isso, queriam conhecer melhor as consumidoras de seus produtos e verificar se suas hipóteses eram factíveis.</p>
+                <p>Neste projeto, as pesquisas que participei foram focadas em:</p>
+
+                <ol class="overview-numbered">
+                  <li>
+                    <span class="num-accent title-pink">1.</span>
+                    <span><strong>Entrevistas + Survey:</strong> Como é a experiência das pessoas que menstruam atualmente e qual a sua relação com aplicativos de saúde íntima? Qual a sua relação com o ciclo menstrual? Como e por que elas utilizam aplicativos de saúde íntima?</span>
+                  </li>
+                  <li>
+                    <span class="num-accent title-pink">2.</span>
+                    <span><strong>Requisitos:</strong> Se a KC criasse um aplicativo de saúde íntima, quais elementos criaram a melhor experiência para as usuárias?</span>
+                  </li>
+                </ol>
+
+                <p>O time de Marketing e Desenvolvimento da Kimberly Clark tinham como hipótese oferecer aos consumidores uma plataforma de engajamento que pudesse conectar controle menstrual, relacionamento direto com as consumidoras e vendas online de forma integrada, e entender se as consumidoras se interessariam pela solução e seu potencial de aumentar o engajamento com a marca Intimus.</p>
+                <p>Assim, nosso foco foi mapear os perfis de consumidoras e validar o protótipo da solução com esses perfis.</p>
+
+                <div class="stage-tracker">
+                  <div class="stage-tracker-label">Etapa do processo de desenvolvimento do produto?</div>
+                  <div class="stage-line">
+                    <div class="stage-node active-pink"><div class="stage-dot"></div><span>Discovery</span></div>
+                    <div class="stage-node"><div class="stage-dot"></div><span>Design</span></div>
+                    <div class="stage-node"><div class="stage-dot"></div><span>Delivery</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display:flex; flex-direction:column; gap:1rem;">
+                <div class="photo-placeholder" style="min-height: 200px;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <path d="M21 15l-5-5L5 21"></path>
+                  </svg>
+                  <strong>Calendário Menstrual (Artefato)</strong>
+                  <span>Espaço reservado para foto de acompanhamento de ciclo menstrual</span>
+                </div>
+
+                <div class="photo-placeholder" style="min-height: 200px;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <circle cx="12" cy="8" r="4"></circle>
+                    <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
+                  </svg>
+                  <strong>Foto Workshop com Time Kimberly-Clark</strong>
+                  <span>Espaço para foto de Marlon Lemes e equipe dinamizando post-its (filtro magenta)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Estrutura da Pesquisa -->
+          <div class="case-sub-block reveal">
+            <p class="breadcrumb">Estudo de Caso 2 / Plataforma de Engajamento</p>
+            <h4 class="sub-heading title-pink">Estrutura da Pesquisa</h4>
+
+            <div class="research-rows">
+              <div class="research-row">
+                <div class="research-q">
+                  Qual a relação das pessoas com a menstruação? Quais os hábitos de consumo? Utilizam tecnologia de que forma neste contexto?
+                </div>
+                <div>
+                  <div class="research-step-banner" style="background: var(--pink);">ENTREVISTAS</div>
+                  <ul class="research-bullets">
+                    <li>O time entrevistou remotamente 15 consumidoras dos produtos Intimus® em várias regiões do Brasil.</li>
+                    <li>O time perguntou sobre a relação das participantes com seu ciclo menstrual, pedindo para descrever sua experiência do seu último ciclo. Além disso, questionou sobre seus hábitos de consumo em relação a produtos de saúde íntima, como se informa quando possui dúvidas, etc.</li>
+                  </ul>
+                  <div class="photo-placeholder" style="min-height: 85px; margin-top: 0.75rem; padding: 0.65rem;">
+                    <strong>Print Entrevista Remota + Roteiro</strong>
+                    <span>Espaço para captura de tela da videochamada com participante</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="research-row">
+                <div class="research-q">
+                  Quais são as principais diferenças entre os grupos? Quais variáveis ajudam a diferenciar estes perfis?
+                </div>
+                <div>
+                  <div class="research-step-banner" style="background: var(--pink);">SURVEY</div>
+                  <ul class="research-bullets">
+                    <li>Disparamos um survey online entre as redes sociais dos pesquisadores e comunidades sobre o assunto nas redes sociais, buscando quantificar as variáveis identificadas nas entrevistas iniciais.</li>
+                    <li>Por conta de tempo e custo, a amostra por conveniência foi utilizada.</li>
+                  </ul>
+
+                  <div class="mini-app-card" style="margin-top: 0.75rem;">
+                    <div style="font-weight:700; margin-bottom:0.4rem; color:var(--pink);">Árvore de Segmentação de Perfis (Survey)</div>
+                    <svg viewBox="0 0 420 155" width="100%" height="auto">
+                      <rect x="8" y="62" width="60" height="26" rx="13" fill="none" stroke="#94A3B8" />
+                      <text x="38" y="79" text-anchor="middle" font-size="9" fill="currentColor" font-weight="700">Perfis</text>
+
+                      <path d="M 68,75 C 105,75 105,15 140,15" fill="none" stroke="#F472B6" stroke-width="1.3" />
+                      <path d="M 68,75 C 105,75 105,40 140,40" fill="none" stroke="#F472B6" stroke-width="1.3" />
+                      <path d="M 68,75 C 105,75 105,65 140,65" fill="none" stroke="#F472B6" stroke-width="1.3" />
+                      <path d="M 68,75 C 105,75 105,90 140,90" fill="none" stroke="#F472B6" stroke-width="1.3" />
+                      <path d="M 68,75 C 105,75 105,115 140,115" fill="none" stroke="#F472B6" stroke-width="1.3" />
+                      <path d="M 68,75 C 105,75 105,140 140,140" fill="none" stroke="#F472B6" stroke-width="1.3" />
+
+                      <text x="145" y="18" font-size="8" fill="currentColor" font-weight="700">Pré-menarca → Infância</text>
+                      <text x="145" y="43" font-size="8" fill="currentColor" font-weight="700">Liberada → Anticoncepcional / Menopausa</text>
+                      <text x="145" y="68" font-size="8" fill="currentColor" font-weight="700">Super Controle → Não menstrua / Ciclo</text>
+                      <text x="145" y="93" font-size="8" fill="currentColor" font-weight="700">Controle Especial → Problemas no ciclo / Saúde</text>
+                      <text x="145" y="118" font-size="8" fill="currentColor" font-weight="700">Gravidez → Tentando engravidar / Grávida / Pós-Parto</text>
+                      <text x="145" y="143" font-size="8" fill="currentColor" font-weight="700">Menopausa → Pré-menopausa / Menopausa</text>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div class="research-row">
+                <div class="research-q">
+                  As usuárias se interessam pela solução? A solução é capaz de aumentar o engajamento com a marca? Qual o diferencial percebido? O que é mais importante para os usuários? A aplicação é fácil de usar?
+                </div>
+                <div>
+                  <div class="research-step-banner" style="background: var(--pink);">TESTE DE USABILIDADE</div>
+                  <ul class="research-bullets">
+                    <li>Testamos a experiência de uso por meio de um protótipo de média fidelidade.</li>
+                    <li>Testamos se as pessoas conseguiam configurar seu calendário menstrual, encontrar um determinado conteúdo e realizar uma compra e sua percepção, etc.</li>
+                  </ul>
+                  <div class="photo-placeholder" style="min-height: 85px; margin-top: 0.75rem; padding: 0.65rem;">
+                    <strong>Telas do Protótipo + Matriz de Achados</strong>
+                    <span>Espaço para telas do app Intimus ("Dúvidas sobre sua saúde íntima?") e post-its</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Exemplo de Persona e Jornada -->
+          <div class="case-sub-block reveal">
+            <p class="breadcrumb">Estudo de Caso 2 / Plataforma de Engajamento</p>
+            <h4 class="sub-heading title-pink">Exemplo de Persona e Jornada</h4>
+
+            <p class="lead-paragraph" style="margin-bottom:0.85rem;">
+              Como resultado final das análises das entrevistas e do survey, foram construídas personas e desenhos de jornada. Neste caso a jornada do ciclo menstrual para cada persona. O principal aspecto que de diferenciação entre os perfis foi a noção de autoconhecimento e sua relação positiva ou negativa com o ciclo menstrual.
+            </p>
+            <p style="font-size:0.95rem; color:var(--text-secondary); margin-bottom:1.5rem;">
+              Estes artefatos foram utilizados durante as sessões de ideação e testes.
+            </p>
+
+            <div class="ui-mockup-grid" style="margin-bottom: 1.5rem;">
+              <div class="mini-app-card">
+                <div style="display:flex; align-items:center; gap:0.65rem; margin-bottom:0.5rem;">
+                  <div style="width:40px; height:40px; border-radius:50%; background:var(--pink-soft); color:var(--pink); display:flex; align-items:center; justify-content:center; font-weight:800;">T</div>
+                  <div>
+                    <strong>Thais, 33.</strong><br>
+                    <small style="color:var(--text-muted);">Marketing Home Office • Campinas SP</small>
+                  </div>
+                </div>
+                <p style="font-style:italic; color:var(--text-secondary);">"A gente vai ficando velha e vê umas coisas naturais que médico não gosta, mas funciona."</p>
+              </div>
+
+              <div class="mini-app-card">
+                <div style="display:flex; align-items:center; gap:0.65rem; margin-bottom:0.5rem;">
+                  <div style="width:40px; height:40px; border-radius:50%; background:var(--pink-soft); color:var(--pink); display:flex; align-items:center; justify-content:center; font-weight:800;">C</div>
+                  <div>
+                    <strong>Cláudia, 26.</strong><br>
+                    <small style="color:var(--text-muted);">Advogada • Recife PE</small>
+                  </div>
+                </div>
+                <p style="font-style:italic; color:var(--text-secondary);">"Prefiro não menstruar."</p>
+              </div>
+
+              <div class="mini-app-card">
+                <div style="display:flex; align-items:center; gap:0.65rem; margin-bottom:0.5rem;">
+                  <div style="width:40px; height:40px; border-radius:50%; background:var(--pink-soft); color:var(--pink); display:flex; align-items:center; justify-content:center; font-weight:800;">L</div>
+                  <div>
+                    <strong>Lucia, 42.</strong><br>
+                    <small style="color:var(--text-muted);">Tabeliã • Porto Alegre RS</small>
+                  </div>
+                </div>
+                <p style="font-style:italic; color:var(--text-secondary);">"Aprendi assim e tem funcionado assim."</p>
+              </div>
+            </div>
+
+            <div class="mini-app-card" style="overflow-x:auto;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+                <strong>Mapa de Jornada do Ciclo Menstrual — Thais, 33</strong>
+                <span style="font-size:0.7rem; color:var(--text-muted);">Positivo 🟢 | Neutro 🟡 | Negativo 🔴</span>
+              </div>
+              <svg viewBox="0 0 920 230" style="min-width:780px; width:100%; height:auto;">
+                <rect x="10" y="10" width="135" height="22" rx="4" fill="#38BDF8" />
+                <text x="77" y="24" text-anchor="middle" font-size="8.5" fill="#fff" font-weight="700">Pré-Período Menstrual</text>
+
+                <rect x="155" y="10" width="135" height="22" rx="4" fill="#A855F7" />
+                <text x="222" y="24" text-anchor="middle" font-size="8.5" fill="#fff" font-weight="700">Descobrimento da Infecção</text>
+
+                <rect x="300" y="10" width="145" height="22" rx="4" fill="#EC4899" />
+                <text x="372" y="24" text-anchor="middle" font-size="8.5" fill="#fff" font-weight="700">Busca por Informação e Cuidados</text>
+
+                <rect x="455" y="10" width="145" height="22" rx="4" fill="#DB2777" />
+                <text x="527" y="24" text-anchor="middle" font-size="8.5" fill="#fff" font-weight="700">Tensão Pré-Menstrual (TPM)</text>
+
+                <rect x="610" y="10" width="145" height="22" rx="4" fill="#F43F5E" />
+                <text x="682" y="24" text-anchor="middle" font-size="8.5" fill="#fff" font-weight="700">Durante dia da Menstruação</text>
+
+                <rect x="765" y="10" width="145" height="22" rx="4" fill="#F472B6" />
+                <text x="837" y="24" text-anchor="middle" font-size="8.5" fill="#fff" font-weight="700">Último dia da Menstruação</text>
+
+                <line x1="20" y1="115" x2="900" y2="115" stroke="#CBD5E1" stroke-dasharray="3,3" />
+
+                <polyline fill="none" stroke="#94A3B8" stroke-width="2"
+                  points="50,80 110,80 190,155 255,155 340,115 410,80 480,115 530,155 585,115 650,115 710,115 780,115 845,80" />
+
+                <circle cx="50" cy="80" r="5" fill="#10B981" data-tip="Acolhida (Positivo)" />
+                <text x="50" y="68" text-anchor="middle" font-size="7.5" fill="currentColor">Acolhida</text>
+
+                <circle cx="110" cy="80" r="5" fill="#10B981" data-tip="Aliviada (Positivo)" />
+                <text x="110" y="68" text-anchor="middle" font-size="7.5" fill="currentColor">Aliviada</text>
+
+                <circle cx="190" cy="155" r="5" fill="#EF4444" data-tip="Decepcionada (Negativo)" />
+                <text x="190" y="172" text-anchor="middle" font-size="7.5" fill="#EF4444" font-weight="700">Decepcionada</text>
+
+                <circle cx="255" cy="155" r="5" fill="#EF4444" data-tip="Preocupada (Negativo)" />
+                <text x="255" y="172" text-anchor="middle" font-size="7.5" fill="#EF4444" font-weight="700">Preocupada</text>
+
+                <circle cx="340" cy="115" r="5" fill="#F59E0B" data-tip="Focada (Neutro)" />
+                <text x="340" y="103" text-anchor="middle" font-size="7.5" fill="currentColor">Focada</text>
+
+                <circle cx="410" cy="80" r="5" fill="#10B981" data-tip="Bem (Positivo)" />
+                <text x="410" y="68" text-anchor="middle" font-size="7.5" fill="currentColor">Bem</text>
+
+                <circle cx="530" cy="155" r="5" fill="#EF4444" data-tip="Indisposta (Negativo)" />
+                <text x="530" y="172" text-anchor="middle" font-size="7.5" fill="#EF4444" font-weight="700">Indisposta</text>
+
+                <circle cx="682" cy="115" r="5" fill="#F59E0B" data-tip="Atenta (Neutro)" />
+                <text x="682" y="103" text-anchor="middle" font-size="7.5" fill="currentColor">Atenta</text>
+
+                <circle cx="845" cy="80" r="5" fill="#10B981" data-tip="Mais disposta (Positivo)" />
+                <text x="845" y="68" text-anchor="middle" font-size="7.5" fill="currentColor">Mais disposta</text>
+
+                <rect x="25" y="188" width="110" height="30" rx="3" fill="#38BDF8" opacity="0.85" />
+                <text x="80" y="206" text-anchor="middle" font-size="7" fill="#0F172A" font-weight="700">Insight: Registro de sintomas</text>
+
+                <rect x="170" y="188" width="110" height="30" rx="3" fill="#38BDF8" opacity="0.85" />
+                <text x="225" y="206" text-anchor="middle" font-size="7" fill="#0F172A" font-weight="700">Insight: Conteúdo preventivo</text>
+
+                <rect x="330" y="188" width="110" height="30" rx="3" fill="#38BDF8" opacity="0.85" />
+                <text x="385" y="206" text-anchor="middle" font-size="7" fill="#0F172A" font-weight="700">Insight: Recomendações</text>
+
+                <rect x="490" y="188" width="110" height="30" rx="3" fill="#38BDF8" opacity="0.85" />
+                <text x="545" y="206" text-anchor="middle" font-size="7" fill="#0F172A" font-weight="700">Insight: Alimentação/TPM</text>
+
+                <rect x="650" y="188" width="110" height="30" rx="3" fill="#38BDF8" opacity="0.85" />
+                <text x="705" y="206" text-anchor="middle" font-size="7" fill="#0F172A" font-weight="700">Insight: Loja integrada</text>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Principais Insights & Resultados de Negócio -->
+          <div class="case-sub-block reveal" style="margin-bottom:0;">
+            <p class="breadcrumb">Estudo de Caso 2 / Plataforma de Engajamento</p>
+            <h4 class="sub-heading title-pink">Principais Insights</h4>
+
+            <ul class="skills-list" style="grid-template-columns: 1fr; margin-bottom: 1.5rem;">
+              <li>A integração entre calendário, conteúdo, produtos, recomendações e a possibilidade de tirar dúvidas, em um único local, foi vista como grande diferencial em relação a outros aplicativos, que as participantes já experimentaram;</li>
+              <li>Os participantes buscam por conteúdos e produtos muito diversos, inclusive de outras marcas, e por isso é importante considerar o modelo de parcerias para oferecer valor, tanto em termos de conteúdo relevante quanto diversidade de produtos na loja.</li>
+              <li>O design da interação para coleta dos dados do calendário, inspirada em uma conversa, funcionou e foi vista como outro aspecto diferencial comparado a outros aplicativos.</li>
+            </ul>
+
+            <div style="margin-bottom: 2.5rem; text-align:right; font-weight:800; color:var(--blue);">
+              Kimberly-Clark<br>
+              <small style="font-weight:500; color:var(--text-muted);">Essencial para uma vida melhor</small>
+            </div>
+
+            <div class="overview-layout">
+              <div class="overview-text">
+                <p class="breadcrumb">Estudo de Caso 2 / Plataforma de Engajamento</p>
+                <h4 class="sub-heading title-pink">Resultados de Negócio</h4>
+
+                <p>Com base nos resultados destas pesquisas, apontamos os aspectos críticos de negócio para a viabilidade de grande parte do produto, e que deveriam ser considerados como próximos passos do projeto. A Kimberly Clark então ficou mais confiante em seguir adiante e começou a buscar investimentos internamente para a próxima fase do projeto.</p>
+                <p>Em 2021, lançou a Kira: "uma plataforma de conteúdo que reúne informação sobre saúde íntima feminina, bem-estar e sexualidade".</p>
+                <p style="font-size:0.85rem; color:var(--text-muted);">(Não tenho mais informações sobre o projeto</p>
+              </div>
+
+              <div class="photo-placeholder" style="min-height: 310px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <circle cx="12" cy="8" r="4"></circle>
+                  <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
+                </svg>
+                <strong>Foto da Equipe do Projeto (Preto e Branco)</strong>
+                <span>Espaço para foto de encerramento com o time Kimberly-Clark / CESAR</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- ====================================================================
+             ESTUDO DE CASO 03 — ANÁLISE DA CONVERSÃO DO CADASTRO (GOOMER)
+             ==================================================================== -->
+        <article id="case-03" class="case-chapter" style="padding-bottom: 0;">
+          <div class="case-banner-header reveal">
+            <div class="case-accent-stripe bar-blue"></div>
+            <div class="case-cover-left">
+              <div style="font-weight:800; font-size:1.85rem; color:var(--blue-bright);">goomer</div>
+              <div class="case-cover-circle" style="background: var(--blue);">
+                <small>ESTUDO<br>DE CASO</small>
+                <strong>03</strong>
+              </div>
+              <h3 class="case-cover-title title-blue">Análise da Conversão do Cadastro</h3>
+              <p class="case-cover-sub">Product / Behaviour Analytics</p>
+            </div>
+
+            <div class="photo-placeholder" style="min-height: 300px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <path d="M21 15l-5-5L5 21"></path>
+              </svg>
+              <strong>Imagem Capa Case 03 (Goomer)</strong>
+              <span>Espaço reservado para fotografia de empreendedor em restaurante/delivery</span>
+            </div>
+          </div>
+
+          <!-- Overview do Projeto (Tela Cadastro + Tabela + Gráfico Histórico) -->
+          <div class="case-sub-block reveal">
+            <div class="overview-layout" style="margin-bottom: 2.5rem;">
+              <div class="overview-text">
+                <p class="breadcrumb">Estudo de Caso 3 / Análise da Conversão do Cadastro</p>
+                <h4 class="sub-heading title-blue">Overview do Projeto</h4>
+
+                <p>No começo de 2022, o cadastro do site sofreu um redesign com o intuito de aumentar sua taxa de conversão. Em março, o time responsável por essa OKR solicitou uma investigação deste redesign para entender as oportunidades de melhoria, pois mesmo após o redesign, a taxa de conversão ainda estava abaixo do objetivo desejado.</p>
+                <p>Neste projeto, a pesquisa que conduzi foi focada:</p>
+
+                <ol class="overview-numbered">
+                  <li>
+                    <span class="num-accent title-blue">1.</span>
+                    <span><strong>Product / Behaviour Analytics:</strong> Quais as etapas do cadastro sofrem a maior queda de conversão? Quais as possíveis barreiras que os usuários estão enfrentando? Existem oportunidades de produto para a squad atuar na melhoria dessa métrica?</span>
+                  </li>
+                </ol>
+
+                <p>O objetivo da squad com o redesign foi aumentar a taxa de completude do cadastro de 30% para 43%, sendo este um dos OKRs de uma squad de produto da Goomer. Esta métrica de produto está diretamente ligada aos KPIs de crescimento de base e receita do negócio.</p>
+                <p>Semanas após a implementação do novo cadastro, o redesign se mostrou eficiente em aumentar a taxa de completude, crescendo de 31% para 35%, porém ainda abaixo da meta.</p>
+                <p>Desta forma o objetivo desta investigação foi identificar as principais partes do fluxo de cadastro que o time de Assinatura e Conversão pode atuar para melhorar a taxa de completude do cadastro para 43%.</p>
+
+                <div class="stage-tracker">
+                  <div class="stage-tracker-label">Etapa do processo de desenvolvimento do produto?</div>
+                  <div class="stage-line">
+                    <div class="stage-node"><div class="stage-dot"></div><span>Discovery</span></div>
+                    <div class="stage-node"><div class="stage-dot"></div><span>Design</span></div>
+                    <div class="stage-node active-blue"><div class="stage-dot"></div><span>Delivery</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display:flex; flex-direction:column; gap:1.25rem;">
+                <!-- Tela de Cadastro Goomer -->
+                <div class="mini-app-card" style="padding:1.15rem;">
+                  <div style="display:flex; gap:5px; margin-bottom:0.75rem;">
+                    <span style="width:9px; height:9px; border-radius:50%; background:#EF4444;"></span>
+                    <span style="width:9px; height:9px; border-radius:50%; background:#F59E0B;"></span>
+                    <span style="width:9px; height:9px; border-radius:50%; background:#10B981;"></span>
+                  </div>
+                  <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.85rem; align-items:center;">
+                    <div>
+                      <div style="font-weight:800; color:var(--blue-bright); font-size:0.95rem; margin-bottom:0.35rem;">goomer</div>
+                      <div style="font-weight:700; font-size:0.8rem; margin-bottom:0.55rem;">Venda muito mais com nossas soluções digitais</div>
+                      <div style="font-size:0.65rem; margin-bottom:0.15rem;">E-mail</div>
+                      <div style="border:1px solid var(--border-color); padding:0.35rem; border-radius:6px; color:var(--text-muted); margin-bottom:0.4rem;">Digite um e-mail</div>
+                      <div style="font-size:0.65rem; margin-bottom:0.15rem;">Senha</div>
+                      <div style="border:1px solid var(--border-color); padding:0.35rem; border-radius:6px; color:var(--text-muted); margin-bottom:0.3rem;">Digite uma senha forte</div>
+                      <div style="font-size:0.58rem; color:var(--text-muted); margin-bottom:0.5rem;">Digite 8 ou mais caracteres</div>
+                      <div style="background:var(--bg-surface-alt); text-align:center; padding:0.4rem; border-radius:6px; font-weight:700; color:var(--text-muted);">Criar conta grátis</div>
+                    </div>
+                    <div style="background:var(--blue-bright); border-radius:10px; padding:0.85rem; color:#fff; display:flex; flex-direction:column; gap:0.6rem;">
+                      <div class="photo-placeholder" style="min-height:95px; background:rgba(255,255,255,0.12); border-color:rgba(255,255,255,0.4); color:#fff; padding:0.5rem;">
+                        <strong style="color:#fff; font-size:0.75rem;">Foto Delivery</strong>
+                        <span style="color:rgba(255,255,255,0.85); font-size:0.65rem;">Entregador e lojista</span>
+                      </div>
+                      <div style="background:rgba(255,255,255,0.92); color:#1E293B; padding:0.5rem; border-radius:8px; font-size:0.65rem;">
+                        <div style="color:#F59E0B;">★★★★★</div>
+                        <strong>Usado por mais de 175 mil negócios em todo o Brasil</strong>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Tabela + Gráfico Histórico do Indicador -->
+                <div class="mini-app-card">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Período</th>
+                        <th>Tx. Completude de Cadastro</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr><td>Janeiro</td><td>29,18%</td></tr>
+                      <tr><td>1 a 23 de fev</td><td>31,48%</td></tr>
+                      <tr><td>24 a 28 fev</td><td>34,14%</td></tr>
+                      <tr><td>1 e 2 Mar</td><td>35,02%</td></tr>
+                      <tr class="meta-row"><td>META</td><td>43,5%</td></tr>
+                    </tbody>
+                  </table>
+
+                  <div style="font-weight:700; margin-bottom:0.5rem;">Histórico do indicador</div>
+                  <svg viewBox="0 0 420 220" width="100%" height="auto">
+                    <text x="18" y="20" font-size="8.5" fill="#888">43</text>
+                    <text x="18" y="45" font-size="8.5" fill="#888">41</text>
+                    <text x="18" y="70" font-size="8.5" fill="#888">39</text>
+                    <text x="18" y="95" font-size="8.5" fill="#888">37</text>
+                    <text x="18" y="120" font-size="8.5" fill="#888">35</text>
+                    <text x="18" y="145" font-size="8.5" fill="#888">33</text>
+                    <text x="18" y="170" font-size="8.5" fill="#888">31</text>
+                    <text x="18" y="182" font-size="8.5" fill="#888">30</text>
+
+                    <line x1="35" y1="180" x2="405" y2="180" stroke="#CBD5E1" />
+                    <line x1="35" y1="120" x2="405" y2="120" stroke="#E2E8F0" stroke-dasharray="2,2" />
+                    <line x1="35" y1="20" x2="405" y2="20" stroke="#E2E8F0" stroke-dasharray="2,2" />
+
+                    <line x1="35" y1="180" x2="355" y2="18" stroke="#9CA3AF" stroke-width="2" />
+                    <circle cx="355" cy="18" r="3.5" fill="#9CA3AF" data-tip="Planejado: 43" />
+
+                    <polyline fill="none" stroke="#475569" stroke-width="2.5"
+                      points="35,180 150,174 168,166 202,148 212,132 215,123" />
+                    <circle cx="150" cy="174" r="3" fill="#475569" />
+                    <circle cx="168" cy="166" r="3" fill="#475569" />
+                    <circle cx="202" cy="148" r="3" fill="#475569" />
+                    <circle cx="212" cy="132" r="3" fill="#475569" />
+                    <circle cx="215" cy="123" r="4" fill="#475569" data-tip="Realizado: 34,71" />
+
+                    <circle cx="215" cy="123" r="12" fill="none" stroke="#64748B" stroke-width="1.2" />
+                    <text x="232" y="126" font-size="10" font-weight="800" fill="#475569">34,71</text>
+
+                    <text x="35" y="196" font-size="8" fill="#888">01/jan</text>
+                    <text x="80" y="196" font-size="8" fill="#888">15/jan</text>
+                    <text x="125" y="196" font-size="8" fill="#888">29/jan</text>
+                    <text x="170" y="196" font-size="8" fill="#888">12/fev</text>
+                    <text x="215" y="196" font-size="8" fill="#888">26/fev</text>
+                    <text x="260" y="196" font-size="8" fill="#888">12/mar</text>
+                    <text x="305" y="196" font-size="8" fill="#888">26/mar</text>
+                    <text x="350" y="196" font-size="8" fill="#888">09/abr</text>
+                    <text x="388" y="196" font-size="8" fill="#888">23/abr</text>
+
+                    <line x1="35" y1="212" x2="50" y2="212" stroke="#9CA3AF" stroke-width="2" />
+                    <text x="55" y="215" font-size="8.5" fill="#64748B">Planejado</text>
+                    <line x1="115" y1="212" x2="130" y2="212" stroke="#475569" stroke-width="2.5" />
+                    <text x="135" y="215" font-size="8.5" fill="#64748B">Realizado</text>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Estrutura da Investigação -->
+          <div class="case-sub-block reveal">
+            <p class="breadcrumb">Estudo de Caso 3 / Análise da Conversão do Cadastro</p>
+            <h4 class="sub-heading title-blue">Estrutura da investigação</h4>
+
+            <div class="research-rows">
+              <div class="research-row">
+                <div>
+                  <p class="research-q" style="margin-bottom:0.75rem;">Quais as etapas do cadastro sofrem a maior queda de conversão?</p>
+                  <div class="mini-app-card">
+                    <div style="font-weight:700; margin-bottom:0.4rem;">Funil de Conversão — Google Analytics</div>
+                    <svg viewBox="0 0 320 265" width="100%" height="auto">
+                      <rect x="85" y="12" width="150" height="32" rx="4" fill="#F8FAFC" stroke="#CBD5E1" />
+                      <text x="160" y="25" text-anchor="middle" font-size="8" fill="#334155" font-weight="700">Etapa 1: 2.819</text>
+                      <text x="160" y="37" text-anchor="middle" font-size="7.5" fill="#16A34A" font-weight="700">1.286 (45,62%)</text>
+                      <circle cx="160" cy="28" r="22" fill="none" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="3,2" />
+                      <circle cx="135" cy="12" r="9" fill="#EF4444" />
+                      <text x="135" y="15" text-anchor="middle" font-size="8" fill="#fff" font-weight="800">1</text>
+                      <text x="248" y="28" font-size="7.5" fill="#EF4444" font-weight="700">→ 1.533 saída</text>
+
+                      <rect x="95" y="58" width="130" height="30" rx="4" fill="#F8FAFC" stroke="#CBD5E1" />
+                      <text x="160" y="70" text-anchor="middle" font-size="8" fill="#334155" font-weight="700">Etapa 2: 1.301</text>
+                      <text x="160" y="81" text-anchor="middle" font-size="7.5" fill="#16A34A" font-weight="700">1.265 (97,23%)</text>
+                      <text x="238" y="74" font-size="7.5" fill="#64748B">→ 36 saída</text>
+
+                      <rect x="95" y="102" width="130" height="32" rx="4" fill="#F8FAFC" stroke="#CBD5E1" />
+                      <text x="160" y="115" text-anchor="middle" font-size="8" fill="#334155" font-weight="700">Etapa 3: 1.269</text>
+                      <text x="160" y="127" text-anchor="middle" font-size="7.5" fill="#16A34A" font-weight="700">1.045 (82,35%)</text>
+                      <circle cx="160" cy="118" r="22" fill="none" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="3,2" />
+                      <circle cx="135" cy="102" r="9" fill="#EF4444" />
+                      <text x="135" y="105" text-anchor="middle" font-size="8" fill="#fff" font-weight="800">3</text>
+                      <text x="238" y="118" font-size="7.5" fill="#EF4444" font-weight="700">→ 224 saída</text>
+
+                      <rect x="102" y="148" width="116" height="28" rx="4" fill="#F8FAFC" stroke="#CBD5E1" />
+                      <text x="160" y="160" text-anchor="middle" font-size="8" fill="#334155" font-weight="700">Etapa 4: 1.053</text>
+                      <text x="160" y="170" text-anchor="middle" font-size="7.5" fill="#16A34A" font-weight="700">1.014 (96,30%)</text>
+                      <text x="228" y="164" font-size="7.5" fill="#64748B">→ 39 saída</text>
+
+                      <rect x="105" y="188" width="110" height="28" rx="4" fill="#F8FAFC" stroke="#CBD5E1" />
+                      <text x="160" y="200" text-anchor="middle" font-size="8" fill="#334155" font-weight="700">Etapa 5: 1.016</text>
+                      <text x="160" y="210" text-anchor="middle" font-size="7.5" fill="#16A34A" font-weight="700">980 (96,46%)</text>
+                      <text x="225" y="204" font-size="7.5" fill="#64748B">→ 36 saída</text>
+
+                      <rect x="105" y="228" width="110" height="28" rx="4" fill="#DCFCE7" stroke="#86EFAC" />
+                      <text x="160" y="240" text-anchor="middle" font-size="7.5" fill="#166534" font-weight="800">[M8] Funil - Cadastro</text>
+                      <text x="160" y="250" text-anchor="middle" font-size="8" fill="#166534" font-weight="800">981</text>
+                    </svg>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="research-step-banner" style="background: var(--blue);">GOOGLE ANALYTICS</div>
+                  <ul class="research-bullets">
+                    <li>No funil de conversão do Google Analytics foi possível ver as principais etapas onde o usuário deixa o cadastro, sendo elas as etapas 1 e 3. Da etapa 1 para a 2, há uma perda de +/-55%, e a conversão entre as etapas 3 e 4, havia uma perda de +/-18%.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="research-row">
+                <div>
+                  <p class="research-q" style="margin-bottom:0.75rem;">Quais as barreiras que cada etapa do cadastro está apresentando?</p>
+                  <div class="mini-app-card">
+                    <div style="font-weight:700; margin-bottom:0.35rem;">Gravação de Sessão — Hotjar (Etapa 3)</div>
+                    <div style="font-size:0.78rem; font-weight:700;">Prazer, <span style="color:#EF4444;">Cintia Silva!</span></div>
+                    <div style="font-size:0.65rem; color:var(--text-muted); margin-bottom:0.4rem;">Vamos conhecer o negócio, leva só ** minuto</div>
+                    <div style="font-size:0.68rem;">Você tem um negócio individual (CPF) ou uma empresa (CNPJ)?</div>
+                    <div style="display:flex; gap:4px; margin:4px 0 6px;">
+                      <span style="border:1px solid var(--border-color); padding:2px 8px; border-radius:4px;">CNPJ</span>
+                      <span style="border:1.5px solid #1E293B; padding:2px 8px; border-radius:4px; font-weight:700;">CPF</span>
+                    </div>
+                    <div style="font-size:0.68rem;">Qual o estilo da culinária?</div>
+                    <div style="border:1px solid var(--border-color); padding:4px; border-radius:4px; margin-top:2px;">
+                      Bar &amp; Petiscaria • Bar &amp; Restaurante • Bistrô &amp; Francesa • Bufê • Cafeteria
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="research-step-banner" style="background: var(--blue);">HOTJAR</div>
+                  <ul class="research-bullets">
+                    <li>Tendo em vista os principais gaps no funil (etapas 1 e 3), iniciei o trabalho de observação do comportamento dos usuários, principalmente nestes dois pontos críticos da jornada de cadastro, mas não só.</li>
+                    <li>Os problemas e oportunidades eram anotados e então categorizados por etapa onde foram observados, e por fim categorizados. O resultado foi um backlog de ações voltadas ao aumento da performance do cadastro.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Exemplo da Análise e Síntese -->
+          <div class="case-sub-block reveal">
+            <p class="breadcrumb">Estudo de Caso 3 / Análise da Conversão do Cadastro</p>
+            <h4 class="sub-heading title-blue">Exemplo da Análise e Síntese</h4>
+
+            <p class="lead-paragraph">
+              Foram analisados 82 vídeos durante 4 dias. Cada observação foi classificada em 3 principais categorias: Oportunidades, Melhorias e Bugs e então transformadas em estórias de usuário para popular o backlog
+            </p>
+
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:1.5rem;">
+              <div class="mini-app-card">
+                <div class="research-step-banner" style="background: var(--blue);">Observações</div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
+                  <div style="border:1px solid var(--border-color); padding:0.5rem; border-radius:6px;">
+                    <strong>Tela 1 — Erro no campo</strong><br>
+                    <span style="color:#EF4444; font-size:0.65rem;">→ Usuário digita e-mail e trava no envio</span>
+                  </div>
+                  <div style="border:1px solid var(--border-color); padding:0.5rem; border-radius:6px;">
+                    <strong>Tela 2 — Boas-vindas</strong><br>
+                    <span style="color:var(--blue); font-size:0.65rem;">→ Rastro de mouse entre Nome e Telefone</span>
+                  </div>
+                  <div style="border:1px solid var(--border-color); padding:0.5rem; border-radius:6px;">
+                    <strong>Tela 3 — Culinária</strong><br>
+                    <span style="color:var(--orange); font-size:0.65rem;">→ Hesitação no dropdown de categoria</span>
+                  </div>
+                  <div style="border:1px solid var(--border-color); padding:0.5rem; border-radius:6px;">
+                    <strong>Tela 4 — Endereço/CEP</strong><br>
+                    <span style="color:#EF4444; font-size:0.65rem;">→ Falha na busca automática de CEP</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mini-app-card">
+                <div class="research-step-banner" style="background: var(--blue);">Compilação e Análise</div>
+
+                <div class="cat-card">
+                  <div class="cat-badge" style="background: var(--green-opp);">Oportunidades</div>
+                  <div style="font-size:0.75rem; color:var(--text-secondary);">Oportunidades que podem elevar a performance do cadastro visando a meta de 43% de aumento de conversão;</div>
+                </div>
+
+                <div class="cat-card">
+                  <div class="cat-badge" style="background: #F59E0B;">Melhorias</div>
+                  <div style="font-size:0.75rem; color:var(--text-secondary);">Melhorias referentes a questões de UX, UI, ou Tech que melhoram a experiência geral do produto, porém não tem relação direta com o aumento de conversão;</div>
+                </div>
+
+                <div class="cat-card">
+                  <div class="cat-badge" style="background: var(--red-bug); color:#fff;">BUG</div>
+                  <div style="font-size:0.75rem; color:var(--text-secondary);">Bugs, ou problemas, que impedem o usuário de prosseguir com a tarefa, no caso o cadastro. Inclui também bugs que não afetam a experiência de cadastro, mas que podem e devem ser resolvidos;</div>
+                </div>
+
+                <div style="margin-top:0.75rem; padding-top:0.6rem; border-top:1px dashed var(--border-color); display:flex; justify-content:space-between; align-items:center; font-weight:800;">
+                  <span>📊 Anotações (Google Sheets)</span>
+                  <span>➔</span>
+                  <span style="color:#2563EB;">Backlog Jira Software</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Principais Resultados & Resultados de Negócio -->
+          <div class="case-sub-block reveal" style="margin-bottom:0;">
+            <div class="overview-layout" style="margin-bottom: 2.5rem;">
+              <div class="overview-text">
+                <p class="breadcrumb">Estudo de Caso 3 / Análise da Conversão do Cadastro</p>
+                <h4 class="sub-heading title-blue">Principais Resultados</h4>
+
+                <p>Com esta pesquisa conseguimos identificar:</p>
+                <ul class="skills-list" style="grid-template-columns: 1fr; margin-bottom:1.25rem;">
+                  <li style="--pink: var(--blue);">8 melhorias de UX/UI/Tech nas etapas 1, 3 e 4 do cadastro;</li>
+                  <li style="--pink: var(--blue);">6 oportunidades que podem elevar a performance do cadastro visando a meta de 43% de aumento de conversão;</li>
+                  <li style="--pink: var(--blue);">3 bugs, sendo que dois deles (etapa 1 e 5) são críticos para a completude do cadastro, pois estão impedindo o usuário de finalizá-lo.</li>
+                </ul>
+                <p>O principal problema da etapa 1 era um bug que estava impedindo o usuário de prosseguir no cadastro, enquanto na etapa 3, foram realizadas alterações no design da página para a versão mobile, mas não tiveram impacto na conversão. Desta forma, levantamos a necessidade de realizar testes de usabilidade focado em entender o motivo dos usuários estarem deixando o cadastro nesta etapa (in progress).</p>
+              </div>
+
+              <div class="mini-app-card" style="display:flex; flex-direction:column; justify-content:center;">
+                <div style="font-weight:700; font-size:0.95rem; color:var(--text-secondary); margin-bottom:0.75rem;">
+                  Distribuição das Melhorias, Oportunidades e Bugs entre as etapas do cadastro
+                </div>
+                <svg viewBox="0 0 460 270" width="100%" height="auto">
+                  <rect x="135" y="6" width="10" height="10" fill="#4285F4" />
+                  <text x="150" y="15" font-size="10" fill="currentColor">Melhorias</text>
+                  <rect x="208" y="6" width="10" height="10" fill="#7CB342" />
+                  <text x="223" y="15" font-size="10" fill="currentColor">Oportunidades</text>
+                  <rect x="302" y="6" width="10" height="10" fill="#EA4335" />
+                  <text x="317" y="15" font-size="10" fill="currentColor">Bug</text>
+
+                  <text x="15" y="42" font-size="9" fill="#888">5</text>
+                  <line x1="30" y1="38" x2="445" y2="38" stroke="#E2E8F0" />
+                  <text x="15" y="80" font-size="9" fill="#888">4</text>
+                  <line x1="30" y1="76" x2="445" y2="76" stroke="#E2E8F0" />
+                  <text x="15" y="118" font-size="9" fill="#888">3</text>
+                  <line x1="30" y1="114" x2="445" y2="114" stroke="#E2E8F0" />
+                  <text x="15" y="156" font-size="9" fill="#888">2</text>
+                  <line x1="30" y1="152" x2="445" y2="152" stroke="#E2E8F0" />
+                  <text x="15" y="194" font-size="9" fill="#888">1</text>
+                  <line x1="30" y1="190" x2="445" y2="190" stroke="#E2E8F0" />
+                  <text x="15" y="232" font-size="9" fill="#888">0</text>
+                  <line x1="30" y1="228" x2="445" y2="228" stroke="#94A3B8" />
+
+                  <!-- ETAPA 1: 5, 1, 1 -->
+                  <rect x="42" y="38" width="16" height="190" rx="2" fill="#4285F4" data-tip="Etapa 1: 5 Melhorias" />
+                  <text x="50" y="52" text-anchor="middle" font-size="9" fill="#fff" font-weight="700">5</text>
+                  <rect x="60" y="190" width="16" height="38" rx="2" fill="#7CB342" data-tip="Etapa 1: 1 Oportunidade" />
+                  <text x="68" y="204" text-anchor="middle" font-size="9" fill="#fff" font-weight="700">1</text>
+                  <rect x="78" y="190" width="16" height="38" rx="2" fill="#EA4335" data-tip="Etapa 1: 1 Bug" />
+                  <text x="86" y="204" text-anchor="middle" font-size="9" fill="#fff" font-weight="700">1</text>
+                  <text x="68" y="246" text-anchor="middle" font-size="9.5" fill="currentColor">Etapa 1</text>
+
+                  <!-- ETAPA 2: 0, 1, 0 -->
+                  <text x="118" y="223" text-anchor="middle" font-size="9" fill="#4285F4">0</text>
+                  <rect x="128" y="190" width="16" height="38" rx="2" fill="#7CB342" data-tip="Etapa 2: 1 Oportunidade" />
+                  <text x="136" y="204" text-anchor="middle" font-size="9" fill="#fff" font-weight="700">1</text>
+                  <text x="154" y="223" text-anchor="middle" font-size="9" fill="#EA4335">0</text>
+                  <text x="136" y="246" text-anchor="middle" font-size="9.5" fill="currentColor">Etapa 2</text>
+
+                  <!-- ETAPA 3: 1, 1, 1 -->
+                  <rect x="178" y="190" width="16" height="38" rx="2" fill="#4285F4" data-tip="Etapa 3: 1 Melhoria" />
+                  <text x="186" y="204" text-anchor="middle" font-size="9" fill="#fff" font-weight="700">1</text>
+                  <rect x="196" y="190" width="16" height="38" rx="2" fill="#7CB342" data-tip="Etapa 3: 1 Oportunidade" />
+                  <text x="204" y="204" text-anchor="middle" font-size="9" fill="#fff" font-weight="700">1</text>
+                  <rect x="214" y="190" width="16" height="38" rx="2" fill="#EA4335" data-tip="Etapa 3: 1 Bug" />
+                  <text x="222" y="204" text-anchor="middle" font-size="9" fill="#fff" font-weight="700">1</text>
+                  <text x="204" y="246" text-anchor="middle" font-size="9.5" fill="currentColor">Etapa 3</text>
+
+                  <!-- ETAPA 4: 1, 2, 0 -->
+                  <rect x="246" y="190" width="16" height="38" rx="2" fill="#4285F4" data-tip="Etapa 4: 1 Melhoria" />
+                  <text x="254" y="204" text-anchor="middle" font-size="9" fill="#fff" font-weight="700">1</text>
+                  <rect x="264" y="152" width="16" height="76" rx="2" fill="#7CB342" data-tip="Etapa 4: 2 Oportunidades" />
+                  <text x="272" y="166" text-anchor="middle" font-size="9" fill="#fff" font-weight="700">2</text>
+                  <text x="290" y="223" text-anchor="middle" font-size="9" fill="#EA4335">0</text>
+                  <text x="272" y="246" text-anchor="middle" font-size="9.5" fill="currentColor">Etapa 4</text>
+
+                  <!-- ETAPA 5: 0, 0, 1 -->
+                  <text x="322" y="223" text-anchor="middle" font-size="9" fill="#4285F4">0</text>
+                  <text x="340" y="223" text-anchor="middle" font-size="9" fill="#7CB342">0</text>
+                  <rect x="350" y="190" width="16" height="38" rx="2" fill="#EA4335" data-tip="Etapa 5: 1 Bug" />
+                  <text x="358" y="204" text-anchor="middle" font-size="9" fill="#fff" font-weight="700">1</text>
+                  <text x="340" y="246" text-anchor="middle" font-size="9.5" fill="currentColor">Etapa 5</text>
+
+                  <!-- ETAPA 7: 0, 1, 0 -->
+                  <text x="390" y="223" text-anchor="middle" font-size="9" fill="#4285F4">0</text>
+                  <rect x="400" y="190" width="16" height="38" rx="2" fill="#7CB342" data-tip="Etapa 7: 1 Oportunidade" />
+                  <text x="408" y="204" text-anchor="middle" font-size="9" fill="#fff" font-weight="700">1</text>
+                  <text x="426" y="223" text-anchor="middle" font-size="9" fill="#EA4335">0</text>
+                  <text x="408" y="246" text-anchor="middle" font-size="9.5" fill="currentColor">Etapa 7</text>
+                </svg>
+              </div>
+            </div>
+
+            <div class="overview-layout">
+              <div class="overview-text">
+                <p class="breadcrumb">Estudo de Caso 3 / Análise da Conversão do Cadastro</p>
+                <h4 class="sub-heading title-blue">Resultados de Negócio</h4>
+
+                <p>Em 13 de abril, após alterações feitas nas etapas 1 e 3 do cadastro, a performance do cadastro aumentou em 20%.</p>
+                <p>Em relação aos resultados de negócio, este aumento de conversão ajudou nos resultados financeiros da empresa durante a análise do 1º mês de Q2.</p>
+
+                <div class="quote-box">
+                  <p>"Gostaria de parabeniza-los mais uma vez por essa entrega espetacular de vocês! A conversão de cadastro aumentou em 20%! Mesmo nosso topo de funil não tendo aumento significativo, a gente foi lá e bateu recorde de conversão e criação de lojas!!"</p>
+                  <div class="quote-author">Product Manager</div>
+                </div>
+              </div>
+
+              <div class="photo-placeholder" style="min-height: 320px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <path d="M21 15l-5-5L5 21"></path>
+                </svg>
+                <strong>Imagem Resultados Analíticos (Filtro Azul)</strong>
+                <span>Espaço reservado para fotografia de análise de dados no notebook</span>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         6. CONTATO / ENCERRAMENTO
+         ====================================================================== -->
+    <footer id="contato" class="contact-footer">
+      <div class="contact-inner reveal">
+        <div class="avatar-ring" style="width:230px; height:230px;">
+          <div class="photo-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="12" cy="8" r="4"></circle>
+              <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
+            </svg>
+            <strong>Foto de Perfil</strong>
+            <span>Espaço para foto circular</span>
+          </div>
+        </div>
+
+        <div>
+          <h2 class="hero-name" style="margin-bottom:0.5rem;">Obrigado</h2>
+          <p style="font-size:1.45rem; font-weight:700; color:var(--text-primary);">Marlon Lemes</p>
+          <p style="font-size:1.1rem; color:var(--text-secondary);">UX Researcher</p>
+
+          <div class="contact-links">
+            <button class="contact-item" data-copy="+55 15 99803.6306" title="Clique para copiar">
+              <span>+55 15 99803.6306</span>
+            </button>
+            <button class="contact-item" data-copy="hello.marlonlemes@gmail.com" title="Clique para copiar">
+              <span>hello.marlonlemes@gmail.com</span>
+            </button>
+            <a href="https://www.linkedin.com/in/marlonlemes/" target="_blank" rel="noopener noreferrer" class="contact-item" style="color:var(--pink); font-weight:700;">
+              https://www.linkedin.com/in/marlonlemes/
+            </a>
+          </div>
+        </div>
+
+        <!-- Post-its decorativos no canto inferior direito -->
+        <div class="sticky-cluster" style="max-width:340px;" aria-hidden="true">
+          <div class="postit pi-pink">1. ZEPLIN</div>
+          <div class="postit pi-yellow">2. ENTREGA DOS TEXTOS</div>
+          <div class="postit pi-green">FLUXO ASA</div>
+          <div class="postit pi-yellow">1. CRIAR TODOS CASOS DE USO E CORNER CASE</div>
+          <div class="postit pi-blue">ESTEIRA<br>RÉPLICA</div>
+          <div class="postit pi-orange">IMPACTO</div>
+        </div>
+      </div>
+    </footer>
+
+  </main>
+
+  <script>
+    // 1. Light / Dark Mode com persistência local
+    const themeBtn = document.getElementById('themeBtn');
+    const themeIcon = document.getElementById('themeIcon');
+    const themeText = document.getElementById('themeText');
+    const htmlEl = document.documentElement;
+
+    function applyTheme(theme) {
+      htmlEl.setAttribute('data-theme', theme);
+      if (theme === 'dark') {
+        themeIcon.textContent = '☀️';
+        themeText.textContent = 'Light Mode';
+      } else {
+        themeIcon.textContent = '🌙';
+        themeText.textContent = 'Dark Mode';
+      }
+      localStorage.setItem('portfolio-theme', theme);
+    }
+
+    const savedTheme = localStorage.getItem('portfolio-theme') || 'light';
+    applyTheme(savedTheme);
+
+    themeBtn.addEventListener('click', () => {
+      const current = htmlEl.getAttribute('data-theme');
+      applyTheme(current === 'light' ? 'dark' : 'light');
+    });
+
+    // 2. Barra de progresso de leitura + Scroll-Spy na Navbar
+    const readingProgress = document.getElementById('readingProgress');
+    const navLinks = document.querySelectorAll('.nav-links a');
+    const sections = document.querySelectorAll('section[id], footer[id]');
+
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      readingProgress.style.width = `${pct}%`;
+
+      let currentId = '';
+      sections.forEach((sec) => {
+        if (scrollTop >= sec.offsetTop - 180) {
+          currentId = sec.getAttribute('id');
+        }
+      });
+
+      navLinks.forEach((link) => {
+        link.classList.toggle('active', link.getAttribute('href') === `#${currentId}`);
+      });
+    });
+
+    // 3. Reveal on Scroll (IntersectionObserver)
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+        }
+      });
+    }, { threshold: 0.08 });
+
+    document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+
+    // 4. Microinteração de Parallax suave nos Post-its da Hero
+    const heroBoard = document.getElementById('heroBoard');
+    if (heroBoard) {
+      window.addEventListener('mousemove', (e) => {
+        if (window.innerWidth <= 960) return;
+        const x = (e.clientX / window.innerWidth - 0.5) * 14;
+        const y = (e.clientY / window.innerHeight - 0.5) * 14;
+        heroBoard.style.transform = `rotate(-5deg) translate(${x}px, ${y}px)`;
+      });
+    }
+
+    // 5. Microinteração no Diagrama Metaball (Discovery / Design / Delivery)
+    const metaCaption = document.getElementById('metaCaption');
+    const phaseInfo = {
+      discovery: 'Discovery: Explorações abertas para compreender problemas reais, hábitos e oportunidades de negócio.',
+      design: 'Design & Experimentação: Prototipação de baixa e média fidelidade, testes de conceito e validação de fluxos.',
+      delivery: 'Delivery & Otimização: Análise de funil, product/behaviour analytics e acompanhamento contínuo de métricas e OKRs.'
+    };
+
+    document.querySelectorAll('.meta-node').forEach((node) => {
+      const updateCaption = () => {
+        const key = node.getAttribute('data-phase');
+        metaCaption.textContent = phaseInfo[key];
+      };
+      node.addEventListener('mouseenter', updateCaption);
+      node.addEventListener('click', updateCaption);
+    });
+
+    // 6. Filtro interativo na Matriz de Métodos
+    const filterBtns = document.querySelectorAll('.m-filter-btn');
+    const methodCols = document.querySelectorAll('.method-col');
+
+    filterBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        const target = btn.getAttribute('data-target');
+
+        methodCols.forEach((col) => {
+          if (target === 'all' || col.getAttribute('data-group') === target) {
+            col.classList.remove('dimmed');
+          } else {
+            col.classList.add('dimmed');
+          }
+        });
+      });
+    });
+
+    // 7. Tooltip flutuante nos pontos da Timeline e Gráficos
+    const floatingTip = document.getElementById('floatingTip');
+    document.querySelectorAll('[data-tip]').forEach((item) => {
+      item.addEventListener('mouseenter', () => {
+        floatingTip.textContent = item.getAttribute('data-tip');
+        floatingTip.style.opacity = '1';
+      });
+      item.addEventListener('mousemove', (e) => {
+        floatingTip.style.left = `${e.clientX}px`;
+        floatingTip.style.top = `${e.clientY - 10}px`;
+      });
+      item.addEventListener('mouseleave', () => {
+        floatingTip.style.opacity = '0';
+      });
+    });
+
+    // 8. Cópia rápida de telefone/e-mail no contato
+    document.querySelectorAll('[data-copy]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const val = btn.getAttribute('data-copy');
+        navigator.clipboard.writeText(val);
+        const span = btn.querySelector('span');
+        const orig = span.textContent;
+        span.textContent = `✓ Copiado: ${orig}`;
+        setTimeout(() => { span.textContent = orig; }, 1800);
+      });
+    });
+  </script>
+</body>
+</html>
