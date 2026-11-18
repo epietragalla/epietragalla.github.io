@@ -16,7 +16,6 @@
         theme: {
             extend: {
                 colors: {
-                    // Mapeamento dos nomes 'apple-*' mantido integralmente, substituindo pelos hexadecimais do DSC
                     apple: {
                         blue: '#005CA9',        /* CAIXA Primary 90 */
                         darkBlue: '#60B1FA',    /* CAIXA Primary 50 (Alto contraste Dark Mode) */
@@ -176,7 +175,7 @@
 
         <!-- Área Principal de Exibição (Container do Iframe) -->
         <main class="flex-1 h-full w-full relative bg-[#F5F5F7] dark:bg-black">
-            <!-- Iframe Dinâmico (Inicia com o Dashboard Estratégico 'puxe.html') -->
+            <!-- Iframe Dinâmico -->
             <iframe id="mainAppIframe" src="dashboardgerencial.html" class="w-full h-full border-none" title="Módulo de Gestão Ativo"></iframe>
         </main>
 
@@ -184,92 +183,144 @@
 
     <!-- Script de Integração e Controle -->
     <script>
-      // Inicializa Lucide Icons ao carregar a página
-document.addEventListener('DOMContentLoaded', () => {
-    carregarTemaSalvo();
-    
-    // Notifica o iframe do tema atual assim que ele terminar de carregar
-    const iframe = document.getElementById('mainAppIframe');
-    iframe.addEventListener('load', () => {
-        notificarIframeTema();
-    });
-});
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarTemaSalvo();
+            
+            const iframe = document.getElementById('mainAppIframe');
+            iframe.addEventListener('load', () => {
+                configurarIframeIntegrado();
+            });
+        });
 
-// Alterna entre os arquivos HTML no Iframe
-function carregarSistema(element, urlArquivo) {
-    const items = document.querySelectorAll('.nav-item');
-    items.forEach(item => item.classList.remove('active'));
+        // Alterna entre os arquivos HTML no Iframe
+        function carregarSistema(element, urlArquivo) {
+            const items = document.querySelectorAll('.nav-item');
+            items.forEach(item => item.classList.remove('active'));
 
-    element.classList.add('active');
+            element.classList.add('active');
 
-    const iframe = document.getElementById('mainAppIframe');
-    iframe.src = urlArquivo;
-}
-
-// Recarrega o módulo atual dentro do Iframe
-function recarregarSistemaAtual() {
-    const iframe = document.getElementById('mainAppIframe');
-    iframe.contentWindow.location.reload();
-}
-
-// Sistema de Tema Unificado para o Shell
-function toggleTheme() {
-    const html = document.documentElement;
-    const currentTheme = html.getAttribute('data-theme') || (html.classList.contains('dark') ? 'dark' : 'light');
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-
-    aplicarTema(newTheme);
-    localStorage.setItem('apple_theme_pref', newTheme);
-    
-    // Avisa o iframe sobre a mudança de tema
-    notificarIframeTema();
-}
-
-function aplicarTema(theme) {
-    const html = document.documentElement;
-    const icon = document.getElementById('themeIcon');
-
-    html.setAttribute('data-theme', theme);
-
-    if (theme === 'dark') {
-        html.classList.add('dark');
-        html.classList.remove('light');
-        if (icon) {
-            icon.setAttribute('data-lucide', 'sun');
-            icon.className = "w-4 h-4 text-apple-orange";
+            const iframe = document.getElementById('mainAppIframe');
+            iframe.src = urlArquivo;
         }
-    } else {
-        html.classList.remove('dark');
-        html.classList.add('light');
-        if (icon) {
-            icon.setAttribute('data-lucide', 'moon');
-            icon.className = "w-4 h-4 text-apple-orange";
+
+        // Recarrega o módulo atual dentro do Iframe
+        function recarregarSistemaAtual() {
+            const iframe = document.getElementById('mainAppIframe');
+            iframe.contentWindow.location.reload();
         }
-    }
 
-    if (window.lucide) {
-        lucide.createIcons();
-    }
-}
+        // Sistema de Tema Unificado para o Shell
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme') || (html.classList.contains('dark') ? 'dark' : 'light');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
 
-function carregarTemaSalvo() {
-    const savedTheme = localStorage.getItem('apple_theme_pref') || 'light';
-    aplicarTema(savedTheme);
-}
+            aplicarTema(newTheme);
+            
+            // Atualiza ambas as chaves de localStorage usadas pelas ferramentas filhas
+            localStorage.setItem('apple_theme_pref', newTheme);
+            localStorage.setItem('puxe_demo_theme', newTheme);
+            
+            // Aplica imediatamente na ferramenta ativa
+            configurarIframeIntegrado();
+        }
 
-// FUNÇÃO CHAVE: Envia mensagem para o iframe com o tema ativo
-function notificarIframeTema() {
-    const iframe = document.getElementById('mainAppIframe');
-    const currentTheme = localStorage.getItem('apple_theme_pref') || 'light';
-    
-    if (iframe && iframe.contentWindow) {
-        iframe.contentWindow.postMessage({ 
-            type: 'CHANGE_THEME', 
-            theme: currentTheme,
-            hideThemeBtn: true // Instrução para esconder o botão interno
-        }, '*');
-    }
-}
+        function aplicarTema(theme) {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+
+            html.setAttribute('data-theme', theme);
+
+            if (theme === 'dark') {
+                html.classList.add('dark');
+                html.classList.remove('light');
+                if (icon) {
+                    icon.setAttribute('data-lucide', 'sun');
+                    icon.className = "w-4 h-4 text-apple-orange";
+                }
+            } else {
+                html.classList.remove('dark');
+                html.classList.add('light');
+                if (icon) {
+                    icon.setAttribute('data-lucide', 'moon');
+                    icon.className = "w-4 h-4 text-apple-orange";
+                }
+            }
+
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        }
+
+        function carregarTemaSalvo() {
+            const savedTheme = localStorage.getItem('apple_theme_pref') || 'light';
+            localStorage.setItem('puxe_demo_theme', savedTheme);
+            aplicarTema(savedTheme);
+        }
+
+        // Oculta os botões internos e sincroniza instantaneamente o tema do iframe
+        function configurarIframeIntegrado() {
+            const iframe = document.getElementById('mainAppIframe');
+            const currentTheme = localStorage.getItem('apple_theme_pref') || 'light';
+
+            if (!iframe) return;
+
+            try {
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                const iframeWin = iframe.contentWindow;
+                const iframeHtml = iframeDoc.documentElement;
+
+                // 1. Injeta CSS para esconder os botões de light/dark mode internos das 3 ferramentas
+                if (iframeDoc && iframeDoc.head && !iframeDoc.getElementById('hide-child-theme-btn')) {
+                    const style = iframeDoc.createElement('style');
+                    style.id = 'hide-child-theme-btn';
+                    style.textContent = `
+                        #themeToggleBtn,
+                        button[onclick*="toggleTheme"] {
+                            display: none !important;
+                        }
+                    `;
+                    iframeDoc.head.appendChild(style);
+                }
+
+                // 2. Força o atributo e as classes diretamente no <html> da ferramenta filha
+                iframeHtml.setAttribute('data-theme', currentTheme);
+                if (currentTheme === 'dark') {
+                    iframeHtml.classList.add('dark');
+                    iframeHtml.classList.remove('light');
+                } else {
+                    iframeHtml.classList.remove('dark');
+                    iframeHtml.classList.add('light');
+                }
+
+                // 3. Re-renderiza os gráficos Chart.js de acordo com cada ferramenta
+                if (iframeWin) {
+                    // Atualiza cor padrão do Chart.js dentro do iframe, se existir
+                    if (iframeWin.Chart && iframeWin.Chart.defaults) {
+                        iframeWin.Chart.defaults.color = currentTheme === 'dark' ? '#94A3B8' : '#404852';
+                    }
+
+                    // dashboardgerencial.html
+                    if (typeof iframeWin.renderAll === 'function') {
+                        iframeWin.renderAll();
+                    } 
+                    // skillmapping.html
+                    else if (typeof iframeWin.atualizarDashboard === 'function') {
+                        iframeWin.atualizarDashboard();
+                    } 
+                    // maturidadeux.html
+                    else if (typeof iframeWin.calcularMediaGeralDoTime === 'function') {
+                        iframeWin.calcularMediaGeralDoTime(false);
+                    }
+                }
+            } catch (e) {
+                // Caso esteja rodando localmente via file:// (onde o navegador bloqueia acesso ao DOM do iframe),
+                // recarrega o iframe para que ele leia o novo valor salvo no localStorage
+                if (iframe.contentWindow) {
+                    iframe.contentWindow.location.reload();
+                }
+            }
+        }
     </script>
 </body>
 </html>
