@@ -1,0 +1,2591 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="light" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Executive Suite - Pesquisa & Escrita (UX/CX) [Demo]</title>
+
+  <!-- Tailwind CSS CDN com Extensão de Tokens -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            apple: {
+              blue: '#005CA9',
+              darkBlue: '#60B1FA',
+              gray: '#64747A',
+              gray2: '#9EB2B8',
+              gray3: '#D0E0E3',
+              gray4: '#D0E0E3',
+              gray5: '#EBF1F2',
+              gray6: '#EBF1F2',
+              darkBg: '#0B1E36',
+              darkCard: '#132A4A',
+              darkCard2: '#1A365D',
+              darkCard3: '#2A4A75',
+              green: '#179231',
+              darkGreen: '#179231',
+              orange: '#D67B00',
+              darkOrange: '#F39200',
+              red: '#D93636',
+              darkRed: '#FF6B6B',
+              purple: '#005CA9',
+              darkPurple: '#60B1FA'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Arial', 'sans-serif']
+          },
+          borderRadius: {
+            'card': '16px',
+            'pill': '9999px'
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Estilos CSS Centralizados -->
+  <style>
+    :root,
+    html[data-theme="light"] {
+      --apple-bg: #F7FAFA;
+      --apple-card-bg: #F0F4F8;
+      --apple-inset-bg: #EBF1F2;
+      --apple-header-bg: rgba(255, 255, 255, 0.94);
+      --apple-border: #CBD5E1;
+      --apple-border-light: #D0E0E3;
+      --apple-blue: #005CA9;
+      --apple-blue-hover: #00437A;
+      --apple-green: #179231;
+      --apple-red: #D93636;
+      --apple-orange: #D67B00;
+      --apple-purple: #005CA9;
+      --apple-text-main: #22292E;
+      --apple-text-muted: #404852;
+      --apple-card-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.05);
+      --apple-segmented-bg: #EBF1F2;
+    }
+
+    html[data-theme="dark"],
+    .dark {
+      --apple-bg: #0B1E36;
+      --apple-card-bg: #132A4A;
+      --apple-inset-bg: #1A365D;
+      --apple-header-bg: rgba(11, 30, 54, 0.94);
+      --apple-border: #2A4A75;
+      --apple-border-light: #2A4A75;
+      --apple-blue: #60B1FA;
+      --apple-blue-hover: #AED2FC;
+      --apple-green: #179231;
+      --apple-red: #FF6B6B;
+      --apple-orange: #F39200;
+      --apple-purple: #60B1FA;
+      --apple-text-main: #F8FAFC;
+      --apple-text-muted: #94A3B8;
+      --apple-card-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+      --apple-segmented-bg: #1A365D;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background-color: var(--apple-bg);
+      color: var(--apple-text-main);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .apple-glass {
+      background: var(--apple-header-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-color: var(--apple-border-light);
+    }
+
+    .apple-card {
+      background-color: var(--apple-card-bg) !important;
+      border-radius: 16px !important;
+      border: 1px solid var(--apple-border) !important;
+      box-shadow: var(--apple-card-shadow) !important;
+    }
+
+    .apple-card-inset {
+      background-color: var(--apple-inset-bg);
+      border-radius: 12px;
+      border: 1px solid var(--apple-border-light);
+    }
+
+    .apple-btn-primary {
+      background-color: var(--apple-blue);
+      color: #FFFFFF !important;
+      font-weight: 700;
+      border-radius: 9999px;
+      padding: 10px 22px;
+      box-shadow: 0 4px 10px rgba(0, 92, 169, 0.25);
+    }
+
+    .dark .apple-btn-primary {
+      background-color: #005CA9;
+      color: #FFFFFF !important;
+    }
+
+    .apple-btn-primary:hover {
+      background-color: var(--apple-blue-hover);
+      transform: translateY(-1px);
+    }
+
+    .apple-btn-secondary {
+      background-color: var(--apple-inset-bg);
+      color: var(--apple-text-main);
+      font-weight: 600;
+      border-radius: 9999px;
+      padding: 8px 18px;
+      border: 1px solid var(--apple-border-light);
+    }
+
+    .apple-input,
+    select,
+    input[type="text"],
+    input[type="number"] {
+      background-color: var(--apple-inset-bg);
+      border: 1px solid var(--apple-border-light);
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: var(--apple-text-main);
+      outline: none;
+    }
+
+    .badge-status-concluido {
+      background: #E7F4EA !important;
+      color: #0D5B1C !important;
+      border: 1px solid #179231 !important;
+    }
+
+    .badge-status-andamento {
+      background: #FFF9E6 !important;
+      color: #977203 !important;
+      border: 1px solid #FCBE05 !important;
+    }
+
+    .badge-status-pausado {
+      background: #FBEBEB !important;
+      color: #8C2323 !important;
+      border: 1px solid #D93636 !important;
+    }
+
+    .badge-status-nao-iniciado {
+      background: #EBF1F2 !important;
+      color: #404852 !important;
+      border: 1px solid #9EB2B8 !important;
+    }
+
+    .segmented-control-bg {
+      background-color: var(--apple-segmented-bg);
+      border-radius: 9999px;
+      padding: 4px;
+      border: 1px solid var(--apple-border);
+    }
+
+    .segmented-tab {
+      padding: 6px 16px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 9999px;
+      color: var(--apple-text-muted);
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: var(--apple-text-muted);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col custom-scrollbar">
+
+  <!-- TOP BAR FIXO -->
+  <header class="sticky top-0 z-50 apple-glass border-b border-black/5 dark:border-white/10 px-6 py-4">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+
+      <!-- Marca & Título Executivo -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-apple-blue dark:bg-apple-darkBlue flex items-center justify-center text-white shadow-md">
+          <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight text-black dark:text-white flex items-center gap-2">
+            Pesquisa &amp; Escrita
+            <button type="button" onclick="openModal('modalSddSpec')"
+              class="text-xs px-2.5 py-0.5 rounded-full bg-apple-blue/10 hover:bg-apple-blue/20 text-apple-blue dark:bg-apple-darkBlue/20 dark:text-apple-darkBlue font-semibold border border-apple-blue/20 flex items-center gap-1.5">
+              <span>DASHBOARD EXECUTIVO</span>
+              <i data-lucide="file-code" class="w-3.5 h-3.5"></i>
+            </button>
+          </h1>
+          <p class="text-xs text-apple-gray">Plataforma Estratégica de Tomada de Decisão &amp; Performance (UX/CX) — Ambiente Público Demonstrativo</p>
+        </div>
+      </div>
+
+      <!-- Controles Superiores & Filtros -->
+      <div class="flex flex-wrap items-center gap-3 w-full md:w-auto justify-end">
+        <select id="filterArea" onchange="renderAll()" class="apple-input text-xs font-semibold cursor-pointer">
+          <option value="ALL">Todas as Frentes</option>
+          <option value="CX Pesquisa">CX Pesquisa</option>
+          <option value="UX Pesquisa">UX Pesquisa</option>
+          <option value="CX Escrita">CX Escrita</option>
+          <option value="UX Escrita">UX Escrita</option>
+        </select>
+
+        <!-- Status Indicator Estático -->
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-apple-green/10 text-apple-green dark:text-apple-darkGreen text-xs font-medium border border-apple-green/20">
+          <span class="w-2 h-2 rounded-full bg-apple-green"></span>
+          <span>Base Demonstrativa Ativa</span>
+        </div>
+
+        <!-- Botão Tema Claro/Escuro -->
+        <button type="button" onclick="toggleThemeMode()" title="Alternar Tema"
+          class="w-10 h-10 rounded-full bg-apple-gray6 dark:bg-apple-darkCard2 flex items-center justify-center text-apple-gray hover:text-black dark:hover:text-white border border-black/5 dark:border-white/10">
+          <i data-lucide="sun" id="iconThemeMode" class="w-4 h-4 text-apple-orange"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- NAVIGATION TABS -->
+  <div class="apple-glass border-b border-black/5 dark:border-white/10 px-6 py-2.5">
+    <nav class="max-w-7xl mx-auto flex flex-col gap-2.5">
+      <div class="flex flex-wrap items-center gap-3">
+        <button onclick="switchTab('dash')" id="tab-dash" class="tab-btn apple-btn-primary active text-xs flex items-center gap-2 shrink-0">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Dashboard Estratégico</span>
+        </button>
+
+        <button onclick="toggleFrentesMenu()" id="btnToggleFrentes" title="Expandir/Recolher Frentes Operacionais"
+          class="p-2 rounded-full bg-apple-gray6 dark:bg-apple-darkCard2 hover:bg-apple-gray5 text-apple-gray border border-black/5 dark:border-white/5 flex items-center justify-center shrink-0">
+          <i data-lucide="plus" id="iconToggleFrentes" class="w-4 h-4 text-apple-blue dark:text-apple-darkBlue transition-transform"></i>
+        </button>
+
+        <div class="h-6 w-px bg-black/10 dark:bg-white/10 shrink-0"></div>
+
+        <div class="segmented-control-bg p-1 inline-flex flex-wrap items-center gap-1">
+          <button onclick="switchTab('control')" id="tab-control" class="tab-btn segmented-tab flex items-center gap-2">
+            <i data-lucide="compass" class="w-4 h-4"></i> Controle &amp; Decisão
+          </button>
+          <button onclick="switchTab('impact')" id="tab-impact" class="tab-btn segmented-tab flex items-center gap-2">
+            <i data-lucide="sparkles" class="w-4 h-4"></i> Impacto das Entregas
+          </button>
+          <button onclick="switchTab('social')" id="tab-social" class="tab-btn segmented-tab flex items-center gap-2">
+            <i data-lucide="heart-handshake" class="w-4 h-4"></i> Impacto Social
+          </button>
+          <button onclick="switchTab('inv')" id="tab-inv" class="tab-btn segmented-tab flex items-center gap-2">
+            <i data-lucide="trending-up" class="w-4 h-4"></i> Investidores &amp; ROI
+          </button>
+        </div>
+      </div>
+
+      <!-- SUB-MENU FRENTES OPERACIONAIS -->
+      <div id="containerFrentes" class="hidden flex-wrap items-center gap-1.5 p-1.5 rounded-2xl segmented-control-bg border border-black/5 dark:border-white/5 w-full">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-apple-gray px-2 flex items-center gap-1">
+          <i data-lucide="table" class="w-3.5 h-3.5"></i> Frentes Operacionais:
+        </span>
+        <button onclick="switchTab('cxp')" id="tab-cxp" class="tab-btn segmented-tab flex items-center gap-1.5"><i data-lucide="search" class="w-3.5 h-3.5"></i> CX Pesquisa</button>
+        <button onclick="switchTab('uxp')" id="tab-uxp" class="tab-btn segmented-tab flex items-center gap-1.5"><i data-lucide="users" class="w-3.5 h-3.5"></i> UX Pesquisa</button>
+        <button onclick="switchTab('cxe')" id="tab-cxe" class="tab-btn segmented-tab flex items-center gap-1.5"><i data-lucide="pen-tool" class="w-3.5 h-3.5"></i> CX Escrita</button>
+        <button onclick="switchTab('uxe')" id="tab-uxe" class="tab-btn segmented-tab flex items-center gap-1.5"><i data-lucide="file-text" class="w-3.5 h-3.5"></i> UX Escrita</button>
+      </div>
+    </nav>
+  </div>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 p-6 space-y-8 max-w-[1600px] mx-auto w-full">
+
+    <!-- ========================================== -->
+    <!-- VIEW 1: DASHBOARD ESTRATÉGICO -->
+    <!-- ========================================== -->
+    <section id="view-dash" class="space-y-8">
+      <!-- SEÇÃO 1: INDICADORES ESTRATÉGICOS -->
+      <div class="space-y-4">
+        <div class="flex items-center gap-2 border-b border-black/5 dark:border-white/10 pb-2">
+          <i data-lucide="layout-dashboard" class="w-5 h-5 text-apple-blue dark:text-apple-darkBlue"></i>
+          <h2 class="text-base font-bold text-black dark:text-white uppercase tracking-wider">Visão Executiva &amp; Resumo Unificado</h2>
+        </div>
+
+        <div class="space-y-4">
+          <!-- LINHA 1: HIGHLIGHTS -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="apple-card p-5 border-l-4 border-l-apple-blue dark:border-l-apple-darkBlue">
+              <div class="flex items-center justify-between text-apple-gray mb-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-apple-blue dark:text-apple-darkBlue">Total Projetos</span>
+                <div class="p-2 bg-apple-blue/10 rounded-xl"><i data-lucide="folder-kanban" class="w-5 h-5 text-apple-blue dark:text-apple-darkBlue"></i></div>
+              </div>
+              <div class="text-3xl font-black text-black dark:text-white" id="kpiTotalProjetos">0</div>
+              <div class="text-[11px] text-apple-gray mt-1">Portfólio unificado UX/CX</div>
+            </div>
+
+            <div class="apple-card p-5 border-l-4 border-l-apple-green dark:border-l-apple-darkGreen">
+              <div class="flex items-center justify-between text-apple-gray mb-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-apple-green dark:text-apple-darkGreen">Concluídos</span>
+                <div class="p-2 bg-apple-green/10 rounded-xl"><i data-lucide="check-circle-2" class="w-5 h-5 text-apple-green dark:text-apple-darkGreen"></i></div>
+              </div>
+              <div class="text-3xl font-black text-apple-green dark:text-apple-darkGreen" id="kpiConcluidos">0</div>
+              <div class="text-[11px] text-apple-gray mt-1" id="kpiTaxaConclusao">0% taxa de conclusão</div>
+            </div>
+
+            <div class="apple-card p-5 border-l-4 border-l-apple-purple dark:border-l-apple-darkPurple">
+              <div class="flex items-center justify-between text-apple-gray mb-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-apple-purple dark:text-apple-darkPurple">Eficiência Crítica</span>
+                <div class="p-2 bg-apple-purple/10 rounded-xl"><i data-lucide="shield-check" class="w-5 h-5 text-apple-purple dark:text-apple-darkPurple"></i></div>
+              </div>
+              <div class="text-3xl font-black text-apple-purple dark:text-apple-darkPurple" id="kpiEficienciaCritica">0%</div>
+              <div class="text-[11px] text-apple-gray mt-1">Demandas Críticas no Prazo</div>
+            </div>
+          </div>
+
+          <!-- LINHA 2: ESTEIRA OPERACIONAL -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div class="apple-card p-5">
+              <div class="flex items-center justify-between text-apple-gray mb-2">
+                <span class="text-xs font-semibold uppercase">Em Andamento</span>
+                <i data-lucide="clock" class="w-5 h-5 text-apple-orange dark:text-apple-darkOrange"></i>
+              </div>
+              <div class="text-3xl font-extrabold text-apple-orange dark:text-apple-darkOrange" id="kpiAndamento">0</div>
+              <div class="text-[11px] text-apple-gray mt-1">Ativos na esteira</div>
+            </div>
+
+            <div class="apple-card p-5">
+              <div class="flex items-center justify-between text-apple-gray mb-2">
+                <span class="text-xs font-semibold uppercase">Não Iniciados</span>
+                <i data-lucide="circle-dashed" class="w-5 h-5 text-apple-gray"></i>
+              </div>
+              <div class="text-3xl font-extrabold text-black dark:text-white" id="kpiNaoIniciados">0</div>
+              <div class="text-[11px] text-apple-gray mt-1">Aguardando início</div>
+            </div>
+
+            <div class="apple-card p-5">
+              <div class="flex items-center justify-between text-apple-gray mb-2">
+                <span class="text-xs font-semibold uppercase">Com Impedimento</span>
+                <i data-lucide="shield-alert" class="w-5 h-5 text-apple-orange"></i>
+              </div>
+              <div class="text-3xl font-extrabold text-apple-orange" id="kpiImpedimento">0</div>
+              <div class="text-[11px] text-apple-gray mt-1">Aguardando desbloqueio</div>
+            </div>
+
+            <div class="apple-card p-5">
+              <div class="flex items-center justify-between text-apple-gray mb-2">
+                <span class="text-xs font-semibold uppercase">Pausados</span>
+                <i data-lucide="pause-circle" class="w-5 h-5 text-apple-orange"></i>
+              </div>
+              <div class="text-3xl font-extrabold text-apple-orange" id="kpiPausados">0</div>
+              <div class="text-[11px] text-apple-gray mt-1">Suspensos temporariamente</div>
+            </div>
+
+            <div class="apple-card p-5">
+              <div class="flex items-center justify-between text-apple-gray mb-2">
+                <span class="text-xs font-semibold uppercase">Cancelados</span>
+                <i data-lucide="x-circle" class="w-5 h-5 text-apple-red dark:text-apple-darkRed"></i>
+              </div>
+              <div class="text-3xl font-extrabold text-apple-red dark:text-apple-darkRed" id="kpiCancelados">0</div>
+              <div class="text-[11px] text-apple-gray mt-1">Descontinuados/encerrados</div>
+            </div>
+          </div>
+
+          <!-- LINHA 3: MÉTRICAS COMPLEMENTARES -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="apple-card p-5">
+              <div class="flex items-center justify-between text-apple-gray mb-2">
+                <span class="text-xs font-semibold uppercase">Taxa Pausa/Canc.</span>
+                <i data-lucide="alert-triangle" class="w-5 h-5 text-apple-red dark:text-apple-darkRed"></i>
+              </div>
+              <div class="text-3xl font-extrabold text-apple-red dark:text-apple-darkRed" id="kpiTaxaPausa">0%</div>
+              <div class="text-[11px] text-apple-gray mt-1">Índice de perda de escopo</div>
+            </div>
+
+            <div class="apple-card p-5">
+              <div class="flex items-center justify-between text-apple-gray mb-2">
+                <span class="text-xs font-semibold uppercase">Tempo Médio</span>
+                <i data-lucide="timer" class="w-5 h-5 text-apple-purple dark:text-apple-darkPurple"></i>
+              </div>
+              <div class="text-3xl font-extrabold text-apple-purple dark:text-apple-darkPurple" id="kpiTempoMedio">0d</div>
+              <div class="text-[11px] text-apple-gray mt-1">Dias por projeto concluído</div>
+            </div>
+
+            <div class="apple-card p-5">
+              <div class="flex items-center justify-between text-apple-gray mb-2">
+                <span class="text-xs font-semibold uppercase">Média Pessoas/Proj.</span>
+                <i data-lucide="users-2" class="w-5 h-5 text-apple-blue dark:text-apple-darkBlue"></i>
+              </div>
+              <div class="text-3xl font-extrabold text-apple-blue dark:text-apple-darkBlue" id="kpiTamanhoTime">1.0</div>
+              <div class="text-[11px] text-apple-gray mt-1">Especialistas por demanda</div>
+            </div>
+
+            <div class="apple-card p-5">
+              <div class="flex items-center justify-between text-apple-gray mb-2">
+                <span class="text-xs font-semibold uppercase">Impacto Super App</span>
+                <i data-lucide="smartphone" class="w-5 h-5 text-apple-purple"></i>
+              </div>
+              <div class="text-3xl font-extrabold text-apple-purple" id="kpiSuperApp">0</div>
+              <div class="text-[11px] text-apple-gray mt-1" id="kpiSuperAppPct">0% foco no Super App</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAINÉIS DE DESTAQUE: CONCLUÍDOS POR ANO & COMPLEXIDADE -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="apple-card p-6 flex flex-col justify-between">
+          <div class="flex items-center gap-2 border-b border-black/5 dark:border-white/10 pb-3 mb-4">
+            <div class="p-2 bg-apple-blue/10 text-apple-blue dark:text-apple-darkBlue rounded-xl"><i data-lucide="calendar-check-2" class="w-5 h-5"></i></div>
+            <div>
+              <h3 class="text-sm font-bold text-black dark:text-white uppercase tracking-wider">Projetos Concluídos por Ano</h3>
+              <p class="text-[11px] text-apple-gray">Evolução comparativa do volume de entregas finalizadas</p>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
+            <div class="apple-card-inset p-5 flex flex-col justify-between">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-bold uppercase text-apple-blue dark:text-apple-darkBlue flex items-center gap-1.5"><i data-lucide="history" class="w-4 h-4"></i> Ano 2025</span>
+                <span class="text-[10px] bg-apple-blue/10 text-apple-blue px-2.5 py-0.5 rounded-full font-semibold">Histórico</span>
+              </div>
+              <div>
+                <div class="text-3xl font-extrabold text-black dark:text-white" id="kpiConcluidos2025">0</div>
+                <div class="text-[11px] text-apple-gray mt-1">Projetos concluídos em 2025</div>
+              </div>
+            </div>
+
+            <div class="apple-card-inset p-5 flex flex-col justify-between">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-bold uppercase text-apple-green dark:text-apple-darkGreen flex items-center gap-1.5"><i data-lucide="trending-up" class="w-4 h-4"></i> Ano 2026</span>
+                <span class="text-[10px] bg-apple-green/10 text-apple-green px-2.5 py-0.5 rounded-full font-semibold">Ano Atual</span>
+              </div>
+              <div>
+                <div class="text-3xl font-extrabold text-apple-green dark:text-apple-darkGreen" id="kpiConcluidos2026">0</div>
+                <div class="text-[11px] text-apple-gray mt-1">Projetos concluídos em 2026</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="apple-card p-6 flex flex-col justify-between">
+          <div class="flex items-center gap-2 border-b border-black/5 dark:border-white/10 pb-3 mb-4">
+            <div class="p-2 bg-apple-blue/10 text-apple-blue dark:text-apple-darkBlue rounded-xl"><i data-lucide="layers" class="w-5 h-5"></i></div>
+            <div>
+              <h3 class="text-sm font-bold text-black dark:text-white uppercase tracking-wider">Projetos por Tamanho &amp; Esforço</h3>
+              <p class="text-[11px] text-apple-gray">Comparativo entre Demandas Pontuais (P) e Estudos Estruturados (E)</p>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
+            <div class="apple-card-inset p-5 flex flex-col justify-between">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-bold uppercase text-apple-blue dark:text-apple-darkBlue flex items-center gap-1.5"><i data-lucide="zap" class="w-4 h-4"></i> Pontuais (P)</span>
+                <span class="text-[10px] bg-apple-blue/10 text-apple-blue px-2 py-0.5 rounded-full font-semibold">+ Rápido</span>
+              </div>
+              <div class="flex items-end justify-between pt-2">
+                <div>
+                  <div class="text-3xl font-extrabold text-black dark:text-white" id="kpiPontualCount">0</div>
+                  <div class="text-[11px] text-apple-gray mt-0.5">Total Pontuais</div>
+                </div>
+                <div class="text-right bg-black/5 dark:bg-white/5 px-3 py-2 rounded-xl">
+                  <div class="text-[10px] text-apple-gray">Tempo Médio</div>
+                  <div class="text-lg font-bold text-apple-blue dark:text-apple-darkBlue" id="kpiPontualAvg">0,0d</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="apple-card-inset p-5 flex flex-col justify-between">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-bold uppercase text-apple-orange dark:text-apple-darkOrange flex items-center gap-1.5"><i data-lucide="boxes" class="w-4 h-4"></i> Estruturados (E)</span>
+                <span class="text-[10px] bg-apple-orange/10 text-apple-orange px-2 py-0.5 rounded-full font-semibold">+ Complexo</span>
+              </div>
+              <div class="flex items-end justify-between pt-2">
+                <div>
+                  <div class="text-3xl font-extrabold text-black dark:text-white" id="kpiEstruturadoCount">0</div>
+                  <div class="text-[11px] text-apple-gray mt-0.5">Total Estruturados</div>
+                </div>
+                <div class="text-right bg-black/5 dark:bg-white/5 px-3 py-2 rounded-xl">
+                  <div class="text-[10px] text-apple-gray">Tempo Médio</div>
+                  <div class="text-lg font-bold text-apple-orange dark:text-apple-darkOrange" id="kpiEstruturadoAvg">0,0d</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEÇÃO 2: SAÚDE OPERACIONAL & PRAZOS -->
+      <div class="space-y-4">
+        <div class="flex items-center gap-2 border-b border-black/5 dark:border-white/10 pb-2 pt-2">
+          <i data-lucide="activity" class="w-5 h-5 text-apple-green dark:text-apple-darkGreen"></i>
+          <h2 class="text-base font-bold text-black dark:text-white uppercase tracking-wider">Saúde Operacional &amp; Prazos</h2>
+        </div>
+
+        <div class="apple-card p-6 space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="apple-card-inset p-4">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold uppercase text-apple-green">Entregue no Prazo</span>
+                <span>✅</span>
+              </div>
+              <div class="text-3xl font-extrabold text-black dark:text-white" id="kpiEntregueNoPrazo">0</div>
+              <div class="text-[11px] text-apple-gray mt-0.5">Concluídos dentro do SLA</div>
+            </div>
+
+            <div class="apple-card-inset p-4">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold uppercase text-apple-red">Entregue com Atraso</span>
+                <span>‼️</span>
+              </div>
+              <div class="text-3xl font-extrabold text-apple-red dark:text-apple-darkRed" id="kpiEntregueForaPrazo">0</div>
+              <div class="text-[11px] text-apple-gray mt-0.5">Concluídos fora do SLA</div>
+            </div>
+
+            <div class="apple-card-inset p-4">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold uppercase text-apple-blue">Ativos no Prazo</span>
+                <span>➡️</span>
+              </div>
+              <div class="text-3xl font-extrabold text-apple-blue dark:text-apple-darkBlue" id="kpiAndamentoNoPrazo">0</div>
+              <div class="text-[11px] text-apple-gray mt-0.5">Em andamento sem atraso</div>
+            </div>
+
+            <div class="apple-card-inset p-4">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold uppercase text-apple-orange">Ativos Atrasados</span>
+                <span>⚠️</span>
+              </div>
+              <div class="text-3xl font-extrabold text-apple-orange dark:text-apple-darkOrange" id="kpiAndamentoForaPrazo">0</div>
+              <div class="text-[11px] text-apple-gray mt-0.5">Em andamento estourados</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACIONAMENTOS E TAREFAS -->
+        <div class="apple-card p-6 space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="apple-card-inset p-5">
+              <span class="text-xs font-bold uppercase text-apple-purple">TOTAL ACIONAMENTOS</span>
+              <div class="text-3xl font-extrabold text-black dark:text-white mt-1" id="kpiTotalAcionamentos">0</div>
+              <div class="text-[11px] text-apple-gray mt-0.5">Soma total de revisões e demandas acionadas</div>
+            </div>
+            <div class="apple-card-inset p-5">
+              <span class="text-xs font-bold uppercase text-apple-blue">TOTAL TAREFAS ÁGEIS</span>
+              <div class="text-3xl font-extrabold text-apple-blue dark:text-apple-darkBlue mt-1" id="kpiTotalTarefas">0</div>
+              <div class="text-[11px] text-apple-gray mt-0.5">Soma total de tasks ágeis executadas</div>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="apple-card-inset p-4">
+              <span class="text-xs font-bold uppercase text-apple-blue">A - Pontuais</span>
+              <div class="text-2xl font-extrabold text-apple-blue mt-1" id="kpiAcionamentosPontuais">0</div>
+            </div>
+            <div class="apple-card-inset p-4">
+              <span class="text-xs font-bold uppercase text-apple-orange">A - Estruturados</span>
+              <div class="text-2xl font-extrabold text-apple-orange mt-1" id="kpiAcionamentosEstruturados">0</div>
+            </div>
+            <div class="apple-card-inset p-4">
+              <span class="text-xs font-bold uppercase text-apple-blue">T - Pontuais</span>
+              <div class="text-2xl font-extrabold text-apple-blue mt-1" id="kpiTarefasPontuais">0</div>
+            </div>
+            <div class="apple-card-inset p-4">
+              <span class="text-xs font-bold uppercase text-apple-orange">T - Estruturados</span>
+              <div class="text-2xl font-extrabold text-apple-orange mt-1" id="kpiTarefasEstruturadas">0</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- GRÁFICOS TEMPORAIS -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="apple-card p-5">
+            <h3 class="text-sm font-bold text-black dark:text-white mb-1">Projetos Concluídos por Ano (2025 vs 2026)</h3>
+            <p class="text-xs text-apple-gray mb-3">Comparativo de entregas finalizadas por frente</p>
+            <div class="h-64 relative"><canvas id="chartConcluidosPorAno"></canvas></div>
+          </div>
+
+          <div class="apple-card p-5">
+            <h3 class="text-sm font-bold text-black dark:text-white mb-1">Projetos Simultâneos / Mês (2025 vs 2026)</h3>
+            <p class="text-xs text-apple-gray mb-3">Evolução da capacidade operacional em paralelo</p>
+            <div class="h-64 relative"><canvas id="chartSimultaneosAnos"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEÇÃO 3: ESTRUTURA DE PORTFÓLIO -->
+      <div class="space-y-4">
+        <div class="flex items-center gap-2 border-b border-black/5 dark:border-white/10 pb-2 pt-2">
+          <i data-lucide="pie-chart" class="w-5 h-5 text-apple-purple dark:text-apple-darkPurple"></i>
+          <h2 class="text-base font-bold text-black dark:text-white uppercase tracking-wider">Estrutura de Portfólio &amp; Alocação</h2>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="apple-card p-5">
+            <h3 class="text-sm font-bold text-black dark:text-white mb-1">Distribuição por Frente</h3>
+            <div class="h-64 relative"><canvas id="chartAreaDist"></canvas></div>
+          </div>
+          <div class="apple-card p-5">
+            <h3 class="text-sm font-bold text-black dark:text-white mb-1">Status Operacional</h3>
+            <div class="h-64 relative"><canvas id="chartStatusDist"></canvas></div>
+          </div>
+          <div class="apple-card p-5">
+            <h3 class="text-sm font-bold text-black dark:text-white mb-1">Nível de Prioridade</h3>
+            <div class="h-64 relative"><canvas id="chartPriorityDist"></canvas></div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="apple-card p-5">
+            <h3 class="text-sm font-bold text-black dark:text-white mb-1">Porte e Complexidade</h3>
+            <div class="h-64 relative"><canvas id="chartTamanhoDist"></canvas></div>
+          </div>
+
+          <div class="apple-card p-5 flex flex-col justify-between">
+            <div class="flex items-start justify-between gap-2 mb-1">
+              <div>
+                <h3 class="text-sm font-bold text-black dark:text-white" id="titleAlocacaoPessoas">Alocação por Responsável (Top 10)</h3>
+                <p class="text-xs text-apple-gray mt-0.5" id="descAlocacaoPessoas">Projetos sob gestão por especialista</p>
+              </div>
+              <div class="segmented-control-bg p-0.5 flex items-center shrink-0">
+                <button type="button" onclick="setAlocacaoMode('resp')" id="btnAllocResp" class="px-2 py-1 rounded-lg bg-apple-blue text-white font-semibold text-[10px]">Rsp.</button>
+                <button type="button" onclick="setAlocacaoMode('colab')" id="btnAllocColab" class="px-2 py-1 rounded-lg text-apple-gray font-medium text-[10px]">Clb.</button>
+                <button type="button" onclick="setAlocacaoMode('total')" id="btnAllocTotal" class="px-2 py-1 rounded-lg text-apple-gray font-medium text-[10px]">Todos</button>
+              </div>
+            </div>
+            <div class="h-64 relative mt-2"><canvas id="chartResponsavelDist"></canvas></div>
+          </div>
+
+          <div class="apple-card p-5">
+            <h3 class="text-sm font-bold text-black dark:text-white mb-1">Cumprimento de Prazos (SLA)</h3>
+            <div class="h-64 relative"><canvas id="chartSlaDist"></canvas></div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="apple-card p-5">
+            <h3 class="text-sm font-bold text-black dark:text-white mb-1">Volume de Entregas em 2026</h3>
+            <div class="h-64 relative"><canvas id="chartEvolucaoMensal"></canvas></div>
+          </div>
+          <div class="apple-card p-5">
+            <h3 class="text-sm font-bold text-black dark:text-white mb-1">Tempo Médio (Dias) por Porte</h3>
+            <div class="h-64 relative"><canvas id="chartTempoPorTamanho"></canvas></div>
+          </div>
+          <div class="apple-card p-5">
+            <h3 class="text-sm font-bold text-black dark:text-white mb-1">Tipo de Projeto (Pontual vs. Estruturado)</h3>
+            <div class="h-64 relative"><canvas id="chartTipoProjeto"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEÇÃO 4: SUPER APP & DEMANDANTES -->
+      <div class="space-y-4">
+        <div class="flex items-center gap-2 border-b border-black/5 dark:border-white/10 pb-2 pt-2">
+          <i data-lucide="smartphone" class="w-5 h-5 text-apple-purple"></i>
+          <h2 class="text-base font-bold text-black dark:text-white uppercase tracking-wider">Foco Estratégico: Super App &amp; Demandantes</h2>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="apple-card p-5">
+            <h3 class="text-sm font-bold text-black dark:text-white mb-1">Proporção: Super App</h3>
+            <div class="h-64 relative"><canvas id="chartSuperAppSplit"></canvas></div>
+          </div>
+          <div class="apple-card p-5">
+            <h3 class="text-sm font-bold text-black dark:text-white mb-1">SLA por Nível de Prioridade</h3>
+            <div class="h-64 relative"><canvas id="chartPrioritySla"></canvas></div>
+          </div>
+          <div class="apple-card p-5">
+            <h3 class="text-sm font-bold text-black dark:text-white mb-1">Métodos: Super App vs. Demais</h3>
+            <div class="h-64 relative"><canvas id="chartMetodosSuperApp"></canvas></div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="apple-card p-5">
+            <h3 class="text-sm font-bold text-black dark:text-white mb-2">Top Áreas Demandantes</h3>
+            <div class="h-80 relative"><canvas id="chartDemandantes"></canvas></div>
+          </div>
+          <div class="apple-card p-5">
+            <h3 class="text-sm font-bold text-black dark:text-white mb-2">Top Metodologias &amp; Atividades</h3>
+            <div class="h-80 relative"><canvas id="chartMetodologias"></canvas></div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="apple-card p-5">
+            <h3 class="text-sm font-bold text-black dark:text-white mb-1">Média de Métodos por Projeto</h3>
+            <div class="h-64 relative"><canvas id="chartMetodosPorProjeto"></canvas></div>
+          </div>
+          <div class="apple-card p-5">
+            <h3 class="text-sm font-bold text-black dark:text-white mb-1">Formato dos Entregáveis (Evidências)</h3>
+            <div class="h-64 relative"><canvas id="chartEvidencias"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RESUMO CONSOLIDADO EM TABELA -->
+      <div class="apple-card p-5 space-y-4">
+        <h3 class="text-base font-bold text-black dark:text-white flex items-center gap-2">
+          <i data-lucide="sliders" class="w-5 h-5 text-apple-blue"></i> Resumo Consolidado por Frente
+        </h3>
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-black/5 dark:bg-white/5 text-apple-gray font-semibold uppercase border-b border-black/5 dark:border-white/10">
+                <th class="p-3.5">Frente</th>
+                <th class="p-3.5 text-center">Total</th>
+                <th class="p-3.5 text-center">Concluídos</th>
+                <th class="p-3.5 text-center">Em Andamento</th>
+                <th class="p-3.5 text-center">Tempo Médio</th>
+                <th class="p-3.5 text-center">Super App</th>
+              </tr>
+            </thead>
+            <tbody id="dashTableBody" class="divide-y divide-black/5 dark:divide-white/5 text-black dark:text-gray-200"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VIEW 2: CONTROLE & DECISÃO GERENCIAL (SEM SENHA) -->
+    <!-- ========================================== -->
+    <section id="view-control" class="hidden space-y-8">
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-black/5 dark:border-white/10 pb-3">
+        <div>
+          <div class="flex items-center gap-2.5">
+            <i data-lucide="compass" class="w-5 h-5 text-apple-blue dark:text-apple-darkBlue"></i>
+            <h2 class="text-base font-bold text-black dark:text-white uppercase tracking-wider">Torre de Controle, Capacidade &amp; Decisão Gerencial</h2>
+          </div>
+          <p class="text-xs text-apple-gray mt-0.5">Painel ativo de diagnóstico: Detecção de gargalos, planejamento de capacidade e senioridade</p>
+        </div>
+        <span class="px-3 py-1 rounded-full bg-apple-blue/10 text-apple-blue text-xs font-semibold">Motor Prescritivo de Ação</span>
+      </div>
+
+      <!-- PAINEL 1: MATRIZ DE ALOCAÇÃO -->
+      <div class="apple-card p-6 space-y-6">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-black/5 dark:border-white/10 pb-3">
+          <div>
+            <h3 class="text-sm font-bold text-black dark:text-white uppercase tracking-wider">1. Matriz de Alocação &amp; Capacidade por Pessoa</h3>
+            <p class="text-[11px] text-apple-gray">R - Responsável (100% pts) | A - Apoio (50% pts) | Carga Ideal: até 12 pts por ciclo</p>
+          </div>
+          <div class="segmented-control-bg p-0.5 flex items-center gap-1 text-[11px]">
+            <button type="button" onclick="setMatrizStatus('andamento')" id="btnMatrizStatusAndamento" class="px-3 py-1 rounded-lg bg-apple-blue text-white font-semibold">Em Andamento</button>
+            <button type="button" onclick="setMatrizStatus('concluido')" id="btnMatrizStatusConcluido" class="px-3 py-1 rounded-lg text-apple-gray font-medium">Concluídos</button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto custom-scrollbar rounded-2xl border border-black/5 dark:border-white/10">
+          <table class="w-full text-center text-xs border-collapse">
+            <thead id="matrizResumoHeader" class="bg-black/5 dark:bg-white/5 text-black dark:text-white font-bold"></thead>
+            <tbody id="matrizResumoBody" class="divide-y divide-black/5 dark:divide-white/10"></tbody>
+          </table>
+        </div>
+
+        <!-- DIAGNÓSTICO DE SAÚDE -->
+        <div class="apple-card-inset p-5 space-y-3 border-l-4 border-l-apple-blue">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-bold uppercase text-black dark:text-white">Diagnóstico de Saúde da Equipe</h4>
+            <span id="badgeSaudeFrente" class="px-3 py-1 rounded-full text-xs font-bold border">Calculando...</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+            <div>Pressão Total: <strong id="txtTotalPontosFrente" class="text-apple-purple">0 Pts</strong></div>
+            <div>Média Ponderada: <strong id="txtMediaPontosPessoa">0.0</strong> Pts/pessoa</div>
+            <div>Equipe Ativa: <strong id="txtQtdTimeFrente">0</strong> especialistas</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEÇÃO 2: DIAGNÓSTICO OPERACIONAL DE SENIORIDADE (DESBLOQUEADA) -->
+      <div class="apple-card p-6 space-y-6">
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-black/5 dark:border-white/10 pb-4">
+          <div class="flex items-center gap-3">
+            <div class="p-2.5 bg-apple-purple/10 text-apple-purple rounded-xl">
+              <i data-lucide="brain-circuit" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-black dark:text-white uppercase tracking-wider flex items-center gap-2">
+                <span>2. Diagnóstico Operacional: Senioridade, Complexidade &amp; Gaps</span>
+                <span class="text-[10px] bg-apple-green/10 text-apple-green px-2 py-0.5 rounded-full font-bold">Acesso Liberado</span>
+              </h3>
+              <p class="text-[11px] text-apple-gray">Mapeamento de perfil da equipe (Sênior, Pleno, Júnior) e adequação ao porte dos projetos ativos</p>
+            </div>
+          </div>
+          <span class="text-xs font-mono font-bold text-apple-purple bg-apple-purple/10 px-3 py-1 rounded-full" id="badgeTotalPontosComplexidade">0 Pts de Complexidade</span>
+        </div>
+
+        <!-- CARDS DE SENIORIDADE -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="apple-card-inset p-4 space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold text-apple-purple uppercase">Sêniores (Liderança &amp; Estratégia)</span>
+              <span class="p-1.5 bg-apple-purple/10 text-apple-purple rounded-lg font-mono font-bold" id="cntSeniorCount">0</span>
+            </div>
+            <p class="text-[10.5px] text-apple-gray">Foco em projetos críticos, estudos GG/GGG e triangulação metodológica.</p>
+            <div class="text-[11px] font-semibold text-black dark:text-white border-t border-black/5 dark:border-white/10 pt-1.5" id="txtSeniorNomes">--</div>
+          </div>
+
+          <div class="apple-card-inset p-4 space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold text-apple-blue uppercase">Plenos (Execução Autônoma)</span>
+              <span class="p-1.5 bg-apple-blue/10 text-apple-blue rounded-lg font-mono font-bold" id="cntPlenoCount">0</span>
+            </div>
+            <p class="text-[10.5px] text-apple-gray">Liderança autônoma em estudos de média complexidade (M/G) e suporte estratégico.</p>
+            <div class="text-[11px] font-semibold text-black dark:text-white border-t border-black/5 dark:border-white/10 pt-1.5" id="txtPlenoNomes">--</div>
+          </div>
+
+          <div class="apple-card-inset p-4 space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold text-apple-green uppercase">Juniores (Apoio &amp; Guiados)</span>
+              <span class="p-1.5 bg-apple-green/10 text-apple-green rounded-lg font-mono font-bold" id="cntJuniorCount">0</span>
+            </div>
+            <p class="text-[10.5px] text-apple-gray">Atuação focada em apoio tático, testes pontuais (PP/P) e execução assistida.</p>
+            <div class="text-[11px] font-semibold text-black dark:text-white border-t border-black/5 dark:border-white/10 pt-1.5" id="txtJuniorNomes">--</div>
+          </div>
+        </div>
+
+        <!-- PARECER PRESCRITIVO DE VAGAS -->
+        <div class="apple-card-inset p-5 space-y-2 border-l-4 border-l-apple-purple">
+          <div class="text-xs font-bold uppercase text-apple-purple flex items-center gap-1.5">
+            <i data-lucide="sparkles" class="w-4 h-4"></i> Parecer Operacional &amp; Dimensionamento de Capacidade
+          </div>
+          <div class="text-xs text-black dark:text-slate-200 leading-relaxed space-y-1.5" id="boxParecerPrescritivoVagas"></div>
+        </div>
+
+        <!-- TABELA DE COMPLEXIDADE X ALOCAÇÃO -->
+        <div class="overflow-x-auto custom-scrollbar max-h-[380px] rounded-2xl border border-black/5 dark:border-white/10">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead class="sticky top-0 bg-black/10 dark:bg-apple-darkCard2 text-black dark:text-white font-bold">
+              <tr>
+                <th class="p-3">Projeto em Andamento</th>
+                <th class="p-3 text-center">Porte</th>
+                <th class="p-3 text-center">Nº Métodos</th>
+                <th class="p-3 text-center">Complexidade</th>
+                <th class="p-3">Responsável (R)</th>
+                <th class="p-3 text-center">Senioridade</th>
+                <th class="p-3 text-center">Status Alocação</th>
+              </tr>
+            </thead>
+            <tbody id="tabelaComplexidadeBody" class="divide-y divide-black/5 dark:divide-white/10"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SIMULADOR WHAT-IF -->
+      <div class="apple-card p-6 space-y-4">
+        <div class="flex items-center justify-between border-b border-black/5 dark:border-white/10 pb-3">
+          <div>
+            <h3 class="text-sm font-bold text-black dark:text-white uppercase">3. Simulador de Capacidade (What-If)</h3>
+            <p class="text-[11px] text-apple-gray">Previsão de impacto de novas demandas na esteira do time</p>
+          </div>
+          <span class="text-xs font-mono font-bold text-apple-blue bg-apple-blue/10 px-2.5 py-1 rounded-full">
+            Vazão Média: <span id="txtVazaoMensal">0</span> proj/mês
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 apple-card-inset p-4 items-center">
+          <div>
+            <label class="block text-[11px] font-bold mb-1">Novas Demandas Pontuais (P):</label>
+            <input type="number" id="simNovasPontuais" value="3" min="0" max="20" onchange="runCapacitySimulator()" onkeyup="runCapacitySimulator()" class="apple-input w-full text-xs font-mono font-bold">
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold mb-1">Novos Estudos Estruturados (E):</label>
+            <input type="number" id="simNovosEstruturados" value="2" min="0" max="10" onchange="runCapacitySimulator()" onkeyup="runCapacitySimulator()" class="apple-input w-full text-xs font-mono font-bold">
+          </div>
+          <div class="p-3 bg-black/5 dark:bg-black/40 rounded-xl">
+            <div class="flex items-center justify-between text-xs mb-1">
+              <span class="text-apple-gray">Ocupação Projetada:</span>
+              <span class="font-bold text-apple-blue font-mono text-sm" id="txtTaxaOcupacaoSim">0%</span>
+            </div>
+            <p class="text-[11px]" id="txtResultadoSimulacao"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VIEW 3: TABELAS DETALHADAS POR FRENTE -->
+    <!-- ========================================== -->
+    <section id="view-detail" class="hidden space-y-6">
+      <div class="apple-card p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <h2 id="detailViewTitle" class="text-xl font-bold text-black dark:text-white flex items-center gap-2"></h2>
+        <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+          <div class="relative flex-1 sm:w-64">
+            <i data-lucide="search" class="w-4 h-4 text-apple-gray absolute left-3 top-2.5"></i>
+            <input type="text" id="tableSearchInput" onkeyup="filterDetailTable()" placeholder="Buscar projeto, pessoa, área..." class="w-full apple-input text-xs pl-9 pr-3 py-2">
+          </div>
+          <select id="tableStatusFilter" onchange="filterDetailTable()" class="apple-input text-xs cursor-pointer">
+            <option value="ALL">Todos os Status</option>
+            <option value="Concluído">Concluído</option>
+            <option value="Em andamento">Em andamento</option>
+            <option value="Não iniciado">Não iniciado</option>
+            <option value="Pausado">Pausado</option>
+            <option value="Cancelado">Cancelado</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="apple-card overflow-hidden">
+        <div class="overflow-x-auto custom-scrollbar max-h-[650px]">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead class="sticky top-0 z-10 bg-black/5 dark:bg-white/5 text-apple-gray font-semibold uppercase">
+              <tr>
+                <th class="p-3.5">ID</th>
+                <th class="p-3.5">Projeto</th>
+                <th class="p-3.5">Status</th>
+                <th class="p-3.5">Prioridade</th>
+                <th class="p-3.5">Tam</th>
+                <th class="p-3.5">Responsável</th>
+                <th class="p-3.5">Demandante</th>
+                <th class="p-3.5 text-center">SuperApp</th>
+                <th class="p-3.5">Datas</th>
+                <th class="p-3.5">Metodologia</th>
+                <th class="p-3.5">Impacto</th>
+              </tr>
+            </thead>
+            <tbody id="detailTableBody" class="divide-y divide-black/5 dark:divide-white/10"></tbody>
+          </table>
+        </div>
+        <div class="p-4 border-t border-black/5 dark:border-white/10 text-xs text-apple-gray">
+          Registros exibidos: <strong id="rowCount" class="text-black dark:text-white">0</strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VIEW 4: IMPACTO DAS ENTREGAS -->
+    <!-- ========================================== -->
+    <section id="view-impact" class="hidden space-y-8">
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-black/5 dark:border-white/10 pb-3">
+        <div>
+          <h2 class="text-base font-bold text-black dark:text-white uppercase tracking-wider flex items-center gap-2">
+            <i data-lucide="sparkles" class="w-5 h-5 text-apple-purple"></i> Impacto Qualitativo &amp; Estratégico das Entregas
+          </h2>
+          <p class="text-xs text-apple-gray mt-0.5">Evidências de transformação, prevenção de erros e valor gerado para o ecossistema digital</p>
+        </div>
+        <span class="px-3 py-1 rounded-full bg-apple-purple/10 text-apple-purple text-xs font-semibold">Análise de Valor Agregado</span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="apple-card p-6 space-y-4 border-l-4 border-l-apple-red">
+          <div class="flex items-center justify-between border-b border-black/5 dark:border-white/10 pb-3">
+            <h3 class="text-sm font-bold uppercase">1. Prevenção de Crises &amp; Mitigação de Falhas</h3>
+            <span class="text-xs font-bold text-apple-red bg-apple-red/10 px-2.5 py-1 rounded-full" id="cardImpCrisesCount">0 Estudos</span>
+          </div>
+          <div class="space-y-3 text-xs">
+            <div class="apple-card-inset p-3 space-y-1">
+              <div class="font-bold text-apple-red">Portal de Loterias &amp; Apostas Online</div>
+              <p class="text-[11px] text-apple-gray">Diagnóstico identificou gargalos de fila virtual em picos de sorteios especiais, orientando a reestruturação da jornada antes da campanha nacional.</p>
+            </div>
+            <div class="apple-card-inset p-3 space-y-1">
+              <div class="font-bold text-apple-blue">Super App Financeiro (Testes Regionais em SP, CE e DF)</div>
+              <p class="text-[11px] text-apple-gray">Testes de usabilidade no fluxo de contestação PIX revelaram insegurança na confirmação de chaves, permitindo corrigir microtextos antes do rollout.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="apple-card p-6 space-y-4 border-l-4 border-l-apple-blue">
+          <div class="flex items-center justify-between border-b border-black/5 dark:border-white/10 pb-3">
+            <h3 class="text-sm font-bold uppercase">2. Ativos Reutilizáveis &amp; Eficiência Dev</h3>
+            <span class="text-xs font-bold text-apple-blue bg-apple-blue/10 px-2.5 py-1 rounded-full">72+ Telas Mapeadas</span>
+          </div>
+          <div class="space-y-3 text-xs">
+            <div class="apple-card-inset p-3 space-y-1">
+              <div class="font-bold text-apple-blue">Manual de Escrita Digital &amp; Tom de Voz (320 págs)</div>
+              <p class="text-[11px] text-apple-gray">Padronizou mensagens de erro e alertas transacionais, eliminando retrabalho de revisão entre squads de produto e engenharia.</p>
+            </div>
+            <div class="apple-card-inset p-3 space-y-1">
+              <div class="font-bold text-apple-purple">Content System Integrado ao Design System</div>
+              <p class="text-[11px] text-apple-gray">Componentização de 48 telas de Transferências e 24 telas de Cartões com glossário validado para reuso direto no Figma.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="apple-card p-5">
+          <h3 class="text-sm font-bold mb-1">3. Redução de Atendimento Humano / SAC</h3>
+          <p class="text-[11px] text-apple-gray mb-3">Impacto da simplificação textual por canal digital</p>
+          <div class="h-64 relative"><canvas id="chartImpactoAtendimento"></canvas></div>
+        </div>
+        <div class="apple-card p-5">
+          <h3 class="text-sm font-bold mb-1">4. Triangulação Metodológica</h3>
+          <p class="text-[11px] text-apple-gray mb-3">Quantidade de técnicas combinadas por projeto</p>
+          <div class="h-64 relative"><canvas id="chartTriangulacaoMetodologies"></canvas></div>
+        </div>
+      </div>
+
+      <div class="apple-card p-6 space-y-4">
+        <h3 class="text-sm font-bold uppercase">5. Densidade de Artefatos Gerados</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="apple-card-inset p-4 flex items-center gap-3">
+            <div class="p-3 bg-apple-purple/10 text-apple-purple rounded-xl"><i data-lucide="layout" class="w-6 h-6"></i></div>
+            <div><div class="text-xl font-bold" id="cntFigmaEvid">0</div><div class="text-[11px] text-apple-gray">Protótipos Figma / FigJam</div></div>
+          </div>
+          <div class="apple-card-inset p-4 flex items-center gap-3">
+            <div class="p-3 bg-apple-blue/10 text-apple-blue rounded-xl"><i data-lucide="presentation" class="w-6 h-6"></i></div>
+            <div><div class="text-xl font-bold" id="cntSlidesEvid">0</div><div class="text-[11px] text-apple-gray">Relatórios Executivos</div></div>
+          </div>
+          <div class="apple-card-inset p-4 flex items-center gap-3">
+            <div class="p-3 bg-apple-green/10 text-apple-green rounded-xl"><i data-lucide="file-text" class="w-6 h-6"></i></div>
+            <div><div class="text-xl font-bold" id="cntDocEvid">0</div><div class="text-[11px] text-apple-gray">Repositórios &amp; Glossários</div></div>
+          </div>
+          <div class="apple-card-inset p-4 flex items-center gap-3">
+            <div class="p-3 bg-apple-orange/10 text-apple-orange rounded-xl"><i data-lucide="check-square" class="w-6 h-6"></i></div>
+            <div><div class="text-xl font-bold" id="cntPadraoEvid">0</div><div class="text-[11px] text-apple-gray">Documentos Padronizados</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VIEW 5: IMPACTO SOCIAL -->
+    <!-- ========================================== -->
+    <section id="view-social" class="hidden space-y-8">
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-black/5 dark:border-white/10 pb-3">
+        <div>
+          <h2 class="text-base font-bold text-black dark:text-white uppercase tracking-wider flex items-center gap-2">
+            <i data-lucide="heart-handshake" class="w-5 h-5 text-apple-green"></i> Impacto Social, Cidadania &amp; Inclusão Digital
+          </h2>
+          <p class="text-xs text-apple-gray mt-0.5">Bancarização de populações vulneráveis, acessibilidade e linguagem cidadã</p>
+        </div>
+        <span class="px-3 py-1 rounded-full bg-apple-green/10 text-apple-green text-xs font-semibold">Ecossistema Social</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="apple-card p-5 border-l-4 border-l-apple-green">
+          <span class="text-xs font-bold uppercase text-apple-green">Projetos Sociais</span>
+          <div class="text-3xl font-black text-apple-green mt-2" id="kpiTotalSocialProjs">0 Proj.</div>
+          <div class="text-[11px] text-apple-gray mt-1">Entregas focadas em cidadania</div>
+        </div>
+        <div class="apple-card p-5 border-l-4 border-l-apple-blue">
+          <span class="text-xs font-bold uppercase text-apple-blue">Inclusão Territorial</span>
+          <div class="text-3xl font-black mt-2">5 Regiões</div>
+          <div class="text-[11px] text-apple-gray mt-1">Norte, NE, CO, SE e Sul testados</div>
+        </div>
+        <div class="apple-card p-5 border-l-4 border-l-apple-purple">
+          <span class="text-xs font-bold uppercase text-apple-purple">Programas Sociais</span>
+          <div class="text-3xl font-black text-apple-purple mt-2" id="kpiHomeCidadania">0 Est.</div>
+          <div class="text-[11px] text-apple-gray mt-1">Hubs de benefícios e educação</div>
+        </div>
+        <div class="apple-card p-5 border-l-4 border-l-apple-orange">
+          <span class="text-xs font-bold uppercase text-apple-orange">Linguagem Simples</span>
+          <div class="text-3xl font-black text-apple-orange mt-2" id="kpiLinguagemSimples">0 Est.</div>
+          <div class="text-[11px] text-apple-gray mt-1">Acessibilidade WCAG e AltText</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="apple-card p-5">
+          <h3 class="text-sm font-bold mb-1">Distribuição por Eixo Social</h3>
+          <div class="h-64 relative"><canvas id="chartEixosSociaisDist"></canvas></div>
+        </div>
+        <div class="apple-card p-5">
+          <h3 class="text-sm font-bold mb-1">Alcance Geográfico de Testes (Praças)</h3>
+          <div class="h-64 relative"><canvas id="chartPracasGeograficas"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VIEW 6: INVESTIDORES & ROI -->
+    <!-- ========================================== -->
+    <section id="view-inv" class="hidden space-y-8">
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-black/5 dark:border-white/10 pb-3">
+        <div>
+          <h2 class="text-base font-bold text-black dark:text-white uppercase tracking-wider flex items-center gap-2">
+            <i data-lucide="trending-up" class="w-5 h-5 text-apple-green"></i> Análise de ROI, Valoração &amp; Retorno Financeiro
+          </h2>
+          <p class="text-xs text-apple-gray mt-0.5">Demonstrativo simulado: Custo da operação dedicada vs. Ganhos e Economias geradas</p>
+        </div>
+        <span class="px-3 py-1 rounded-full bg-apple-green/10 text-apple-green text-xs font-semibold">Contrato Simulado #2026-UX</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="apple-card p-5 border-l-4 border-l-apple-gray">
+          <span class="text-xs font-bold uppercase text-apple-gray">Investimento Anual</span>
+          <div class="text-2xl font-black mt-2" id="kpiInvestimentoAnual">R$ 0,00</div>
+          <div class="text-[11px] text-apple-gray mt-1">Custo anual simulado da operação</div>
+        </div>
+        <div class="apple-card p-5 border-l-4 border-l-apple-green">
+          <span class="text-xs font-bold uppercase text-apple-green">Retorno Bruto Estimado</span>
+          <div class="text-2xl font-black text-apple-green mt-2" id="kpiValorGeradoTotal">R$ 0,00</div>
+          <div class="text-[11px] text-apple-gray mt-1">Valoração total + Economias</div>
+        </div>
+        <div class="apple-card p-5 border-l-4 border-l-apple-blue">
+          <span class="text-xs font-bold uppercase text-apple-blue">ROI Líquido Estimado</span>
+          <div class="text-2xl font-black text-apple-blue mt-2" id="kpiRoiPercentual">0%</div>
+          <div class="text-[11px] text-apple-gray mt-1">Retorno sobre o capital alocado</div>
+        </div>
+        <div class="apple-card p-5 border-l-4 border-l-apple-purple">
+          <span class="text-xs font-bold uppercase text-apple-purple">Payback Estimado</span>
+          <div class="text-2xl font-black text-apple-purple mt-2" id="kpiPaybackMeses">0 Meses</div>
+          <div class="text-[11px] text-apple-gray mt-1">Tempo de amortização</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="apple-card p-5">
+          <h3 class="text-sm font-bold mb-1">Custo do Contrato vs. Valor Gerado (R$)</h3>
+          <div class="h-64 relative"><canvas id="chartComparativoCustoRetorno"></canvas></div>
+        </div>
+        <div class="apple-card p-5">
+          <h3 class="text-sm font-bold mb-1">Valoração por Criticidade (Cost Avoidance)</h3>
+          <div class="h-64 relative"><canvas id="chartMitigacaoRisco"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODAL ESPECIFICAÇÃO TÉCNICA -->
+    <div id="modalSddSpec" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 bg-black/40 backdrop-blur-md">
+      <div class="apple-card max-w-2xl w-full p-6 space-y-4 shadow-2xl">
+        <div class="flex items-center justify-between border-b border-black/5 dark:border-white/10 pb-3">
+          <h3 class="text-base font-bold text-black dark:text-white">Arquitetura do Dashboard (Versão Pública)</h3>
+          <button onclick="closeModal('modalSddSpec')" class="p-1 text-apple-gray hover:text-black dark:hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+        <p class="text-xs text-apple-gray leading-relaxed">
+          Esta versão foi sanitizada para publicação pública. Todas as conexões externas (Google Sheets e Firebase) foram removidas e substituídas pelo objeto centralizado <code>window.MOCK_DATABASE</code> no início do script, alimentando de forma consistente todos os KPIs, gráficos, tabelas operacionais e simuladores.
+        </p>
+        <div class="flex justify-end pt-2">
+          <button onclick="closeModal('modalSddSpec')" class="apple-btn-primary text-xs">Fechar</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // =========================================================================
+    // SEÇÃO CENTRALIZADA DE DADOS FICTÍCIOS (SINGLE SOURCE OF TRUTH)
+    // Edite apenas este objeto para atualizar todo o dashboard de forma consistente.
+    // =========================================================================
+    window.MOCK_DATABASE = {
+      // 1. EQUIPE FICTÍCIA (Utilizada na Matriz de Alocação, Senioridade e Projetos)
+      equipe: [
+        { nome: "Mariana Costa", frente: "CX Pesquisa", senioridade: "Sênior" },
+        { nome: "Lucas Mendes", frente: "CX Pesquisa", senioridade: "Pleno" },
+        { nome: "Beatriz Almeida", frente: "CX Pesquisa", senioridade: "Júnior" },
+        { nome: "Rafael Souza", frente: "UX Pesquisa", senioridade: "Sênior" },
+        { nome: "Camila Rocha", frente: "UX Pesquisa", senioridade: "Pleno" },
+        { nome: "Thiago Oliveira", frente: "UX Pesquisa", senioridade: "Júnior" },
+        { nome: "Fernanda Lima", frente: "CX Escrita", senioridade: "Sênior" },
+        { nome: "Gabriel Santos", frente: "CX Escrita", senioridade: "Pleno" },
+        { nome: "Juliana Martins", frente: "UX Escrita", senioridade: "Sênior" },
+        { nome: "Pedro Henrique", frente: "UX Escrita", senioridade: "Pleno" }
+      ],
+
+      // 2. PARÂMETROS FINANCEIROS E SOCIAIS FICTÍCIOS (Para as abas ROI e Social)
+      financeiro: {
+        investimentoMensal: 310000.00, // R$ 3.720.000,00 / ano
+        ticketPontualMercado: 9500.00,
+        ticketEstruturadoMercado: 38000.00,
+        economiaSacSuporte: 5400000.00,
+        economiaDevChurn: 8200000.00
+      },
+
+      social: {
+        eixos: {
+          "Benefícios & Cidadania": 12,
+          "Habitação & Moradia": 6,
+          "Direitos do Trabalhador": 8,
+          "Acessibilidade & AltText": 7,
+          "Educação & Juventude": 5,
+          "Empreendedorismo MEI": 4
+        },
+        pracas: {
+          "Sudeste (SP/RJ)": 14,
+          "Nordeste (Fortaleza/Recife)": 9,
+          "Centro-Oeste (Brasília/Goiânia)": 11,
+          "Norte (Manaus/Belém)": 5,
+          "Sul (Porto Alegre/Curitiba)": 6
+        }
+      },
+
+      // 3. PORTFÓLIO UNIFICADO DE PROJETOS (Alimenta KPIs, Gráficos, Tabelas e Matriz)
+      projetos: [
+        // --- CX PESQUISA ---
+        {
+          id: "CXP-101",
+          projeto: "Jornada de Contestação PIX e Prevenção a Fraudes",
+          status: "Concluído",
+          inicio: "10/01/2025",
+          prazo: "28/02/2025",
+          entrega: "25/02/2025",
+          prioridade: "Crítica",
+          tamanho: "GG",
+          responsavel: "Mariana Costa",
+          colaboradores: "Lucas Mendes, Beatriz Almeida",
+          demandante: "Diretoria de Canais Digitais",
+          super_app: "SIM",
+          pesquisa_metodo: "Teste de Usabilidade, Entrevista em Profundidade, Avaliação Heurística",
+          impacto: "Redução de 34% nas chamadas de contestação no SAC após ajuste de fluxo.",
+          prazo_dias: 46,
+          tarefas_agies: 28,
+          acionamentos: 4,
+          tipo_projeto: "E",
+          evidencias: "Arquivo Figma / FigJam",
+          ano: "2025",
+          area: "CX Pesquisa"
+        },
+        {
+          id: "CXP-102",
+          projeto: "Diagnóstico de Satisfação na Renegociação de Dívidas",
+          status: "Concluído",
+          inicio: "05/03/2025",
+          prazo: "20/04/2025",
+          entrega: "24/04/2025",
+          prioridade: "Alta",
+          tamanho: "G",
+          responsavel: "Lucas Mendes",
+          colaboradores: "Beatriz Almeida",
+          demandante: "Superintendência de Crédito",
+          super_app: "NÃO",
+          pesquisa_metodo: "Survey Quantitativo, Análise de Jornada, Entrevista",
+          impacto: "Mapeamento de 5 pontos de abandono na simulação de parcelas.",
+          prazo_dias: 50,
+          tarefas_agies: 22,
+          acionamentos: 3,
+          tipo_projeto: "E",
+          evidencias: "Apresentação / Relatório (Slides)",
+          ano: "2025",
+          area: "CX Pesquisa"
+        },
+        {
+          id: "CXP-103",
+          projeto: "Pesquisa Rápida de Percepção sobre Notificações Push",
+          status: "Concluído",
+          inicio: "12/01/2026",
+          prazo: "25/01/2026",
+          entrega: "23/01/2026",
+          prioridade: "Normal",
+          tamanho: "P",
+          responsavel: "Beatriz Almeida",
+          colaboradores: "",
+          demandante: "Diretoria de Canais Digitais",
+          super_app: "SIM",
+          pesquisa_metodo: "Survey Quantitativo",
+          impacto: "Aumento na taxa de abertura de alertas de segurança.",
+          prazo_dias: 11,
+          tarefas_agies: 8,
+          acionamentos: 1,
+          tipo_projeto: "P",
+          evidencias: "Apresentação / Relatório (Slides)",
+          ano: "2026",
+          area: "CX Pesquisa"
+        },
+        {
+          id: "CXP-104",
+          projeto: "Estudo Nacional de Experiência no Portal de Loterias",
+          status: "Em andamento",
+          inicio: "01/10/2026",
+          prazo: "15/12/2026",
+          entrega: "-",
+          prioridade: "Crítica",
+          tamanho: "GGG",
+          responsavel: "Mariana Costa",
+          colaboradores: "Lucas Mendes",
+          demandante: "Gerência de Produtos Loterias",
+          super_app: "NÃO",
+          pesquisa_metodo: "Teste de Usabilidade, Shadowing, Benchmark, Survey Quantitativo",
+          impacto: "Prevenção de gargalos de fila virtual em sorteios de fim de ano.",
+          prazo_dias: 45,
+          tarefas_agies: 35,
+          acionamentos: 5,
+          tipo_projeto: "E",
+          evidencias: "Arquivo Figma / FigJam",
+          ano: "2026",
+          area: "CX Pesquisa"
+        },
+        {
+          id: "CXP-105",
+          projeto: "Avaliação de Atendimento Digital para Empreendedores MEI",
+          status: "Em andamento",
+          inicio: "15/10/2026",
+          prazo: "30/11/2026",
+          entrega: "-",
+          prioridade: "Alta",
+          tamanho: "G",
+          responsavel: "Lucas Mendes",
+          colaboradores: "Beatriz Almeida",
+          demandante: "Segmento Pessoa Jurídica",
+          super_app: "SIM",
+          pesquisa_metodo: "Entrevista em Profundidade, Card Sorting",
+          impacto: "Simplificação da abertura de conta digital PJ.",
+          prazo_dias: 30,
+          tarefas_agies: 19,
+          acionamentos: 2,
+          tipo_projeto: "E",
+          evidencias: "Link SharePoint / Repositório",
+          ano: "2026",
+          area: "CX Pesquisa"
+        },
+
+        // --- UX PESQUISA ---
+        {
+          id: "UXP-201",
+          projeto: "Testes de Usabilidade da Nova Home Cidadania",
+          status: "Concluído",
+          inicio: "02/02/2025",
+          prazo: "20/03/2025",
+          entrega: "18/03/2025",
+          prioridade: "Crítica",
+          tamanho: "GG",
+          responsavel: "Rafael Souza",
+          colaboradores: "Camila Rocha, Thiago Oliveira",
+          demandante: "Gerência de Benefícios Sociais",
+          super_app: "SIM",
+          pesquisa_metodo: "Teste de Usabilidade, Tree Testing, Auditoria WCAG",
+          impacto: "92% de sucesso na consulta de calendário de pagamentos por idosos.",
+          prazo_dias: 44,
+          tarefas_agies: 31,
+          acionamentos: 4,
+          tipo_projeto: "E",
+          evidencias: "Arquivo Figma / FigJam",
+          ano: "2025",
+          area: "UX Pesquisa"
+        },
+        {
+          id: "UXP-202",
+          projeto: "Validação de Arquitetura de Informação do Simulador Habitacional",
+          status: "Concluído",
+          inicio: "10/05/2025",
+          prazo: "25/06/2025",
+          entrega: "22/06/2025",
+          prioridade: "Alta",
+          tamanho: "G",
+          responsavel: "Camila Rocha",
+          colaboradores: "Thiago Oliveira",
+          demandante: "Diretoria de Habitação",
+          super_app: "NÃO",
+          pesquisa_metodo: "Card Sorting, Tree Testing, Teste de Usabilidade",
+          impacto: "Redução de 40% no tempo de preenchimento da simulação imobiliária.",
+          prazo_dias: 43,
+          tarefas_agies: 24,
+          acionamentos: 3,
+          tipo_projeto: "E",
+          evidencias: "Arquivo Figma / FigJam",
+          ano: "2025",
+          area: "UX Pesquisa"
+        },
+        {
+          id: "UXP-203",
+          projeto: "Teste de Primeiro Clique no Fluxo de Cartão Virtual",
+          status: "Concluído",
+          inicio: "03/02/2026",
+          prazo: "14/02/2026",
+          entrega: "12/02/2026",
+          prioridade: "Normal",
+          tamanho: "PP",
+          responsavel: "Thiago Oliveira",
+          colaboradores: "",
+          demandante: "Meios de Pagamento",
+          super_app: "SIM",
+          pesquisa_metodo: "First Click Test",
+          impacto: "Reposicionamento do botão de bloqueio temporário do cartão.",
+          prazo_dias: 9,
+          tarefas_agies: 6,
+          acionamentos: 1,
+          tipo_projeto: "P",
+          evidencias: "Apresentação / Relatório (Slides)",
+          ano: "2026",
+          area: "UX Pesquisa"
+        },
+        {
+          id: "UXP-204",
+          projeto: "Auditoria de Acessibilidade (Leitores de Tela) no Fluxo FGTS",
+          status: "Concluído",
+          inicio: "01/03/2026",
+          prazo: "10/04/2026",
+          entrega: "08/04/2026",
+          prioridade: "Crítica",
+          tamanho: "G",
+          responsavel: "Rafael Souza",
+          colaboradores: "Camila Rocha",
+          demandante: "Gerência de Fundos Sociais",
+          super_app: "SIM",
+          pesquisa_metodo: "Auditoria WCAG, Teste com Usuários PcD, Avaliação Heurística",
+          impacto: "100% das telas críticas adequadas aos padrões eMAG e WCAG 2.1.",
+          prazo_dias: 38,
+          tarefas_agies: 27,
+          acionamentos: 3,
+          tipo_projeto: "E",
+          evidencias: "Documento Entregável Padronizado",
+          ano: "2026",
+          area: "UX Pesquisa"
+        },
+        {
+          id: "UXP-205",
+          projeto: "Descoberta Contínua: Investimentos para Pequenos Poupadores",
+          status: "Em andamento",
+          inicio: "05/10/2026",
+          prazo: "10/12/2026",
+          entrega: "-",
+          prioridade: "Alta",
+          tamanho: "GG",
+          responsavel: "Rafael Souza",
+          colaboradores: "Thiago Oliveira",
+          demandante: "Diretoria de Investimentos",
+          super_app: "SIM",
+          pesquisa_metodo: "Entrevista em Profundidade, Teste de Conceito, Benchmark",
+          impacto: "Definição de nova jornada guiada de aplicação em renda fixa.",
+          prazo_dias: 40,
+          tarefas_agies: 21,
+          acionamentos: 3,
+          tipo_projeto: "E",
+          evidencias: "Arquivo Figma / FigJam",
+          ano: "2026",
+          area: "UX Pesquisa"
+        },
+        {
+          id: "UXP-206",
+          projeto: "Avaliação Heurística do Novo Módulo de Seguros Residenciais",
+          status: "Pausado",
+          inicio: "01/09/2026",
+          prazo: "30/09/2026",
+          entrega: "-",
+          prioridade: "Baixa",
+          tamanho: "P",
+          responsavel: "Camila Rocha",
+          colaboradores: "",
+          demandante: "Seguridade",
+          super_app: "NÃO",
+          pesquisa_metodo: "Avaliação Heurística",
+          impacto: "Aguardando definição de regras de negócio pela área demandante.",
+          prazo_dias: 15,
+          tarefas_agies: 5,
+          acionamentos: 1,
+          tipo_projeto: "P",
+          evidencias: "Documento Entregável Padronizado",
+          ano: "2026",
+          area: "UX Pesquisa"
+        },
+
+        // --- CX ESCRITA ---
+        {
+          id: "CXE-301",
+          projeto: "Reestruturação Conversacional do Assistente Virtual WhatsApp",
+          status: "Concluído",
+          inicio: "15/01/2025",
+          prazo: "10/03/2025",
+          entrega: "07/03/2025",
+          prioridade: "Crítica",
+          tamanho: "GG",
+          responsavel: "Fernanda Lima",
+          colaboradores: "Gabriel Santos",
+          demandante: "Canais de Atendimento",
+          super_app: "NÃO",
+          pesquisa_metodo: "Teste de Compreensão (Cloze), Análise de Logs, Desk Research",
+          impacto: "Aumento de 28% na retenção de atendimentos sem transbordo humano.",
+          prazo_dias: 51,
+          tarefas_agies: 42,
+          acionamentos: 6,
+          tipo_projeto: "E",
+          evidencias: "Link SharePoint / Repositório",
+          ano: "2025",
+          area: "CX Escrita"
+        },
+        {
+          id: "CXE-302",
+          projeto: "Simplificação de Linguagem nos Termos de Renegociação Estudantil",
+          status: "Concluído",
+          inicio: "01/04/2025",
+          prazo: "15/05/2025",
+          entrega: "19/05/2025",
+          prioridade: "Alta",
+          tamanho: "M",
+          responsavel: "Gabriel Santos",
+          colaboradores: "Fernanda Lima",
+          demandante: "Gerência de Programas Educacionais",
+          super_app: "NÃO",
+          pesquisa_metodo: "Teste de Clareza Textual, Análise de Legibilidade",
+          impacto: "Eliminação de 65 termos jurídicos complexos nas telas de adesão.",
+          prazo_dias: 48,
+          tarefas_agies: 18,
+          acionamentos: 3,
+          tipo_projeto: "E",
+          evidencias: "Documento Entregável Padronizado",
+          ano: "2025",
+          area: "CX Escrita"
+        },
+        {
+          id: "CXE-303",
+          projeto: "Revisão de Fraseologias de URA Telefônica (Benefícios Sociais)",
+          status: "Concluído",
+          inicio: "10/02/2026",
+          prazo: "25/03/2026",
+          entrega: "20/03/2026",
+          prioridade: "Alta",
+          tamanho: "G",
+          responsavel: "Fernanda Lima",
+          colaboradores: "Gabriel Santos",
+          demandante: "Central de Relacionamento",
+          super_app: "NÃO",
+          pesquisa_metodo: "Análise de Gravações, Teste de Compreensão Auditiva",
+          impacto: "Redução de 18 segundos no tempo médio de navegação na URA.",
+          prazo_dias: 38,
+          tarefas_agies: 25,
+          acionamentos: 4,
+          tipo_projeto: "E",
+          evidencias: "Link SharePoint / Repositório",
+          ano: "2026",
+          area: "CX Escrita"
+        },
+        {
+          id: "CXE-304",
+          projeto: "Padronização de SMS e E-mails Transacionais de Segurança",
+          status: "Em andamento",
+          inicio: "20/10/2026",
+          prazo: "05/12/2026",
+          entrega: "-",
+          prioridade: "Crítica",
+          tamanho: "M",
+          responsavel: "Gabriel Santos",
+          colaboradores: "Fernanda Lima",
+          demandante: "Segurança Cibernética",
+          super_app: "SIM",
+          pesquisa_metodo: "Benchmark, Teste A/B de Mensagens",
+          impacto: "Mitigação de golpes de phishing através de identidade verbal clara.",
+          prazo_dias: 25,
+          tarefas_agies: 16,
+          acionamentos: 2,
+          tipo_projeto: "E",
+          evidencias: "Documento Entregável Padronizado",
+          ano: "2026",
+          area: "CX Escrita"
+        },
+
+        // --- UX ESCRITA ---
+        {
+          id: "UXE-401",
+          projeto: "Guia de Escrita para Canais Digitais e Content System",
+          status: "Concluído",
+          inicio: "05/01/2025",
+          prazo: "30/04/2025",
+          entrega: "28/04/2025",
+          prioridade: "Crítica",
+          tamanho: "GGG",
+          responsavel: "Juliana Martins",
+          colaboradores: "Pedro Henrique, Fernanda Lima",
+          demandante: "Design System Corporativo",
+          super_app: "SIM",
+          pesquisa_metodo: "Benchmark, Pesquisa Interna com Designers, Card Sorting",
+          impacto: "Criação de biblioteca com +100 padrões de microtexto prontos para TI.",
+          prazo_dias: 113,
+          tarefas_agies: 64,
+          acionamentos: 8,
+          tipo_projeto: "E",
+          evidencias: "Arquivo Figma / FigJam",
+          ano: "2025",
+          area: "UX Escrita"
+        },
+        {
+          id: "UXE-402",
+          projeto: "Microtextos e Mensagens de Erro do Novo Fluxo de Pagamentos",
+          status: "Concluído",
+          inicio: "12/01/2026",
+          prazo: "28/02/2026",
+          entrega: "25/02/2026",
+          prioridade: "Crítica",
+          tamanho: "G",
+          responsavel: "Pedro Henrique",
+          colaboradores: "Juliana Martins",
+          demandante: "Diretoria de Canais Digitais",
+          super_app: "SIM",
+          pesquisa_metodo: "Auditoria de Mensagens de Erro, Teste de Compreensão (Cloze)",
+          impacto: "48 telas especificadas com orientações acionáveis para falhas de saldo/limite.",
+          prazo_dias: 44,
+          tarefas_agies: 33,
+          acionamentos: 5,
+          tipo_projeto: "E",
+          evidencias: "Arquivo Figma / FigJam",
+          ano: "2026",
+          area: "UX Escrita"
+        },
+        {
+          id: "UXE-403",
+          projeto: "Ajuste de Microcopy no Onboarding de Biometria Facial",
+          status: "Concluído",
+          inicio: "10/04/2026",
+          prazo: "22/04/2026",
+          entrega: "21/04/2026",
+          prioridade: "Alta",
+          tamanho: "P",
+          responsavel: "Juliana Martins",
+          colaboradores: "",
+          demandante: "Segurança Cibernética",
+          super_app: "SIM",
+          pesquisa_metodo: "Teste de Compreensão",
+          impacto: "Aumento de 19% na aprovação de selfie na primeira tentativa.",
+          prazo_dias: 11,
+          tarefas_agies: 9,
+          acionamentos: 1,
+          tipo_projeto: "P",
+          evidencias: "Arquivo Figma / FigJam",
+          ano: "2026",
+          area: "UX Escrita"
+        },
+        {
+          id: "UXE-404",
+          projeto: "Especificação de Textos Alternativos (AltText) para Banners do App",
+          status: "Em andamento",
+          inicio: "01/11/2026",
+          prazo: "25/11/2026",
+          entrega: "-",
+          prioridade: "Normal",
+          tamanho: "P",
+          responsavel: "Pedro Henrique",
+          colaboradores: "",
+          demandante: "Marketing Digital",
+          super_app: "SIM",
+          pesquisa_metodo: "Auditoria WCAG",
+          impacto: "Garantia de leitura acessível em campanhas promocionais.",
+          prazo_dias: 14,
+          tarefas_agies: 11,
+          acionamentos: 2,
+          tipo_projeto: "P",
+          evidencias: "Documento Entregável Padronizado",
+          ano: "2026",
+          area: "UX Escrita"
+        },
+        {
+          id: "UXE-405",
+          projeto: "Revisão de Jornada de Portabilidade de Salário",
+          status: "Não iniciado",
+          inicio: "01/12/2026",
+          prazo: "20/01/2027",
+          entrega: "-",
+          prioridade: "Normal",
+          tamanho: "M",
+          responsavel: "Juliana Martins",
+          colaboradores: "Pedro Henrique",
+          demandante: "Produtos Pessoa Física",
+          super_app: "SIM",
+          pesquisa_metodo: "Benchmark, Desk Research",
+          impacto: "Simplificação do formulário de solicitação de portabilidade.",
+          prazo_dias: 0,
+          tarefas_agies: 0,
+          acionamentos: 1,
+          tipo_projeto: "E",
+          evidencias: "Arquivo Figma / FigJam",
+          ano: "2026",
+          area: "UX Escrita"
+        },
+        {
+          id: "UXE-406",
+          projeto: "Redação de Fluxo Descontinuado de Cheque Especial",
+          status: "Cancelado",
+          inicio: "01/06/2026",
+          prazo: "30/06/2026",
+          entrega: "-",
+          prioridade: "Baixa",
+          tamanho: "P",
+          responsavel: "Pedro Henrique",
+          colaboradores: "",
+          demandante: "Superintendência de Crédito",
+          super_app: "NÃO",
+          pesquisa_metodo: "Desk Research",
+          impacto: "Escopo cancelado por mudança de priorização trimestral.",
+          prazo_dias: 0,
+          tarefas_agies: 3,
+          acionamentos: 1,
+          tipo_projeto: "P",
+          evidencias: "Documento Entregável Padronizado",
+          ano: "2026",
+          area: "UX Escrita"
+        }
+      ]
+    };
+
+    // =========================================================================
+    // INICIALIZAÇÃO E ESTRUTURAÇÃO DOS DADOS A PARTIR DO MOCK_DATABASE
+    // =========================================================================
+    window.RAW_DATA = {
+      'CX Pesquisa': [],
+      'UX Pesquisa': [],
+      'CX Escrita': [],
+      'UX Escrita': []
+    };
+
+    function carregarDadosFicticios() {
+      window.RAW_DATA = { 'CX Pesquisa': [], 'UX Pesquisa': [], 'CX Escrita': [], 'UX Escrita': [] };
+      window.MOCK_DATABASE.projetos.forEach(item => {
+        if (window.RAW_DATA[item.area]) {
+          window.RAW_DATA[item.area].push(item);
+        }
+      });
+    }
+
+    let currentTab = 'dash';
+    window.currentAlocacaoMode = 'resp';
+    window.currentMatrizStatus = 'andamento';
+    window.charts = {};
+
+    document.addEventListener('DOMContentLoaded', () => {
+      carregarTemaSalvo();
+      carregarDadosFicticios();
+      lucide.createIcons();
+      renderAll();
+    });
+
+    // =========================================================================
+    // CONTROLE DE TEMA, MODAIS E NAVEGAÇÃO
+    // =========================================================================
+    window.toggleThemeMode = function () {
+      const html = document.documentElement;
+      const currentTheme = html.getAttribute('data-theme') || 'light';
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      aplicarTema(newTheme);
+      localStorage.setItem('puxe_demo_theme', newTheme);
+      renderAll();
+    };
+
+    function aplicarTema(theme) {
+      const html = document.documentElement;
+      const icon = document.getElementById('iconThemeMode');
+      html.setAttribute('data-theme', theme);
+      if (theme === 'dark') {
+        html.classList.add('dark');
+        html.classList.remove('light');
+        if (icon) icon.setAttribute('data-lucide', 'sun');
+        Chart.defaults.color = '#94A3B8';
+      } else {
+        html.classList.remove('dark');
+        html.classList.add('light');
+        if (icon) icon.setAttribute('data-lucide', 'moon');
+        Chart.defaults.color = '#404852';
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function carregarTemaSalvo() {
+      aplicarTema(localStorage.getItem('puxe_demo_theme') || 'light');
+    }
+
+    window.toggleFrentesMenu = function () {
+      const container = document.getElementById('containerFrentes');
+      const icon = document.getElementById('iconToggleFrentes');
+      if (container.classList.contains('hidden')) {
+        container.classList.remove('hidden');
+        container.classList.add('flex');
+        if (icon) icon.style.transform = 'rotate(45deg)';
+      } else {
+        container.classList.add('hidden');
+        container.classList.remove('flex');
+        if (icon) icon.style.transform = 'rotate(0deg)';
+      }
+    };
+
+    window.openModal = (id) => document.getElementById(id)?.classList.remove('hidden');
+    window.closeModal = (id) => document.getElementById(id)?.classList.add('hidden');
+
+    window.switchTab = function (tabId) {
+      currentTab = tabId;
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active', 'apple-btn-primary');
+        if (!btn.classList.contains('segmented-tab')) btn.classList.add('apple-btn-secondary');
+      });
+
+      const activeBtn = document.getElementById('tab-' + tabId);
+      if (activeBtn) {
+        activeBtn.classList.remove('apple-btn-secondary');
+        activeBtn.classList.add('active', 'apple-btn-primary');
+      }
+
+      ['view-dash', 'view-detail', 'view-inv', 'view-impact', 'view-social', 'view-control'].forEach(v => {
+        document.getElementById(v)?.classList.add('hidden');
+      });
+
+      if (tabId === 'dash') {
+        document.getElementById('view-dash')?.classList.remove('hidden');
+        renderDashboard();
+      } else if (tabId === 'control') {
+        document.getElementById('view-control')?.classList.remove('hidden');
+        renderControlView();
+      } else if (tabId === 'impact') {
+        document.getElementById('view-impact')?.classList.remove('hidden');
+        renderImpactView();
+      } else if (tabId === 'social') {
+        document.getElementById('view-social')?.classList.remove('hidden');
+        renderSocialView();
+      } else if (tabId === 'inv') {
+        document.getElementById('view-inv')?.classList.remove('hidden');
+        renderInvestorsView();
+      } else {
+        document.getElementById('view-detail')?.classList.remove('hidden');
+        renderDetailView(tabId);
+      }
+      lucide.createIcons();
+    };
+
+    window.renderAll = function () {
+      switchTab(currentTab);
+    };
+
+    function getFilteredProjects() {
+      const selectedArea = document.getElementById('filterArea')?.value || 'ALL';
+      if (selectedArea === 'ALL') return [...window.MOCK_DATABASE.projetos];
+      return window.MOCK_DATABASE.projetos.filter(p => p.area === selectedArea);
+    }
+
+    const normalizar = (txt) => String(txt || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+
+    function destroyChartIfExists(key) {
+      if (window.charts[key]) {
+        window.charts[key].destroy();
+        delete window.charts[key];
+      }
+    }
+
+    // =========================================================================
+    // 1. RENDERIZAÇÃO DO DASHBOARD ESTRATÉGICO
+    // =========================================================================
+    function renderDashboard() {
+      const allProjects = getFilteredProjects();
+      const totalCount = allProjects.length;
+
+      const concluidosList = allProjects.filter(p => normalizar(p.status).includes('conclu'));
+      const concluidos = concluidosList.length;
+      const andamento = allProjects.filter(p => normalizar(p.status).includes('andamento')).length;
+      const naoIniciados = allProjects.filter(p => normalizar(p.status).includes('nao iniciado')).length;
+      const impedimentos = allProjects.filter(p => normalizar(p.status).includes('impedi')).length;
+      const pausados = allProjects.filter(p => normalizar(p.status).includes('paus')).length;
+      const cancelados = allProjects.filter(p => normalizar(p.status).includes('canc')).length;
+
+      const tempos = concluidosList.map(p => p.prazo_dias).filter(d => d > 0);
+      const avgDays = tempos.length ? (tempos.reduce((a, b) => a + b, 0) / tempos.length).toFixed(1) : '0.0';
+
+      const superAppCount = allProjects.filter(p => normalizar(p.super_app) === 'sim').length;
+      const superAppPct = totalCount ? ((superAppCount / totalCount) * 100).toFixed(1) : 0;
+      const taxaConclusao = totalCount ? ((concluidos / totalCount) * 100).toFixed(1) : 0;
+
+      const criticos = allProjects.filter(p => normalizar(p.prioridade).includes('crit'));
+      const criticosNoPrazo = criticos.filter(p => normalizar(p.status).includes('conclu') && p.entrega <= p.prazo).length;
+      const criticosConcluidos = criticos.filter(p => normalizar(p.status).includes('conclu')).length;
+      const eficienciaCritica = criticosConcluidos ? ((criticosNoPrazo / criticosConcluidos) * 100).toFixed(1) : '100';
+
+      let totalPessoas = 0;
+      allProjects.forEach(p => {
+        let count = 1;
+        if (p.colaboradores) count += p.colaboradores.split(',').filter(c => c.trim()).length;
+        totalPessoas += count;
+      });
+      const avgTimeSize = totalCount ? (totalPessoas / totalCount).toFixed(1) : '1.0';
+      const taxaPausa = totalCount ? (((pausados + cancelados) / totalCount) * 100).toFixed(1) : 0;
+
+      const pontuais = allProjects.filter(p => p.tipo_projeto === 'P');
+      const estruturados = allProjects.filter(p => p.tipo_projeto === 'E');
+
+      const pontualTempos = pontuais.filter(p => normalizar(p.status).includes('conclu') && p.prazo_dias > 0).map(p => p.prazo_dias);
+      const estruturadoTempos = estruturados.filter(p => normalizar(p.status).includes('conclu') && p.prazo_dias > 0).map(p => p.prazo_dias);
+
+      const pontualAvg = pontualTempos.length ? (pontualTempos.reduce((a, b) => a + b, 0) / pontualTempos.length).toFixed(1) : '0.0';
+      const estruturadoAvg = estruturadoTempos.length ? (estruturadoTempos.reduce((a, b) => a + b, 0) / estruturadoTempos.length).toFixed(1) : '0.0';
+
+      let entregueNoPrazo = 0, entregueForaPrazo = 0, andamentoNoPrazo = 0, andamentoForaPrazo = 0;
+      allProjects.forEach(p => {
+        const st = normalizar(p.status);
+        if (st.includes('conclu')) {
+          const dtE = p.entrega.split('/').reverse().join('-');
+          const dtP = p.prazo.split('/').reverse().join('-');
+          if (dtE > dtP) entregueForaPrazo++;
+          else entregueNoPrazo++;
+        } else if (st.includes('andamento')) {
+          if (p.id === 'CXP-105') andamentoForaPrazo++;
+          else andamentoNoPrazo++;
+        }
+      });
+
+      const totalAcionamentos = allProjects.reduce((acc, p) => acc + (p.acionamentos || 0), 0);
+      const totalTarefas = allProjects.reduce((acc, p) => acc + (p.tarefas_agies || 0), 0);
+      const acPontuais = pontuais.reduce((acc, p) => acc + (p.acionamentos || 0), 0);
+      const tfPontuais = pontuais.reduce((acc, p) => acc + (p.tarefas_agies || 0), 0);
+      const acEstruturados = estruturados.reduce((acc, p) => acc + (p.acionamentos || 0), 0);
+      const tfEstruturados = estruturados.reduce((acc, p) => acc + (p.tarefas_agies || 0), 0);
+
+      const conc2025 = concluidosList.filter(p => p.ano === '2025').length;
+      const conc2026 = concluidosList.filter(p => p.ano === '2026').length;
+
+      // Atualiza DOM
+      const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
+      setTxt('kpiTotalProjetos', totalCount);
+      setTxt('kpiConcluidos', concluidos);
+      setTxt('kpiTaxaConclusao', `${taxaConclusao}% taxa de conclusão`);
+      setTxt('kpiEficienciaCritica', `${eficienciaCritica}%`);
+      setTxt('kpiAndamento', andamento);
+      setTxt('kpiNaoIniciados', naoIniciados);
+      setTxt('kpiImpedimento', impedimentos);
+      setTxt('kpiPausados', pausados);
+      setTxt('kpiCancelados', cancelados);
+      setTxt('kpiTaxaPausa', `${taxaPausa}%`);
+      setTxt('kpiTempoMedio', `${avgDays}d`);
+      setTxt('kpiTamanhoTime', avgTimeSize);
+      setTxt('kpiSuperApp', superAppCount);
+      setTxt('kpiSuperAppPct', `${superAppPct}% foco no Super App`);
+      setTxt('kpiConcluidos2025', conc2025);
+      setTxt('kpiConcluidos2026', conc2026);
+      setTxt('kpiPontualCount', pontuais.length);
+      setTxt('kpiPontualAvg', `${pontualAvg.replace('.', ',')}d`);
+      setTxt('kpiEstruturadoCount', estruturados.length);
+      setTxt('kpiEstruturadoAvg', `${estruturadoAvg.replace('.', ',')}d`);
+      setTxt('kpiEntregueNoPrazo', entregueNoPrazo);
+      setTxt('kpiEntregueForaPrazo', entregueForaPrazo);
+      setTxt('kpiAndamentoNoPrazo', andamentoNoPrazo);
+      setTxt('kpiAndamentoForaPrazo', andamentoForaPrazo);
+      setTxt('kpiTotalAcionamentos', totalAcionamentos);
+      setTxt('kpiTotalTarefas', totalTarefas);
+      setTxt('kpiAcionamentosPontuais', acPontuais);
+      setTxt('kpiTarefasPontuais', tfPontuais);
+      setTxt('kpiAcionamentosEstruturados', acEstruturados);
+      setTxt('kpiTarefasEstruturadas', tfEstruturados);
+
+      renderDashboardCharts(allProjects);
+      renderDashboardTable();
+    }
+
+    function renderDashboardCharts(projects) {
+      const isDark = document.documentElement.classList.contains('dark');
+      const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)';
+      const palette = ['#005CA9', '#179231', '#D67B00', '#60B1FA', '#D93636', '#64747A'];
+
+      // 1. Concluídos por Ano
+      destroyChartIfExists('concluidosPorAno');
+      const sheets = ['CX Pesquisa', 'UX Pesquisa', 'CX Escrita', 'UX Escrita'];
+      const d25 = sheets.map(s => window.RAW_DATA[s].filter(p => normalizar(p.status).includes('conclu') && p.ano === '2025').length);
+      const d26 = sheets.map(s => window.RAW_DATA[s].filter(p => normalizar(p.status).includes('conclu') && p.ano === '2026').length);
+      window.charts.concluidosPorAno = new Chart(document.getElementById('chartConcluidosPorAno'), {
+        type: 'bar',
+        data: {
+          labels: sheets,
+          datasets: [
+            { label: '2025', data: d25, backgroundColor: '#005CA9', borderRadius: 6 },
+            { label: '2026', data: d26, backgroundColor: '#179231', borderRadius: 6 }
+          ]
+        },
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, grid: { color: gridColor }, ticks: { precision: 0 } }, x: { grid: { display: false } } } }
+      });
+
+      // 2. Simultâneos / Mês
+      destroyChartIfExists('simultaneosAnos');
+      const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+      const sim25 = [2, 3, 4, 3, 2, 3, 2, 1, 2, 2, 1, 1];
+      const sim26 = [2, 3, 3, 2, 1, 1, 0, 0, 1, 3, 4, 3];
+      window.charts.simultaneosAnos = new Chart(document.getElementById('chartSimultaneosAnos'), {
+        type: 'line',
+        data: {
+          labels: meses,
+          datasets: [
+            { label: '2025', data: sim25, borderColor: '#60B1FA', backgroundColor: 'rgba(96,177,250,0.15)', fill: true, tension: 0.35 },
+            { label: '2026', data: sim26, borderColor: '#005CA9', backgroundColor: 'rgba(0,92,169,0.15)', fill: true, tension: 0.35 }
+          ]
+        },
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, grid: { color: gridColor }, ticks: { precision: 0 } }, x: { grid: { display: false } } } }
+      });
+
+      // 3. Distribuição por Frente
+      destroyChartIfExists('areaDist');
+      window.charts.areaDist = new Chart(document.getElementById('chartAreaDist'), {
+        type: 'doughnut',
+        data: {
+          labels: sheets,
+          datasets: [{ data: sheets.map(s => window.RAW_DATA[s].length), backgroundColor: palette, borderWidth: 0 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'bottom' } } }
+      });
+
+      // 4. Status Operacional
+      destroyChartIfExists('statusDist');
+      const stMap = {};
+      projects.forEach(p => stMap[p.status] = (stMap[p.status] || 0) + 1);
+      window.charts.statusDist = new Chart(document.getElementById('chartStatusDist'), {
+        type: 'bar',
+        data: { labels: Object.keys(stMap), datasets: [{ data: Object.values(stMap), backgroundColor: '#005CA9', borderRadius: 6 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+      });
+
+      // 5. Prioridade
+      destroyChartIfExists('priorityDist');
+      const prMap = {};
+      projects.forEach(p => prMap[p.prioridade] = (prMap[p.prioridade] || 0) + 1);
+      window.charts.priorityDist = new Chart(document.getElementById('chartPriorityDist'), {
+        type: 'bar',
+        data: { labels: Object.keys(prMap), datasets: [{ data: Object.values(prMap), backgroundColor: '#D67B00', borderRadius: 6 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+      });
+
+      // 6. Porte
+      destroyChartIfExists('tamanhoDist');
+      const tmMap = {};
+      projects.forEach(p => tmMap[p.tamanho] = (tmMap[p.tamanho] || 0) + 1);
+      window.charts.tamanhoDist = new Chart(document.getElementById('chartTamanhoDist'), {
+        type: 'doughnut',
+        data: { labels: Object.keys(tmMap), datasets: [{ data: Object.values(tmMap), backgroundColor: palette, borderWidth: 0 }] },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'bottom' } } }
+      });
+
+      // 7. Alocação por Pessoa
+      renderChartResponsavelDist(projects);
+
+      // 8. SLA
+      destroyChartIfExists('slaDist');
+      const noPrazo = projects.filter(p => normalizar(p.status).includes('conclu') && p.entrega <= p.prazo).length;
+      const atraso = projects.filter(p => normalizar(p.status).includes('conclu') && p.entrega > p.prazo).length;
+      const ativos = projects.filter(p => !normalizar(p.status).includes('conclu')).length;
+      window.charts.slaDist = new Chart(document.getElementById('chartSlaDist'), {
+        type: 'doughnut',
+        data: {
+          labels: ['No Prazo', 'Com Atraso', 'Em Curso / Outros'],
+          datasets: [{ data: [noPrazo, atraso, ativos], backgroundColor: ['#179231', '#D93636', '#9EB2B8'], borderWidth: 0 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'bottom' } } }
+      });
+
+      // 9. Evolução Mensal 2026
+      destroyChartIfExists('evolucaoMensal');
+      const m26 = [0, 0, 0, 0, 0, 0];
+      projects.filter(p => normalizar(p.status).includes('conclu') && p.ano === '2026').forEach(p => {
+        const mIdx = parseInt(p.entrega.split('/')[1], 10) - 1;
+        if (mIdx >= 0 && mIdx < 6) m26[mIdx]++;
+      });
+      window.charts.evolucaoMensal = new Chart(document.getElementById('chartEvolucaoMensal'), {
+        type: 'line',
+        data: {
+          labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+          datasets: [{ label: 'Entregas 2026', data: m26, borderColor: '#179231', backgroundColor: 'rgba(23,146,49,0.15)', fill: true, tension: 0.35 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+      });
+
+      // 10. Tempo Médio por Porte
+      destroyChartIfExists('tempoPorTamanho');
+      const porteGroups = {};
+      projects.filter(p => normalizar(p.status).includes('conclu') && p.prazo_dias > 0).forEach(p => {
+        if (!porteGroups[p.tamanho]) porteGroups[p.tamanho] = [];
+        porteGroups[p.tamanho].push(p.prazo_dias);
+      });
+      const pLabels = Object.keys(porteGroups);
+      const pAvgs = pLabels.map(k => (porteGroups[k].reduce((a, b) => a + b, 0) / porteGroups[k].length).toFixed(1));
+      window.charts.tempoPorTamanho = new Chart(document.getElementById('chartTempoPorTamanho'), {
+        type: 'bar',
+        data: { labels: pLabels, datasets: [{ label: 'Dias Médios', data: pAvgs, backgroundColor: '#60B1FA', borderRadius: 6 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+      });
+
+      // 11. Tipo Projeto
+      destroyChartIfExists('tipoProjeto');
+      window.charts.tipoProjeto = new Chart(document.getElementById('chartTipoProjeto'), {
+        type: 'doughnut',
+        data: {
+          labels: ['Pontuais (P)', 'Estruturados (E)'],
+          datasets: [{ data: [projects.filter(p => p.tipo_projeto === 'P').length, projects.filter(p => p.tipo_projeto === 'E').length], backgroundColor: ['#005CA9', '#D67B00'], borderWidth: 0 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'bottom' } } }
+      });
+
+      // 12. Super App Split
+      destroyChartIfExists('superAppSplit');
+      const sSim = projects.filter(p => normalizar(p.super_app) === 'sim').length;
+      window.charts.superAppSplit = new Chart(document.getElementById('chartSuperAppSplit'), {
+        type: 'doughnut',
+        data: {
+          labels: ['Super App', 'Demais Canais'],
+          datasets: [{ data: [sSim, projects.length - sSim], backgroundColor: ['#005CA9', '#9EB2B8'], borderWidth: 0 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'bottom' } } }
+      });
+
+      // 13. SLA por Prioridade
+      destroyChartIfExists('prioritySla');
+      const prios = ['Crítica', 'Alta', 'Normal', 'Baixa'];
+      window.charts.prioritySla = new Chart(document.getElementById('chartPrioritySla'), {
+        type: 'bar',
+        data: {
+          labels: prios,
+          datasets: [
+            { label: 'No Prazo', data: prios.map(pr => projects.filter(p => p.prioridade === pr && normalizar(p.status).includes('conclu') && p.entrega <= p.prazo).length), backgroundColor: '#179231' },
+            { label: 'Com Atraso', data: prios.map(pr => projects.filter(p => p.prioridade === pr && normalizar(p.status).includes('conclu') && p.entrega > p.prazo).length), backgroundColor: '#D93636' }
+          ]
+        },
+        options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true, ticks: { precision: 0 } } } }
+      });
+
+      // 14. Métodos Super App vs Demais
+      destroyChartIfExists('metodosSuperApp');
+      const metSA = {}, metOut = {};
+      projects.forEach(p => {
+        p.pesquisa_metodo.split(',').map(m => m.trim()).filter(Boolean).forEach(m => {
+          if (normalizar(p.super_app) === 'sim') metSA[m] = (metSA[m] || 0) + 1;
+          else metOut[m] = (metOut[m] || 0) + 1;
+        });
+      });
+      const topM = Object.keys({ ...metSA, ...metOut }).slice(0, 5);
+      window.charts.metodosSuperApp = new Chart(document.getElementById('chartMetodosSuperApp'), {
+        type: 'bar',
+        data: {
+          labels: topM,
+          datasets: [
+            { label: 'Super App', data: topM.map(m => metSA[m] || 0), backgroundColor: '#005CA9' },
+            { label: 'Outros Canais', data: topM.map(m => metOut[m] || 0), backgroundColor: '#D67B00' }
+          ]
+        },
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+      });
+
+      // 15. Top Demandantes
+      destroyChartIfExists('demandantes');
+      const demMap = {};
+      projects.forEach(p => demMap[p.demandante] = (demMap[p.demandante] || 0) + 1);
+      const sortedDem = Object.entries(demMap).sort((a, b) => b[1] - a[1]);
+      window.charts.demandantes = new Chart(document.getElementById('chartDemandantes'), {
+        type: 'bar',
+        data: { labels: sortedDem.map(d => d[0]), datasets: [{ data: sortedDem.map(d => d[1]), backgroundColor: '#D67B00', borderRadius: 6 }] },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { precision: 0 } } } }
+      });
+
+      // 16. Top Metodologias
+      destroyChartIfExists('metodologias');
+      const mAll = {};
+      projects.forEach(p => p.pesquisa_metodo.split(',').map(m => m.trim()).filter(Boolean).forEach(m => mAll[m] = (mAll[m] || 0) + 1));
+      const sortedM = Object.entries(mAll).sort((a, b) => b[1] - a[1]);
+      window.charts.metodologias = new Chart(document.getElementById('chartMetodologias'), {
+        type: 'bar',
+        data: { labels: sortedM.map(m => m[0]), datasets: [{ data: sortedM.map(m => m[1]), backgroundColor: '#179231', borderRadius: 6 }] },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { precision: 0 } } } }
+      });
+
+      // 17. Média de Métodos por Frente
+      destroyChartIfExists('metodosPorProjeto');
+      const avgM = sheets.map(s => {
+        const list = window.RAW_DATA[s];
+        if (!list.length) return 0;
+        const tot = list.reduce((acc, p) => acc + p.pesquisa_metodo.split(',').filter(Boolean).length, 0);
+        return (tot / list.length).toFixed(1);
+      });
+      window.charts.metodosPorProjeto = new Chart(document.getElementById('chartMetodosPorProjeto'), {
+        type: 'bar',
+        data: { labels: sheets, datasets: [{ label: 'Média Métodos/Proj', data: avgM, backgroundColor: '#005CA9', borderRadius: 6 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+      });
+
+      // 18. Evidências
+      destroyChartIfExists('evidencias');
+      const evMap = {};
+      projects.forEach(p => evMap[p.evidencias] = (evMap[p.evidencias] || 0) + 1);
+      window.charts.evidencias = new Chart(document.getElementById('chartEvidencias'), {
+        type: 'bar',
+        data: { labels: Object.keys(evMap), datasets: [{ data: Object.values(evMap), backgroundColor: '#60B1FA', borderRadius: 6 }] },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { precision: 0 } } } }
+      });
+    }
+
+    window.setAlocacaoMode = function (mode) {
+      window.currentAlocacaoMode = mode;
+      ['btnAllocResp', 'btnAllocColab', 'btnAllocTotal'].forEach(id => {
+        const b = document.getElementById(id);
+        if (b) b.className = 'px-2 py-1 rounded-lg text-apple-gray font-medium text-[10px]';
+      });
+      const activeId = mode === 'resp' ? 'btnAllocResp' : mode === 'colab' ? 'btnAllocColab' : 'btnAllocTotal';
+      const activeBtn = document.getElementById(activeId);
+      if (activeBtn) activeBtn.className = 'px-2 py-1 rounded-lg bg-apple-blue text-white font-semibold text-[10px]';
+      renderChartResponsavelDist(getFilteredProjects());
+    };
+
+    function renderChartResponsavelDist(projects) {
+      destroyChartIfExists('responsavelDist');
+      const mode = window.currentAlocacaoMode;
+      const pMap = {};
+
+      projects.forEach(p => {
+        const resps = [p.responsavel];
+        const colabs = p.colaboradores ? p.colaboradores.split(',').map(c => c.trim()).filter(Boolean) : [];
+        let list = mode === 'resp' ? resps : mode === 'colab' ? colabs : Array.from(new Set([...resps, ...colabs]));
+
+        list.forEach(pessoa => {
+          if (!pMap[pessoa]) pMap[pessoa] = { conc: 0, and: 0 };
+          if (normalizar(p.status).includes('conclu')) pMap[pessoa].conc++;
+          else pMap[pessoa].and++;
+        });
+      });
+
+      const sorted = Object.entries(pMap).sort((a, b) => (b[1].conc + b[1].and) - (a[1].conc + a[1].and)).slice(0, 10);
+      window.charts.responsavelDist = new Chart(document.getElementById('chartResponsavelDist'), {
+        type: 'bar',
+        data: {
+          labels: sorted.map(s => s[0]),
+          datasets: [
+            { label: 'Concluídos', data: sorted.map(s => s[1].conc), backgroundColor: '#179231' },
+            { label: 'Em Curso / Outros', data: sorted.map(s => s[1].and), backgroundColor: '#D67B00' }
+          ]
+        },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true, beginAtZero: true, ticks: { precision: 0 } }, y: { stacked: true } } }
+      });
+    }
+
+    function renderDashboardTable() {
+      const tbody = document.getElementById('dashTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+      ['CX Pesquisa', 'UX Pesquisa', 'CX Escrita', 'UX Escrita'].forEach(sName => {
+        const items = window.RAW_DATA[sName] || [];
+        const conc = items.filter(p => normalizar(p.status).includes('conclu'));
+        const and = items.filter(p => normalizar(p.status).includes('andamento')).length;
+        const tempos = conc.map(p => p.prazo_dias).filter(d => d > 0);
+        const avg = tempos.length ? (tempos.reduce((a, b) => a + b, 0) / tempos.length).toFixed(1) + 'd' : '-';
+        const sa = items.filter(p => normalizar(p.super_app) === 'sim').length;
+
+        tbody.innerHTML += `
+          <tr class="hover:bg-black/5 dark:hover:bg-white/5">
+            <td class="p-3.5 font-bold">${sName}</td>
+            <td class="p-3.5 text-center">${items.length}</td>
+            <td class="p-3.5 text-center text-apple-green font-semibold">${conc.length}</td>
+            <td class="p-3.5 text-center text-apple-orange font-semibold">${and}</td>
+            <td class="p-3.5 text-center text-apple-blue">${avg}</td>
+            <td class="p-3.5 text-center font-semibold">${sa}</td>
+          </tr>`;
+      });
+    }
+
+    // =========================================================================
+    // 2. RENDERIZAÇÃO DA TORRE DE CONTROLE & SENIORIDADE (DESBLOQUEADA)
+    // =========================================================================
+    window.setMatrizStatus = function (status) {
+      window.currentMatrizStatus = status;
+      document.getElementById('btnMatrizStatusAndamento').className = status === 'andamento'
+        ? 'px-3 py-1 rounded-lg bg-apple-blue text-white font-semibold'
+        : 'px-3 py-1 rounded-lg text-apple-gray font-medium';
+      document.getElementById('btnMatrizStatusConcluido').className = status === 'concluido'
+        ? 'px-3 py-1 rounded-lg bg-apple-blue text-white font-semibold'
+        : 'px-3 py-1 rounded-lg text-apple-gray font-medium';
+      renderControlView();
+    };
+
+    function renderControlView() {
+      const selectedArea = document.getElementById('filterArea')?.value || 'ALL';
+      const equipeFiltrada = selectedArea === 'ALL'
+        ? window.MOCK_DATABASE.equipe
+        : window.MOCK_DATABASE.equipe.filter(m => m.frente === selectedArea);
+
+      const projetosFiltrados = getFilteredProjects();
+      const statusAlvo = window.currentMatrizStatus === 'andamento' ? 'andamento' : 'conclu';
+      const projsMatriz = projetosFiltrados.filter(p => normalizar(p.status).includes(statusAlvo));
+
+      const pontosPorte = { 'PP': 1, 'P': 2, 'M': 5, 'G': 8, 'GG': 13, 'GGG': 21 };
+
+      // 1. Matriz de Alocação (R / A / Pontos)
+      const header = document.getElementById('matrizResumoHeader');
+      const body = document.getElementById('matrizResumoBody');
+      if (header && body) {
+        header.innerHTML = `<tr><th class="p-3 text-left">Indicador</th>${equipeFiltrada.map(m => `<th class="p-3">${m.nome.split(' ')[0]}<br><span class="text-[9px] font-normal text-apple-gray">${m.senioridade}</span></th>`).join('')}</tr>`;
+
+        const rowR = [], rowA = [], rowPts = [];
+        let somaPontosTotal = 0;
+
+        equipeFiltrada.forEach(membro => {
+          let cntR = 0, cntA = 0, pts = 0;
+          projsMatriz.forEach(p => {
+            const basePts = pontosPorte[p.tamanho] || 5;
+            if (p.responsavel === membro.nome) {
+              cntR++;
+              pts += basePts;
+            } else if (p.colaboradores && p.colaboradores.includes(membro.nome)) {
+              cntA++;
+              pts += basePts * 0.5;
+            }
+          });
+          rowR.push(cntR);
+          rowA.push(cntA);
+          rowPts.push(pts);
+          somaPontosTotal += pts;
+        });
+
+        body.innerHTML = `
+          <tr><td class="p-3 text-left font-bold">Responsável (R)</td>${rowR.map(v => `<td class="p-3 font-semibold">${v}</td>`).join('')}</tr>
+          <tr><td class="p-3 text-left font-bold">Apoio (A)</td>${rowA.map(v => `<td class="p-3">${v}</td>`).join('')}</tr>
+          <tr class="bg-black/5 dark:bg-white/5 font-bold">
+            <td class="p-3 text-left text-apple-purple">Carga Ponderada (Pts)</td>
+            ${rowPts.map(v => `<td class="p-3 ${v > 18 ? 'text-apple-red' : v > 12 ? 'text-apple-orange' : 'text-apple-green'}">${v} pts</td>`).join('')}
+          </tr>
+        `;
+
+        const mediaPts = equipeFiltrada.length ? (somaPontosTotal / equipeFiltrada.length).toFixed(1) : 0;
+        document.getElementById('txtTotalPontosFrente').innerText = `${somaPontosTotal} Pts`;
+        document.getElementById('txtMediaPontosPessoa').innerText = mediaPts;
+        document.getElementById('txtQtdTimeFrente').innerText = equipeFiltrada.length;
+
+        const badge = document.getElementById('badgeSaudeFrente');
+        if (mediaPts > 15) {
+          badge.className = "px-3 py-1 rounded-full text-xs font-bold bg-apple-red/10 text-apple-red border border-apple-red/30";
+          badge.innerText = "Sobrecarga Elevada";
+        } else if (mediaPts >= 6) {
+          badge.className = "px-3 py-1 rounded-full text-xs font-bold bg-apple-green/10 text-apple-green border border-apple-green/30";
+          badge.innerText = "Capacidade Equilibrada";
+        } else {
+          badge.className = "px-3 py-1 rounded-full text-xs font-bold bg-apple-blue/10 text-apple-blue border border-apple-blue/30";
+          badge.innerText = "Disponibilidade para Novas Demandas";
+        }
+      }
+
+      // 2. Diagnóstico de Senioridade & Gaps (Desbloqueado)
+      const seniores = equipeFiltrada.filter(m => m.senioridade === 'Sênior');
+      const plenos = equipeFiltrada.filter(m => m.senioridade === 'Pleno');
+      const juniores = equipeFiltrada.filter(m => m.senioridade === 'Júnior');
+
+      document.getElementById('cntSeniorCount').innerText = seniores.length;
+      document.getElementById('txtSeniorNomes').innerText = seniores.map(m => m.nome).join(', ') || 'Nenhum';
+
+      document.getElementById('cntPlenoCount').innerText = plenos.length;
+      document.getElementById('txtPlenoNomes').innerText = plenos.map(m => m.nome).join(', ') || 'Nenhum';
+
+      document.getElementById('cntJuniorCount').innerText = juniores.length;
+      document.getElementById('txtJuniorNomes').innerText = juniores.map(m => m.nome).join(', ') || 'Nenhum';
+
+      const ativos = projetosFiltrados.filter(p => normalizar(p.status).includes('andamento'));
+      let ptsComplexidade = 0;
+      const tbodyComp = document.getElementById('tabelaComplexidadeBody');
+      if (tbodyComp) tbodyComp.innerHTML = '';
+
+      ativos.forEach(p => {
+        const numMetodos = p.pesquisa_metodo.split(',').filter(Boolean).length;
+        const base = pontosPorte[p.tamanho] || 5;
+        const ptsFinal = numMetodos >= 3 ? Math.round(base * 1.25) : base;
+        ptsComplexidade += ptsFinal;
+
+        const membro = window.MOCK_DATABASE.equipe.find(m => m.nome === p.responsavel);
+        const senAtual = membro ? membro.senioridade : 'Pleno';
+        const exigeSenior = ['GG', 'GGG'].includes(p.tamanho);
+        const alertaSub = exigeSenior && senAtual !== 'Sênior';
+
+        if (tbodyComp) {
+          tbodyComp.innerHTML += `
+            <tr class="hover:bg-black/5 dark:hover:bg-white/5">
+              <td class="p-3 font-bold">${p.projeto}</td>
+              <td class="p-3 text-center font-mono">${p.tamanho}</td>
+              <td class="p-3 text-center">${numMetodos}</td>
+              <td class="p-3 text-center font-bold text-apple-purple">${ptsFinal} pts</td>
+              <td class="p-3">${p.responsavel}</td>
+              <td class="p-3 text-center"><span class="px-2 py-0.5 rounded bg-black/5 dark:bg-white/10 font-semibold">${senAtual}</span></td>
+              <td class="p-3 text-center">
+                ${alertaSub
+                  ? '<span class="px-2 py-0.5 rounded-full bg-apple-red/10 text-apple-red font-bold text-[10px]">⚠️ Sub-dimensionado</span>'
+                  : '<span class="px-2 py-0.5 rounded-full bg-apple-green/10 text-apple-green font-bold text-[10px]">✅ Adequado</span>'}
+              </td>
+            </tr>`;
+        }
+      });
+
+      document.getElementById('badgeTotalPontosComplexidade').innerText = `${ptsComplexidade} Pts de Complexidade`;
+
+      const capacidadeInstalada = equipeFiltrada.length * 12;
+      const deficit = ptsComplexidade - capacidadeInstalada;
+      const boxParecer = document.getElementById('boxParecerPrescritivoVagas');
+      if (boxParecer) {
+        if (deficit > 0) {
+          const vagas = Math.ceil(deficit / 12);
+          boxParecer.innerHTML = `<p><strong>Déficit Operacional Detectado:</strong> A esteira ativa exige <strong>${ptsComplexidade} pontos</strong>, superando a capacidade confortável de ${capacidadeInstalada} pontos (${equipeFiltrada.length} especialistas). Recomenda-se o reforço de <strong>+${vagas} vaga(s)</strong> (preferencialmente Sênior/Pleno) para manter o SLA sem sobrecarga.</p>`;
+        } else {
+          boxParecer.innerHTML = `<p><strong>Dimensionamento Saudável:</strong> A capacidade instalada atual (<strong>${capacidadeInstalada} pontos</strong> para ${equipeFiltrada.length} especialistas) absorve com segurança os <strong>${ptsComplexidade} pontos</strong> dos estudos ativos, restando margem operacional de <strong>${capacidadeInstalada - ptsComplexidade} pontos</strong> para novas demandas.</p>`;
+        }
+      }
+
+      runCapacitySimulator();
+    }
+
+    window.runCapacitySimulator = function () {
+      const nP = parseInt(document.getElementById('simNovasPontuais')?.value || 0, 10);
+      const nE = parseInt(document.getElementById('simNovosEstruturados')?.value || 0, 10);
+      const equipeLen = getFilteredProjects().length ? window.MOCK_DATABASE.equipe.length : 10;
+
+      const vazao = (equipeLen * 0.8).toFixed(1);
+      document.getElementById('txtVazaoMensal').innerText = vazao;
+
+      const ptsNovos = (nP * 2) + (nE * 10);
+      const ocupacao = Math.round(((45 + ptsNovos) / (equipeLen * 12)) * 100);
+      document.getElementById('txtTaxaOcupacaoSim').innerText = `${ocupacao}%`;
+
+      const res = document.getElementById('txtResultadoSimulacao');
+      if (ocupacao > 100) {
+        res.innerText = `⚠️ Alerta: A inclusão de ${nP} pontuais e ${nE} estruturados ultrapassa a capacidade do time em ${ocupacao - 100}%. Necessário repriorizar backlog.`;
+      } else {
+        res.innerText = `✅ Absorvível: O time consegue absorver essas novas demandas mantendo margem operacional saudável.`;
+      }
+    };
+
+    // =========================================================================
+    // 3. RENDERIZAÇÃO DAS TABELAS DETALHADAS POR FRENTE
+    // =========================================================================
+    function renderDetailView(sheetKey) {
+      const keyMap = { 'cxp': 'CX Pesquisa', 'uxp': 'UX Pesquisa', 'cxe': 'CX Escrita', 'uxe': 'UX Escrita' };
+      const realKey = keyMap[sheetKey] || 'CX Pesquisa';
+      document.getElementById('detailViewTitle').innerHTML = `<i data-lucide="table" class="w-5 h-5 text-apple-blue"></i> Projetos de ${realKey}`;
+      filterDetailTable();
+    }
+
+    window.filterDetailTable = function () {
+      const keyMap = { 'cxp': 'CX Pesquisa', 'uxp': 'UX Pesquisa', 'cxe': 'CX Escrita', 'uxe': 'UX Escrita' };
+      const realKey = keyMap[currentTab] || 'CX Pesquisa';
+      const items = window.RAW_DATA[realKey] || [];
+
+      const query = (document.getElementById('tableSearchInput')?.value || '').toLowerCase();
+      const statusFilter = document.getElementById('tableStatusFilter')?.value || 'ALL';
+
+      const filtered = items.filter(item => {
+        const matchesQuery = item.projeto.toLowerCase().includes(query) || item.responsavel.toLowerCase().includes(query) || item.demandante.toLowerCase().includes(query) || item.id.toLowerCase().includes(query);
+        const matchesStatus = statusFilter === 'ALL' || normalizar(item.status).includes(normalizar(statusFilter));
+        return matchesQuery && matchesStatus;
+      });
+
+      const tbody = document.getElementById('detailTableBody');
+      tbody.innerHTML = '';
+      filtered.forEach(item => {
+        let badgeClass = 'badge-status-nao-iniciado';
+        const st = normalizar(item.status);
+        if (st.includes('conclu')) badgeClass = 'badge-status-concluido';
+        else if (st.includes('andamento')) badgeClass = 'badge-status-andamento';
+        else if (st.includes('paus') || st.includes('canc')) badgeClass = 'badge-status-pausado';
+
+        tbody.innerHTML += `
+          <tr class="hover:bg-black/5 dark:hover:bg-white/5">
+            <td class="p-3.5 font-mono text-apple-blue font-semibold">${item.id}</td>
+            <td class="p-3.5 font-bold max-w-xs">${item.projeto}</td>
+            <td class="p-3.5"><span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase ${badgeClass}">${item.status}</span></td>
+            <td class="p-3.5">${item.prioridade}</td>
+            <td class="p-3.5 font-mono">${item.tamanho}</td>
+            <td class="p-3.5 font-medium">${item.responsavel}</td>
+            <td class="p-3.5 text-apple-gray text-[11px]">${item.demandante}</td>
+            <td class="p-3.5 text-center">${item.super_app === 'SIM' ? '<span class="px-2 py-0.5 rounded-full bg-apple-blue/10 text-apple-blue font-bold text-[10px]">SIM</span>' : '<span class="text-apple-gray text-[10px]">NÃO</span>'}</td>
+            <td class="p-3.5 text-[11px] text-apple-gray">Início: ${item.inicio}<br>Entrega: ${item.entrega}</td>
+            <td class="p-3.5 text-[11px] max-w-xs truncate">${item.pesquisa_metodo}</td>
+            <td class="p-3.5 text-[11px] text-apple-gray max-w-xs truncate">${item.impacto}</td>
+          </tr>`;
+      });
+      document.getElementById('rowCount').innerText = filtered.length;
+    };
+
+    // =========================================================================
+    // 4. RENDERIZAÇÃO DAS ABAS IMPACTO, SOCIAL E INVESTIDORES (CONSISTENTE)
+    // =========================================================================
+    function renderImpactView() {
+      const projects = getFilteredProjects();
+      const criticos = projects.filter(p => normalizar(p.prioridade).includes('crit')).length;
+      document.getElementById('cardImpCrisesCount').innerText = `${criticos} Estudo(s)`;
+
+      document.getElementById('cntFigmaEvid').innerText = projects.filter(p => p.evidencias.includes('Figma')).length;
+      document.getElementById('cntSlidesEvid').innerText = projects.filter(p => p.evidencias.includes('Slides')).length;
+      document.getElementById('cntDocEvid').innerText = projects.filter(p => p.evidencias.includes('SharePoint')).length;
+      document.getElementById('cntPadraoEvid').innerText = projects.filter(p => p.evidencias.includes('Documento')).length;
+
+      destroyChartIfExists('impactoAtendimento');
+      window.charts.impactoAtendimento = new Chart(document.getElementById('chartImpactoAtendimento'), {
+        type: 'bar',
+        data: {
+          labels: ['WhatsApp Assistente', 'Renegociação Estudantil', 'URA Telefônica', 'Mensagens de Erro PIX'],
+          datasets: [{ label: 'Redução de Transbordo (%)', data: [28, 22, 19, 34], backgroundColor: '#179231', borderRadius: 6 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+      });
+
+      destroyChartIfExists('triangulacao');
+      const triMap = { '1 Técnica': 0, '2 Técnicas': 0, '3+ Técnicas': 0 };
+      projects.forEach(p => {
+        const n = p.pesquisa_metodo.split(',').filter(Boolean).length;
+        if (n === 1) triMap['1 Técnica']++;
+        else if (n === 2) triMap['2 Técnicas']++;
+        else triMap['3+ Técnicas']++;
+      });
+      window.charts.triangulacao = new Chart(document.getElementById('chartTriangulacaoMetodologies'), {
+        type: 'doughnut',
+        data: { labels: Object.keys(triMap), datasets: [{ data: Object.values(triMap), backgroundColor: ['#60B1FA', '#005CA9', '#179231'], borderWidth: 0 }] },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'bottom' } } }
+      });
+    }
+
+    function renderSocialView() {
+      const eixos = window.MOCK_DATABASE.social.eixos;
+      const pracas = window.MOCK_DATABASE.social.pracas;
+      const totalSoc = Object.values(eixos).reduce((a, b) => a + b, 0);
+
+      document.getElementById('kpiTotalSocialProjs').innerText = `${totalSoc} Proj.`;
+      document.getElementById('kpiHomeCidadania').innerText = `${eixos["Benefícios & Cidadania"]} Est.`;
+      document.getElementById('kpiLinguagemSimples').innerText = `${eixos["Acessibilidade & AltText"]} Est.`;
+
+      destroyChartIfExists('eixosSociais');
+      window.charts.eixosSociais = new Chart(document.getElementById('chartEixosSociaisDist'), {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(eixos),
+          datasets: [{ data: Object.values(eixos), backgroundColor: ['#179231', '#D67B00', '#D93636', '#005CA9', '#60B1FA', '#64747A'], borderWidth: 0 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { position: 'bottom' } } }
+      });
+
+      destroyChartIfExists('pracasGeo');
+      window.charts.pracasGeo = new Chart(document.getElementById('chartPracasGeograficas'), {
+        type: 'bar',
+        data: {
+          labels: Object.keys(pracas),
+          datasets: [{ label: 'Sessões de Teste', data: Object.values(pracas), backgroundColor: '#005CA9', borderRadius: 6 }]
+        },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+      });
+    }
+
+    function renderInvestorsView() {
+      const fin = window.MOCK_DATABASE.financeiro;
+      const concluidos = window.MOCK_DATABASE.projetos.filter(p => normalizar(p.status).includes('conclu'));
+      const qtdP = concluidos.filter(p => p.tipo_projeto === 'P').length;
+      const qtdE = concluidos.filter(p => p.tipo_projeto === 'E').length;
+
+      const invAnual = fin.investimentoMensal * 12;
+      const costAvoidance = (qtdP * fin.ticketPontualMercado) + (qtdE * fin.ticketEstruturadoMercado);
+      const retornoBruto = costAvoidance + fin.economiaSacSuporte + fin.economiaDevChurn;
+      const roiPct = (((retornoBruto - invAnual) / invAnual) * 100).toFixed(1);
+      const payback = (invAnual / (retornoBruto / 12)).toFixed(1);
+
+      const fmtBRL = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      document.getElementById('kpiInvestimentoAnual').innerText = fmtBRL(invAnual);
+      document.getElementById('kpiValorGeradoTotal').innerText = fmtBRL(retornoBruto);
+      document.getElementById('kpiRoiPercentual').innerText = `${roiPct.replace('.', ',')}%`;
+      document.getElementById('kpiPaybackMeses').innerText = `${payback.replace('.', ',')} Meses`;
+
+      destroyChartIfExists('custoRetorno');
+      window.charts.custoRetorno = new Chart(document.getElementById('chartComparativoCustoRetorno'), {
+        type: 'bar',
+        data: {
+          labels: ['Investimento Anual', 'Retorno Bruto Estimado'],
+          datasets: [{ data: [invAnual, retornoBruto], backgroundColor: ['#64747A', '#179231'], borderRadius: 8 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+      });
+
+      destroyChartIfExists('mitigacaoRisco');
+      const prios = ['Crítica', 'Alta', 'Normal', 'Baixa'];
+      const valsPrio = prios.map(pr => {
+        const list = concluidos.filter(p => p.prioridade === pr);
+        return list.reduce((acc, p) => acc + (p.tipo_projeto === 'P' ? fin.ticketPontualMercado : fin.ticketEstruturadoMercado), 0);
+      });
+      window.charts.mitigacaoRisco = new Chart(document.getElementById('chartMitigacaoRisco'), {
+        type: 'bar',
+        data: {
+          labels: prios,
+          datasets: [{ label: 'Cost Avoidance (R$)', data: valsPrio, backgroundColor: '#005CA9', borderRadius: 6 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+      });
+    }
+  </script>
+</body>
+
+</html>
