@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super App CAIXA: Trazer Dinheiro (Open Finance) — UX Research Case Study | Estéfano Pietragalla</title>
+    <meta name="description"
+        content="Estudo de UX Research e Teste de Usabilidade presencial da funcionalidade Trazer Dinheiro (Fase 19 - Open Finance) no Super App da CAIXA, avaliando autorização entre bancos, reutilização de conexão, limites e cancelamento.">
+    <meta name="keywords"
+        content="UX Research, Research Ops, Teste de Usabilidade, Open Finance, Trazer Dinheiro, Super App, CAIXA, Estéfano Pietragalla, Portfólio UX">
+    <meta name="author" content="Estéfano Pietragalla">
+    <meta name="robots" content="index, follow">
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Super App CAIXA: Trazer Dinheiro (Open Finance) | Estéfano Pietragalla">
+    <meta property="og:description"
+        content="Como avaliamos presencialmente em agências CAIXA a experiência de iniciação de pagamentos e gestão de conexões Open Finance na funcionalidade Trazer Dinheiro (SUS 84.2).">
+    <meta property="og:image" content="imagens/cover_trazerdinheiro.webp">
+    <meta property="og:url" content="https://epietragalla.com/trazerdinheiro.html">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cascadia+Code:wght@400;600;700&family=Hanken+Grotesk:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Estéfano Pietragalla",
+      "jobTitle": "Senior UX Researcher & Product Designer Specialist",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Brasília",
+        "addressRegion": "DF",
+        "addressCountry": "BR"
+      }
+    }
+    </script>
+
+    <!-- Estilos pontuais exclusivos dos componentes deste case e do Hero padrão (integrados às variáveis do style.css) -->
+    <style>
+        /* Hero & Cabeçalho de Metadados (Padrão CONECTA-TCU) */
+        .hero-case {
+            position: relative;
+            min-height: calc(100vh - 70px);
+            padding: 100px 0 60px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        .hero-case-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            max-width: 950px !important;
+            margin: 0 auto;
+            z-index: 2;
+        }
+
+        .hero-case-top-tag {
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 2.5rem;
+            opacity: 0.7;
+        }
+
+        .hero-case-title {
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 3.5rem;
+            line-height: 1.15;
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 2rem;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-case-title .italic-accent {
+            font-style: italic;
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .hero-case-subtitle {
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 2.2rem;
+            font-style: italic;
+            color: var(--text-secondary);
+            font-weight: 400;
+            margin-bottom: 2.5rem;
+            line-height: 1.25;
+            opacity: 0.9;
+        }
+
+        .hero-case-description {
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            max-width: 790px;
+            margin-bottom: 5rem;
+            font-weight: 400;
+        }
+
+        .hero-case-divider {
+            width: 100%;
+            height: 1px;
+            background-color: var(--timeline-line);
+            margin-bottom: 2.5rem;
+            opacity: 0.4;
+        }
+
+        .hero-case-metadata-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            width: 100%;
+            gap: 20px;
+            text-align: left;
+        }
+
+        .metadata-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .metadata-label {
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            letter-spacing: 0.15em;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .metadata-value {
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .hero-case-title {
+                font-size: 2.3rem;
+            }
+            .hero-case-subtitle {
+                font-size: 1.45rem;
+            }
+            .hero-case-description {
+                font-size: 1.05rem;
+                margin-bottom: 3rem;
+            }
+            .hero-case-metadata-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 24px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-case-metadata-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Estrutura e Componentes Específicos do Case */
+        .case-section {
+            padding: 90px 0;
+            border-top: 1px solid var(--timeline-line);
+            position: relative;
+        }
+
+        .main-section-heading {
+            font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+            line-height: 1.2;
+            margin-bottom: 24px;
+        }
+
+        .bullet-list {
+            list-style-type: disc;
+            padding-left: 20px;
+            margin-top: 16px;
+            color: var(--text-secondary);
+            font-size: 0.96rem;
+            line-height: 1.75;
+        }
+
+        .bullet-list li {
+            margin-bottom: 10px;
+        }
+
+        .bullet-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .bullet-list li strong {
+            color: var(--text-primary);
+        }
+
+        .grid-2-cols {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        .grid-3-cols {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .grid-4-cols {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        /* Trilha de Etapa do Produto */
+        .process-stage-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 24px;
+            padding: 18px 24px;
+            border: 1px solid var(--timeline-line);
+            border-radius: 8px;
+            background-color: rgba(182, 182, 182, 0.05);
+        }
+
+        .stage-label {
+            font-family: 'Cascadia Code', monospace;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-right: 8px;
+        }
+
+        .stage-pill {
+            font-family: 'Cascadia Code', monospace;
+            font-size: 0.8rem;
+            padding: 6px 16px;
+            border-radius: 50px;
+            border: 1px solid var(--timeline-line);
+            color: var(--text-secondary);
+            opacity: 0.55;
+        }
+
+        .stage-pill.active {
+            border-color: var(--accent-color);
+            background-color: var(--accent-color);
+            color: #fff;
+            font-weight: 700;
+            opacity: 1;
+        }
+
+        .stage-connector {
+            color: var(--text-secondary);
+            opacity: 0.4;
+            font-family: 'Cascadia Code', monospace;
+        }
+
+        /* Bloco de Pergunta de Pesquisa */
+        .research-question-box {
+            padding: 14px 16px;
+            border-left: 3px solid var(--accent-color);
+            background-color: rgba(182, 182, 182, 0.06);
+            border-radius: 0 6px 6px 0;
+            margin: 14px 0;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            font-style: italic;
+        }
+
+        /* Barras de Progresso Comparativas (CES) */
+        .stat-bar-group {
+            margin-bottom: 16px;
+        }
+
+        .stat-bar-header {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Cascadia Code', monospace;
+            font-size: 0.82rem;
+            margin-bottom: 6px;
+        }
+
+        .stat-bar-track {
+            width: 100%;
+            height: 10px;
+            background: var(--timeline-line);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .stat-bar-fill {
+            height: 100%;
+            background: var(--accent-color);
+            border-radius: 6px;
+        }
+
+        /* Abas Interativas */
+        .tabs-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 1px solid var(--timeline-line);
+            color: var(--text-secondary);
+            font-family: 'Cascadia Code', monospace;
+            font-size: 0.84rem;
+            font-weight: 600;
+            padding: 10px 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .tab-btn.active,
+        .tab-btn:hover {
+            border-color: var(--accent-color);
+            color: var(--text-primary);
+            background-color: var(--tag-bg);
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        /* Citação de Participante */
+        .user-quote {
+            margin-top: 16px;
+            padding: 14px 18px;
+            border-left: 3px solid var(--accent-color);
+            background-color: rgba(182, 182, 182, 0.05);
+            border-radius: 0 6px 6px 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .user-quote strong {
+            display: block;
+            margin-top: 6px;
+            font-style: normal;
+            font-family: 'Cascadia Code', monospace;
+            font-size: 0.78rem;
+            color: var(--accent-color);
+        }
+
+        /* Card Expansível */
+        details.expandable-card {
+            transform: none !important;
+            padding: 24px 28px;
+        }
+
+        details.expandable-card summary {
+            list-style: none;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            user-select: none;
+        }
+
+        details.expandable-card summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .expandable-chevron {
+            font-family: 'Cascadia Code', monospace;
+            font-size: 0.82rem;
+            color: var(--accent-color);
+            border: 1px solid var(--accent-color);
+            padding: 6px 14px;
+            border-radius: 50px;
+            white-space: nowrap;
+            transition: var(--transition-smooth);
+        }
+
+        details.expandable-card summary:hover .expandable-chevron {
+            background-color: var(--accent-color);
+            color: #fff;
+        }
+
+        details.expandable-card[open] .expandable-chevron .label-closed {
+            display: none;
+        }
+
+        details.expandable-card:not([open]) .expandable-chevron .label-open {
+            display: none;
+        }
+
+        .expandable-content {
+            margin-top: 22px;
+            padding-top: 20px;
+            border-top: 1px solid var(--timeline-line);
+        }
+
+        /* Tabelas */
+        .table-responsive-scroll {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid var(--timeline-line);
+        }
+
+        .indicators-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.92rem;
+        }
+
+        .indicators-table th {
+            font-family: 'Cascadia Code', monospace;
+            font-size: 0.78rem;
+            color: var(--accent-color);
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--timeline-line);
+            white-space: nowrap;
+        }
+
+        .indicators-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--timeline-line);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+
+        .indicators-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .td-indicator {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .badge-warn {
+            color: var(--accent-color);
+            font-family: 'Cascadia Code', monospace;
+            font-weight: 600;
+        }
+
+        .badge-ok {
+            color: #10b981;
+            font-family: 'Cascadia Code', monospace;
+            font-weight: 600;
+        }
+
+        @media (max-width: 900px) {
+            .grid-3-cols,
+            .grid-4-cols {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 680px) {
+            .grid-2-cols,
+            .grid-3-cols,
+            .grid-4-cols {
+                grid-template-columns: 1fr;
+            }
+            .case-section {
+                padding: 65px 0;
+            }
+            details.expandable-card summary {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body id="body">
+
+    <header id="main-header">
+        <nav>
+            <a href="index.html" class="logo">epietragalla<span class="text-accent">.</span></a>
+            <div class="nav-links">
+                <a href="index.html#sobre">sobre</a>
+                <a href="index.html#o-que-faco">o que faço</a>
+                <a href="index.html#carreira">minha jornada</a>
+                <a href="index.html#cases">projetos</a>
+                <a href="index.html#acredito">o que acredito</a>
+                <a href="index.html#laboratorio">laboratório</a>
+                <a href="#contato">contato</a>
+            </div>
+            <div class="nav-actions">
+                <button id="theme-toggle" class="theme-toggle" aria-label="Alternar tema">🌓</button>
+                <a href="#contato" class="nav-btn">Vamos conversar</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- HERO CASE SECTION -->
+        <section id="hero" class="hero-case">
+            <div id="parallax-shapes-container" class="parallax-shapes-container"></div>
+            <div class="container hero-case-container animate-on-scroll fade-up">
+
+                <p class="hero-case-top-tag">— CASE &middot; SUPER APP CAIXA &middot; TRAZER DINHEIRO (OPEN FINANCE) &middot;
+                    2026 —</p>
+
+                <h1 class="hero-case-title">
+                    Super App CAIXA: <span class="italic-accent">Trazer Dinheiro</span> — Validação de iniciação de pagamentos Open Finance.
+                </h1>
+
+                <p class="hero-case-subtitle">
+                    Pesquisa qualitativa e teste de usabilidade presencial em agências CAIXA para avaliar a movimentação de recursos entre bancos, limites de conexão e revogação de permissões
+                </p>
+
+                <p class="hero-case-description">
+                    Como equilibrar máxima conveniência na transferência de recursos de outros bancos para a CAIXA com clareza sobre segurança, limites e controle de autorizações? Neste estudo conduzido em Ceilândia (DF) e Caxias do Sul (RS), avaliamos a jornada completa desde a primeira conexão até o cancelamento do vínculo.
+                </p>
+
+                <div class="hero-case-divider"></div>
+
+                <div class="hero-case-metadata-grid">
+                    <div class="metadata-item">
+                        <span class="metadata-label">CLIENTE</span>
+                        <span class="metadata-value">CAIXA (Super App · Fase 19)</span>
+                    </div>
+                    <div class="metadata-item">
+                        <span class="metadata-label">PAPEL</span>
+                        <span class="metadata-value">Pesquisador de UX (UX Researcher)</span>
+                    </div>
+                    <div class="metadata-item">
+                        <span class="metadata-label">TIME</span>
+                        <span class="metadata-value">UX Lead, UI Designer e UXRs</span>
+                    </div>
+                    <div class="metadata-item">
+                        <span class="metadata-label">PERÍODO</span>
+                        <span class="metadata-value">Novembro/2026</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SEÇÃO 01: OVERVIEW DO PROJETO -->
+        <section id="overview" class="case-section">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll fade-up"><span class="text-accent">01 —</span> overview do projeto</h2>
+                <h3 class="main-section-heading animate-on-scroll fade-up">Movimentando recursos entre bancos sem alternar aplicativos</h3>
+
+                <div class="grid-2-cols grid-cascade animate-on-scroll fade-up">
+                    <div class="belief-box">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">PROPOSTA DE VALOR &amp; TENSÃO CENTRAL</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">Conveniência vs. Percepção de Segurança</h4>
+                        <p class="belief-desc">
+                            O serviço <strong>Trazer Dinheiro</strong> permite que o correntista transfira recursos de outras instituições financeiras diretamente pelo aplicativo da CAIXA via Open Finance. Os testes evidenciaram uma tensão central: quanto mais simples se torna puxar dinheiro de outro banco, maior a necessidade de demonstrar segurança, limites claros e controle sobre as autorizações.
+                        </p>
+                    </div>
+
+                    <div class="belief-box">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">OBJETIVOS DA INVESTIGAÇÃO</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">Compreensão conceitual e autonomia de controle</h4>
+                        <ul class="bullet-list">
+                            <li><strong>Nomenclatura e Fluxo:</strong> Avaliar a descoberta do termo <em>"Trazer Dinheiro"</em> e a facilidade na primeira conexão e nas transferências recorrentes.</li>
+                            <li><strong>Conceitos de Open Finance:</strong> Investigar como os usuários interpretam autorização entre instituições, limites de movimentação, validade e cancelamento.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Indicador de Etapa do Processo -->
+                <div class="process-stage-bar animate-on-scroll fade-up">
+                    <span class="stage-label">ETAPA DO PROCESSO DE PRODUTO:</span>
+                    <span class="stage-pill">1. Discovery</span>
+                    <span class="stage-connector">&rarr;</span>
+                    <span class="stage-pill active">2. Design &amp; Experimentação (Validação Fase 19)</span>
+                    <span class="stage-connector">&rarr;</span>
+                    <span class="stage-pill">3. Delivery &amp; Otimização</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 02: ESTRUTURA DA PESQUISA -->
+        <section id="estrutura" class="case-section">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll fade-up"><span class="text-accent">02 —</span> estrutura da pesquisa</h2>
+                <h3 class="main-section-heading animate-on-scroll fade-up">Testes presenciais em agências com perfis diversos</h3>
+
+                <p class="sobre-bio animate-on-scroll fade-up" style="max-width: 900px; font-size: 1.08rem;">
+                    A pesquisa foi aplicada presencialmente em duas agências CAIXA — <strong>Ceilândia (DF)</strong> e <strong>Caxias do Sul (RS)</strong> — com <strong>13 correntistas</strong> (idades entre 23 e 55 anos, escolaridade de ensino fundamental a superior completo, e em sua maioria sem experiência prévia com Open Finance), em sessões individuais de 30 minutos:
+                </p>
+
+                <div class="grid-4-cols grid-cascade animate-on-scroll fade-up">
+                    <!-- Etapa 1 -->
+                    <div class="belief-box">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">01 / PRÉ-TESTE</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">Perfil &amp; Familiaridade</h4>
+                        <div class="research-question-box">
+                            "Como o cliente movimenta dinheiro entre seus bancos hoje e o que conhece sobre Open Finance?"
+                        </div>
+                        <ul class="bullet-list">
+                            <li>11 de 13 participantes nunca haviam utilizado o Open Finance.</li>
+                            <li>Mapeamento de contas ativas (Itaú, Nubank, Bradesco, Inter, C6, Santander, BB).</li>
+                        </ul>
+                    </div>
+
+                    <!-- Etapa 2 -->
+                    <div class="belief-box">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">02 / TAREFAS NO MAZE</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">4 Missões + Escala CES</h4>
+                        <div class="research-question-box">
+                            "A compreensão evolui da primeira transferência até o gerenciamento da conexão?"
+                        </div>
+                        <ul class="bullet-list">
+                            <li>Execução de 4 cenários progressivos com mapas de calor e taxa de cliques no Maze.</li>
+                            <li>Aplicação do <strong>CES (1 a 5)</strong> ao término de cada tarefa.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Etapa 3 -->
+                    <div class="belief-box">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">03 / PÓS-TESTE</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">Modelos Mentais &amp; Riscos</h4>
+                        <div class="research-question-box">
+                            "Quais medos de golpe ou confusões conceituais surgem ao autorizar conexões?"
+                        </div>
+                        <ul class="bullet-list">
+                            <li>Entrevista qualitativa sobre limites, prazos de validade e sensação de controle.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Etapa 4 -->
+                    <div class="belief-box">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">04 / ESCALA CIENTÍFICA</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">Avaliação SUS</h4>
+                        <div class="research-question-box">
+                            "Qual o índice global de usabilidade, memorização e satisfação do fluxo?"
+                        </div>
+                        <ul class="bullet-list">
+                            <li>Aplicação do <strong>System Usability Scale (SUS)</strong> e correlação com Heurísticas de Nielsen.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 03: MISSÕES AVALIADAS & DESEMPENHO -->
+        <section id="missoes" class="case-section">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll fade-up"><span class="text-accent">03 —</span> missões avaliadas &amp; desempenho</h2>
+                <h3 class="main-section-heading animate-on-scroll fade-up">Compreensão progressiva ao longo das quatro etapas</h3>
+
+                <p class="sobre-bio animate-on-scroll fade-up" style="max-width: 900px; font-size: 1.08rem;">
+                    As tarefas foram desenhadas como uma jornada crescente: ativar a primeira conexão, reutilizá-la em uma segunda transferência, ajustar limites/prazos de segurança e, por fim, cancelar o vínculo entre instituições:
+                </p>
+
+                <!-- Navegação por Abas das 4 Missões -->
+                <div class="tabs-nav animate-on-scroll fade-up" role="tablist">
+                    <button class="tab-btn active" data-tab="tab-m1">Missão 1: 1ª Transferência &amp; Conexão (CES 4,71)</button>
+                    <button class="tab-btn" data-tab="tab-m2">Missão 2: 2ª Transferência Recorrente (CES 4,40)</button>
+                    <button class="tab-btn" data-tab="tab-m3">Missão 3: Limites &amp; Prazo da Conexão (CES 3,88)</button>
+                    <button class="tab-btn" data-tab="tab-m4">Missão 4: Cancelamento da Conexão (CES 4,00)</button>
+                </div>
+
+                <!-- MISSÃO 1 -->
+                <div id="tab-m1" class="tab-panel active belief-box" style="transform: none;">
+                    <div class="grid-2-cols">
+                        <div>
+                            <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">MISSÃO 01 &middot; PRIMEIRA TRANSFERÊNCIA (R$ 100 DO BRADESCO)</span>
+                            <h4 class="belief-title" style="margin-top: 10px;">O usuário entende a ação, mas precisa construir dois modelos em paralelo</h4>
+                            <ul class="bullet-list">
+                                <li><strong>Descoberta do termo:</strong> 10 de 13 concluíram de forma autônoma (3 com ajuda). A busca inicial parte de <em>Conta, Pagamentos e Saldos</em> antes de associar transferência ao termo <em>"Trazer Dinheiro"</em>.</li>
+                                <li><strong>Dupla compreensão:</strong> Na primeira vez, o cliente precisa entender simultaneamente o envio imediato de R$ 100 e a autorização de uma conexão para movimentações futuras.</li>
+                            </ul>
+                            <div class="user-quote">
+                                "[...] mas quando eu autorizo isso aqui [Open Finance], eu tô liberando só essa transferência ou depois a CAIXA consegue trazer dinheiro de lá também?"
+                                <strong>— Participante U06</strong>
+                            </div>
+                        </div>
+                        <div style="padding: 24px; border-radius: 8px; border: 1px solid var(--timeline-line);">
+                            <p class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace; margin-bottom: 14px;">INDICADORES DA MISSÃO 1 (n=13)</p>
+                            <div class="stat-bar-group">
+                                <div class="stat-bar-header"><span>Taxa de Conclusão Total (10 sem ajuda / 3 com ajuda)</span><span class="badge-ok">100%</span></div>
+                                <div class="stat-bar-track"><div class="stat-bar-fill" style="width: 100%; background: #10b981;"></div></div>
+                            </div>
+                            <div class="stat-bar-group">
+                                <div class="stat-bar-header"><span>Facilidade Percebida (CES 1–5)</span><span>4,71 / 5</span></div>
+                                <div class="stat-bar-track"><div class="stat-bar-fill" style="width: 94.2%;"></div></div>
+                            </div>
+                            <p style="font-size: 0.9rem; margin-top: 18px; color: var(--text-secondary);">
+                                <strong>Duração média:</strong> 115,1s | <strong>Taxa de erros de clique:</strong> 47,5% (concentrados na busca inicial pelo ponto de entrada).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MISSÃO 2 -->
+                <div id="tab-m2" class="tab-panel belief-box" style="transform: none;">
+                    <div class="grid-2-cols">
+                        <div>
+                            <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">MISSÃO 02 &middot; SEGUNDA TRANSFERÊNCIA (R$ 340 DO BRADESCO)</span>
+                            <h4 class="belief-title" style="margin-top: 10px;">A conveniência da recorrência precisa ficar explícita na tela</h4>
+                            <ul class="bullet-list">
+                                <li><strong>Conclusão unânime:</strong> 100% dos participantes completaram a segunda transferência sem ajuda e reduziram o tempo médio para <strong>85,1s</strong>.</li>
+                                <li><strong>Percepção do benefício:</strong> 5 de 13 perceberam explicitamente que a conexão já estava ativa e dispensava abrir o app do Bradesco novamente. Nos demais, o benefício ficou implícito demais para diferenciar o serviço do PIX tradicional.</li>
+                            </ul>
+                        </div>
+                        <div style="padding: 24px; border-radius: 8px; border: 1px solid var(--timeline-line);">
+                            <p class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace; margin-bottom: 14px;">INDICADORES DA MISSÃO 2 (n=13)</p>
+                            <div class="stat-bar-group">
+                                <div class="stat-bar-header"><span>Conclusão Autônoma (Sem Ajuda)</span><span class="badge-ok">100%</span></div>
+                                <div class="stat-bar-track"><div class="stat-bar-fill" style="width: 100%; background: #10b981;"></div></div>
+                            </div>
+                            <div class="stat-bar-group">
+                                <div class="stat-bar-header"><span>Facilidade Percebida (CES 1–5)</span><span>4,40 / 5</span></div>
+                                <div class="stat-bar-track"><div class="stat-bar-fill" style="width: 88%;"></div></div>
+                            </div>
+                            <p style="font-size: 0.9rem; margin-top: 18px; color: var(--text-secondary);">
+                                <strong>Duração média:</strong> 85,1s (redução de 26% em relação à primeira transferência).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MISSÃO 3 -->
+                <div id="tab-m3" class="tab-panel belief-box" style="transform: none;">
+                    <div class="grid-2-cols">
+                        <div>
+                            <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">MISSÃO 03 &middot; ALTERAR LIMITE (R$ 50 MIL/ANO) E PRAZO (6 MESES)</span>
+                            <h4 class="belief-title" style="margin-top: 10px;">Maior atrito conceitual: limite da conexão vs. limite PIX e agendamento</h4>
+                            <ul class="bullet-list">
+                                <li><strong>Desempenho:</strong> Missão mais longa (média <strong>181,6s</strong>) e com menor nota CES (<strong>3,88</strong>); 10 concluíram sem ajuda, 2 com ajuda e 1 não concluiu por falha técnica no protótipo.</li>
+                                <li><strong>Confusão de conceitos:</strong> Usuários confundiram o limite anual da conexão com limites operacionais do PIX, e interpretaram a escolha de validade (6 meses ou data no calendário) como data de agendamento da transferência.</li>
+                            </ul>
+                            <div class="user-quote">
+                                "Esses 6 meses são o tempo que os bancos ficam conectados ou quer dizer que a transferência só vai acontecer depois desse prazo?"
+                                <strong>— Participante U05</strong>
+                            </div>
+                        </div>
+                        <div style="padding: 24px; border-radius: 8px; border: 1px solid var(--timeline-line);">
+                            <p class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace; margin-bottom: 14px;">INDICADORES DA MISSÃO 3 (n=13)</p>
+                            <div class="stat-bar-group">
+                                <div class="stat-bar-header"><span>Conclusão (10 sem ajuda / 2 com ajuda)</span><span>92,3%</span></div>
+                                <div class="stat-bar-track"><div class="stat-bar-fill" style="width: 92.3%;"></div></div>
+                            </div>
+                            <div class="stat-bar-group">
+                                <div class="stat-bar-header"><span>Taxa de Erros de Clique (Maze)</span><span class="badge-warn">72,4%</span></div>
+                                <div class="stat-bar-track"><div class="stat-bar-fill" style="width: 72.4%;"></div></div>
+                            </div>
+                            <div class="stat-bar-group">
+                                <div class="stat-bar-header"><span>Facilidade Percebida (CES 1–5)</span><span>3,88 / 5</span></div>
+                                <div class="stat-bar-track"><div class="stat-bar-fill" style="width: 77.6%;"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MISSÃO 4 -->
+                <div id="tab-m4" class="tab-panel belief-box" style="transform: none;">
+                    <div class="grid-2-cols">
+                        <div>
+                            <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">MISSÃO 04 &middot; CANCELAR CONEXÃO COM MERCADO PAGO</span>
+                            <h4 class="belief-title" style="margin-top: 10px;">A percepção de segurança depende de saber como encerrar o vínculo</h4>
+                            <ul class="bullet-list">
+                                <li><strong>Desempenho:</strong> 11 de 13 concluíram de forma autônoma (2 não concluíram devido a problema técnico no Maze), com média de <strong>105,6s</strong> e CES <strong>4,00</strong>.</li>
+                                <li><strong>Insegurança na ação:</strong> Alguns usuários hesitaram ao ver o botão <em>"Cancelar conexão"</em>, receando cancelar uma transferência já realizada ou encontrar dificuldade para localizar a tela de gerenciamento.</li>
+                            </ul>
+                            <div class="user-quote">
+                                "Se eu clicar em cancelar aqui, eu cancelo a transferência, não é?"
+                                <strong>— Participante U06</strong>
+                            </div>
+                        </div>
+                        <div style="padding: 24px; border-radius: 8px; border: 1px solid var(--timeline-line);">
+                            <p class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace; margin-bottom: 14px;">INDICADORES DA MISSÃO 4 (n=13)</p>
+                            <div class="stat-bar-group">
+                                <div class="stat-bar-header"><span>Conclusão Autônoma (Dos 11 sem falha técnica)</span><span class="badge-ok">100%</span></div>
+                                <div class="stat-bar-track"><div class="stat-bar-fill" style="width: 100%; background: #10b981;"></div></div>
+                            </div>
+                            <div class="stat-bar-group">
+                                <div class="stat-bar-header"><span>Facilidade Percebida (CES 1–5)</span><span>4,00 / 5</span></div>
+                                <div class="stat-bar-track"><div class="stat-bar-fill" style="width: 80%;"></div></div>
+                            </div>
+                            <p style="font-size: 0.9rem; margin-top: 18px; color: var(--text-secondary);">
+                                <strong>Duração média:</strong> 105,6s | <strong>Taxa de erros de clique:</strong> 64,4%.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 04: PRINCIPAIS INSIGHTS & MODELOS MENTAIS -->
+        <section id="insights" class="case-section">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll fade-up"><span class="text-accent">04 —</span> principais insights &amp; modelos mentais</h2>
+                <h3 class="main-section-heading animate-on-scroll fade-up">Como o cliente interpreta o Trazer Dinheiro frente ao PIX</h3>
+
+                <div class="grid-2-cols grid-cascade animate-on-scroll fade-up">
+                    <!-- Insight 1 -->
+                    <div class="belief-box">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">INSIGHT 01 &middot; CONVENIÊNCIA NA RECORRÊNCIA</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">O valor real aparece a partir da segunda movimentação</h4>
+                        <p class="belief-desc">
+                            Evitar entrar e sair de múltiplos aplicativos é o principal argumento de valor. Porém, o app precisa sinalizar visualmente quais instituições já têm conexão ativa para que o cliente perceba a economia de esforço na reutilização.
+                        </p>
+                    </div>
+
+                    <!-- Insight 2 -->
+                    <div class="belief-box">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">INSIGHT 02 &middot; SEGURANÇA COMO CONDIÇÃO</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">Medo de golpes exige transparência sobre o alcance da permissão</h4>
+                        <p class="belief-desc">
+                            Participantes questionaram se manter contas conectadas facilita golpes ("o bandido pode pegar o dinheiro de todas as contas de uma vez?"). Deixar claro que cada transferência exige autenticação protege a confiança no produto.
+                        </p>
+                    </div>
+
+                    <!-- Insight 3 -->
+                    <div class="belief-box">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">INSIGHT 03 &middot; DISPUTA DE NAMING</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">"Trazer Dinheiro" compete com os caminhos tradicionais de PIX</h4>
+                        <p class="belief-desc">
+                            Embora comunique a direção da operação, o termo não é a primeira associação mental de quem busca fazer uma transferência. Precisa estar acompanhado de descrição objetiva e integrado às rotas habituais de PIX e Transferências.
+                        </p>
+                    </div>
+
+                    <!-- Insight 4 -->
+                    <div class="belief-box">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">INSIGHT 04 &middot; ABSTRAÇÃO DE LIMITES E PRAZOS</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">Limite e validade da conexão precisam de linguagem concreta</h4>
+                        <p class="belief-desc">
+                            Termos técnicos isolados geram confusão com limite diário do PIX ou agendamento futuro. Explicar em linguagem cotidiana (<em>"até quando a conexão fica ativa"</em> e <em>"quanto pode ser movimentado no período"</em>) elimina o ruído.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Card Expansível: Modelos Mentais & Comparativo PIX vs Trazer Dinheiro (Inicialmente Fechado) -->
+                <details class="belief-box expandable-card animate-on-scroll fade-up" style="margin-top: 32px;">
+                    <summary>
+                        <div>
+                            <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace; display: block;">
+                                SÍNTESE CONCEITUAL &middot; MODELOS MENTAIS E COMPARATIVO PIX &lt;&gt; TRAZER DINHEIRO
+                            </span>
+                            <span style="font-size: 0.92rem; color: var(--text-secondary);">
+                                As 3 formas de interpretação dos usuários e os diferenciais competitivos frente ao fluxo tradicional do PIX
+                            </span>
+                        </div>
+                        <span class="expandable-chevron">
+                            <span class="label-closed">+ Ver matriz comparativa</span>
+                            <span class="label-open">− Ocultar matriz</span>
+                        </span>
+                    </summary>
+
+                    <div class="expandable-content">
+                        <div class="table-responsive-scroll" style="margin-bottom: 24px;">
+                            <table class="indicators-table">
+                                <thead>
+                                    <tr>
+                                        <th align="left">MODELO MENTAL</th>
+                                        <th align="left">INTERPRETAÇÃO DO USUÁRIO</th>
+                                        <th align="left">IMPLICAÇÕES PARA UX / UI</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="td-indicator">1. Transferência Bancária</td>
+                                        <td>Movimentação direta de recursos entre contas próprias de diferentes bancos.</td>
+                                        <td>Facilita a compreensão imediata da finalidade quando associada à descrição de transferência.</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td-indicator">2. Pix Simplificado</td>
+                                        <td>Alternativa rápida para enviar dinheiro entre instituições sem digitar chaves.</td>
+                                        <td>Gera comparação direta de esforço e exige evidenciar o ganho de iniciar tudo pela CAIXA.</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td-indicator">3. Integração entre Contas</td>
+                                        <td>Autorização contínua que permite operar entre instituições financeiras.</td>
+                                        <td>Exige clareza sobre alcance das permissões, limites anuais, validade e facilidade de revogação.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="table-responsive-scroll">
+                            <table class="indicators-table">
+                                <thead>
+                                    <tr>
+                                        <th align="left">CRITÉRIO</th>
+                                        <th align="left">PIX TRADICIONAL</th>
+                                        <th align="left">TRAZER DINHEIRO (OPEN FINANCE)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="td-indicator">Ponto de Partida</td>
+                                        <td>Iniciado no aplicativo do banco de origem (exige alternar apps).</td>
+                                        <td>Centralizado no app da CAIXA (onde o cliente deseja receber o recurso).</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td-indicator">Esforço Recorrente</td>
+                                        <td>Exige repetir autenticação e envio no outro banco a cada operação.</td>
+                                        <td>Permite reutilizar uma conexão já autorizada com menor atrito.</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td-indicator">Curva de Aprendizagem</td>
+                                        <td>Fluxo amplamente conhecido e incorporado na rotina.</td>
+                                        <td>Exige comunicação clara na primeira autorização para construir confiança.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </details>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 05: AVALIAÇÃO SUS & RECOMENDAÇÕES DE NEGÓCIO -->
+        <section id="resultados" class="case-section">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll fade-up"><span class="text-accent">05 —</span> avaliação SUS &amp; recomendações estratégicas</h2>
+                <h3 class="main-section-heading animate-on-scroll fade-up">Excelente aceitação (SUS 84.2) e plano de refinamento de UX</h3>
+
+                <!-- Métricas Macro do SUS -->
+                <div class="metrics-grid grid-cascade animate-on-scroll fade-up" style="margin: 36px 0 48px 0;">
+                    <div class="metric-item">
+                        <span class="big-number">84,2<span class="text-accent" style="font-size: 1.5rem;"> pts</span></span>
+                        <span class="small-title text-accent">SUS Score (Nota A)</span>
+                        <span class="small-desc">faixa "Excelente" na escala de aceitabilidade (n=13)</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="big-number">4,71<span class="text-accent" style="font-size: 1.5rem;"> / 5</span></span>
+                        <span class="small-title text-accent">Facilidade Inicial</span>
+                        <span class="small-desc">média CES na ativação e primeira transferência</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="big-number">2<span class="text-accent" style="font-size: 1.5rem;"> praças</span></span>
+                        <span class="small-title text-accent">Pesquisa Presencial</span>
+                        <span class="small-desc">agências CAIXA em Ceilândia/DF e Caxias do Sul/RS</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="big-number">11<span class="text-accent" style="font-size: 1.5rem;"> ações</span></span>
+                        <span class="small-title text-accent">Recomendações</span>
+                        <span class="small-desc">melhorias de UX Writing, UI e Segurança entregues</span>
+                    </div>
+                </div>
+
+                <!-- 3 Pilares de Recomendações -->
+                <div class="grid-3-cols grid-cascade animate-on-scroll fade-up">
+                    <!-- Pilar 1 -->
+                    <div class="belief-box">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">01 / DESCOBERTA &amp; RECORRÊNCIA</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">Aproximar do modelo mental e destacar conexões</h4>
+                        <ul class="bullet-list">
+                            <li><strong>Naming Descritivo:</strong> Associar <em>"Trazer Dinheiro"</em> a subtítulos claros (ex.: <em>"Transfira dinheiro de outros bancos para a CAIXA"</em>) e integrá-lo aos menus de PIX/Transferências.</li>
+                            <li><strong>Reutilização Visível:</strong> Destacar instituições já conectadas para evidenciar a praticidade nas transferências seguintes.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Pilar 2 -->
+                    <div class="belief-box">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">02 / LIMITES &amp; VALIDADE</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">Separar transferência de permissão contínua</h4>
+                        <ul class="bullet-list">
+                            <li><strong>Clareza na 1ª Autorização:</strong> Separar visualmente os dados da transferência imediata (origem, destino, valor) das regras da conexão (limite anual e prazo).</li>
+                            <li><strong>Validade Híbrida:</strong> Combinar prazos prontos (3 ou 6 meses) com calendário, exibindo sempre a data exata de encerramento da conexão.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Pilar 3 -->
+                    <div class="belief-box">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">03 / CONTROLE &amp; ENCERRAMENTO</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">Gerenciamento e cancelamento descomplicados</h4>
+                        <ul class="bullet-list">
+                            <li><strong>Acesso Direto às Conexões:</strong> Permitir consultar, alterar limites ou renovar prazos sem precisar simular uma nova transferência.</li>
+                            <li><strong>Cancelamento Seguro:</strong> Deixar a opção <em>"Cancelar conexão"</em> visível nos detalhes e explicar claramente que o encerramento não afeta transferências já concluídas.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 06: REFLEXÕES & APRENDIZADOS -->
+        <section id="retrospectiva" class="case-section">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll fade-up"><span class="text-accent">06 —</span> reflexões &amp; aprendizados</h2>
+                <h3 class="main-section-heading animate-on-scroll fade-up">Pesquisa presencial em agências aproxima o produto da vida real</h3>
+
+                <div class="grid-2-cols grid-cascade animate-on-scroll fade-up">
+                    <div class="belief-box">
+                        <h4 class="belief-title">Testar com quem nunca usou Open Finance revela o essencial</h4>
+                        <p class="belief-desc">
+                            Conduzir as sessões presencialmente nas agências de Ceilândia (DF) e Caxias do Sul (RS) com correntistas de perfis variados (85% sem uso prévio de Open Finance) mostrou que conceitos técnicos do setor financeiro precisam ser traduzidos em efeitos práticos e seguros para gerar adoção massiva.
+                        </p>
+                    </div>
+
+                    <div class="belief-box">
+                        <h4 class="belief-title">Confiança se constrói na porta de saída tanto quanto na entrada</h4>
+                        <p class="belief-desc">
+                            O estudo reforçou que, em serviços de iniciação de pagamentos, a percepção de segurança do cliente depende diretamente de saber onde consultar limites e como revogar a autorização a qualquer momento com um clique.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Links de Navegação entre Cases -->
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; width: 100%; margin-top: 60px; padding-top: 28px; border-top: 1px solid var(--timeline-line);"
+                    class="animate-on-scroll fade-up">
+                    <a href="supergerenciadorpj.html" class="nav-btn">&larr; Projeto Anterior: Super Gerenciador PJ</a>
+                    <a href="openfinance.html" class="nav-btn">Próximo Projeto: Minha Carteira (Open Finance) &rarr;</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO CONTATO -->
+        <section id="contato" class="contato">
+            <div class="container contato-content">
+                <div class="contato-left animate-on-scroll fade-right">
+                    <h2 class="contato-title">Vamos conversar<span class="dot1">.</span></h2>
+                </div>
+                <div class="contato-right animate-on-scroll fade-left">
+                    <ul class="contact-list">
+                        <li class="contact-item animate-on-scroll fade-up">
+                            <svg class="contact-arrow" viewBox="0 0 24 24">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                            <a href="mailto:epietragalla@gmail.com">epietragalla@gmail.com</a>
+                        </li>
+                        <li class="contact-item animate-on-scroll fade-up">
+                            <svg class="contact-arrow" viewBox="0 0 24 24">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                            <a href="https://wa.me/5561981794586" target="_blank">(61) 98179-4586</a>
+                        </li>
+                        <li class="contact-item animate-on-scroll fade-up">
+                            <svg class="contact-arrow" viewBox="0 0 24 24">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                            <a href="https://www.linkedin.com/in/epietragalla/" target="_blank">LinkedIn</a>
+                        </li>
+                        <li class="contact-item animate-on-scroll fade-up">
+                            <svg class="contact-arrow" viewBox="0 0 24 24">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                            <a href="https://epietragalla.medium.com/" target="_blank">Medium</a>
+                        </li>
+                        <li class="contact-item animate-on-scroll fade-up">
+                            <svg class="contact-arrow" viewBox="0 0 24 24">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                            <a href="cvepietragalla.pdf" target="_blank">Curriculum Vitae</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="container animate-on-scroll fade-up">
+        <p>© 2026 Estéfano Pietragalla · Brasília, DF — Brasil</p>
+    </footer>
+
+    <script>
+        // Alternador de Tema Dark / Light (usa classes do style.css)
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.getElementById('body');
+
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            body.classList.add(savedTheme);
+            updateToggleButton(savedTheme);
+        } else {
+            body.classList.add('dark-mode');
+            updateToggleButton('dark-mode');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.add('theme-blur');
+            setTimeout(() => {
+                if (body.classList.contains('light-mode')) {
+                    body.classList.remove('light-mode');
+                    body.classList.add('dark-mode');
+                    localStorage.setItem('theme', 'dark-mode');
+                    updateToggleButton('dark-mode');
+                } else {
+                    body.classList.remove('dark-mode');
+                    body.classList.add('light-mode');
+                    localStorage.setItem('theme', 'light-mode');
+                    updateToggleButton('light-mode');
+                }
+            }, 250);
+            setTimeout(() => {
+                body.classList.remove('theme-blur');
+            }, 500);
+        });
+
+        function updateToggleButton(theme) {
+            if (theme === 'dark-mode') {
+                themeToggle.innerHTML = `
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.22" x2="5.64" y2="17.78"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                `;
+            } else {
+                themeToggle.innerHTML = `
+                    <svg viewBox="0 0 24 24">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                `;
+            }
+        }
+
+        // Estilo no Header ao Rolar
+        const header = document.getElementById('main-header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // Abas Interativas das Missões
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const tabPanels = document.querySelectorAll('.tab-panel');
+
+        tabButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetId = btn.getAttribute('data-tab');
+
+                tabButtons.forEach(b => b.classList.remove('active'));
+                tabPanels.forEach(p => p.classList.remove('active'));
+
+                btn.classList.add('active');
+                document.getElementById(targetId).classList.add('active');
+            });
+        });
+
+        // Efeito Parallax Geométrico (usa .p-shape do style.css)
+        const shapeConfig = {
+            containerId: 'parallax-shapes-container',
+            count: 15,
+            minSize: 40,
+            maxSize: 240,
+            minOpacity: 0.2,
+            maxOpacity: 0.12,
+            minSpeed: 0.05,
+            maxSpeed: 0.25,
+            types: ['square', 'triangle', 'hexagon']
+        };
+
+        const shapeContainer = document.getElementById(shapeConfig.containerId);
+        const shapes = [];
+        const random = (min, max) => Math.random() * (max - min) + min;
+
+        const initGeometricShapes = () => {
+            shapeContainer.innerHTML = '';
+            shapes.length = 0;
+
+            for (let i = 0; i < shapeConfig.count; i++) {
+                const type = shapeConfig.types[Math.floor(Math.random() * shapeConfig.types.length)];
+                const size = random(shapeConfig.minSize, shapeConfig.maxSize);
+                const opacity = random(shapeConfig.minOpacity, shapeConfig.maxOpacity);
+                const speed = random(shapeConfig.minSpeed, shapeConfig.maxSpeed);
+                const left = random(0, 95);
+                const initialTop = Math.random() < 0.65 ? random(0, 120) : random(120, 400);
+
+                const shapeEl = document.createElement('div');
+                shapeEl.className = `p-shape ${type}`;
+                shapeEl.style.width = `${size}px`;
+                shapeEl.style.height = `${size}px`;
+
+                const randomRotation = Math.floor(random(0, 360));
+                shapeEl.style.opacity = opacity;
+                shapeEl.style.left = `${left}%`;
+                shapeEl.style.top = `${initialTop}%`;
+                shapeEl.style.transform = `rotate(${randomRotation}deg)`;
+
+                shapeContainer.appendChild(shapeEl);
+
+                shapes.push({
+                    el: shapeEl,
+                    speed: speed,
+                    initialTop: initialTop,
+                    rotation: randomRotation
+                });
+            }
+        };
+
+        const updateParallaxShapes = () => {
+            const scrollY = window.scrollY;
+            shapes.forEach(shape => {
+                const yOffset = scrollY * shape.speed;
+                shape.el.style.transform = `translate3d(0, ${-yOffset}px, 0) rotate(${shape.rotation}deg)`;
+            });
+        };
+
+        initGeometricShapes();
+        window.addEventListener('scroll', updateParallaxShapes);
+        window.addEventListener('resize', initGeometricShapes);
+
+        // Observador de Interseção para Animações ao Rolar (usa .animate-on-scroll e .is-visible do style.css)
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.15
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+    </script>
+</body>
+
+</html>

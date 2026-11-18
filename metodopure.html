@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Método PURE (CAIXA) — UX Research &amp; Metrics Case Study | Estéfano Pietragalla</title>
+    <meta name="description"
+        content="Estudo de validação científica e aplicação prática do Método PURE (Practical Usability Rating by Experts) na avaliação da jornada de Contratação da Azulzinha (SICRD) na CAIXA.">
+    <meta name="keywords"
+        content="UX Research, Research Ops, Método PURE, Métricas de UX, Krippendorff Alpha, Azulzinha, SICRD, CAIXA, Estéfano Pietragalla, Portfólio UX">
+    <meta name="author" content="Estéfano Pietragalla">
+    <meta name="robots" content="index, follow">
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Método PURE (CAIXA) — Quantificação de Usabilidade | Estéfano Pietragalla">
+    <meta property="og:description"
+        content="Como estruturamos, validamos cientificamente e aplicamos o Método PURE em um projeto piloto da CAIXA (Contratação da Azulzinha), criando um guia replicável de Research Ops.">
+    <meta property="og:image" content="imagens/cover_pure.webp">
+    <meta property="og:url" content="https://epietragalla.com/metodopure.html">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cascadia+Code:wght@400;600;700&family=Hanken+Grotesk:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Estéfano Pietragalla",
+      "jobTitle": "Senior UX Researcher & Product Designer Specialist",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Brasília",
+        "addressRegion": "DF",
+        "addressCountry": "BR"
+      }
+    }
+    </script>
+
+    <!-- Estilos pontuais exclusivos dos componentes deste case e do Hero padrão (integrados às variáveis do style.css) -->
+    <style>
+        /* Hero & Cabeçalho de Metadados (Padrão CONECTA-TCU) */
+        .hero-case {
+            position: relative;
+            min-height: calc(100vh - 70px);
+            padding: 100px 0 60px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        .hero-case-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            max-width: 950px !important;
+            margin: 0 auto;
+            z-index: 2;
+        }
+
+        .hero-case-top-tag {
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 2.5rem;
+            opacity: 0.7;
+        }
+
+        .hero-case-title {
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 3.5rem;
+            line-height: 1.15;
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 2rem;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-case-title .italic-accent {
+            font-style: italic;
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .hero-case-subtitle {
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 2.2rem;
+            font-style: italic;
+            color: var(--text-secondary);
+            font-weight: 400;
+            margin-bottom: 2.5rem;
+            line-height: 1.25;
+            opacity: 0.9;
+        }
+
+        .hero-case-description {
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            max-width: 790px;
+            margin-bottom: 5rem;
+            font-weight: 400;
+        }
+
+        .hero-case-divider {
+            width: 100%;
+            height: 1px;
+            background-color: var(--timeline-line);
+            margin-bottom: 2.5rem;
+            opacity: 0.4;
+        }
+
+        .hero-case-metadata-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            width: 100%;
+            gap: 20px;
+            text-align: left;
+        }
+
+        .metadata-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .metadata-label {
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            letter-spacing: 0.15em;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .metadata-value {
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .hero-case-title {
+                font-size: 2.3rem;
+            }
+            .hero-case-subtitle {
+                font-size: 1.45rem;
+            }
+            .hero-case-description {
+                font-size: 1.05rem;
+                margin-bottom: 3rem;
+            }
+            .hero-case-metadata-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 24px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-case-metadata-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Estrutura e Componentes Específicos do Case */
+        .case-section {
+            padding: 90px 0;
+            border-top: 1px solid var(--timeline-line);
+            position: relative;
+        }
+
+        .main-section-heading {
+            font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+            line-height: 1.2;
+            margin-bottom: 24px;
+        }
+
+        .bullet-list {
+            list-style-type: disc;
+            padding-left: 20px;
+            margin-top: 16px;
+            color: var(--text-secondary);
+            font-size: 0.96rem;
+            line-height: 1.75;
+        }
+
+        .bullet-list li {
+            margin-bottom: 10px;
+        }
+
+        .bullet-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .bullet-list li strong {
+            color: var(--text-primary);
+        }
+
+        .grid-2-cols {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        .grid-3-cols {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .grid-4-cols {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        /* Trilha de Etapa do Produto / Research Ops */
+        .process-stage-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 24px;
+            padding: 18px 24px;
+            border: 1px solid var(--timeline-line);
+            border-radius: 8px;
+            background-color: rgba(182, 182, 182, 0.05);
+        }
+
+        .stage-label {
+            font-family: 'Cascadia Code', monospace;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-right: 8px;
+        }
+
+        .stage-pill {
+            font-family: 'Cascadia Code', monospace;
+            font-size: 0.8rem;
+            padding: 6px 16px;
+            border-radius: 50px;
+            border: 1px solid var(--timeline-line);
+            color: var(--text-secondary);
+            opacity: 0.55;
+        }
+
+        .stage-pill.active {
+            border-color: var(--accent-color);
+            background-color: var(--accent-color);
+            color: #fff;
+            font-weight: 700;
+            opacity: 1;
+        }
+
+        .stage-connector {
+            color: var(--text-secondary);
+            opacity: 0.4;
+            font-family: 'Cascadia Code', monospace;
+        }
+
+        /* Bloco de Pergunta / Premissa */
+        .research-question-box {
+            padding: 14px 16px;
+            border-left: 3px solid var(--accent-color);
+            background-color: rgba(182, 182, 182, 0.06);
+            border-radius: 0 6px 6px 0;
+            margin: 14px 0;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            font-style: italic;
+        }
+
+        /* Badges de Nota PURE (1, 2, 3) */
+        .pure-score-pill {
+            display: inline-block;
+            font-family: 'Cascadia Code', monospace;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 50px;
+        }
+
+        .pure-1 {
+            background: rgba(16, 185, 129, 0.16);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+
+        .pure-2 {
+            background: rgba(245, 158, 11, 0.16);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.4);
+        }
+
+        .pure-3 {
+            background: var(--tag-bg);
+            color: var(--accent-color);
+            border: 1px solid var(--accent-color);
+        }
+
+        /* Barras de Termômetro de Fricção */
+        .stat-bar-group {
+            margin-bottom: 16px;
+        }
+
+        .stat-bar-header {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Cascadia Code', monospace;
+            font-size: 0.82rem;
+            margin-bottom: 6px;
+        }
+
+        .stat-bar-track {
+            width: 100%;
+            height: 10px;
+            background: var(--timeline-line);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .stat-bar-fill {
+            height: 100%;
+            background: var(--accent-color);
+            border-radius: 6px;
+        }
+
+        /* Abas Interativas */
+        .tabs-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 1px solid var(--timeline-line);
+            color: var(--text-secondary);
+            font-family: 'Cascadia Code', monospace;
+            font-size: 0.84rem;
+            font-weight: 600;
+            padding: 10px 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .tab-btn.active,
+        .tab-btn:hover {
+            border-color: var(--accent-color);
+            color: var(--text-primary);
+            background-color: var(--tag-bg);
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        /* Card Expansível */
+        details.expandable-card {
+            transform: none !important;
+            padding: 24px 28px;
+        }
+
+        details.expandable-card summary {
+            list-style: none;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            user-select: none;
+        }
+
+        details.expandable-card summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .expandable-chevron {
+            font-family: 'Cascadia Code', monospace;
+            font-size: 0.82rem;
+            color: var(--accent-color);
+            border: 1px solid var(--accent-color);
+            padding: 6px 14px;
+            border-radius: 50px;
+            white-space: nowrap;
+            transition: var(--transition-smooth);
+        }
+
+        details.expandable-card summary:hover .expandable-chevron {
+            background-color: var(--accent-color);
+            color: #fff;
+        }
+
+        details.expandable-card[open] .expandable-chevron .label-closed {
+            display: none;
+        }
+
+        details.expandable-card:not([open]) .expandable-chevron .label-open {
+            display: none;
+        }
+
+        .expandable-content {
+            margin-top: 22px;
+            padding-top: 20px;
+            border-top: 1px solid var(--timeline-line);
+        }
+
+        /* Tabelas */
+        .table-responsive-scroll {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid var(--timeline-line);
+        }
+
+        .indicators-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.92rem;
+        }
+
+        .indicators-table th {
+            font-family: 'Cascadia Code', monospace;
+            font-size: 0.78rem;
+            color: var(--accent-color);
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--timeline-line);
+            white-space: nowrap;
+        }
+
+        .indicators-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--timeline-line);
+            color: var(--text-secondary);
+        }
+
+        .indicators-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .td-indicator {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        @media (max-width: 900px) {
+            .grid-3-cols,
+            .grid-4-cols {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 680px) {
+            .grid-2-cols,
+            .grid-3-cols,
+            .grid-4-cols {
+                grid-template-columns: 1fr;
+            }
+            .case-section {
+                padding: 65px 0;
+            }
+            details.expandable-card summary {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body id="body">
+
+    <header id="main-header">
+        <nav>
+            <a href="index.html" class="logo">epietragalla<span class="text-accent">.</span></a>
+            <div class="nav-links">
+                <a href="index.html#sobre">sobre</a>
+                <a href="index.html#o-que-faco">o que faço</a>
+                <a href="index.html#carreira">minha jornada</a>
+                <a href="index.html#cases">projetos</a>
+                <a href="index.html#acredito">o que acredito</a>
+                <a href="index.html#laboratorio">laboratório</a>
+                <a href="#contato">contato</a>
+            </div>
+            <div class="nav-actions">
+                <button id="theme-toggle" class="theme-toggle" aria-label="Alternar tema">🌓</button>
+                <a href="#contato" class="nav-btn">Vamos conversar</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- HERO CASE SECTION -->
+        <section id="hero" class="hero-case">
+            <div id="parallax-shapes-container" class="parallax-shapes-container"></div>
+            <div class="container hero-case-container animate-on-scroll fade-up">
+
+                <p class="hero-case-top-tag">— CASE &middot; RESEARCH OPS CAIXA &middot; MÉTODO PURE &middot; MÉTRICAS DE UX &middot;
+                    2026 —</p>
+
+                <h1 class="hero-case-title">
+                    <span class="italic-accent">Método PURE</span> — Validação científica e avaliação analítica de usabilidade.
+                </h1>
+
+                <p class="hero-case-subtitle">
+                    Estruturação metodológica e aplicação piloto na jornada de contratação da Azulzinha (plataforma SICRD) para quantificar o atrito cognitivo sem depender de testes empíricos extensos
+                </p>
+
+                <p class="hero-case-description">
+                    Como gerar métricas numéricas rigorosas e comparáveis de facilidade de uso quando prazos e logística inviabilizam testes empíricos recorrentes com usuários reais? Neste estudo de Research Ops, validamos o embasamento científico do PURE (CHI '16 / NN/g), criamos a documentação de replicação para o Capítulo de UX e conduzimos sessões piloto com especialistas.
+                </p>
+
+                <div class="hero-case-divider"></div>
+
+                <div class="hero-case-metadata-grid">
+                    <div class="metadata-item">
+                        <span class="metadata-label">CLIENTE</span>
+                        <span class="metadata-value">CAIXA (Capítulo de UX · SICRD)</span>
+                    </div>
+                    <div class="metadata-item">
+                        <span class="metadata-label">PAPEL</span>
+                        <span class="metadata-value">UX Researcher &amp; Piloto da Sessão</span>
+                    </div>
+                    <div class="metadata-item">
+                        <span class="metadata-label">TIME</span>
+                        <span class="metadata-value">UX Lead, UXRs e 3 Avaliadoras</span>
+                    </div>
+                    <div class="metadata-item">
+                        <span class="metadata-label">PERÍODO</span>
+                        <span class="metadata-value">Junho — Setembro/2026</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SEÇÃO 01: OVERVIEW DO PROJETO -->
+        <section id="overview" class="case-section">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll fade-up"><span class="text-accent">01 —</span> overview do projeto</h2>
+                <h3 class="main-section-heading animate-on-scroll fade-up">Traduzindo facilidade de uso em métricas executivas</h3>
+
+                <div class="grid-2-cols grid-cascade animate-on-scroll fade-up">
+                    <div class="belief-box">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">PROBLEMA DE RESEARCH OPS</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">O dilema entre rigor numérico e agilidade</h4>
+                        <p class="belief-desc">
+                            Avaliações heurísticas tradicionais geram listas qualitativas de problemas sem um score numérico para acompanhamento histórico, enquanto testes empíricos com usuários exigem alto custo e logística. O objetivo foi validar e internalizar o <strong>PURE (Practical Usability Rating by Experts)</strong> como alternativa analítica ágil e cientificamente fundamentada.
+                        </p>
+                    </div>
+
+                    <div class="belief-box">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">ENTREGÁVEIS &amp; ESCOPO</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">Guia metodológico + Avaliação Piloto</h4>
+                        <ul class="bullet-list">
+                            <li><strong>Entregáveis:</strong> Relatório com os resultados da aplicação piloto (jornada de contratação da <strong>Azulzinha</strong> no sistema SICRD) e documentação passo a passo para replicação em outros projetos da CAIXA.</li>
+                            <li><strong>Fora de escopo:</strong> Ajustes diretos no protótipo ou redefinição das regras de negócio após o levantamento dos insights.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Indicador de Etapa do Processo -->
+                <div class="process-stage-bar animate-on-scroll fade-up">
+                    <span class="stage-label">FRENTE DE RESEARCH OPS:</span>
+                    <span class="stage-pill active">1. Discovery Metodológico &amp; Piloto</span>
+                    <span class="stage-connector">&rarr;</span>
+                    <span class="stage-pill">2. Calibração de Avaliadores</span>
+                    <span class="stage-connector">&rarr;</span>
+                    <span class="stage-pill">3. Escala no Capítulo de UX</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 02: COMO FUNCIONA O MÉTODO PURE -->
+        <section id="metodo" class="case-section">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll fade-up"><span class="text-accent">02 —</span> fundamentação: o método PURE</h2>
+                <h3 class="main-section-heading animate-on-scroll fade-up">Avaliação cega por especialistas sob a lente da persona</h3>
+
+                <p class="sobre-bio animate-on-scroll fade-up" style="max-width: 900px; font-size: 1.08rem;">
+                    Criado por Christian Rohrer, Jeff Sauro et al. (CHI 2016) e consolidado pela Nielsen Norman Group (NN/g), o PURE combina inspeção de especialistas com princípios do <em>Keystroke Level Modeling (KLM)</em> para medir o atrito cognitivo e físico passo a passo ao longo do fluxo ideal (<em>Happy Path</em>).
+                </p>
+
+                <div class="grid-3-cols grid-cascade animate-on-scroll fade-up" style="margin-bottom: 24px;">
+                    <div class="belief-box">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">PAPEL 01 &middot; O PILOTO</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">Execução silenciosa do Happy Path</h4>
+                        <p class="belief-desc">
+                            Navega pelo protótipo ou sistema executando o caminho ideal para cumprir a tarefa. Atua em silêncio para evitar vieses, sinalizando apenas o início e o fim de cada passo para a atribuição das notas.
+                        </p>
+                    </div>
+
+                    <div class="belief-box">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">PAPEL 02 &middot; 3 AVALIADORES</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">Pontuação individual na pele da persona</h4>
+                        <p class="belief-desc">
+                            Três especialistas em UX/UI ou domínio do negócio avaliam cada etapa individualmente em uma planilha pré-estruturada (notas de 1 a 3 + justificativa), assumindo estritamente o modelo mental da persona definida.
+                        </p>
+                    </div>
+
+                    <div class="belief-box">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">RIGOR &middot; CONSENSO &amp; ALPHA (α)</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">Confiabilidade Interavaliadores (IRR)</h4>
+                        <p class="belief-desc">
+                            Após as notas secretas, calcula-se o <strong>Alpha de Krippendorff</strong> (referência científica de confiabilidade &ge; 0,667) e realiza-se uma reunião de consenso para alinhar divergências e somar o score final da tarefa.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Rubrica de Pontuação 1 a 3 -->
+                <div class="grid-3-cols grid-cascade animate-on-scroll fade-up">
+                    <div class="belief-box">
+                        <span class="pure-score-pill pure-1">NOTA 1 &middot; ATRITO BAIXO</span>
+                        <p class="belief-desc" style="margin-top: 12px;">
+                            A etapa pode ser realizada facilmente pelo usuário-alvo, devido à baixa carga cognitiva ou por seguir um padrão de interface amplamente conhecido.
+                        </p>
+                    </div>
+
+                    <div class="belief-box">
+                        <span class="pure-score-pill pure-2">NOTA 2 &middot; ESFORÇO MODERADO</span>
+                        <p class="belief-desc" style="margin-top: 12px;">
+                            Exige grau considerável de esforço cognitivo ou físico (hesitação ou leitura atenta), mas o usuário-alvo consegue concluir a etapa com algum empenho.
+                        </p>
+                    </div>
+
+                    <div class="belief-box">
+                        <span class="pure-score-pill pure-3">NOTA 3 &middot; ATRITO CRÍTICO</span>
+                        <p class="belief-desc" style="margin-top: 12px;">
+                            Etapa difícil devido à significativa carga cognitiva ou confusão; grande probabilidade de o usuário cometer erros graves ou abandonar a tarefa.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 03: PROJETO PILOTO — JORNADA DA AZULZINHA & PERSONA -->
+        <section id="piloto" class="case-section">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll fade-up"><span class="text-accent">03 —</span> projeto piloto: jornada &amp; persona</h2>
+                <h3 class="main-section-heading animate-on-scroll fade-up">Contratação da Azulzinha para Grandes Contas (SICRD)</h3>
+
+                <div class="grid-2-cols grid-cascade animate-on-scroll fade-up">
+                    <div class="belief-box">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">OBJETO AVALIADO &middot; 7 ETAPAS</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">Etapa 1: Condições Comerciais (Precificação)</h4>
+                        <p class="belief-desc">
+                            Avaliamos o primeiro módulo da jornada de contratação da maquininha Azulzinha na plataforma <strong>SIPNC / SICRD</strong>, decompondo o fluxo em <strong>7 passos lineares</strong> (Score mínimo teórico: 7 pts | Score máximo teórico: 21 pts):
+                        </p>
+                        <ul class="bullet-list">
+                            <li><strong>Passos 1 a 3:</strong> Informar faturamento mensal em cartões, quantidade de CNPJs do grupo e confirmar se possuem o mesmo CNAE primário.</li>
+                            <li><strong>Passos 4 e 5:</strong> Adicionar CNAEs secundários, definir antecipação de recebíveis e selecionar as 5 tecnologias físicas da Azulzinha.</li>
+                            <li><strong>Passos 6 e 7:</strong> Preencher/replicar distribuição por bandeira nos CNAEs, revisar o resumo e confirmar o envio da precificação.</li>
+                        </ul>
+                    </div>
+
+                    <div class="belief-box">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">MODELO MENTAL DOS AVALIADORES</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">Persona: Gerente de Clientes (GER CLIENTES NEG III ATC)</h4>
+                        <ul class="bullet-list">
+                            <li><strong>Familiaridade Tecnológica:</strong> Média — utiliza smartphone diariamente e computador no trabalho para contato com clientes e fornecedor (Fiserv).</li>
+                            <li><strong>Domínio do Produto:</strong> Alto — domina as regras de varejo e credenciamento de Grandes Contas da Azulzinha.</li>
+                            <li><strong>Contexto Operacional:</strong> Antes preenchia formulários abertos em Word enviados por e-mail (por grupo ou CNPJ). Na nova interface, precisa realizar a precificação estruturada <strong>por CNAE</strong> dentro do SICRD.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 04: RESULTADOS DAS SESSÕES PILOTO -->
+        <section id="sessoes" class="case-section">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll fade-up"><span class="text-accent">04 —</span> execução &amp; resultados das sessões</h2>
+                <h3 class="main-section-heading animate-on-scroll fade-up">Evolução da calibração do time entre a 1ª e a 2ª rodada</h3>
+
+                <p class="sobre-bio animate-on-scroll fade-up" style="max-width: 900px; font-size: 1.08rem;">
+                    Conduzimos <strong>2 sessões gravadas e transcritas</strong> (dias 01 e 09 de setembro de 2026) com 3 avaliadoras (Alessandra, Cynthia e Renata) e 1 piloto (Estéfano). A comparação entre as rodadas demonstrou na prática a curva de calibração prevista na literatura do PURE:
+                </p>
+
+                <!-- Abas das 2 Sessões -->
+                <div class="tabs-nav animate-on-scroll fade-up" role="tablist">
+                    <button class="tab-btn active" data-tab="tab-s1">Sessão 1 (01/09) — Score 9 &middot; Atrito Notável</button>
+                    <button class="tab-btn" data-tab="tab-s2">Sessão 2 (09/09) — Score 7 &middot; Atrito Fluido</button>
+                </div>
+
+                <!-- SESSÃO 1 -->
+                <div id="tab-s1" class="tab-panel active belief-box" style="transform: none;">
+                    <div class="grid-2-cols">
+                        <div>
+                            <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">PRIMEIRA RODADA &middot; CALIBRAÇÃO INICIAL</span>
+                            <h4 class="belief-title" style="margin-top: 10px;">Divergências nas etapas finais revelam pontos de atrito</h4>
+                            <p class="belief-desc">
+                                Na primeira sessão, os passos 1 a 3 obtiveram acordo unânime (nota 1). A partir do passo 4 (CNAEs) e principalmente no passo 5 (seleção das 5 tecnologias), surgiram divergências entre notas 1, 2 e 3, exigindo discussão de consenso e motivando uma segunda rodada de alinhamento.
+                            </p>
+                            <div class="research-question-box">
+                                Nota consenso da Sessão 1 fechou em <strong>9 pontos</strong> (com notas 2 nos passos 5 e 6), representando um índice de fricção de <strong>14,3%</strong> na escala teórica de 7 a 21.
+                            </div>
+                        </div>
+                        <div style="padding: 24px; border-radius: 8px; border: 1px solid var(--timeline-line);">
+                            <p class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace; margin-bottom: 14px;">TERMÔMETRO DE FRICÇÃO &middot; SESSÃO 1</p>
+                            <div class="stat-bar-group">
+                                <div class="stat-bar-header"><span>Score PURE Global (Mín. 7 / Máx. 21)</span><span>9 pts</span></div>
+                                <div class="stat-bar-track"><div class="stat-bar-fill" style="width: 14.3%;"></div></div>
+                            </div>
+                            <ul class="bullet-list" style="margin-top: 16px;">
+                                <li><strong>Confiabilidade IRR (Alpha de Krippendorff):</strong> <code>-0.148</code> (sinalizando necessidade de alinhamento de modelo mental entre avaliadoras).</li>
+                                <li><strong>Etapas críticas apontadas:</strong> Passo 5 (seleção de tecnologias) e Passo 6 (replicação de bandeiras por CNAE).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SESSÃO 2 -->
+                <div id="tab-s2" class="tab-panel belief-box" style="transform: none;">
+                    <div class="grid-2-cols">
+                        <div>
+                            <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">SEGUNDA RODADA &middot; TIME CALIBRADO</span>
+                            <h4 class="belief-title" style="margin-top: 10px;">Mais de 90% de concordância nas avaliações</h4>
+                            <p class="belief-desc">
+                                Com o modelo mental da persona nivelado após a reunião de consenso da primeira sessão, as avaliadoras apresentaram forte alinhamento na Sessão 2: ocorreram apenas <strong>2 divergências pontuais em 21 avaliações totais</strong> (menos de 10% de discordância).
+                            </p>
+                            <div class="research-question-box">
+                                O Score PURE Global consolidado caiu para <strong>7 pontos</strong> (0,0% de índice de fricção — fluxo fluido), encerrando com êxito a validação do piloto.
+                            </div>
+                        </div>
+                        <div style="padding: 24px; border-radius: 8px; border: 1px solid var(--timeline-line);">
+                            <p class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace; margin-bottom: 14px;">TERMÔMETRO DE FRICÇÃO &middot; SESSÃO 2</p>
+                            <div class="stat-bar-group">
+                                <div class="stat-bar-header"><span>Taxa de Concordância Bruta (19/21 células)</span><span>90,5%</span></div>
+                                <div class="stat-bar-track"><div class="stat-bar-fill" style="width: 90.5%; background: #10b981;"></div></div>
+                            </div>
+                            <ul class="bullet-list" style="margin-top: 16px;">
+                                <li><strong>Confiabilidade IRR (Alpha de Krippendorff):</strong> <code>-0.053</code> — mesmo com 90,5% de acordo bruto, o coeficiente permaneceu próximo de zero devido ao paradoxo estatístico de baixa variância em uma amostra pequena de apenas 7 etapas.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card Expansível: Tabela Passo a Passo das Notas (Inicialmente Fechado) -->
+                <details class="belief-box expandable-card animate-on-scroll fade-up" style="margin-top: 28px;">
+                    <summary>
+                        <div>
+                            <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace; display: block;">
+                                DETALHAMENTO PASSO A PASSO &middot; PLANILHA DE AVALIAÇÃO PURE (TAREFA 1)
+                            </span>
+                            <span style="font-size: 0.92rem; color: var(--text-secondary);">
+                                Comparativo das notas atribuídas pelas 3 avaliadoras nas 7 etapas da contratação da Azulzinha
+                            </span>
+                        </div>
+                        <span class="expandable-chevron">
+                            <span class="label-closed">+ Ver tabela de passos</span>
+                            <span class="label-open">− Ocultar tabela</span>
+                        </span>
+                    </summary>
+
+                    <div class="expandable-content">
+                        <div class="table-responsive-scroll">
+                            <table class="indicators-table">
+                                <thead>
+                                    <tr>
+                                        <th align="left">PASSO</th>
+                                        <th align="left">DESCRIÇÃO DA ETAPA (HAPPY PATH)</th>
+                                        <th align="center">SESSÃO 1 (AV. 1 / 2 / 3)</th>
+                                        <th align="center">SESSÃO 2 (AV. 1 / 2 / 3)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="td-indicator">Passo 1</td>
+                                        <td>Preencher o valor do faturamento mensal em cartões e avançar</td>
+                                        <td align="center"><span class="pure-score-pill pure-1">1 / 1 / 1</span></td>
+                                        <td align="center"><span class="pure-score-pill pure-1">1 / 1 / 1</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td-indicator">Passo 2</td>
+                                        <td>Preencher a quantidade de CNPJs do grupo</td>
+                                        <td align="center"><span class="pure-score-pill pure-1">1 / 1 / 1</span></td>
+                                        <td align="center"><span class="pure-score-pill pure-1">1 / 1 / 1</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td-indicator">Passo 3</td>
+                                        <td>Selecionar "Não" em "Todos os CNPJs do grupo possuem o mesmo CNAE primário?"</td>
+                                        <td align="center"><span class="pure-score-pill pure-1">1 / 1 / 1</span></td>
+                                        <td align="center"><span class="pure-score-pill pure-1">1 / 1 / 1</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td-indicator">Passo 4</td>
+                                        <td>Adicionar CNAE 1 e CNAE 2 e escolher modalidade de antecipação de recebíveis</td>
+                                        <td align="center"><span class="pure-score-pill pure-2">1 / 1 / 2</span></td>
+                                        <td align="center"><span class="pure-score-pill pure-1">1 / 1 / 1</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td-indicator">Passo 5</td>
+                                        <td>Em Tecnologias Físicas, adicionar cada uma das 5 tecnologias Azulzinha e avançar</td>
+                                        <td align="center"><span class="pure-score-pill pure-3">1 / 3 / 1</span></td>
+                                        <td align="center"><span class="pure-score-pill pure-2">1 / 2 / 1</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td-indicator">Passo 6</td>
+                                        <td>Preencher distribuição de recebíveis por bandeira no CNAE Principal e replicar nos demais</td>
+                                        <td align="center"><span class="pure-score-pill pure-2">1 / 2 / 1</span></td>
+                                        <td align="center"><span class="pure-score-pill pure-1">1 / 1 / 1</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td-indicator">Passo 7</td>
+                                        <td>Ler o resumo da solicitação de precificação e confirmar o envio</td>
+                                        <td align="center"><span class="pure-score-pill pure-2">1 / 2 / 1</span></td>
+                                        <td align="center"><span class="pure-score-pill pure-2">1 / 1 / 2</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </details>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 05: INSIGHTS & RECOMENDAÇÕES LEVANTADAS -->
+        <section id="insights" class="case-section">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll fade-up"><span class="text-accent">05 —</span> insights &amp; recomendações de UX/UI</h2>
+                <h3 class="main-section-heading animate-on-scroll fade-up">Oportunidades de melhoria identificadas na jornada da Azulzinha</h3>
+
+                <div class="grid-3-cols grid-cascade animate-on-scroll fade-up" style="margin-bottom: 24px;">
+                    <!-- Insight 1 -->
+                    <div class="belief-box">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">01 / COMPONENTE DE SELEÇÃO</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">Padronizar seleção das maquininhas</h4>
+                        <p class="belief-desc">
+                            Na etapa 5, a combinação de campo <code>select</code> com botões <code>checkbox</code> para escolher as 5 maquininhas gerou confusão visual (recebendo nota 3 na primeira sessão). Recomenda-se unificar o padrão de seleção.
+                        </p>
+                    </div>
+
+                    <!-- Insight 2 -->
+                    <div class="belief-box">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">02 / UX WRITING &amp; TAXONOMIA</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">Clareza no termo "Tecnologia"</h4>
+                        <p class="belief-desc">
+                            O termo <em>"Tecnologia"</em> é usado de forma ambígua na interface, podendo se referir ao modelo da maquininha física, ao canal de contratação (online/presencial) ou à própria marca Azulzinha.
+                        </p>
+                    </div>
+
+                    <!-- Insight 3 -->
+                    <div class="belief-box">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">03 / CARGA COGNITIVA</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">Quebra de expectativa na densidade de campos</h4>
+                        <p class="belief-desc">
+                            O salto repentino na quantidade de informações e campos exigidos no preenchimento e replicação dos CNAEs rompe a fluidez observada nos primeiros passos da jornada.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="grid-2-cols grid-cascade animate-on-scroll fade-up">
+                    <!-- Insight 4 -->
+                    <div class="belief-box">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">04 / HIERARQUIA DE AÇÕES</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">Revisar ordem do botão "Continuar"</h4>
+                        <p class="belief-desc">
+                            Na etapa de precificação dos CNAEs, a disposição atual dos botões segue a ordem <em>Cancelar &rarr; Salvar rascunho &rarr; Continuar</em>, gerando questionamento quanto à ergonomia e hierarquia visual da ação primária.
+                        </p>
+                    </div>
+
+                    <!-- Insight 5 -->
+                    <div class="belief-box">
+                        <span class="case-meta text-accent" style="font-family: 'Cascadia Code', monospace;">05 / VISIBILIDADE DO STATUS</span>
+                        <h4 class="belief-title" style="margin-top: 10px;">Feedback visual das próximas etapas</h4>
+                        <p class="belief-desc">
+                            Após o envio da precificação, o SICRD exibe apenas o texto <em>"Em análise (até 2 dias úteis)"</em>. Falta um componente visual de progresso que indique ao gerente os próximos passos do fluxo.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 06: REFLEXÕES & APRENDIZADOS -->
+        <section id="retrospectiva" class="case-section">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll fade-up"><span class="text-accent">06 —</span> reflexões &amp; aprendizados</h2>
+                <h3 class="main-section-heading animate-on-scroll fade-up">O que aprendemos ao implantar o PURE como prática de Research Ops</h3>
+
+                <div class="grid-2-cols grid-cascade animate-on-scroll fade-up">
+                    <div class="belief-box">
+                        <h4 class="belief-title">A calibração é o coração do método</h4>
+                        <p class="belief-desc">
+                            Como apontado na literatura (Siemens e Capital One), divergências iniciais entre avaliadores são naturais. A reunião de consenso após a primeira rodada cega provou ser o mecanismo pedagógico essencial para alinhar o olhar da equipe à persona e elevar a concordância acima de 90%.
+                        </p>
+                    </div>
+
+                    <div class="belief-box">
+                        <h4 class="belief-title">Interpretação estatística crítica em amostras curtas</h4>
+                        <p class="belief-desc">
+                            Documentar por que o Alpha de Krippendorff permaneceu negativo mesmo com mais de 90% de acordo bruto (efeito matemático de baixa variância em apenas 7 passos) evitou interpretações equivocadas e fortaleceu o guia metodológico deixado para o Capítulo de UX da CAIXA.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Links de Navegação entre Cases -->
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; width: 100%; margin-top: 60px; padding-top: 28px; border-top: 1px solid var(--timeline-line);"
+                    class="animate-on-scroll fade-up">
+                    <a href="pixporvoz.html" class="nav-btn">&larr; Projeto Anterior: PIX por Voz</a>
+                    <a href="openfinance.html" class="nav-btn">Próximo Projeto: Minha Carteira (Open Finance) &rarr;</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO CONTATO -->
+        <section id="contato" class="contato">
+            <div class="container contato-content">
+                <div class="contato-left animate-on-scroll fade-right">
+                    <h2 class="contato-title">Vamos conversar<span class="dot1">.</span></h2>
+                </div>
+                <div class="contato-right animate-on-scroll fade-left">
+                    <ul class="contact-list">
+                        <li class="contact-item animate-on-scroll fade-up">
+                            <svg class="contact-arrow" viewBox="0 0 24 24">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                            <a href="mailto:epietragalla@gmail.com">epietragalla@gmail.com</a>
+                        </li>
+                        <li class="contact-item animate-on-scroll fade-up">
+                            <svg class="contact-arrow" viewBox="0 0 24 24">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                            <a href="https://wa.me/5561981794586" target="_blank">(61) 98179-4586</a>
+                        </li>
+                        <li class="contact-item animate-on-scroll fade-up">
+                            <svg class="contact-arrow" viewBox="0 0 24 24">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                            <a href="https://www.linkedin.com/in/epietragalla/" target="_blank">LinkedIn</a>
+                        </li>
+                        <li class="contact-item animate-on-scroll fade-up">
+                            <svg class="contact-arrow" viewBox="0 0 24 24">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                            <a href="https://epietragalla.medium.com/" target="_blank">Medium</a>
+                        </li>
+                        <li class="contact-item animate-on-scroll fade-up">
+                            <svg class="contact-arrow" viewBox="0 0 24 24">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                            <a href="cvepietragalla.pdf" target="_blank">Curriculum Vitae</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="container animate-on-scroll fade-up">
+        <p>© 2026 Estéfano Pietragalla · Brasília, DF — Brasil</p>
+    </footer>
+
+    <script>
+        // Alternador de Tema Dark / Light (usa classes do style.css)
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.getElementById('body');
+
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            body.classList.add(savedTheme);
+            updateToggleButton(savedTheme);
+        } else {
+            body.classList.add('dark-mode');
+            updateToggleButton('dark-mode');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.add('theme-blur');
+            setTimeout(() => {
+                if (body.classList.contains('light-mode')) {
+                    body.classList.remove('light-mode');
+                    body.classList.add('dark-mode');
+                    localStorage.setItem('theme', 'dark-mode');
+                    updateToggleButton('dark-mode');
+                } else {
+                    body.classList.remove('dark-mode');
+                    body.classList.add('light-mode');
+                    localStorage.setItem('theme', 'light-mode');
+                    updateToggleButton('light-mode');
+                }
+            }, 250);
+            setTimeout(() => {
+                body.classList.remove('theme-blur');
+            }, 500);
+        });
+
+        function updateToggleButton(theme) {
+            if (theme === 'dark-mode') {
+                themeToggle.innerHTML = `
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.22" x2="5.64" y2="17.78"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                `;
+            } else {
+                themeToggle.innerHTML = `
+                    <svg viewBox="0 0 24 24">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                `;
+            }
+        }
+
+        // Estilo no Header ao Rolar
+        const header = document.getElementById('main-header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // Abas Interativas das Sessões PURE
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const tabPanels = document.querySelectorAll('.tab-panel');
+
+        tabButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetId = btn.getAttribute('data-tab');
+
+                tabButtons.forEach(b => b.classList.remove('active'));
+                tabPanels.forEach(p => p.classList.remove('active'));
+
+                btn.classList.add('active');
+                document.getElementById(targetId).classList.add('active');
+            });
+        });
+
+        // Efeito Parallax Geométrico (usa .p-shape do style.css)
+        const shapeConfig = {
+            containerId: 'parallax-shapes-container',
+            count: 15,
+            minSize: 40,
+            maxSize: 240,
+            minOpacity: 0.2,
+            maxOpacity: 0.12,
+            minSpeed: 0.05,
+            maxSpeed: 0.25,
+            types: ['square', 'triangle', 'hexagon']
+        };
+
+        const shapeContainer = document.getElementById(shapeConfig.containerId);
+        const shapes = [];
+        const random = (min, max) => Math.random() * (max - min) + min;
+
+        const initGeometricShapes = () => {
+            shapeContainer.innerHTML = '';
+            shapes.length = 0;
+
+            for (let i = 0; i < shapeConfig.count; i++) {
+                const type = shapeConfig.types[Math.floor(Math.random() * shapeConfig.types.length)];
+                const size = random(shapeConfig.minSize, shapeConfig.maxSize);
+                const opacity = random(shapeConfig.minOpacity, shapeConfig.maxOpacity);
+                const speed = random(shapeConfig.minSpeed, shapeConfig.maxSpeed);
+                const left = random(0, 95);
+                const initialTop = Math.random() < 0.65 ? random(0, 120) : random(120, 400);
+
+                const shapeEl = document.createElement('div');
+                shapeEl.className = `p-shape ${type}`;
+                shapeEl.style.width = `${size}px`;
+                shapeEl.style.height = `${size}px`;
+
+                const randomRotation = Math.floor(random(0, 360));
+                shapeEl.style.opacity = opacity;
+                shapeEl.style.left = `${left}%`;
+                shapeEl.style.top = `${initialTop}%`;
+                shapeEl.style.transform = `rotate(${randomRotation}deg)`;
+
+                shapeContainer.appendChild(shapeEl);
+
+                shapes.push({
+                    el: shapeEl,
+                    speed: speed,
+                    initialTop: initialTop,
+                    rotation: randomRotation
+                });
+            }
+        };
+
+        const updateParallaxShapes = () => {
+            const scrollY = window.scrollY;
+            shapes.forEach(shape => {
+                const yOffset = scrollY * shape.speed;
+                shape.el.style.transform = `translate3d(0, ${-yOffset}px, 0) rotate(${shape.rotation}deg)`;
+            });
+        };
+
+        initGeometricShapes();
+        window.addEventListener('scroll', updateParallaxShapes);
+        window.addEventListener('resize', initGeometricShapes);
+
+        // Observador de Interseção para Animações ao Rolar (usa .animate-on-scroll e .is-visible do style.css)
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.15
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+    </script>
+</body>
+
+</html>
