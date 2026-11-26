@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Ficha D&D 5E 2014</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+  <link rel="stylesheet" href="css/print.css" media="print" />
+</head>
+
+<body>
+  <!-- Histórico de Rolagens de Dados -->
+  <div id="dice-log-container" style="display: none;">
+    <div id="dice-log-header">
+      <span>Histórico de Dados</span>
+      <div class="dice-header-actions">
+        <button type="button" id="btn-limpar-log" class="btn-log-action">Limpar</button>
+        <button type="button" id="btn-fechar-log" class="btn-log-close">✕</button>
+      </div>
+    </div>
+    <div id="dice-quick-rolls">
+      <button type="button" class="quick-roll-btn" data-dice="4">d4</button>
+      <button type="button" class="quick-roll-btn" data-dice="6">d6</button>
+      <button type="button" class="quick-roll-btn" data-dice="8">d8</button>
+      <button type="button" class="quick-roll-btn" data-dice="10">d10</button>
+      <button type="button" class="quick-roll-btn" data-dice="12">d12</button>
+      <button type="button" class="quick-roll-btn btn-d20" data-dice="20">d20</button>
+      <button type="button" class="quick-roll-btn" data-dice="100">d100</button>
+    </div>
+    <div id="dice-log-content">
+      <div class="log-placeholder">Clique em um bônus, arma ou nos dados acima...</div>
+    </div>
+  </div>
+
+  <button type="button" id="btn-reabrir-log" title="Abrir Histórico de Dados">🎲</button>
+
+  <!-- Barra Superior Fixa (Tema e Ações de Arquivo) -->
+  <div class="header-fixed-top">
+    <button type="button" id="menu-hamburguer-btn">☰</button>
+    <button type="button" id="btn-theme-toggle" class="btn-theme-toggle" title="Alternar Tema Claro/Escuro">
+      <span class="icon-moon">🌙</span>
+      <span class="icon-sun">☀️</span>
+    </button>
+
+    <div class="btn-container-inner">
+      <label class="btn-save btn-import-label">
+        📥 Importar Dados
+        <input type="file" id="import_file" accept=".json" style="display: none;">
+      </label>
+      <button type="button" id="btn-exportar-json" class="btn-save">📤 Exportar Dados</button>
+      <button type="button" id="btn-limpar-ficha" class="btn-save">🧹 Limpar Ficha</button>
+      <button type="button" id="btn-baixar-html" class="btn-save">💾 Salvar HTML</button>
+      <button type="button" id="btn-imprimir-pdf" class="btn-save btn-pdf">🖨️ Exportar PDF</button>
+      <button type="button" id="btn-gerar-aleatorio" class="btn-save btn-pdf">🎲 Ficha Aleatória</button>
+    </div>
+  </div>
+
+  <!-- Modal Rápido de Magia -->
+  <div id="spell-quick-modal" class="modal-box modal-spell-quick" style="display: none;">
+    <div class="spell-quick-header">
+      <h3 id="sqm-title">Nome da Magia</h3>
+      <button type="button" id="btn-fechar-spell-modal" class="btn-modal-x">✕</button>
+    </div>
+    <div id="sqm-meta" class="sqm-meta"></div>
+    <div id="sqm-desc" class="sqm-desc"></div>
+  </div>
+
+  <!-- Corpo Principal da Ficha -->
+  <div class="sheet">
+    <!-- Cabeçalho do Personagem com Avatar Integrado -->
+    <div class="header-container">
+      <div class="header-top-flex">
+        <div id="char-image-container" title="Clique para alterar o endereço da imagem">
+          <img id="char_img" src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'%3E%3C/path%3E%3C/svg%3E" alt="Avatar">
+          <div class="overlay-icon">✏️</div>
+        </div>
+
+        <div class="header-fields-wrap">
+          <div class="header-row l1">
+            <div>
+              <label for="char_name">Nome do Personagem</label>
+              <input type="text" id="char_name" />
+            </div>
+            <div>
+              <label>&nbsp;</label>
+              <button type="button" id="btn-gerar-nome" class="btn-gerar-nome full-width">🎲 Nome</button>
+            </div>
+            <div>
+              <label for="char_sex">Gênero</label>
+              <select id="char_sex" class="select-center">
+                <option value="">Selecione...</option>
+                <option value="Homem">Homem</option>
+                <option value="Mulher">Mulher</option>
+              </select>
+            </div>
+            <div>
+              <label for="player_name">Nome do jogador</label>
+              <input type="text" id="player_name" />
+            </div>
+            <div>
+              <label for="level_val">Nível</label>
+              <input type="number" id="level_val" value="1" min="1" max="20" class="input-level" />
+            </div>
+            <div>
+              <label>&nbsp;</label>
+              <button type="button" id="btn-descanso-longo" class="btn-gerar-nome full-width">⛺ Descanso</button>
+            </div>
+          </div>
+
+          <div class="header-row l2">
+            <div>
+              <label for="race_name">Raça</label>
+              <select id="race_name">
+                <option value="">Selecione...</option>
+                <option value="Anão (Dwarf)">Anão (Dwarf)</option>
+                <option value="Elfo (Elf)">Elfo (Elf)</option>
+                <option value="Genasi">Genasi</option>
+                <option value="Halfling (Halfling)">Halfling</option>
+                <option value="Humano (Human)">Humano (Human)</option>
+                <option value="Draconato (Dragonborn)">Draconato (Dragonborn)</option>
+                <option value="Gnomo (Gnome)">Gnomo (Gnome)</option>
+                <option value="Meio-Elfo (Half-Elf)">Meio-Elfo (Half-Elf)</option>
+                <option value="Meio-Orc (Half-Orc)">Meio-Orc (Half-Orc)</option>
+                <option value="Tiefling (Tiefling)">Tiefling (Tiefling)</option>
+              </select>
+            </div>
+            <div>
+              <label for="subrace_name">Sub-raça</label>
+              <select id="subrace_name">
+                <option value="">Selecione a Raça...</option>
+              </select>
+            </div>
+            <div>
+              <label for="align">Alinhamento</label>
+              <select id="align">
+                <option value="">Selecione...</option>
+                <option value="Leal e Bom (Lawful Good)">Leal e Bom (Lawful Good)</option>
+                <option value="Neutro e Bom (Neutral Good)">Neutro e Bom (Neutral Good)</option>
+                <option value="Caótico e Bom (Chaotic Good)">Caótico e Bom (Chaotic Good)</option>
+                <option value="Leal e Neutro (Lawful Neutral)">Leal e Neutro (Lawful Neutral)</option>
+                <option value="Neutro (Neutral)">Neutro (Neutral)</option>
+                <option value="Caótico e Neutro (Chaotic Neutral)">Caótico e Neutro (Chaotic Neutral)</option>
+                <option value="Leal e Mau (Lawful Evil)">Leal e Mau (Lawful Evil)</option>
+                <option value="Neutro e Mau (Neutral Evil)">Neutro e Mau (Neutral Evil)</option>
+                <option value="Caótico e Mau (Chaotic Evil)">Caótico e Mau (Chaotic Evil)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="header-row l3">
+            <div>
+              <label for="class_name">Classe</label>
+              <select id="class_name">
+                <option value="">Selecione...</option>
+                <option value="Artífice (Artificer)">Artífice (Artificer)</option>
+                <option value="Bárbaro (Barbarian)">Bárbaro (Barbarian)</option>
+                <option value="Bardo (Bard)">Bardo (Bard)</option>
+                <option value="Bruxo (Warlock)">Bruxo (Warlock)</option>
+                <option value="Clérigo (Cleric)">Clérigo (Cleric)</option>
+                <option value="Druida (Druid)">Druida (Druid)</option>
+                <option value="Feiticeiro (Sorcerer)">Feiticeiro (Sorcerer)</option>
+                <option value="Guerreiro (Fighter)">Guerreiro (Fighter)</option>
+                <option value="Ladino (Rogue)">Ladino (Rogue)</option>
+                <option value="Monge (Monk)">Monge (Monk)</option>
+                <option value="Paladino (Paladin)">Paladino (Paladin)</option>
+                <option value="Patrulheiro (Ranger)">Patrulheiro (Ranger)</option>
+                <option value="Mago (Wizard)">Mago (Wizard)</option>
+              </select>
+            </div>
+            <div>
+              <label for="subclass_name">Subclasse / Arquetipo</label>
+              <select id="subclass_name">
+                <option value="">Selecione a Classe...</option>
+              </select>
+            </div>
+            <div>
+              <label for="bg_name">Antecedente</label>
+              <select id="bg_name">
+                <option value="">Selecione...</option>
+                <option value="Acólito (Acolyte)">Acólito (Acolyte)</option>
+                <option value="Artesão de Guilda (Guild Artisan)">Artesão de Guilda (Guild Artisan)</option>
+                <option value="Artista (Entertainer)">Artista (Entertainer)</option>
+                <option value="Charlatão (Charlatan)">Charlatão (Charlatan)</option>
+                <option value="Criminoso (Criminal)">Criminoso (Criminal)</option>
+                <option value="Eremita (Hermit)">Eremita (Hermit)</option>
+                <option value="Forasteiro (Outlander)">Forasteiro (Outlander)</option>
+                <option value="Herói do Povo (Folk Hero)">Herói do Povo (Folk Hero)</option>
+                <option value="Marinheiro (Sailor)">Marinheiro (Sailor)</option>
+                <option value="Nobre (Noble)">Nobre (Noble)</option>
+                <option value="Órfão (Urchin)">Órfão (Urchin)</option>
+                <option value="Sábio (Sage)">Sábio (Sage)</option>
+                <option value="Soldado (Soldier)">Soldado (Soldier)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Barra de Navegação Rápida por Abas -->
+      <div class="top-tabs-bar">
+        <button type="button" id="tab_btn_sheet" class="top-tab-btn active" data-target="sheet">⚔️ Ficha Principal</button>
+        <button type="button" id="btn_toggle_guide" class="top-tab-btn" data-target="guide_section_box">📖 Guia de Referência</button>
+        <button type="button" id="btn_toggle_grimoire" class="top-tab-btn" data-target="grimoire_section_box">✨ Grimório Detalhado</button>
+        <button type="button" id="btn_toggle_infusions" class="top-tab-btn" data-target="infusions_section_box" style="display: none;">🛠️ Infusões</button>
+        <button type="button" id="btn_toggle_notes" class="top-tab-btn" data-target="notes_section_box">📝 Anotações</button>
+        <a href="https://drive.google.com/drive/folders/1rQGgfZDzKCg0GeuJ15Sx1Gk-4gvd7-wA?usp=sharing" target="_blank" rel="noopener noreferrer" class="top-tab-btn tab-books-link">📚 Livros</a>
+      </div>
+    </div>
+
+    <!-- Layout Principal de 3 Colunas -->
+    <div class="main-layout">
+      <!-- Coluna 1: Proficiência, Inspiração, Percepção Passiva, Atributos e Perícias -->
+      <section id="coluna-atributos-pericias"></section>
+
+      <!-- Coluna 2: Ação Imediata (CA/Inic/Desloc, PV + Temp, Armas, Magias) e Inventário -->
+      <section id="coluna-combate-magia">
+        <div class="combat-wrap">
+          <div class="stat-card">
+            <label for="ca_val">CA</label>
+            <input type="number" id="ca_val" value="10" />
+          </div>
+          <div class="stat-card">
+            <label for="inic_val">Iniciativa</label>
+            <input type="text" id="inic_val" readonly />
+          </div>
+          <div class="stat-card">
+            <label for="speed_val">Deslocamento</label>
+            <input type="text" id="speed_val" value="9m" />
+          </div>
+        </div>
+
+        <div class="box-list">
+          <label>Pontos de Vida</label>
+          <div class="hp-controls">
+            <div class="hp-col">
+              <span class="hp-sublabel">Atuais</span>
+              <input type="number" id="hp_at" placeholder="0" class="hp-input-at" />
+            </div>
+            <span class="hp-divider">/</span>
+            <div class="hp-col">
+              <span class="hp-sublabel">Máximos</span>
+              <div class="hp-max-wrap">
+                <input type="number" id="hp_max" placeholder="0" class="hp-input-max" data-manual="false" />
+                <button type="button" id="btn-reset-hp" class="btn-icon-reset" title="Resetar para cálculo automático">🔄</button>
+              </div>
+            </div>
+            <div class="hp-col hp-temp-col">
+              <span class="hp-sublabel">Temporários</span>
+              <input type="number" id="hp_temp" placeholder="0" class="hp-input-temp" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Armas & Ataques -->
+        <div class="box-list">
+          <label for="select_arma_phb">Armas & Ataques <span class="hint-inline">(Clique no bônus/dano para rolar)</span></label>
+          <div class="attr-control add-item-row">
+            <select id="select_arma_phb" class="select-equip">
+              <option value="">Selecione uma arma</option>
+            </select>
+            <button type="button" id="btn-add-arma" class="insp-btn">+</button>
+          </div>
+          <div id="weapon-cards-container"></div>
+        </div>
+
+        <!-- Conjuração & Magias -->
+        <div class="spell-stats-grid">
+          <div class="box-list spell-stat-card">
+            <label for="spell_attr_val">Atributo <br>Conjuração</label>
+            <input type="text" id="spell_attr_val" value="+0" readonly>
+          </div>
+          <div class="box-list spell-stat-card">
+            <label for="spell_save_dc">CD <br>Magia</label>
+            <input type="number" id="spell_save_dc" value="8">
+          </div>
+          <div class="box-list spell-stat-card">
+            <label for="spell_atk_mod">Mod <br>Ataque</label>
+            <input type="text" id="spell_atk_mod" value="+0" readonly>
+          </div>
+        </div>
+
+        <label id="spell-slots-title" style="display: none;">Slots de Magia</label>
+        <div id="spell-slots-tracker"></div>
+
+        <div class="box-list">
+          <label class="label-with-btn">
+            Truques e Magias <button type="button" id="btn-add-magia" class="insp-btn">+</button>
+          </label>
+          <div id="magias-container"></div>
+        </div>
+
+        <div class="box-list" id="box-infusoes-artifice" style="display: none;">
+          <label class="label-with-btn">
+            Infusões de Artífice <button type="button" id="btn-add-infusao" class="insp-btn">+</button>
+          </label>
+          <div id="infusoes-container"></div>
+        </div>
+
+        <!-- Defesas, Talentos e Inventário -->
+        <div class="box-list">
+          <label for="select_armadura_phb">Armaduras & Escudos</label>
+          <div class="attr-control add-item-row">
+            <select id="select_armadura_phb" class="select-equip">
+              <option value="">Selecione uma armadura</option>
+            </select>
+            <button type="button" id="btn-add-armadura" class="insp-btn">+</button>
+          </div>
+          <div id="armor-cards-container"></div>
+        </div>
+
+        <div class="box-list">
+          <label class="label-with-btn">
+            Talentos <button type="button" id="btn-add-talento" class="insp-btn">+</button>
+          </label>
+          <div id="talentos-container"></div>
+        </div>
+
+        <div class="box-list">
+          <label for="select_item_phb">Equipamentos Especiais</label>
+          <div class="attr-control add-item-row">
+            <select id="select_item_phb" class="select-equip">
+              <option value="">Selecione um item</option>
+            </select>
+            <button type="button" id="btn-add-item" class="insp-btn">+</button>
+          </div>
+          <div id="item-cards-container"></div>
+        </div>
+
+        <div class="box-list">
+          <label>Tesouro & Moedas</label>
+          <div class="coins-grid">
+            <div class="coin-item">
+              <label for="coin_pc" class="coin-pc">PC</label>
+              <input type="number" id="coin_pc" value="0">
+            </div>
+            <div class="coin-item">
+              <label for="coin_pp" class="coin-pp">PP</label>
+              <input type="number" id="coin_pp" value="0">
+            </div>
+            <div class="coin-item">
+              <label for="coin_po" class="coin-po">PO</label>
+              <input type="number" id="coin_po" value="0">
+            </div>
+            <div class="coin-item">
+              <label for="coin_pl" class="coin-pl">PL</label>
+              <input type="number" id="coin_pl" value="0">
+            </div>
+          </div>
+          <button type="button" id="btn-converter-moedas" class="btn-gerar-nome btn-convert-coins">🔄 Converter</button>
+        </div>
+
+        <div class="box-list">
+          <label for="equip_area">Inventário Geral</label>
+          <textarea id="equip_area"></textarea>
+        </div>
+      </section>
+
+      <!-- Coluna 3: Recursos de Classe no Topo, Condições, Morte e Traços -->
+      <section id="coluna-tracos-recursos">
+        <div id="box-recursos-classe" class="box-list" style="display: none;">
+          <h3 class="box-subtitle">RECURSOS DE CLASSE</h3>
+          <div id="class-resources-tracker"></div>
+        </div>
+
+        <div class="combat-mini-grid">
+          <div class="box-list compact-box">
+            <label for="hit_dice">Dados de Vida</label>
+            <input type="text" id="hit_dice" placeholder="1d10" class="input-hit-dice" />
+          </div>
+
+          <div class="box-list compact-box death-saves-box">
+            <label class="death-saves-title">Salvaguardas Morte</label>
+            <div class="death-saves-grid">
+              <div class="circles">
+                <label>Suc.</label>
+                <input type="checkbox"><input type="checkbox"><input type="checkbox">
+              </div>
+              <div class="circles">
+                <label>Fal.</label>
+                <input type="checkbox"><input type="checkbox"><input type="checkbox">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="box-list">
+          <label>Condições e Status</label>
+          <div id="condicoes-alerta-box" class="condicoes-alerta" style="display: none;"></div>
+          <div class="conditions-grid">
+            <label class="row cond-label"><input type="checkbox" class="condicao-check" data-name="Amedrontado">Amedrontado</label>
+            <label class="row cond-label"><input type="checkbox" class="condicao-check" data-name="Caído">Caído</label>
+            <label class="row cond-label"><input type="checkbox" class="condicao-check" data-name="Cego">Cego</label>
+            <label class="row cond-label"><input type="checkbox" class="condicao-check" data-name="Enfeitiçado">Enfeitiçado</label>
+            <label class="row cond-label"><input type="checkbox" class="condicao-check" data-name="Envenenado">Envenenado</label>
+            <label class="row cond-label"><input type="checkbox" class="condicao-check" data-name="Agarrado">Agarrado</label>
+            <label class="row cond-label"><input type="checkbox" class="condicao-check" data-name="Incapacitado">Incapacitado</label>
+            <label class="row cond-label"><input type="checkbox" class="condicao-check" data-name="Invisível">Invisível</label>
+            <label class="row cond-label"><input type="checkbox" class="condicao-check" data-name="Paralisado">Paralisado</label>
+            <label class="row cond-label"><input type="checkbox" class="condicao-check" data-name="Petrificado">Petrificado</label>
+            <label class="row cond-label"><input type="checkbox" class="condicao-check" data-name="Impedido">Impedido</label>
+            <label class="row cond-label"><input type="checkbox" class="condicao-check" data-name="Atordoado">Atordoado</label>
+            <label class="row cond-label"><input type="checkbox" class="condicao-check" data-name="Inconsciente">Inconsciente</label>
+            <div class="exhaustion-row">
+              <label for="exaustao_val">Exaustão:</label>
+              <input type="number" id="exaustao_val" value="0" min="0" max="6">
+            </div>
+          </div>
+        </div>
+
+        <div id="box-resumo-pericias" class="box-list">
+          <h3 class="box-subtitle">PROGRESSÃO, PROFICIÊNCIAS E MAGIAS</h3>
+          <div id="conteudo-resumo-pericias">Aguardando...</div>
+        </div>
+
+        <div class="box-list">
+          <label for="combat_log">Log de Combate / Efeitos Ativos</label>
+          <textarea id="combat_log" placeholder="Concentração, bênçãos, maldições..."></textarea>
+        </div>
+
+        <div class="box-list">
+          <label for="t1">Traços de Personalidade</label>
+          <select id="t1" class="select-trait"></select>
+          <div id="t1_display" class="trait-display">---</div>
+          <textarea id="t1_custom" class="trait-custom" style="display: none;"></textarea>
+        </div>
+
+        <div class="box-list">
+          <label for="t2">Ideais</label>
+          <select id="t2" class="select-trait"></select>
+          <div id="t2_display" class="trait-display">---</div>
+          <textarea id="t2_custom" class="trait-custom" style="display: none;"></textarea>
+        </div>
+
+        <div class="box-list">
+          <label for="t3">Vínculos</label>
+          <select id="t3" class="select-trait"></select>
+          <div id="t3_display" class="trait-display">---</div>
+          <textarea id="t3_custom" class="trait-custom" style="display: none;"></textarea>
+        </div>
+
+        <div class="box-list">
+          <label for="t4">Defeitos</label>
+          <select id="t4" class="select-trait"></select>
+          <div id="t4_display" class="trait-display">---</div>
+          <textarea id="t4_custom" class="trait-custom" style="display: none;"></textarea>
+        </div>
+
+        <div class="box-list">
+          <label class="label-with-btn">
+            Idiomas <button type="button" id="btn-add-idioma" class="insp-btn">+</button>
+          </label>
+          <div id="idiomas-container"></div>
+        </div>
+
+        <div class="box-list">
+          <label for="t5">Outras Características</label>
+          <textarea id="t5"></textarea>
+        </div>
+      </section>
+    </div>
+
+    <!-- Seções Expandíveis (Alternadas pelas abas superiores) -->
+    <div class="guide-section" id="guide_section_box" style="display: none;">
+      <h2>Guia de Referência Rápida</h2>
+      <div class="guide-content">
+        <div class="guide-item"><b id="title-race">Raça</b><span id="desc-race"></span></div>
+        <div class="guide-item"><b id="title-subrace">Sub-raça</b><span id="desc-subrace"></span></div>
+        <div class="guide-item"><b id="title-class">Classe</b><span id="desc-class"></span></div>
+        <div class="guide-item"><b id="title-subclass">Subclasse</b><span id="desc-subclass"></span></div>
+        <div class="guide-item"><b id="title-bg">Antecedente</b><span id="desc-bg"></span></div>
+        <div class="guide-item"><b id="title-align">Alinhamento</b><span id="desc-align"></span></div>
+        <div class="guide-item"><b>Idiomas Conhecidos</b><span id="desc-languages" class="guide-subtext"></span></div>
+        <div class="guide-item"><b>Talentos Adquiridos</b><span id="desc-talentos-guia" class="guide-subtext"></span></div>
+        <div class="guide-item"><b>Ataques & Armas Ativas</b><span id="desc-weapons-guia" class="guide-subtext">---</span></div>
+        <div class="guide-item"><b>Armaduras & Escudos Ativos</b><span id="desc-armors-guia" class="guide-subtext">---</span></div>
+        <div class="guide-item"><b>Itens de Aventura & Inventário</b><span id="desc-items-guia" class="guide-subtext">---</span></div>
+        <div class="guide-item guide-full-span">
+          <b id="title-progression">Habilidades de Classe Aprendidas</b>
+          <span id="desc-progression"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="notes-section" id="notes_section_box" style="display: none;">
+      <h2>Anotações do Aventureiro</h2>
+      <textarea id="notes_full_page" placeholder="Escreva aqui seu diário de campanha, detalhes de NPCs, locais visitados ou lembretes importantes..."></textarea>
+    </div>
+
+    <div class="notes-section" id="grimoire_section_box" style="display: none;">
+      <h2>Grimório Detalhado</h2>
+      <div id="grimoire_content"></div>
+    </div>
+
+    <div class="notes-section" id="infusions_section_box" style="display: none;">
+      <h2>Infusões Detalhadas</h2>
+      <div id="infusions_content"></div>
+    </div>
+
+    <div class="sheet-footer">
+      Ficha Automatizada de D&D 5Ed 2014 - VERSÃO MODULAR PRO
+    </div>
+  </div>
+
+  <!-- Scripts Modulares da Aplicação -->
+  <script src="js/data-loader.js"></script>
+  <script src="js/engine-regras.js"></script>
+  <script src="js/ui-render.js"></script>
+  <script src="js/io-storage.js"></script>
+  <script src="js/main.js"></script>
+</body>
+
+</html>
