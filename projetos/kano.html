@@ -1,0 +1,3020 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kano & QFD Studio — Pesquisa Kano e Casa da Qualidade (Material Design 3)</title>
+
+  <!-- Tipografia Google Fonts (Roboto / Plus Jakarta Sans) & Material Symbols Outlined -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400..600,0..1,0" rel="stylesheet" />
+
+  <!-- Chart.js para Gráfico de Reação Kano -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+  <style>
+    /* ==========================================================================
+       1. MATERIAL DESIGN 3 (M3) — TOKENS DE COR, TIPOGRAFIA, FORMA E ELEVAÇÃO
+       ========================================================================== */
+    :root {
+      --md-sys-typescale-font-brand: 'Plus Jakarta Sans', 'Roboto', sans-serif;
+      --md-sys-typescale-font-plain: 'Roboto', sans-serif;
+
+      /* Escala de Formas M3 */
+      --md-sys-shape-corner-none: 0px;
+      --md-sys-shape-corner-extra-small: 4px;
+      --md-sys-shape-corner-small: 8px;
+      --md-sys-shape-corner-medium: 12px;
+      --md-sys-shape-corner-large: 16px;
+      --md-sys-shape-corner-extra-large: 28px;
+      --md-sys-shape-corner-full: 9999px;
+
+      /* Grid Espacial 4dp/8dp */
+      --md-space-1: 4px;
+      --md-space-2: 8px;
+      --md-space-3: 12px;
+      --md-space-4: 16px;
+      --md-space-5: 20px;
+      --md-space-6: 24px;
+      --md-space-8: 32px;
+
+      /* Motion M3 Expressive */
+      --md-sys-motion-easing-emphasized: cubic-bezier(0.2, 0.0, 0, 1.0);
+      --md-sys-motion-easing-standard: cubic-bezier(0.2, 0.0, 0, 1.0);
+      --md-sys-motion-duration-short: 180ms;
+      --md-sys-motion-duration-medium: 280ms;
+
+      /* Elevação Tonal M3 */
+      --md-sys-elevation-level0: none;
+      --md-sys-elevation-level1: 0 1px 2px rgba(0, 0, 0, 0.06), 0 1px 3px 1px rgba(0, 0, 0, 0.04);
+      --md-sys-elevation-level2: 0 1px 2px rgba(0, 0, 0, 0.08), 0 2px 6px 2px rgba(0, 0, 0, 0.05);
+      --md-sys-elevation-level3: 0 4px 8px 3px rgba(0, 0, 0, 0.07), 0 1px 3px rgba(0, 0, 0, 0.09);
+    }
+
+    /* Tema Claro (Padrão Inicial M3) */
+    [data-theme="light"] {
+      --md-sys-color-primary: #0B57D0;
+      --md-sys-color-on-primary: #FFFFFF;
+      --md-sys-color-primary-container: #D3E3FD;
+      --md-sys-color-on-primary-container: #041E49;
+
+      --md-sys-color-secondary: #4D5F7C;
+      --md-sys-color-on-secondary: #FFFFFF;
+      --md-sys-color-secondary-container: #D5E3FF;
+      --md-sys-color-on-secondary-container: #081C36;
+
+      --md-sys-color-tertiary: #6B5778;
+      --md-sys-color-on-tertiary: #FFFFFF;
+      --md-sys-color-tertiary-container: #F2DAFF;
+      --md-sys-color-on-tertiary-container: #251431;
+
+      --md-sys-color-surface: #F8FAFD;
+      --md-sys-color-surface-dim: #D8DCE3;
+      --md-sys-color-surface-bright: #F8FAFD;
+      --md-sys-color-surface-container-lowest: #FFFFFF;
+      --md-sys-color-surface-container-low: #F1F4F9;
+      --md-sys-color-surface-container: #EBF0F6;
+      --md-sys-color-surface-container-high: #E3E9F0;
+      --md-sys-color-surface-container-highest: #DCE2EA;
+
+      --md-sys-color-on-surface: #191C20;
+      --md-sys-color-on-surface-variant: #43474E;
+      --md-sys-color-outline: #74777F;
+      --md-sys-color-outline-variant: #C4C6D0;
+
+      --md-sys-color-error: #BA1A1A;
+      --md-sys-color-on-error: #FFFFFF;
+      --md-sys-color-error-container: #FFDAD6;
+      --md-sys-color-on-error-container: #410002;
+
+      /* Tokens Semânticos Kano & QFD */
+      --kano-a-bg: #D3E3FD; --kano-a-fg: #041E49; --kano-a-border: #0B57D0;
+      --kano-p-bg: #C4EED0; --kano-p-fg: #072711; --kano-p-border: #146C2E;
+      --kano-m-bg: #F2DAFF; --kano-m-fg: #251431; --kano-m-border: #6B5778;
+      --kano-i-bg: #E3E9F0; --kano-i-fg: #43474E; --kano-i-border: #74777F;
+      --kano-r-bg: #FFDAD6; --kano-r-fg: #410002; --kano-r-border: #BA1A1A;
+      --kano-q-bg: #FFDEA8; --kano-q-fg: #271900; --kano-q-border: #7A5900;
+    }
+
+    /* Tema Escuro */
+    [data-theme="dark"] {
+      --md-sys-color-primary: #A8C7FA;
+      --md-sys-color-on-primary: #062E6F;
+      --md-sys-color-primary-container: #0842A0;
+      --md-sys-color-on-primary-container: #D3E3FD;
+
+      --md-sys-color-secondary: #B5C7E9;
+      --md-sys-color-on-secondary: #1F314C;
+      --md-sys-color-secondary-container: #364863;
+      --md-sys-color-on-secondary-container: #D5E3FF;
+
+      --md-sys-color-tertiary: #D6BEE4;
+      --md-sys-color-on-tertiary: #3B2948;
+      --md-sys-color-tertiary-container: #523F5F;
+      --md-sys-color-on-tertiary-container: #F2DAFF;
+
+      --md-sys-color-surface: #111318;
+      --md-sys-color-surface-dim: #111318;
+      --md-sys-color-surface-bright: #37393E;
+      --md-sys-color-surface-container-lowest: #0C0E13;
+      --md-sys-color-surface-container-low: #191C20;
+      --md-sys-color-surface-container: #1D2024;
+      --md-sys-color-surface-container-high: #282A2F;
+      --md-sys-color-surface-container-highest: #33353A;
+
+      --md-sys-color-on-surface: #E2E2E9;
+      --md-sys-color-on-surface-variant: #C4C6D0;
+      --md-sys-color-outline: #8E9099;
+      --md-sys-color-outline-variant: #44474F;
+
+      --md-sys-color-error: #FFB4AB;
+      --md-sys-color-on-error: #690005;
+      --md-sys-color-error-container: #93000A;
+      --md-sys-color-on-error-container: #FFDAD6;
+
+      --kano-a-bg: #0842A0; --kano-a-fg: #D3E3FD; --kano-a-border: #A8C7FA;
+      --kano-p-bg: #0F5223; --kano-p-fg: #C4EED0; --kano-p-border: #6DD58C;
+      --kano-m-bg: #523F5F; --kano-m-fg: #F2DAFF; --kano-m-border: #D6BEE4;
+      --kano-i-bg: #282A2F; --kano-i-fg: #C4C6D0; --kano-i-border: #8E9099;
+      --kano-r-bg: #93000A; --kano-r-fg: #FFDAD6; --kano-r-border: #FFB4AB;
+      --kano-q-bg: #5C4300; --kano-q-fg: #FFDEA8; --kano-q-border: #F5BF48;
+    }
+
+    /* ==========================================================================
+       2. RESET E TIPOGRAFIA M3 TYPE SCALE
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--md-sys-typescale-font-plain);
+      background-color: var(--md-sys-color-surface);
+      color: var(--md-sys-color-on-surface);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-standard),
+                  color var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-standard);
+    }
+
+    .headline-medium { font-family: var(--md-sys-typescale-font-brand); font-size: 28px; line-height: 36px; font-weight: 600; }
+    .headline-small { font-family: var(--md-sys-typescale-font-brand); font-size: 24px; line-height: 32px; font-weight: 600; }
+    .title-large { font-family: var(--md-sys-typescale-font-brand); font-size: 22px; line-height: 28px; font-weight: 500; }
+    .title-medium { font-family: var(--md-sys-typescale-font-plain); font-size: 16px; line-height: 24px; font-weight: 500; letter-spacing: 0.15px; }
+    .title-small { font-family: var(--md-sys-typescale-font-plain); font-size: 14px; line-height: 20px; font-weight: 500; letter-spacing: 0.1px; }
+    .body-large { font-size: 16px; line-height: 24px; font-weight: 400; letter-spacing: 0.5px; }
+    .body-medium { font-size: 14px; line-height: 20px; font-weight: 400; letter-spacing: 0.25px; }
+    .body-small { font-size: 12px; line-height: 16px; font-weight: 400; letter-spacing: 0.4px; }
+    .label-large { font-size: 14px; line-height: 20px; font-weight: 500; letter-spacing: 0.1px; }
+    .label-medium { font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0.5px; }
+    .label-small { font-size: 11px; line-height: 16px; font-weight: 500; letter-spacing: 0.5px; }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      font-size: 24px;
+      user-select: none;
+      vertical-align: middle;
+    }
+    .icon-filled { font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24; }
+
+    :focus-visible { outline: 3px solid var(--md-sys-color-primary); outline-offset: 2px; }
+
+    /* ==========================================================================
+       3. NAVEGAÇÃO ADAPTATIVA M3 (DRAWER / RAIL / BOTTOM BAR)
+       ========================================================================== */
+    .app-shell { display: flex; min-height: 100vh; width: 100%; }
+
+    .nav-drawer {
+      width: 288px;
+      background-color: var(--md-sys-color-surface-container-low);
+      border-right: 1px solid var(--md-sys-color-outline-variant);
+      display: flex;
+      flex-direction: column;
+      padding: var(--md-space-4);
+      gap: var(--md-space-2);
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 20;
+    }
+
+    .brand-header {
+      display: flex;
+      align-items: center;
+      gap: var(--md-space-3);
+      padding: var(--md-space-2) var(--md-space-3);
+      margin-bottom: var(--md-space-2);
+    }
+
+    .brand-badge {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--md-sys-shape-corner-medium);
+      background-color: var(--md-sys-color-primary);
+      color: var(--md-sys-color-on-primary);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+
+    .nav-section-label { padding: var(--md-space-2) var(--md-space-4); color: var(--md-sys-color-on-surface-variant); }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--md-space-3);
+      min-height: 48px;
+      padding: 0 var(--md-space-4);
+      border-radius: var(--md-sys-shape-corner-full);
+      border: none;
+      background: transparent;
+      color: var(--md-sys-color-on-surface-variant);
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+      transition: background-color var(--md-sys-motion-duration-short), color var(--md-sys-motion-duration-short);
+    }
+
+    .nav-item:hover { background-color: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent); }
+    .nav-item.active {
+      background-color: var(--md-sys-color-secondary-container);
+      color: var(--md-sys-color-on-secondary-container);
+      font-weight: 600;
+    }
+    .nav-item.active .material-symbols-outlined { font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24; }
+
+    .nav-divider { height: 1px; background-color: var(--md-sys-color-outline-variant); margin: var(--md-space-2) var(--md-space-3); }
+
+    .main-wrapper { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+
+    .top-app-bar {
+      position: sticky;
+      top: 0;
+      z-index: 15;
+      min-height: 64px;
+      background-color: var(--md-sys-color-surface);
+      border-bottom: 1px solid var(--md-sys-color-outline-variant);
+      padding: var(--md-space-2) var(--md-space-6);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--md-space-4);
+    }
+
+    .top-bar-left { display: flex; align-items: center; gap: var(--md-space-3); min-width: 0; }
+    .top-bar-actions { display: flex; align-items: center; gap: var(--md-space-2); flex-shrink: 0; }
+
+    .project-switcher {
+      display: flex;
+      align-items: center;
+      gap: var(--md-space-2);
+      background-color: var(--md-sys-color-surface-container-high);
+      padding: 4px 12px;
+      border-radius: var(--md-sys-shape-corner-full);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      min-height: 48px;
+    }
+
+    .project-switcher select {
+      background: transparent;
+      border: none;
+      color: var(--md-sys-color-on-surface);
+      font-family: var(--md-sys-typescale-font-plain);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      padding-right: 4px;
+      max-width: 240px;
+    }
+    .project-switcher select option { background-color: var(--md-sys-color-surface-container-lowest); color: var(--md-sys-color-on-surface); }
+
+    .content-area {
+      padding: var(--md-space-6);
+      max-width: 1440px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--md-space-6);
+      padding-bottom: 96px;
+    }
+
+    /* Cabeçalho Explicativo Embasado nos PDFs para Cada Ferramenta */
+    .tool-header-card {
+      background-color: var(--md-sys-color-surface-container-low);
+      border-left: 4px solid var(--md-sys-color-primary);
+      border-radius: var(--md-sys-shape-corner-medium);
+      padding: var(--md-space-5) var(--md-space-6);
+      display: flex;
+      flex-direction: column;
+      gap: var(--md-space-2);
+    }
+
+    .tool-header-top {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: var(--md-space-4);
+    }
+
+    .tool-rationale {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--md-space-2);
+      background-color: var(--md-sys-color-surface-container-lowest);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: var(--md-sys-shape-corner-small);
+      padding: var(--md-space-3) var(--md-space-4);
+      margin-top: var(--md-space-2);
+      color: var(--md-sys-color-on-surface-variant);
+    }
+
+    /* NavigationBar Inferior (Compact < 600dp — 5 destinos principais + scroll horizontal seguro) */
+    .bottom-nav-bar {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      background-color: var(--md-sys-color-surface-container);
+      border-top: 1px solid var(--md-sys-color-outline-variant);
+      z-index: 30;
+      justify-content: space-around;
+      align-items: center;
+      padding: 0 4px;
+      overflow-x: auto;
+    }
+
+    .bottom-nav-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      min-width: 56px;
+      min-height: 48px;
+      border: none;
+      background: transparent;
+      color: var(--md-sys-color-on-surface-variant);
+      cursor: pointer;
+    }
+
+    .bottom-nav-pill {
+      width: 52px;
+      height: 30px;
+      border-radius: var(--md-sys-shape-corner-full);
+      display: grid;
+      place-items: center;
+    }
+
+    .bottom-nav-btn.active .bottom-nav-pill {
+      background-color: var(--md-sys-color-secondary-container);
+      color: var(--md-sys-color-on-secondary-container);
+    }
+    .bottom-nav-btn.active { color: var(--md-sys-color-on-surface); font-weight: 600; }
+
+    /* ==========================================================================
+       4. COMPONENTES M3 (BUTTONS, ICONBUTTONS, CARDS, CHIPS, INPUTS)
+       ========================================================================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--md-space-2);
+      min-height: 48px;
+      padding: 0 var(--md-space-5);
+      border-radius: var(--md-sys-shape-corner-full);
+      font-family: var(--md-sys-typescale-font-plain);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-emphasized);
+      white-space: nowrap;
+    }
+
+    .btn-filled { background-color: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
+    .btn-filled:hover { box-shadow: var(--md-sys-elevation-level1); filter: brightness(1.06); }
+    .btn-tonal { background-color: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); }
+    .btn-tonal:hover { box-shadow: var(--md-sys-elevation-level1); filter: brightness(0.97); }
+    .btn-outlined { background-color: transparent; border-color: var(--md-sys-color-outline); color: var(--md-sys-color-primary); }
+    .btn-outlined:hover { background-color: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent); }
+    .btn-text { background-color: transparent; color: var(--md-sys-color-primary); padding: 0 var(--md-space-3); }
+    .btn-danger-tonal { background-color: var(--md-sys-color-error-container); color: var(--md-sys-color-on-error-container); }
+
+    .icon-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--md-sys-shape-corner-full);
+      border: none;
+      background-color: transparent;
+      color: var(--md-sys-color-on-surface-variant);
+      display: inline-grid;
+      place-items: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .icon-btn:hover { background-color: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent); color: var(--md-sys-color-on-surface); }
+    .icon-btn-tonal { background-color: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface); }
+
+    .m3-card { border-radius: var(--md-sys-shape-corner-large); padding: var(--md-space-6); }
+    .m3-card-elevated { background-color: var(--md-sys-color-surface-container-low); box-shadow: var(--md-sys-elevation-level1); }
+    .m3-card-filled { background-color: var(--md-sys-color-surface-container-highest); }
+    .m3-card-outlined { background-color: var(--md-sys-color-surface-container-lowest); border: 1px solid var(--md-sys-color-outline-variant); }
+
+    .m3-banner {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--md-space-4);
+      padding: var(--md-space-4) var(--md-space-5);
+      border-radius: var(--md-sys-shape-corner-medium);
+      background-color: var(--md-sys-color-tertiary-container);
+      color: var(--md-sys-color-on-tertiary-container);
+    }
+
+    .chip-group { display: flex; flex-wrap: wrap; gap: var(--md-space-2); }
+    .m3-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 36px;
+      padding: 0 var(--md-space-3);
+      border-radius: var(--md-sys-shape-corner-small);
+      border: 1px solid var(--md-sys-color-outline);
+      background-color: transparent;
+      color: var(--md-sys-color-on-surface-variant);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .m3-chip.selected { background-color: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); border-color: transparent; }
+
+    .kano-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: var(--md-sys-shape-corner-full);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      border: 1px solid transparent;
+    }
+    .kano-A { background-color: var(--kano-a-bg); color: var(--kano-a-fg); border-color: var(--kano-a-border); }
+    .kano-P { background-color: var(--kano-p-bg); color: var(--kano-p-fg); border-color: var(--kano-p-border); }
+    .kano-M { background-color: var(--kano-m-bg); color: var(--kano-m-fg); border-color: var(--kano-m-border); }
+    .kano-I { background-color: var(--kano-i-bg); color: var(--kano-i-fg); border-color: var(--kano-i-border); }
+    .kano-R { background-color: var(--kano-r-bg); color: var(--kano-r-fg); border-color: var(--kano-r-border); }
+    .kano-Q { background-color: var(--kano-q-bg); color: var(--kano-q-fg); border-color: var(--kano-q-border); }
+
+    .m3-field { display: flex; flex-direction: column; gap: 6px; }
+    .m3-field label { color: var(--md-sys-color-on-surface-variant); }
+    .m3-input, .m3-select, .m3-textarea {
+      width: 100%;
+      min-height: 48px;
+      padding: 12px 16px;
+      border-radius: var(--md-sys-shape-corner-extra-small);
+      border: 1px solid var(--md-sys-color-outline);
+      background-color: var(--md-sys-color-surface-container-lowest);
+      color: var(--md-sys-color-on-surface);
+      font-family: var(--md-sys-typescale-font-plain);
+      font-size: 15px;
+    }
+    .m3-textarea { min-height: 84px; resize: vertical; }
+    .m3-input:focus, .m3-select:focus, .m3-textarea:focus { border-color: var(--md-sys-color-primary); border-width: 2px; padding: 11px 15px; outline: none; }
+    .m3-helper { color: var(--md-sys-color-on-surface-variant); }
+
+    /* ==========================================================================
+       5. GRIDS & QUESTIONÁRIO KANO
+       ========================================================================== */
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--md-space-6); }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--md-space-4); }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--md-space-4); }
+
+    .kpi-card {
+      background-color: var(--md-sys-color-surface-container-lowest);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: var(--md-sys-shape-corner-large);
+      padding: var(--md-space-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--md-space-2);
+    }
+    .kpi-value { font-family: var(--md-sys-typescale-font-brand); font-size: 32px; line-height: 40px; font-weight: 700; color: var(--md-sys-color-primary); }
+
+    .kano-question-card {
+      background-color: var(--md-sys-color-surface-container-lowest);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: var(--md-sys-shape-corner-large);
+      padding: var(--md-space-6);
+      display: flex;
+      flex-direction: column;
+      gap: var(--md-space-5);
+    }
+    .kano-axis-block {
+      background-color: var(--md-sys-color-surface-container-low);
+      border-radius: var(--md-sys-shape-corner-medium);
+      padding: var(--md-space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--md-space-3);
+    }
+    .kano-options-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--md-space-2); }
+    .kano-option-btn {
+      min-height: 52px;
+      padding: var(--md-space-2);
+      border-radius: var(--md-sys-shape-corner-medium);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      background-color: var(--md-sys-color-surface-container-lowest);
+      color: var(--md-sys-color-on-surface);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 4px;
+    }
+    .kano-option-btn:hover { border-color: var(--md-sys-color-primary); }
+    .kano-option-btn.selected { background-color: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); border-color: var(--md-sys-color-primary); font-weight: 600; }
+
+    .importance-scale-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: var(--md-space-2); }
+
+    .matrix-wrapper, .data-table-wrap {
+      overflow-x: auto;
+      border-radius: var(--md-sys-shape-corner-large);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      background-color: var(--md-sys-color-surface-container-lowest);
+    }
+
+    table.kano-table, table.m3-data-table { width: 100%; border-collapse: collapse; }
+    table.kano-table th, table.kano-table td { padding: 12px 10px; border: 1px solid var(--md-sys-color-outline-variant); font-size: 13px; text-align: center; }
+    table.kano-table th { background-color: var(--md-sys-color-surface-container); font-weight: 600; }
+    .matrix-cell-code { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--md-sys-shape-corner-small); font-weight: 700; }
+
+    table.m3-data-table th {
+      padding: 14px 16px;
+      background-color: var(--md-sys-color-surface-container-low);
+      color: var(--md-sys-color-on-surface-variant);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--md-sys-color-outline-variant);
+      text-align: left;
+    }
+    table.m3-data-table td { padding: 14px 16px; border-bottom: 1px solid var(--md-sys-color-outline-variant); font-size: 14px; }
+
+    .chart-container { position: relative; height: 430px; width: 100%; }
+
+    /* ==========================================================================
+       6. DIAGRAMA ARQUITETÔNICO DA CASA DA QUALIDADE (QFD / HOUSE OF QUALITY)
+       ========================================================================== */
+    .hoq-scroll-container {
+      overflow-x: auto;
+      padding: var(--md-space-4);
+      background-color: var(--md-sys-color-surface-container-lowest);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: var(--md-sys-shape-corner-large);
+    }
+
+    .hoq-house-wrapper {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+      min-width: max-content;
+      margin: 0 auto;
+    }
+
+    /* Telhado Triangular (Matriz de Correlação Técnica) */
+    .hoq-roof-row {
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .hoq-roof-spacer-left {
+      width: 310px; /* Alinha exatamente com Coluna WHATs (230px) + Importância (80px) */
+      flex-shrink: 0;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .hoq-roof-svg-box {
+      position: relative;
+      overflow: visible;
+    }
+
+    .hoq-roof-diamond {
+      cursor: pointer;
+      transition: fill 0.15s ease, stroke-width 0.15s ease;
+    }
+    .hoq-roof-diamond:hover {
+      stroke: var(--md-sys-color-primary);
+      stroke-width: 2.2;
+    }
+
+    /* Matriz Principal da Casa da Qualidade */
+    table.hoq-grid {
+      border-collapse: collapse;
+      background-color: var(--md-sys-color-surface-container-lowest);
+      color: var(--md-sys-color-on-surface);
+    }
+
+    table.hoq-grid th, table.hoq-grid td {
+      border: 1px solid var(--md-sys-color-outline-variant);
+      padding: 0;
+      vertical-align: middle;
+    }
+
+    /* Células de Cabeçalho dos Requisitos Técnicos (HOWs) */
+    .hoq-how-col {
+      width: 68px;
+      min-width: 68px;
+      max-width: 68px;
+      text-align: center;
+    }
+
+    .hoq-goal-btn {
+      width: 100%;
+      height: 36px;
+      border: none;
+      background-color: var(--md-sys-color-surface-container-high);
+      color: var(--md-sys-color-primary);
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+    }
+    .hoq-goal-btn:hover { background-color: var(--md-sys-color-primary-container); }
+
+    .hoq-how-header-cell {
+      height: 155px;
+      background-color: var(--md-sys-color-secondary-container);
+      color: var(--md-sys-color-on-secondary-container);
+      position: relative;
+      padding: 6px 4px;
+      vertical-align: bottom;
+    }
+
+    .hoq-how-vertical-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+      gap: 4px;
+    }
+
+    .hoq-how-input {
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      width: 44px;
+      height: 118px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--md-sys-color-on-secondary-container);
+      font-family: var(--md-sys-typescale-font-plain);
+      font-size: 12px;
+      font-weight: 600;
+      text-align: left;
+      resize: none;
+      padding: 4px;
+      border-radius: 4px;
+    }
+    .hoq-how-input:focus {
+      background-color: var(--md-sys-color-surface-container-lowest);
+      color: var(--md-sys-color-on-surface);
+      border-color: var(--md-sys-color-primary);
+      outline: none;
+    }
+
+    .hoq-del-col-btn {
+      width: 24px;
+      height: 24px;
+      border: none;
+      border-radius: 50%;
+      background: transparent;
+      color: var(--md-sys-color-on-secondary-container);
+      cursor: pointer;
+      font-size: 14px;
+      display: grid;
+      place-items: center;
+      opacity: 0.7;
+    }
+    .hoq-del-col-btn:hover { opacity: 1; background-color: var(--md-sys-color-error-container); color: var(--md-sys-color-on-error-container); }
+
+    /* Parede Esquerda (WHATs — Voz do Cliente) */
+    .hoq-what-cell {
+      width: 230px;
+      min-width: 230px;
+      background-color: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-on-primary-container);
+      padding: 6px 8px;
+    }
+
+    .hoq-what-row-inner {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .hoq-what-input {
+      flex: 1;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--md-sys-color-on-primary-container);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px;
+      border-radius: 4px;
+      min-width: 0;
+    }
+    .hoq-what-input:focus {
+      background-color: var(--md-sys-color-surface-container-lowest);
+      color: var(--md-sys-color-on-surface);
+      border-color: var(--md-sys-color-primary);
+      outline: none;
+    }
+
+    .hoq-imp-cell {
+      width: 80px;
+      min-width: 80px;
+      text-align: center;
+      background-color: var(--md-sys-color-surface-container-low);
+      padding: 4px;
+    }
+
+    .hoq-num-input {
+      width: 44px;
+      height: 32px;
+      text-align: center;
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: 4px;
+      background-color: var(--md-sys-color-surface-container-lowest);
+      color: var(--md-sys-color-on-surface);
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    /* Células de Relacionamento (Corpo Central da Casa) */
+    .hoq-rel-btn {
+      width: 100%;
+      height: 46px;
+      border: none;
+      background-color: transparent;
+      color: var(--md-sys-color-on-surface);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.12s ease;
+    }
+    .hoq-rel-btn:hover { background-color: color-mix(in srgb, var(--md-sys-color-primary) 10%, transparent); }
+    .hoq-rel-symbol { font-size: 18px; font-weight: 700; line-height: 1; }
+    .hoq-rel-val { font-size: 10px; opacity: 0.7; }
+
+    .rel-9 { background-color: color-mix(in srgb, var(--md-sys-color-primary) 16%, transparent); color: var(--md-sys-color-primary); }
+    .rel-3 { background-color: color-mix(in srgb, var(--md-sys-color-tertiary) 14%, transparent); color: var(--md-sys-color-tertiary); }
+    .rel-1 { background-color: color-mix(in srgb, var(--md-sys-color-secondary) 10%, transparent); color: var(--md-sys-color-secondary); }
+
+    /* Parede Direita (Competitive Benchmarking) */
+    .hoq-comp-cell {
+      width: 52px;
+      min-width: 52px;
+      text-align: center;
+      padding: 4px;
+      background-color: var(--md-sys-color-surface-container-lowest);
+    }
+
+    .hoq-comp-chart-cell {
+      width: 130px;
+      min-width: 130px;
+      padding: 4px 8px;
+      background-color: var(--md-sys-color-surface-container-low);
+    }
+
+    /* Base / Alicerce (Target Values, Technical Difficulty, Weights, Technical Benchmarking) */
+    .hoq-base-label {
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      background-color: var(--md-sys-color-surface-container);
+      color: var(--md-sys-color-on-surface);
+      text-align: right;
+    }
+
+    .hoq-target-input {
+      width: 62px;
+      height: 34px;
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: 4px;
+      background-color: var(--md-sys-color-surface-container-lowest);
+      color: var(--md-sys-color-on-surface);
+      font-size: 11px;
+      text-align: center;
+      padding: 2px;
+    }
+
+    .hoq-weight-cell {
+      padding: 8px 4px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 13px;
+      background-color: var(--md-sys-color-surface-container-low);
+    }
+
+    .hoq-weight-top {
+      background-color: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-on-primary-container);
+    }
+
+    /* Hints Interativos da Casa da Qualidade */
+    .hoq-hints-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--md-space-3);
+    }
+
+    .hoq-hint-pill {
+      background-color: var(--md-sys-color-surface-container-low);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: var(--md-sys-shape-corner-medium);
+      padding: 12px 14px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    /* Modal Dialog & Snackbar M3 */
+    dialog.m3-dialog {
+      border: none;
+      border-radius: var(--md-sys-shape-corner-extra-large);
+      background-color: var(--md-sys-color-surface-container-high);
+      color: var(--md-sys-color-on-surface);
+      padding: var(--md-space-6);
+      max-width: 560px;
+      width: calc(100% - 32px);
+      margin: auto;
+      box-shadow: var(--md-sys-elevation-level3);
+    }
+    dialog.m3-dialog::backdrop { background-color: rgba(0, 0, 0, 0.5); }
+
+    .m3-snackbar {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(120px);
+      background-color: var(--md-sys-color-on-surface);
+      color: var(--md-sys-color-surface);
+      padding: 14px 20px;
+      border-radius: var(--md-sys-shape-corner-extra-small);
+      box-shadow: var(--md-sys-elevation-level3);
+      z-index: 100;
+      opacity: 0;
+      transition: transform var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-emphasized), opacity var(--md-sys-motion-duration-short);
+      max-width: 90vw;
+    }
+    .m3-snackbar.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+    .view-section {
+      display: none;
+      flex-direction: column;
+      gap: var(--md-space-6);
+      animation: fadeIn var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-emphasized);
+    }
+    .view-section.active { display: flex; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==========================================================================
+       7. RESPONSIVIDADE M3 WINDOW SIZE CLASSES
+       ========================================================================== */
+    @media (max-width: 1024px) {
+      .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid-3, .hoq-hints-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 839px) and (min-width: 600px) {
+      .nav-drawer { width: 88px; padding: var(--md-space-3) var(--md-space-2); align-items: center; }
+      .brand-text, .nav-section-label, .nav-label, .drawer-footer-box { display: none; }
+      .nav-item { flex-direction: column; justify-content: center; padding: 8px 4px; border-radius: var(--md-sys-shape-corner-large); gap: 4px; }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 599px) {
+      .nav-drawer { display: none; }
+      .bottom-nav-bar { display: flex; }
+      .top-app-bar { padding: var(--md-space-2) var(--md-space-4); }
+      .content-area { padding: var(--md-space-4); padding-bottom: 104px; }
+      .grid-2, .grid-3, .grid-4, .hoq-hints-grid { grid-template-columns: 1fr; }
+      .kano-options-grid { grid-template-columns: 1fr; }
+      .importance-scale-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .m3-snackbar { bottom: 92px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-shell">
+  <!-- NAVIGATION DRAWER (Expanded >= 840dp) / RAIL (Medium 600-839dp) -->
+  <aside class="nav-drawer" aria-label="Navegação Principal">
+    <div class="brand-header">
+      <div class="brand-badge" aria-hidden="true">
+        <span class="material-symbols-outlined icon-filled">insights</span>
+      </div>
+      <div class="brand-text">
+        <div class="title-medium" style="font-weight:700;">Kano & QFD Studio</div>
+        <div class="label-small" style="color:var(--md-sys-color-on-surface-variant);">Pesquisa & Casa da Qualidade</div>
+      </div>
+    </div>
+
+    <div class="nav-section-label label-small">MÉTODO KANO (VOC)</div>
+
+    <button class="nav-item active" data-view="projects" onclick="switchView('projects')">
+      <span class="material-symbols-outlined">folder_special</span>
+      <span class="nav-label label-large">1. Projetos & Contextos</span>
+    </button>
+
+    <button class="nav-item" data-view="features" onclick="switchView('features')">
+      <span class="material-symbols-outlined">fact_check</span>
+      <span class="nav-label label-large">2. Funcionalidades (Até 20)</span>
+    </button>
+
+    <button class="nav-item" data-view="survey" onclick="switchView('survey')">
+      <span class="material-symbols-outlined">quiz</span>
+      <span class="nav-label label-large">3. Questionário Kano</span>
+    </button>
+
+    <button class="nav-item" data-view="analytics" onclick="switchView('analytics')">
+      <span class="material-symbols-outlined">monitoring</span>
+      <span class="nav-label label-large">4. Gráfico & Priorização</span>
+    </button>
+
+    <button class="nav-item" data-view="guide" onclick="switchView('guide')">
+      <span class="material-symbols-outlined">menu_book</span>
+      <span class="nav-label label-large">5. Matriz & Metodologia</span>
+    </button>
+
+    <div class="nav-divider"></div>
+    <div class="nav-section-label label-small">DESDOBRAMENTO (QFD)</div>
+
+    <button class="nav-item" data-view="hoq" onclick="switchView('hoq')">
+      <span class="material-symbols-outlined">roofing</span>
+      <span class="nav-label label-large">6. Casa da Qualidade (HOQ)</span>
+    </button>
+
+    <div class="drawer-footer-box" style="padding: 8px 12px; margin-top: auto;">
+      <div class="m3-card-filled" style="padding: 14px; border-radius: var(--md-sys-shape-corner-medium);">
+        <div class="label-medium" style="font-weight: 600; margin-bottom: 4px;">Fluxo Integrado VOC → QFD</div>
+        <p class="body-small" style="color: var(--md-sys-color-on-surface-variant);">
+          Descubra as emoções dos clientes no <strong>Modelo Kano</strong> e traduza os requisitos prioritários em especificações técnicas na <strong>Casa da Qualidade</strong>.
+        </p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <div class="main-wrapper">
+    <!-- TOP APP BAR M3 -->
+    <header class="top-app-bar">
+      <div class="top-bar-left">
+        <div class="project-switcher" title="Alternar Projeto Ativo">
+          <span class="material-symbols-outlined" style="color: var(--md-sys-color-primary);">science</span>
+          <select id="activeProjectSelect" aria-label="Selecionar Projeto Ativo" onchange="handleProjectChange(this.value)"></select>
+        </div>
+        <span id="headerContextBadge" class="kano-badge kano-A" style="display: inline-flex;">Contexto</span>
+      </div>
+
+      <div class="top-bar-actions">
+        <button class="btn btn-tonal" onclick="openNewProjectModal()" aria-label="Criar Novo Projeto">
+          <span class="material-symbols-outlined">add</span>
+          <span>Novo Projeto</span>
+        </button>
+
+        <button class="icon-btn icon-btn-tonal" onclick="exportProjectJSON()" title="Exportar Dados do Projeto (JSON)" aria-label="Exportar Dados do Projeto em JSON">
+          <span class="material-symbols-outlined">download</span>
+        </button>
+
+        <button id="themeToggleBtn" class="icon-btn icon-btn-tonal" onclick="toggleTheme()" aria-label="Alternar para tema escuro" title="Alternar tema claro/escuro">
+          <span id="themeToggleIcon" class="material-symbols-outlined">dark_mode</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="content-area">
+
+      <!-- ======================================================================
+           VIEW 1: PROJETOS, CONTEXTOS DE PESQUISA E SEGMENTAÇÃO
+           ====================================================================== -->
+      <section id="view-projects" class="view-section active" aria-labelledby="title-projects">
+        <div class="tool-header-card">
+          <div class="tool-header-top">
+            <div>
+              <h1 id="title-projects" class="headline-medium">1. Projetos & Contextos da Pesquisa Kano</h1>
+              <p class="body-medium" style="color:var(--md-sys-color-on-surface-variant);">
+                Gerencie múltiplos produtos/serviços e defina o enquadramento estratégico da pesquisa.
+              </p>
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <label class="btn btn-outlined" style="cursor:pointer;">
+                <span class="material-symbols-outlined">upload_file</span>
+                Importar JSON
+                <input type="file" accept=".json" onchange="importProjectJSON(event)" hidden />
+              </label>
+              <button class="btn btn-filled" onclick="openNewProjectModal()">
+                <span class="material-symbols-outlined">create_new_folder</span>
+                Criar Projeto
+              </button>
+            </div>
+          </div>
+          <div class="tool-rationale body-small">
+            <span class="material-symbols-outlined" style="color:var(--md-sys-color-primary); font-size:20px;">info</span>
+            <div>
+              <strong>Para que serve esta ferramenta (Método Kano — Qualtrics):</strong> Criado pelo Dr. Noriaki Kano (1984), o modelo mede as respostas emocionais dos clientes às funcionalidades para orientar o roadmap com base na relação <em>Encantamento vs. Investimento de Implementação</em>. É especialmente indicado em quatro cenários: <strong>tempo limitado</strong> (acelerar decisões), <strong>recursos limitados</strong> (pesquisa simples por questionário sem especialistas), <strong>inovação ("pensar fora da caixa")</strong> e <strong>atualização de produtos existentes</strong> frente à concorrência.
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-4" id="projectKpiGrid"></div>
+
+        <div class="grid-2">
+          <div class="m3-card m3-card-outlined" style="display:flex; flex-direction:column; gap:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <h2 class="title-large">Configuração do Projeto Ativo</h2>
+              <button class="btn btn-danger-tonal" onclick="deleteCurrentProject()" style="min-height:40px; padding:0 16px;">
+                <span class="material-symbols-outlined" style="font-size:18px;">delete</span>
+                Excluir
+              </button>
+            </div>
+
+            <div class="m3-field">
+              <label class="label-medium" for="editProjName">Nome do Produto / Serviço / Projeto</label>
+              <input id="editProjName" class="m3-input" type="text" onchange="updateActiveProjectField('name', this.value)" />
+            </div>
+
+            <div class="m3-field">
+              <label class="label-medium" for="editProjContext">Contexto de Uso do Modelo Kano (Quando usar)</label>
+              <select id="editProjContext" class="m3-select" onchange="updateActiveProjectField('context', this.value)">
+                <option value="limited_time">Tempo Limitado — Acelerar tomada de decisão sob prazos curtos</option>
+                <option value="limited_resources">Recursos Limitados — Questionário simples sem necessidade de especialistas externos</option>
+                <option value="impress_customers">Inovação ("Pensar Fora da Caixa") — Descobrir o que encanta e diferencia</option>
+                <option value="enhance_product">Melhoria de Produto Atual — Manter competitividade e atualizar portfólio</option>
+              </select>
+              <span id="contextDescriptionHelper" class="m3-helper body-small"></span>
+            </div>
+
+            <div class="m3-field">
+              <label class="label-medium" for="editProjQuestionStyle">Formulações das Perguntas no Questionário</label>
+              <select id="editProjQuestionStyle" class="m3-select" onchange="updateActiveProjectField('questionStyle', this.value)">
+                <option value="presence">Presença da Funcionalidade ("Como você se sentiria se o produto tivesse / não tivesse...?")</option>
+                <option value="quantity">Intensidade / Quantidade ("Como você se sentiria se houvesse mais de / menos de...?")</option>
+              </select>
+            </div>
+
+            <div class="grid-2" style="gap:12px;">
+              <div class="m3-field">
+                <label class="label-medium" for="editProjHauser">Pergunta Extra de Importância (MIT)</label>
+                <select id="editProjHauser" class="m3-select" onchange="updateActiveProjectField('includeImportance', this.value === 'true')">
+                  <option value="true">Ativada (Escala 1 a 7 — John Hauser)</option>
+                  <option value="false">Desativada (Apenas Funcional + Disfuncional)</option>
+                </select>
+              </div>
+              <div class="m3-field">
+                <label class="label-medium" for="editProjNps">NPS Atual do Produto (-100 a +100)</label>
+                <input id="editProjNps" class="m3-input" type="number" min="-100" max="100" onchange="updateActiveProjectField('baselineNps', Number(this.value))" />
+              </div>
+            </div>
+
+            <div class="m3-field">
+              <label class="label-medium" for="editProjPersonas">Segmentos de Clientes / Personas Alvo (separados por vírgula)</label>
+              <input id="editProjPersonas" class="m3-input" type="text" onchange="updateActiveProjectPersonas(this.value)" />
+            </div>
+          </div>
+
+          <div class="m3-card m3-card-elevated" style="display:flex; flex-direction:column; gap:16px;">
+            <h2 class="title-large">Portfólio de Projetos Kano</h2>
+            <p class="body-small" style="color:var(--md-sys-color-on-surface-variant);">
+              Alterne entre diferentes produtos ou ciclos temporais para acompanhar o <em>Natural Decay of Delight</em> (decaimento natural do encantamento ao longo do tempo).
+            </p>
+            <div id="projectsListContainer" style="display:flex; flex-direction:column; gap:12px;"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           VIEW 2: FUNCIONALIDADES E CONTEXTUALIZAÇÃO (PASSO 1)
+           ====================================================================== -->
+      <section id="view-features" class="view-section" aria-labelledby="title-features">
+        <div class="tool-header-card">
+          <div class="tool-header-top">
+            <div>
+              <h1 id="title-features" class="headline-medium">2. Funcionalidades Avaliadas (Passo 1)</h1>
+              <p class="body-medium" style="color:var(--md-sys-color-on-surface-variant);">
+                Estruture o escopo de funcionalidades existentes ou novas ideias a serem submetidas aos clientes.
+              </p>
+            </div>
+            <div id="featureLimitCounter" class="kano-badge kano-P">0 / 20 Funcionalidades</div>
+          </div>
+          <div class="tool-rationale body-small">
+            <span class="material-symbols-outlined" style="color:var(--md-sys-color-primary); font-size:20px;">info</span>
+            <div>
+              <strong>Como utilizar esta etapa (Método Kano — Qualtrics):</strong> Reúna funcionalidades atuais que precisam de diagnóstico e ideias novas para o roadmap. Segundo as boas práticas do artigo, <strong>teste no máximo 20 funcionalidades por pesquisa</strong> — questionários maiores causam fadiga e prejudicam a confiabilidade. Inclua sempre uma breve descrição de contexto ou demonstração para evitar interpretações ambíguas e estime o custo relativo (1 a 5) para posterior análise de retorno sobre investimento (Benefício vs. Custo).
+            </div>
+          </div>
+        </div>
+
+        <div id="featureLimitBanner" class="m3-banner" style="display:none;">
+          <div style="display:flex; gap:12px; align-items:flex-start;">
+            <span class="material-symbols-outlined">warning</span>
+            <div>
+              <div class="title-small">Limite Recomendado Atingido (20 Funcionalidades)</div>
+              <p class="body-small">Testar mais de 20 funcionalidades torna o questionário longo demais. Considere dividir o estudo em dois ciclos.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="align-items:start;">
+          <form class="m3-card m3-card-outlined" onsubmit="addFeature(event)" style="display:flex; flex-direction:column; gap:16px;">
+            <h2 class="title-large">Adicionar Funcionalidade ao Estudo</h2>
+
+            <div class="m3-field">
+              <label class="label-medium" for="featName">Nome da Funcionalidade *</label>
+              <input id="featName" class="m3-input" type="text" required placeholder="Ex: Wi-Fi gratuito de alta velocidade / Tanque de combustível ampliado" />
+            </div>
+
+            <div class="m3-field">
+              <label class="label-medium" for="featContext">Contexto ou Demonstração para o Respondente</label>
+              <textarea id="featContext" class="m3-textarea" placeholder="Explique como a funcionalidade opera na prática para garantir clareza..."></textarea>
+            </div>
+
+            <div class="grid-2" style="gap:12px;">
+              <div class="m3-field">
+                <label class="label-medium" for="featCost">Investimento / Custo de Implementação (1 a 5)</label>
+                <select id="featCost" class="m3-select">
+                  <option value="1">1 — Muito Baixo (Quick Win)</option>
+                  <option value="2">2 — Baixo</option>
+                  <option value="3" selected>3 — Moderado</option>
+                  <option value="4">4 — Alto</option>
+                  <option value="5">5 — Muito Alto (Complexo)</option>
+                </select>
+              </div>
+              <div class="m3-field">
+                <label class="label-medium" for="featStatus">Status no Produto</label>
+                <select id="featStatus" class="m3-select">
+                  <option value="idea">Nova Ideia (Roadmap)</option>
+                  <option value="existing">Funcionalidade Existente</option>
+                </select>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-filled">
+              <span class="material-symbols-outlined">add_circle</span>
+              Incluir na Pesquisa Kano
+            </button>
+          </form>
+
+          <div class="m3-card m3-card-elevated" style="display:flex; flex-direction:column; gap:16px;">
+            <h2 class="title-large">Escopo do Questionário</h2>
+            <div id="featuresListContainer" style="display:flex; flex-direction:column; gap:12px;"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           VIEW 3: QUESTIONÁRIO PADRONIZADO KANO (PASSO 2)
+           ====================================================================== -->
+      <section id="view-survey" class="view-section" aria-labelledby="title-survey">
+        <div class="tool-header-card">
+          <div class="tool-header-top">
+            <div>
+              <h1 id="title-survey" class="headline-medium">3. Questionário Padronizado Kano (Passo 2)</h1>
+              <p class="body-medium" style="color:var(--md-sys-color-on-surface-variant);">
+                Coleta quantitativa pareada (Funcional + Disfuncional), importância (MIT) e entrevista qualitativa.
+              </p>
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button class="btn btn-tonal" onclick="simulateSampleResponses(18)">
+                <span class="material-symbols-outlined">group_add</span>
+                Simular Amostra (18 Respondentes)
+              </button>
+              <button class="btn btn-outlined" onclick="clearProjectResponses()">
+                <span class="material-symbols-outlined">restart_alt</span>
+                Limpar Respostas
+              </button>
+            </div>
+          </div>
+          <div class="tool-rationale body-small">
+            <span class="material-symbols-outlined" style="color:var(--md-sys-color-primary); font-size:20px;">info</span>
+            <div>
+              <strong>Como funciona este questionário (Tutorial Kano — Qualtrics):</strong> Para cada funcionalidade, o participante responde a duas perguntas padronizadas na escala de 5 emoções (<em>Gosto disso, Espero por isso, Sou neutro, Posso tolerar, Não gosto disso</em>): a <strong>Funcional</strong> (presença ou maior intensidade do recurso) e a <strong>Disfuncional</strong> (ausência ou menor intensidade). Opcionalmente, aplica-se a <strong>Escala de Importância (1 a 7) de John Hauser (MIT)</strong> para desempatar prioridades e um campo qualitativo para capturar o <em>"porquê"</em> por trás dos números com uma amostra recomendada de <strong>15 a 20 clientes</strong> representativos.
+            </div>
+          </div>
+        </div>
+
+        <div class="m3-card m3-card-filled" style="display:flex; flex-direction:column; gap:16px;">
+          <div class="grid-3">
+            <div class="m3-field">
+              <label class="label-medium" for="respName">Identificação do Participante</label>
+              <input id="respName" class="m3-input" type="text" placeholder="Ex: Participante #01 ou Nome" />
+            </div>
+            <div class="m3-field">
+              <label class="label-medium" for="respPersona">Segmento / Persona do Cliente</label>
+              <select id="respPersona" class="m3-select"></select>
+            </div>
+            <div class="m3-field">
+              <label class="label-medium" for="respNps">Nota NPS deste Respondente (0 a 10)</label>
+              <input id="respNps" class="m3-input" type="number" min="0" max="10" value="8" />
+            </div>
+          </div>
+        </div>
+
+        <div id="surveyQuestionsContainer" style="display:flex; flex-direction:column; gap:16px;"></div>
+
+        <div style="display:flex; justify-content:flex-end; gap:12px;">
+          <button class="btn btn-filled" onclick="submitSurveyResponse()">
+            <span class="material-symbols-outlined">send</span>
+            Registrar Resposta do Participante
+          </button>
+        </div>
+
+        <div class="m3-card m3-card-outlined" style="display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 class="title-large">Participantes Registrados (<span id="respondentCountLabel">0</span>)</h2>
+            <span class="body-small" style="color:var(--md-sys-color-on-surface-variant);">Meta recomendada: 15–20 respondentes</span>
+          </div>
+          <div id="respondentsListContainer" class="chip-group"></div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           VIEW 4: GRÁFICO DE REAÇÃO KANO, PRIORIZAÇÃO E ROI (PASSOS 3, 4 E 5)
+           ====================================================================== -->
+      <section id="view-analytics" class="view-section" aria-labelledby="title-analytics">
+        <div class="tool-header-card">
+          <div class="tool-header-top">
+            <div>
+              <h1 id="title-analytics" class="headline-medium">4. Gráfico de Reação Kano, Priorização & ROI (Passos 3 a 5)</h1>
+              <p class="body-medium" style="color:var(--md-sys-color-on-surface-variant);">
+                Visualização das curvas emocionais de Noriaki Kano, priorização por persona e modelagem Benefício vs. Custo.
+              </p>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <label class="label-medium" for="analyticsPersonaFilter">Filtrar Persona:</label>
+              <select id="analyticsPersonaFilter" class="m3-select" style="min-width:210px;" onchange="renderAnalytics()">
+                <option value="ALL">Todas as Personas (Amostra Total)</option>
+              </select>
+            </div>
+          </div>
+          <div class="tool-rationale body-small">
+            <span class="material-symbols-outlined" style="color:var(--md-sys-color-primary); font-size:20px;">info</span>
+            <div>
+              <strong>Como interpretar os resultados (Passos 3 a 5 — Qualtrics):</strong> As respostas pareadas são classificadas nas 5 categorias emocionais e plotadas no <strong>Gráfico de Reação Kano</strong>, que cruza <em>Satisfação do Cliente</em> (Frustrado → Encantado) contra <em>Sofisticação/Funcionalidade</em> (Ausente → Melhor). Para decidir o roadmap, garanta primeiro os requisitos <strong>Must-Be (M)</strong> (evitam rejeição), invista nos <strong>Performance (P)</strong> e lance <strong>Attractive (A)</strong> de baixo custo (<em>Quick Wins</em>) para elevar o NPS, eliminando itens <strong>Indiferentes (I)</strong> e <strong>Reversos (R)</strong>. Use o filtro de Personas para alinhar mensagens de marketing a segmentos específicos.
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="align-items:stretch;">
+          <div class="m3-card m3-card-outlined" style="display:flex; flex-direction:column; gap:12px;">
+            <div>
+              <h2 class="title-large">Gráfico de Reação Kano</h2>
+              <p class="body-small" style="color:var(--md-sys-color-on-surface-variant);">
+                Eixo Y: Satisfação do Cliente (Frustrado → Encantado) | Eixo X: Funcionalidade / Sofisticação (Ausente → Melhor)
+              </p>
+            </div>
+            <div class="chart-container">
+              <canvas id="kanoReactionChart"></canvas>
+            </div>
+          </div>
+
+          <div class="m3-card m3-card-elevated" style="display:flex; flex-direction:column; gap:16px;">
+            <h2 class="title-large">Diretrizes Estratégicas (Passo 5)</h2>
+            <div id="strategicInsightsContainer" style="display:flex; flex-direction:column; gap:12px;"></div>
+          </div>
+        </div>
+
+        <div class="m3-card m3-card-outlined" style="display:flex; flex-direction:column; gap:16px;">
+          <div>
+            <h2 class="title-large">Matriz de Priorização & Modelagem Benefício vs. Custo</h2>
+            <p class="body-small" style="color:var(--md-sys-color-on-surface-variant);">
+              Ordenada pela hierarquia Kano: <strong>Must-Be (M)</strong> → <strong>Performance (P)</strong> → <strong>Attractive (A)</strong>, ponderada pela Importância (1–7) e Custo.
+            </p>
+          </div>
+
+          <div class="data-table-wrap">
+            <table class="m3-data-table" aria-label="Resultados detalhados da pesquisa Kano">
+              <thead>
+                <tr>
+                  <th>Funcionalidade</th>
+                  <th>Categoria Kano</th>
+                  <th>Distribuição (A / P / M / I / R / Q)</th>
+                  <th>Satisfação (Melhor)</th>
+                  <th>Insatisfação (Pior)</th>
+                  <th>Importância (1–7)</th>
+                  <th>Custo (1–5)</th>
+                  <th>Decisão Recomendada</th>
+                </tr>
+              </thead>
+              <tbody id="resultsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="m3-card m3-card-filled" style="display:flex; flex-direction:column; gap:12px;">
+          <h2 class="title-large">Insights Qualitativos ("O Porquê" das Respostas)</h2>
+          <div id="qualitativeNotesContainer" class="grid-2"></div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           VIEW 5: MATRIZ DE AVALIAÇÃO OFICIAL (5x5) E GUIA METODOLÓGICO
+           ====================================================================== -->
+      <section id="view-guide" class="view-section" aria-labelledby="title-guide">
+        <div class="tool-header-card">
+          <div class="tool-header-top">
+            <div>
+              <h1 id="title-guide" class="headline-medium">5. Matriz de Avaliação (5×5) & Fundamentos Teóricos</h1>
+              <p class="body-medium" style="color:var(--md-sys-color-on-surface-variant);">
+                Tabela oficial de cruzamento Funcional × Disfuncional e definições das categorias emocionais de Noriaki Kano.
+              </p>
+            </div>
+          </div>
+          <div class="tool-rationale body-small">
+            <span class="material-symbols-outlined" style="color:var(--md-sys-color-primary); font-size:20px;">info</span>
+            <div>
+              <strong>Para que serve esta referência (Qualtrics — Kano Model Explained):</strong> Permite auditar como cada par de respostas individuais (presença vs. ausência de um recurso) é convertido nas categorias <strong>A</strong> (Atrativa), <strong>P</strong> (Performance), <strong>M</strong> (Obrigatória), <strong>I</strong> (Indiferente), <strong>R</strong> (Reversa) ou <strong>Q</strong> (Questionável), além de documentar o fenômeno do <em>Decaimento Natural do Encantamento</em> ao longo do tempo.
+            </div>
+          </div>
+        </div>
+
+        <div class="m3-card m3-card-outlined" style="display:flex; flex-direction:column; gap:16px;">
+          <h2 class="title-large">Tabela de Pontuação Oficial (Funcional × Disfuncional)</h2>
+          <div class="matrix-wrapper">
+            <table class="kano-table" aria-label="Matriz de avaliação 5 por 5 do modelo Kano">
+              <thead>
+                <tr>
+                  <th colspan="2" rowspan="2" style="background:var(--md-sys-color-surface-container-highest);">Matriz de Avaliação Kano</th>
+                  <th colspan="5">Disfuncional (Funcionalidade Ausente / Menos)</th>
+                </tr>
+                <tr>
+                  <th>1. Gosto disso<br><span class="label-small">(Like it)</span></th>
+                  <th>2. Espero por isso<br><span class="label-small">(Expect it)</span></th>
+                  <th>3. Sou neutro<br><span class="label-small">(Don't care)</span></th>
+                  <th>4. Posso tolerar<br><span class="label-small">(Live with)</span></th>
+                  <th>5. Não gosto<br><span class="label-small">(Dislike)</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th rowspan="5" style="writing-mode: vertical-rl; transform: rotate(180deg); background:var(--md-sys-color-surface-container-highest);">Funcional (Presente / Mais)</th>
+                  <th>1. Gosto disso (Like it)</th>
+                  <td><span class="matrix-cell-code kano-Q">Q</span></td>
+                  <td><span class="matrix-cell-code kano-A">A</span></td>
+                  <td><span class="matrix-cell-code kano-A">A</span></td>
+                  <td><span class="matrix-cell-code kano-A">A</span></td>
+                  <td><span class="matrix-cell-code kano-P">P</span></td>
+                </tr>
+                <tr>
+                  <th>2. Espero por isso (Expect it)</th>
+                  <td><span class="matrix-cell-code kano-R">R</span></td>
+                  <td><span class="matrix-cell-code kano-Q">Q</span></td>
+                  <td><span class="matrix-cell-code kano-I">I</span></td>
+                  <td><span class="matrix-cell-code kano-I">I</span></td>
+                  <td><span class="matrix-cell-code kano-M">M</span></td>
+                </tr>
+                <tr>
+                  <th>3. Sou neutro (Don't care)</th>
+                  <td><span class="matrix-cell-code kano-R">R</span></td>
+                  <td><span class="matrix-cell-code kano-I">I</span></td>
+                  <td><span class="matrix-cell-code kano-I">I</span></td>
+                  <td><span class="matrix-cell-code kano-I">I</span></td>
+                  <td><span class="matrix-cell-code kano-M">M</span></td>
+                </tr>
+                <tr>
+                  <th>4. Posso tolerar (Live with)</th>
+                  <td><span class="matrix-cell-code kano-R">R</span></td>
+                  <td><span class="matrix-cell-code kano-I">I</span></td>
+                  <td><span class="matrix-cell-code kano-I">I</span></td>
+                  <td><span class="matrix-cell-code kano-Q">Q</span></td>
+                  <td><span class="matrix-cell-code kano-M">M</span></td>
+                </tr>
+                <tr>
+                  <th>5. Não gosto (Dislike)</th>
+                  <td><span class="matrix-cell-code kano-R">R</span></td>
+                  <td><span class="matrix-cell-code kano-R">R</span></td>
+                  <td><span class="matrix-cell-code kano-R">R</span></td>
+                  <td><span class="matrix-cell-code kano-R">R</span></td>
+                  <td><span class="matrix-cell-code kano-Q">Q</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div class="m3-card m3-card-outlined" style="display:flex; flex-direction:column; gap:8px;">
+            <span class="kano-badge kano-M" style="align-self:flex-start;">M — Must-Be (Obrigatória)</span>
+            <h3 class="title-medium">Qualidade Esperada (Threshold)</h3>
+            <p class="body-small" style="color:var(--md-sys-color-on-surface-variant);">
+              Requisitos básicos esperados por padrão (ex: quarto limpo, Wi-Fi gratuito). Sua presença gera neutralidade, mas sua ausência causa forte insatisfação.
+            </p>
+          </div>
+          <div class="m3-card m3-card-outlined" style="display:flex; flex-direction:column; gap:8px;">
+            <span class="kano-badge kano-P" style="align-self:flex-start;">P — Performance (One-Dimensional)</span>
+            <h3 class="title-medium">Qualidade Desejada (Unidimensional)</h3>
+            <p class="body-small" style="color:var(--md-sys-color-on-surface-variant);">
+              Quanto maior a entrega/sofisticação, maior a satisfação proporcional do cliente (ex: maior capacidade do tanque de combustível).
+            </p>
+          </div>
+          <div class="m3-card m3-card-outlined" style="display:flex; flex-direction:column; gap:8px;">
+            <span class="kano-badge kano-A" style="align-self:flex-start;">A — Attractive (Delighters)</span>
+            <h3 class="title-medium">Qualidade Atrativa (Encantamento)</h3>
+            <p class="body-small" style="color:var(--md-sys-color-on-surface-variant);">
+              Não esperadas pelo cliente, mas geram entusiasmo ("wow") e vantagem competitiva quando presentes. Ausentes, não causam insatisfação.
+            </p>
+          </div>
+          <div class="m3-card m3-card-outlined" style="display:flex; flex-direction:column; gap:8px;">
+            <span class="kano-badge kano-I" style="align-self:flex-start;">I — Indifferent (Indiferente)</span>
+            <h3 class="title-medium">Atributo Neutro</h3>
+            <p class="body-small" style="color:var(--md-sys-color-on-surface-variant);">
+              Recursos que passam despercebidos (ex: tipografia do logotipo). Não geram satisfação nem insatisfação; evite gastar recursos neles.
+            </p>
+          </div>
+          <div class="m3-card m3-card-outlined" style="display:flex; flex-direction:column; gap:8px;">
+            <span class="kano-badge kano-R" style="align-self:flex-start;">R — Reverse (Reversa)</span>
+            <h3 class="title-medium">Atributo Indesejado</h3>
+            <p class="body-small" style="color:var(--md-sys-color-on-surface-variant);">
+              Causa insatisfação ativa em certos grupos (ex: excesso de plástico na embalagem ou manual puramente visual para quem prefere texto).
+            </p>
+          </div>
+          <div class="m3-card m3-card-outlined" style="display:flex; flex-direction:column; gap:8px;">
+            <span class="kano-badge kano-Q" style="align-self:flex-start;">Q — Questionable (Questionável)</span>
+            <h3 class="title-medium">Respostas Conflitantes</h3>
+            <p class="body-small" style="color:var(--md-sys-color-on-surface-variant);">
+              Contradição lógica (ex: gostar de ter e gostar de não ter). Indica que a pergunta precisa ser reescrita com maior clareza.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           VIEW 6: CASA DA QUALIDADE (HOUSE OF QUALITY — QFD) INTERATIVA
+           ====================================================================== -->
+      <section id="view-hoq" class="view-section" aria-labelledby="title-hoq">
+        <div class="tool-header-card">
+          <div class="tool-header-top">
+            <div>
+              <h1 id="title-hoq" class="headline-medium">6. Casa da Qualidade (House of Quality — QFD)</h1>
+              <p class="body-medium" style="color:var(--md-sys-color-on-surface-variant);">
+                Matriz de planejamento de produto que conecta a Voz do Cliente (<em>WHATs</em>) aos Requisitos de Engenharia (<em>HOWs</em>), correlações técnicas e benchmarking.
+              </p>
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button class="btn btn-tonal" onclick="importKanoToHoq()" title="Importar requisitos prioritários (M, P, A) da análise Kano para a parede esquerda da Casa">
+                <span class="material-symbols-outlined">sync_alt</span>
+                Importar VOC do Kano
+              </button>
+              <button class="btn btn-outlined" onclick="addHoqWhat()">
+                <span class="material-symbols-outlined">add</span>
+                Req. Cliente (WHAT)
+              </button>
+              <button class="btn btn-filled" onclick="addHoqHow()">
+                <span class="material-symbols-outlined">add</span>
+                Req. Técnico (HOW)
+              </button>
+            </div>
+          </div>
+          <div class="tool-rationale body-small">
+            <span class="material-symbols-outlined" style="color:var(--md-sys-color-primary); font-size:20px;">info</span>
+            <div>
+              <strong>Para que serve a Casa da Qualidade (ASQ, Lucidchart & Wikipedia — QFD):</strong> Principal ferramenta do <em>Quality Function Deployment</em> (criado por Yoji Akao, 1966), traduz necessidades qualitativas dos clientes (<strong>WHATs</strong>) em parâmetros quantitativos de engenharia e especificações técnicas (<strong>HOWs</strong>). Permite alinhar equipes multidisciplinares, identificar conflitos técnicos no <strong>telhado</strong>, priorizar especificações críticas para a qualidade (<strong>CTQs</strong>) por peso calculado e detectar falhas comparando o <strong>Benchmarking Competitivo</strong> (parede direita) com o <strong>Benchmarking Técnico</strong> (base).
+            </div>
+          </div>
+        </div>
+
+        <!-- Guia Rápido / Hints Interativos de Preenchimento (6 Cômodos da Casa) -->
+        <div class="m3-card m3-card-outlined" style="display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <h2 class="title-medium" style="display:flex; align-items:center; gap:8px;">
+              <span class="material-symbols-outlined" style="color:var(--md-sys-color-primary);">lightbulb</span>
+              Guia Interativo de Preenchimento (Clique diretamente nos cômodos da casa abaixo)
+            </h2>
+            <span class="label-small" style="color:var(--md-sys-color-on-surface-variant);">Cálculos de % e Pesos são automáticos</span>
+          </div>
+
+          <div class="hoq-hints-grid">
+            <div class="hoq-hint-pill">
+              <span class="kano-badge kano-A">1. Parede Esquerda</span>
+              <div class="body-small"><strong>Voz do Cliente (WHATs):</strong> Liste o que o cliente deseja e atribua importância de <strong>1 a 5</strong>. O sistema calcula o <em>% de Importância</em> automaticamente.</div>
+            </div>
+            <div class="hoq-hint-pill">
+              <span class="kano-badge kano-P">2. Teto / Colunas</span>
+              <div class="body-small"><strong>Requisitos Técnicos (HOWs):</strong> Defina como a engenharia atenderá aos desejos e clique na seta para indicar a direção ideal (<strong>▲</strong> Maior, <strong>▼</strong> Menor, <strong>◎</strong> Alvo).</div>
+            </div>
+            <div class="hoq-hint-pill">
+              <span class="kano-badge kano-M">3. Corpo Central</span>
+              <div class="body-small"><strong>Matriz de Relacionamento:</strong> Clique nas células para alternar a força do impacto: <strong>◎ Forte (9)</strong>, <strong>○ Médio (3)</strong>, <strong>△ Fraco (1)</strong> ou vazio (0).</div>
+            </div>
+            <div class="hoq-hint-pill">
+              <span class="kano-badge kano-Q">4. Telhado Triangular</span>
+              <div class="body-small"><strong>Correlações Técnicas:</strong> Clique nos losangos do telhado para mapear sinergias ou trade-offs entre parâmetros: <strong>++</strong>, <strong>+</strong>, <strong>-</strong> ou <strong>--</strong>.</div>
+            </div>
+            <div class="hoq-hint-pill">
+              <span class="kano-badge kano-I">5. Parede Direita</span>
+              <div class="body-small"><strong>Benchmarking Competitivo:</strong> Avalie de <strong>1 a 5</strong> como Nossa Empresa (●) e os Concorrentes A e B satisfazem cada desejo do cliente.</div>
+            </div>
+            <div class="hoq-hint-pill">
+              <span class="kano-badge kano-R">6. Base / Alicerce</span>
+              <div class="body-small"><strong>Metas, Pesos & Bench. Técnico:</strong> Defina valores-alvo mensuráveis, dificuldade (1–5), nota técnica (1–4) e veja a prioridade calculada.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Alertas Metodológicos Automáticos (ASQ / Wikipedia Rules) -->
+        <div id="hoqDiagnosticBanner" class="m3-banner" style="display:none;"></div>
+
+        <!-- DIAGRAMA VISUAL COMPLETO DA CASA DA QUALIDADE -->
+        <div class="hoq-scroll-container" aria-label="Diagrama Interativo da Casa da Qualidade">
+          <div id="hoqDiagramMount" class="hoq-house-wrapper"></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- NAVIGATION BAR INFERIOR (Compact < 600dp) -->
+<nav class="bottom-nav-bar" aria-label="Navegação Inferior">
+  <button class="bottom-nav-btn active" data-view="projects" onclick="switchView('projects')">
+    <div class="bottom-nav-pill"><span class="material-symbols-outlined">folder_special</span></div>
+    <span class="label-small">Projetos</span>
+  </button>
+  <button class="bottom-nav-btn" data-view="features" onclick="switchView('features')">
+    <div class="bottom-nav-pill"><span class="material-symbols-outlined">fact_check</span></div>
+    <span class="label-small">Recursos</span>
+  </button>
+  <button class="bottom-nav-btn" data-view="survey" onclick="switchView('survey')">
+    <div class="bottom-nav-pill"><span class="material-symbols-outlined">quiz</span></div>
+    <span class="label-small">Pesquisa</span>
+  </button>
+  <button class="bottom-nav-btn" data-view="analytics" onclick="switchView('analytics')">
+    <div class="bottom-nav-pill"><span class="material-symbols-outlined">monitoring</span></div>
+    <span class="label-small">Análise</span>
+  </button>
+  <button class="bottom-nav-btn" data-view="hoq" onclick="switchView('hoq')">
+    <div class="bottom-nav-pill"><span class="material-symbols-outlined">roofing</span></div>
+    <span class="label-small">Casa QFD</span>
+  </button>
+</nav>
+
+<!-- MODAL DIALOG M3: NOVO PROJETO -->
+<dialog id="newProjectDialog" class="m3-dialog" aria-labelledby="dialogProjTitle">
+  <form onsubmit="createNewProject(event)" style="display:flex; flex-direction:column; gap:16px;">
+    <h2 id="dialogProjTitle" class="headline-small">Novo Projeto de Pesquisa Kano & QFD</h2>
+    <p class="body-small" style="color:var(--md-sys-color-on-surface-variant);">
+      Defina o produto/serviço e o contexto estratégico da investigação.
+    </p>
+
+    <div class="m3-field">
+      <label class="label-medium" for="newProjName">Nome do Projeto / Produto *</label>
+      <input id="newProjName" class="m3-input" type="text" required placeholder="Ex: Smartphone Modular / Plataforma SaaS B2B" />
+    </div>
+
+    <div class="m3-field">
+      <label class="label-medium" for="newProjContext">Contexto de Aplicação Kano</label>
+      <select id="newProjContext" class="m3-select">
+        <option value="impress_customers">Inovação ("Pensar Fora da Caixa")</option>
+        <option value="enhance_product">Melhoria de Produto Existente</option>
+        <option value="limited_time">Tempo Limitado (Decisão Rápida)</option>
+        <option value="limited_resources">Recursos Limitados (Pesquisa Enxuta)</option>
+      </select>
+    </div>
+
+    <div class="m3-field">
+      <label class="label-medium" for="newProjPersonas">Personas / Segmentos (separados por vírgula)</label>
+      <input id="newProjPersonas" class="m3-input" type="text" value="Clientes Atuais, Novos Usuários, Público Corporativo" />
+    </div>
+
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px;">
+      <button type="button" class="btn btn-text" onclick="document.getElementById('newProjectDialog').close()">Cancelar</button>
+      <button type="submit" class="btn btn-filled">Criar Projeto</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- SNACKBAR M3 -->
+<div id="m3Snackbar" class="m3-snackbar" role="status" aria-live="polite">
+  <span id="snackbarText" class="body-medium"></span>
+</div>
+
+<script>
+  /* ============================================================================
+     1. CONSTANTES DO MODELO KANO & HOUSE OF QUALITY (QFD)
+     ============================================================================ */
+  const KANO_CONTEXTS = {
+    limited_time: {
+      label: "Tempo Limitado",
+      desc: "Quando equipes de produto trabalham com prazos apertados e precisam acelerar a tomada de decisão."
+    },
+    limited_resources: {
+      label: "Recursos Limitados",
+      desc: "Quando não há especialistas disponíveis: utiliza questionário simples para conduzir a pesquisa com eficiência."
+    },
+    impress_customers: {
+      label: "Inovação / Encantar Clientes",
+      desc: "Quando se busca 'pensar fora da caixa' para descobrir quais funcionalidades surpreendem e geram encantamento."
+    },
+    enhance_product: {
+      label: "Melhoria de Produto Atual",
+      desc: "Quando é hora de atualizar o produto ou mantê-lo competitivo no mercado avaliando opções claras."
+    }
+  };
+
+  const KANO_SCALE = [
+    { key: "like", label: "Gosto disso", en: "Like it", icon: "sentiment_very_satisfied" },
+    { key: "expect", label: "Espero por isso", en: "Expect it", icon: "check_circle" },
+    { key: "neutral", label: "Sou neutro", en: "Don't care", icon: "sentiment_neutral" },
+    { key: "tolerate", label: "Posso tolerar", en: "Live with", icon: "sentiment_dissatisfied" },
+    { key: "dislike", label: "Não gosto disso", en: "Dislike", icon: "sentiment_very_dissatisfied" }
+  ];
+
+  const KANO_MATRIX = {
+    like:     { like: "Q", expect: "A", neutral: "A", tolerate: "A", dislike: "P" },
+    expect:   { like: "R", expect: "Q", neutral: "I", tolerate: "I", dislike: "M" },
+    neutral:  { like: "R", expect: "I", neutral: "I", tolerate: "I", dislike: "M" },
+    tolerate: { like: "R", expect: "I", neutral: "I", tolerate: "Q", dislike: "M" },
+    dislike:  { like: "R", expect: "R", neutral: "R", tolerate: "R", dislike: "Q" }
+  };
+
+  const CATEGORY_META = {
+    M: { code: "M", name: "Must-Be (Obrigatória)", short: "Must-Be", priorityRank: 1, action: "Implementar imediatamente (requisito básico esperado; ausência causa frustração)." },
+    P: { code: "P", name: "Performance (Unidimensional)", short: "Performance", priorityRank: 2, action: "Investir proporcionalmente ao orçamento (mais entrega = maior satisfação)." },
+    A: { code: "A", name: "Attractive (Delighter)", short: "Attractive", priorityRank: 3, action: "Diferencial competitivo ('Quick Win' de encantamento para destacar a marca)." },
+    I: { code: "I", name: "Indifferent (Indiferente)", short: "Indifferent", priorityRank: 4, action: "Não priorizar (evitar desperdício de tempo e recursos)." },
+    R: { code: "R", name: "Reverse (Reversa)", short: "Reverse", priorityRank: 5, action: "Remover ou suavizar (gera insatisfação ativa neste segmento)." },
+    Q: { code: "Q", name: "Questionable (Questionável)", short: "Questionable", priorityRank: 6, action: "Revisar redação da pergunta (respostas conflitantes dos participantes)." }
+  };
+
+  // Escalas Canônicas da Casa da Qualidade (ASQ & Lucidchart)
+  const HOQ_REL_STATES = [
+    { val: 0, symbol: "", label: "Sem relação (0)" },
+    { val: 9, symbol: "◎", label: "Forte (9)" },
+    { val: 3, symbol: "○", label: "Médio (3)" },
+    { val: 1, symbol: "△", label: "Fraco (1)" }
+  ];
+
+  const HOQ_GOALS = [
+    { key: "up", symbol: "▲", title: "Maior é melhor (Maximizar)" },
+    { key: "down", symbol: "▼", title: "Menor é melhor (Minimizar)" },
+    { key: "target", symbol: "◎", title: "Valor-alvo nominal" }
+  ];
+
+  const HOQ_CORRELATIONS = [
+    { key: "none", symbol: "", title: "Sem correlação", color: "transparent" },
+    { key: "sp", symbol: "++", title: "Correlação Forte Positiva (++)", color: "#146C2E" },
+    { key: "p", symbol: "+", title: "Correlação Positiva (+)", color: "#0B57D0" },
+    { key: "n", symbol: "-", title: "Correlação Negativa (-)", color: "#B26A00" },
+    { key: "sn", symbol: "--", title: "Correlação Forte Negativa (--)", color: "#BA1A1A" }
+  ];
+
+  /* ============================================================================
+     2. ESTADO MULTI-PROJETOS (KANO + CASA DA QUALIDADE INTEGRADA)
+     ============================================================================ */
+  const STORAGE_KEY = "kano_qfd_studio_m3_v2";
+
+  function createDefaultHoqForHotel() {
+    return {
+      compNames: { us: "Nosso Hotel", compA: "Conc. A", compB: "Conc. B" },
+      whats: [
+        { id: "w1", text: "Wi-Fi estável e de alta velocidade", importance: 5, compUs: 4, compA: 3, compB: 4 },
+        { id: "w2", text: "Quarto silencioso e bem higienizado", importance: 5, compUs: 5, compA: 4, compB: 3 },
+        { id: "w3", text: "Check-in rápido e sem atrito", importance: 4, compUs: 3, compA: 4, compB: 2 },
+        { id: "w4", text: "Experiência acolhedora e personalizada", importance: 3, compUs: 4, compA: 2, compB: 3 }
+      ],
+      hows: [
+        { id: "h1", text: "Link Dedicado (Mbps)", goal: "up", target: "500 Mbps", difficulty: 2, techUs: 4, techA: 3, techB: 4 },
+        { id: "h2", text: "Isolamento Acústico (dB)", goal: "down", target: "< 30 dB", difficulty: 4, techUs: 4, techA: 3, techB: 2 },
+        { id: "h3", text: "Tempo Check-in Digital", goal: "down", target: "< 2 min", difficulty: 3, techUs: 2, techA: 4, techB: 2 },
+        { id: "h4", text: "Protocolo Limpeza (pts)", goal: "up", target: "99.5%", difficulty: 2, techUs: 4, techA: 4, techB: 3 },
+        { id: "h5", text: "Custo Operacional / Diária", goal: "down", target: "R$ 85", difficulty: 3, techUs: 3, techA: 3, techB: 4 }
+      ],
+      relationships: {
+        "w1_h1": 9, "w1_h3": 3, "w1_h5": 1,
+        "w2_h2": 9, "w2_h4": 9, "w2_h5": 3,
+        "w3_h1": 3, "w3_h3": 9, "w3_h5": 1,
+        "w4_h3": 3, "w4_h4": 3, "w4_h5": 3
+      },
+      correlations: {
+        "h1_h3": "sp",
+        "h1_h5": "n",
+        "h2_h5": "sn",
+        "h3_h5": "p"
+      }
+    };
+  }
+
+  function getDefaultProjects() {
+    return [
+      {
+        id: "proj_hotel_exp",
+        name: "Experiência Hotelaria Executiva & Lazer",
+        context: "enhance_product",
+        questionStyle: "presence",
+        includeImportance: true,
+        baselineNps: 42,
+        personas: ["Executivos Remotos", "Turistas de Lazer", "Jovens Eco-Conscientes"],
+        features: [
+          { id: "f1", name: "Wi-Fi gratuito de alta velocidade em todos os quartos", context: "Conexão simétrica sem custo adicional para videoconferências.", cost: 2, status: "existing" },
+          { id: "f2", name: "Quarto higienizado com cama ergonômica padrão", context: "Padrão fundamental de limpeza e conforto ao realizar o check-in.", cost: 2, status: "existing" },
+          { id: "f3", name: "Upgrade gratuito de suíte ou café da manhã cortesia surpresa", context: "Benefício não esperado oferecido no check-in que diferencia o hotel.", cost: 3, status: "idea" },
+          { id: "f4", name: "Tamanho e isolamento acústico superior da suíte", context: "Quanto maior a metragem e o silêncio do ambiente, maior o conforto percebido.", cost: 4, status: "idea" },
+          { id: "f5", name: "Amenities embalados em plástico descartável individual", context: "Uso intenso de plástico de uso único nos itens de banho.", cost: 1, status: "existing" },
+          { id: "f6", name: "Tipografia personalizada no logotipo do cartão-chave", context: "Alteração estética da fonte impressa no cartão de acesso.", cost: 1, status: "idea" }
+        ],
+        responses: [
+          {
+            id: "r1", respondent: "Ana Paula (Executiva)", persona: "Executivos Remotos", nps: 9,
+            answers: {
+              f1: { func: "expect", dys: "dislike", importance: 7, note: "Sem Wi-Fi rápido não consigo trabalhar do hotel." },
+              f2: { func: "expect", dys: "dislike", importance: 7, note: "Obrigação básica de qualquer hospedagem." },
+              f3: { func: "like", dys: "neutral", importance: 5, note: "Surpresa excelente que faz recomendar o hotel." },
+              f4: { func: "like", dys: "dislike", importance: 6, note: "Essencial para reuniões online sem ruído." },
+              f5: { func: "dislike", dys: "expect", importance: 4, note: "Prefiro dispensers recarregáveis." },
+              f6: { func: "neutral", dys: "neutral", importance: 1, note: "Não faz nenhuma diferença na estadia." }
+            }
+          },
+          {
+            id: "r2", respondent: "Lucas Mendes (Eco)", persona: "Jovens Eco-Conscientes", nps: 8,
+            answers: {
+              f1: { func: "expect", dys: "dislike", importance: 6, note: "" },
+              f2: { func: "expect", dys: "dislike", importance: 7, note: "" },
+              f3: { func: "like", dys: "tolerate", importance: 5, note: "Ótimo diferencial." },
+              f4: { func: "like", dys: "dislike", importance: 5, note: "" },
+              f5: { func: "dislike", dys: "like", importance: 6, note: "Excesso de plástico reduz minha intenção de retorno." },
+              f6: { func: "neutral", dys: "neutral", importance: 1, note: "" }
+            }
+          }
+        ],
+        hoq: createDefaultHoqForHotel()
+      },
+      {
+        id: "proj_smartphone_qfd",
+        name: "Smartphone Nova Geração (Exemplo Lucidchart QFD)",
+        context: "impress_customers",
+        questionStyle: "presence",
+        includeImportance: true,
+        baselineNps: 50,
+        personas: ["Usuários Avançados", "Consumidores Sensíveis a Preço"],
+        features: [
+          { id: "s1", name: "Bateria de longa duração", context: "Autonomia superior a 36h de uso intenso.", cost: 4, status: "existing" },
+          { id: "s2", name: "Câmera de alta qualidade noturna", context: "Sensor estabilizado de alta definição.", cost: 4, status: "idea" },
+          { id: "s3", name: "Interface intuitiva e fácil de usar", context: "Sistema operacional limpo e responsivo.", cost: 2, status: "existing" }
+        ],
+        responses: [
+          {
+            id: "sr1", respondent: "Rafael Silva", persona: "Usuários Avançados", nps: 9,
+            answers: {
+              s1: { func: "like", dys: "dislike", importance: 7, note: "" },
+              s2: { func: "like", dys: "neutral", importance: 6, note: "" },
+              s3: { func: "expect", dys: "dislike", importance: 6, note: "" }
+            }
+          }
+        ],
+        hoq: {
+          compNames: { us: "Nosso Modelo", compA: "Tristell", compB: "Vital" },
+          whats: [
+            { id: "sw1", text: "Fácil de usar", importance: 3, compUs: 4, compA: 5, compB: 2 },
+            { id: "sw2", text: "Confiável", importance: 3, compUs: 4, compA: 2, compB: 3 },
+            { id: "sw3", text: "Preço acessível", importance: 4, compUs: 3, compA: 2, compB: 5 },
+            { id: "sw4", text: "Bateria de longa duração", importance: 4, compUs: 4, compA: 2, compB: 5 },
+            { id: "sw5", text: "Câmera de alta qualidade", importance: 5, compUs: 5, compA: 5, compB: 3 }
+          ],
+          hows: [
+            { id: "sh1", text: "Peso (g)", goal: "down", target: "< 165g", difficulty: 3, techUs: 4, techA: 3, techB: 2 },
+            { id: "sh2", text: "Custo de Produção", goal: "down", target: "$ 180", difficulty: 4, techUs: 3, techA: 2, techB: 4 },
+            { id: "sh3", text: "Vida Útil Esperada", goal: "up", target: "4 anos", difficulty: 3, techUs: 4, techA: 3, techB: 3 },
+            { id: "sh4", text: "Sistema Operacional", goal: "up", target: "OS v15", difficulty: 2, techUs: 4, techA: 4, techB: 2 },
+            { id: "sh5", text: "Módulo de Câmera", goal: "up", target: "50MP OIS", difficulty: 4, techUs: 4, techA: 4, techB: 3 },
+            { id: "sh6", text: "Capacidade Bateria", goal: "up", target: "5200 mAh", difficulty: 3, techUs: 4, techA: 2, techB: 4 }
+          ],
+          relationships: {
+            "sw1_sh4": 9, "sw1_sh5": 1,
+            "sw2_sh2": 9, "sw2_sh3": 9, "sw2_sh4": 3, "sw2_sh6": 9,
+            "sw3_sh1": 1, "sw3_sh2": 9, "sw3_sh3": 9, "sw3_sh4": 3, "sw3_sh5": 1, "sw3_sh6": 3,
+            "sw4_sh1": 1, "sw4_sh2": 3, "sw4_sh3": 9, "sw4_sh4": 9, "sw4_sh6": 9,
+            "sw5_sh2": 9, "sw5_sh4": 3, "sw5_sh5": 9
+          },
+          correlations: {
+            "sh1_sh6": "sn",
+            "sh2_sh5": "n",
+            "sh3_sh4": "sp",
+            "sh4_sh6": "p"
+          }
+        }
+      }
+    ];
+  }
+
+  let appState = {
+    projects: [],
+    activeProjectId: null,
+    draftAnswers: {},
+    chartInstance: null
+  };
+
+  function ensureHoqStructure(proj) {
+    if (!proj.hoq) {
+      proj.hoq = {
+        compNames: { us: "Nossa Empresa", compA: "Conc. A", compB: "Conc. B" },
+        whats: [
+          { id: "w_" + Date.now(), text: "Requisito do Cliente 1", importance: 4, compUs: 3, compA: 3, compB: 3 }
+        ],
+        hows: [
+          { id: "h_" + Date.now(), text: "Especificação Técnica 1", goal: "up", target: "Meta", difficulty: 3, techUs: 3, techA: 3, techB: 3 }
+        ],
+        relationships: {},
+        correlations: {}
+      };
+    }
+  }
+
+  function loadState() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed && Array.isArray(parsed.projects) && parsed.projects.length > 0) {
+          appState.projects = parsed.projects;
+          appState.projects.forEach(ensureHoqStructure);
+          appState.activeProjectId = parsed.activeProjectId || parsed.projects[0].id;
+          return;
+        }
+      } catch (e) {
+        console.warn("Erro ao carregar estado:", e);
+      }
+    }
+    appState.projects = getDefaultProjects();
+    appState.activeProjectId = appState.projects[0].id;
+    saveState();
+  }
+
+  function saveState() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      projects: appState.projects,
+      activeProjectId: appState.activeProjectId
+    }));
+  }
+
+  function getActiveProject() {
+    const proj = appState.projects.find(p => p.id === appState.activeProjectId) || appState.projects[0];
+    ensureHoqStructure(proj);
+    return proj;
+  }
+
+  /* ============================================================================
+     3. NAVEGAÇÃO M3 & TEMA CLARO/ESCURO
+     ============================================================================ */
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isLight = html.getAttribute("data-theme") === "light";
+    const nextTheme = isLight ? "dark" : "light";
+    html.setAttribute("data-theme", nextTheme);
+
+    const icon = document.getElementById("themeToggleIcon");
+    const btn = document.getElementById("themeToggleBtn");
+    icon.textContent = nextTheme === "light" ? "dark_mode" : "light_mode";
+    btn.setAttribute("aria-label", nextTheme === "light" ? "Alternar para tema escuro" : "Alternar para tema claro");
+
+    if (document.getElementById("view-analytics").classList.contains("active")) {
+      renderAnalytics();
+    }
+  }
+
+  function switchView(viewId) {
+    document.querySelectorAll(".view-section").forEach(sec => sec.classList.remove("active"));
+    document.getElementById(`view-${viewId}`).classList.add("active");
+
+    document.querySelectorAll(".nav-item, .bottom-nav-btn").forEach(btn => {
+      btn.classList.toggle("active", btn.getAttribute("data-view") === viewId);
+    });
+
+    if (viewId === "analytics") renderAnalytics();
+    if (viewId === "hoq") renderHoqView();
+  }
+
+  function showSnackbar(message) {
+    const sb = document.getElementById("m3Snackbar");
+    document.getElementById("snackbarText").textContent = message;
+    sb.classList.add("show");
+    clearTimeout(window._sbTimer);
+    window._sbTimer = setTimeout(() => sb.classList.remove("show"), 3500);
+  }
+
+  /* ============================================================================
+     4. GESTÃO DE PROJETOS E CONTEXTOS DE PESQUISA
+     ============================================================================ */
+  function renderProjectHeaderAndViews() {
+    const proj = getActiveProject();
+    const select = document.getElementById("activeProjectSelect");
+    select.innerHTML = appState.projects.map(p =>
+      `<option value="${p.id}" ${p.id === proj.id ? "selected" : ""}>${escapeHtml(p.name)}</option>`
+    ).join("");
+
+    const ctxMeta = KANO_CONTEXTS[proj.context] || KANO_CONTEXTS.enhance_product;
+    document.getElementById("headerContextBadge").textContent = ctxMeta.label;
+
+    renderProjectsView();
+    renderFeaturesView();
+    renderSurveyView();
+    renderAnalytics();
+    renderHoqView();
+  }
+
+  function handleProjectChange(projectId) {
+    appState.activeProjectId = projectId;
+    appState.draftAnswers = {};
+    saveState();
+    renderProjectHeaderAndViews();
+    showSnackbar(`Projeto ativo: ${getActiveProject().name}`);
+  }
+
+  function openNewProjectModal() {
+    document.getElementById("newProjectDialog").showModal();
+  }
+
+  function createNewProject(e) {
+    e.preventDefault();
+    const name = document.getElementById("newProjName").value.trim();
+    const context = document.getElementById("newProjContext").value;
+    const personasRaw = document.getElementById("newProjPersonas").value;
+    const personas = personasRaw.split(",").map(s => s.trim()).filter(Boolean);
+
+    if (!name) return;
+
+    const newProj = {
+      id: "proj_" + Date.now(),
+      name,
+      context,
+      questionStyle: "presence",
+      includeImportance: true,
+      baselineNps: 0,
+      personas: personas.length ? personas : ["Público Geral"],
+      features: [],
+      responses: []
+    };
+    ensureHoqStructure(newProj);
+
+    appState.projects.push(newProj);
+    appState.activeProjectId = newProj.id;
+    appState.draftAnswers = {};
+    saveState();
+    document.getElementById("newProjectDialog").close();
+    e.target.reset();
+    renderProjectHeaderAndViews();
+    showSnackbar(`Projeto "${name}" criado com sucesso!`);
+  }
+
+  function updateActiveProjectField(field, value) {
+    const proj = getActiveProject();
+    proj[field] = value;
+    saveState();
+    renderProjectHeaderAndViews();
+    showSnackbar("Configuração do projeto atualizada.");
+  }
+
+  function updateActiveProjectPersonas(raw) {
+    const proj = getActiveProject();
+    const list = raw.split(",").map(s => s.trim()).filter(Boolean);
+    proj.personas = list.length ? list : ["Público Geral"];
+    saveState();
+    renderProjectHeaderAndViews();
+    showSnackbar("Personas do projeto atualizadas.");
+  }
+
+  function deleteCurrentProject() {
+    if (appState.projects.length <= 1) {
+      showSnackbar("É necessário manter pelo menos um projeto ativo.");
+      return;
+    }
+    const proj = getActiveProject();
+    appState.projects = appState.projects.filter(p => p.id !== proj.id);
+    appState.activeProjectId = appState.projects[0].id;
+    saveState();
+    renderProjectHeaderAndViews();
+    showSnackbar("Projeto removido.");
+  }
+
+  function calculateCalculatedNps(proj) {
+    if (!proj.responses.length) return proj.baselineNps;
+    let promoters = 0, detractors = 0;
+    proj.responses.forEach(r => {
+      if (r.nps >= 9) promoters++;
+      else if (r.nps <= 6) detractors++;
+    });
+    return Math.round(((promoters - detractors) / proj.responses.length) * 100);
+  }
+
+  function renderProjectsView() {
+    const proj = getActiveProject();
+    const ctxMeta = KANO_CONTEXTS[proj.context] || KANO_CONTEXTS.enhance_product;
+    const sampleSize = proj.responses.length;
+    const sampleStatus = sampleSize >= 15 && sampleSize <= 20
+      ? "Amostra Ideal (15–20)"
+      : sampleSize < 15 ? `Faltam ${15 - sampleSize} p/ meta (15–20)` : "Amostra Ampliada (>20)";
+
+    const liveNps = calculateCalculatedNps(proj);
+
+    document.getElementById("projectKpiGrid").innerHTML = `
+      <div class="kpi-card">
+        <span class="label-medium" style="color:var(--md-sys-color-on-surface-variant);">FUNCIONALIDADES KANO</span>
+        <div class="kpi-value">${proj.features.length} <span class="body-medium" style="color:var(--md-sys-color-on-surface-variant);">/ 20</span></div>
+        <span class="body-small" style="color:var(--md-sys-color-on-surface-variant);">Limite recomendado no questionário</span>
+      </div>
+      <div class="kpi-card">
+        <span class="label-medium" style="color:var(--md-sys-color-on-surface-variant);">PARTICIPANTES (AMOSTRA)</span>
+        <div class="kpi-value">${sampleSize}</div>
+        <span class="body-small" style="color:var(--md-sys-color-primary); font-weight:500;">${sampleStatus}</span>
+      </div>
+      <div class="kpi-card">
+        <span class="label-medium" style="color:var(--md-sys-color-on-surface-variant);">MATRIZ CASA QFD</span>
+        <div class="kpi-value">${proj.hoq.whats.length}×${proj.hoq.hows.length}</div>
+        <span class="body-small" style="color:var(--md-sys-color-on-surface-variant);">WHATs × HOWs configurados</span>
+      </div>
+      <div class="kpi-card">
+        <span class="label-medium" style="color:var(--md-sys-color-on-surface-variant);">NPS DA PESQUISA</span>
+        <div class="kpi-value">${liveNps > 0 ? "+" + liveNps : liveNps}</div>
+        <span class="body-small" style="color:var(--md-sys-color-on-surface-variant);">Escala -100 a +100 (Base: ${proj.baselineNps})</span>
+      </div>
+    `;
+
+    document.getElementById("editProjName").value = proj.name;
+    document.getElementById("editProjContext").value = proj.context;
+    document.getElementById("contextDescriptionHelper").textContent = ctxMeta.desc;
+    document.getElementById("editProjQuestionStyle").value = proj.questionStyle;
+    document.getElementById("editProjHauser").value = String(proj.includeImportance);
+    document.getElementById("editProjNps").value = proj.baselineNps;
+    document.getElementById("editProjPersonas").value = proj.personas.join(", ");
+
+    const listEl = document.getElementById("projectsListContainer");
+    listEl.innerHTML = appState.projects.map(p => {
+      const isCurrent = p.id === proj.id;
+      const pCtx = KANO_CONTEXTS[p.context] || KANO_CONTEXTS.enhance_product;
+      return `
+        <div class="m3-card ${isCurrent ? "m3-card-filled" : "m3-card-outlined"}" style="padding:16px; display:flex; justify-content:space-between; align-items:center; gap:12px; border-color:${isCurrent ? "var(--md-sys-color-primary)" : "var(--md-sys-color-outline-variant)"};">
+          <div style="min-width:0;">
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <strong class="title-medium">${escapeHtml(p.name)}</strong>
+              ${isCurrent ? `<span class="kano-badge kano-A">Ativo</span>` : ""}
+            </div>
+            <div class="body-small" style="color:var(--md-sys-color-on-surface-variant); margin-top:4px;">
+              Contexto: <strong>${pCtx.label}</strong> • ${p.features.length} funcionalidades • ${p.responses.length} respostas
+            </div>
+          </div>
+          ${!isCurrent ? `<button class="btn btn-tonal" onclick="handleProjectChange('${p.id}')">Abrir</button>` : ""}
+        </div>
+      `;
+    }).join("");
+  }
+
+  /* ============================================================================
+     5. GESTÃO DE FUNCIONALIDADES (PASSO 1)
+     ============================================================================ */
+  function addFeature(e) {
+    e.preventDefault();
+    const proj = getActiveProject();
+    const name = document.getElementById("featName").value.trim();
+    const context = document.getElementById("featContext").value.trim();
+    const cost = Number(document.getElementById("featCost").value);
+    const status = document.getElementById("featStatus").value;
+    if (!name) return;
+
+    proj.features.push({ id: "feat_" + Date.now(), name, context, cost, status });
+    saveState();
+    e.target.reset();
+    renderProjectHeaderAndViews();
+    showSnackbar(`Funcionalidade "${name}" adicionada.`);
+  }
+
+  function removeFeature(featId) {
+    const proj = getActiveProject();
+    proj.features = proj.features.filter(f => f.id !== featId);
+    proj.responses.forEach(r => { if (r.answers) delete r.answers[featId]; });
+    saveState();
+    renderProjectHeaderAndViews();
+    showSnackbar("Funcionalidade removida.");
+  }
+
+  function renderFeaturesView() {
+    const proj = getActiveProject();
+    const count = proj.features.length;
+
+    const counterEl = document.getElementById("featureLimitCounter");
+    counterEl.textContent = `${count} / 20 Funcionalidades`;
+    counterEl.className = count > 20 ? "kano-badge kano-R" : "kano-badge kano-P";
+    document.getElementById("featureLimitBanner").style.display = count >= 20 ? "flex" : "none";
+
+    const container = document.getElementById("featuresListContainer");
+    if (!count) {
+      container.innerHTML = `<p class="body-medium" style="color:var(--md-sys-color-on-surface-variant);">Nenhuma funcionalidade cadastrada neste projeto.</p>`;
+      return;
+    }
+
+    container.innerHTML = proj.features.map((f, idx) => `
+      <div class="m3-card m3-card-outlined" style="padding:16px; display:flex; justify-content:space-between; align-items:flex-start; gap:12px;">
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <span class="kano-badge kano-I">#${idx + 1}</span>
+            <strong class="title-medium">${escapeHtml(f.name)}</strong>
+            <span class="label-small" style="padding:2px 8px; border-radius:6px; background:var(--md-sys-color-surface-container-high);">
+              ${f.status === "existing" ? "Existente" : "Nova Ideia"} • Custo: ${f.cost}/5
+            </span>
+          </div>
+          ${f.context ? `<p class="body-small" style="color:var(--md-sys-color-on-surface-variant);">${escapeHtml(f.context)}</p>` : ""}
+        </div>
+        <button class="icon-btn" onclick="removeFeature('${f.id}')" title="Remover funcionalidade" aria-label="Remover ${escapeHtml(f.name)}">
+          <span class="material-symbols-outlined">delete_outline</span>
+        </button>
+      </div>
+    `).join("");
+  }
+
+  /* ============================================================================
+     6. QUESTIONÁRIO PADRONIZADO KANO + ESCALA HAUSER (PASSO 2)
+     ============================================================================ */
+  function setDraftAnswer(featId, axis, value) {
+    if (!appState.draftAnswers[featId]) {
+      appState.draftAnswers[featId] = { func: null, dys: null, importance: 4, note: "" };
+    }
+    appState.draftAnswers[featId][axis] = value;
+    renderSurveyView();
+  }
+
+  function renderSurveyView() {
+    const proj = getActiveProject();
+    const personaSelect = document.getElementById("respPersona");
+    const currentPersona = personaSelect.value;
+    personaSelect.innerHTML = proj.personas.map(p =>
+      `<option value="${escapeHtml(p)}" ${p === currentPersona ? "selected" : ""}>${escapeHtml(p)}</option>`
+    ).join("");
+
+    const qContainer = document.getElementById("surveyQuestionsContainer");
+    if (!proj.features.length) {
+      qContainer.innerHTML = `<div class="m3-card m3-card-outlined"><p class="body-large">Cadastre funcionalidades na aba <strong>2. Funcionalidades</strong> antes de aplicar o questionário Kano.</p></div>`;
+      return;
+    }
+
+    const isQuantity = proj.questionStyle === "quantity";
+    qContainer.innerHTML = proj.features.map((f, idx) => {
+      const draft = appState.draftAnswers[f.id] || { func: null, dys: null, importance: 4, note: "" };
+      const previewCat = (draft.func && draft.dys) ? KANO_MATRIX[draft.func][draft.dys] : null;
+      const previewMeta = previewCat ? CATEGORY_META[previewCat] : null;
+
+      const funcQuestion = isQuantity
+        ? `Como você se sentiria se houvesse <strong>mais de</strong> "${escapeHtml(f.name)}"?`
+        : `Como você se sentiria se o produto <strong>tivesse</strong> "${escapeHtml(f.name)}"?`;
+
+      const dysQuestion = isQuantity
+        ? `Como você se sentiria se houvesse <strong>menos de</strong> "${escapeHtml(f.name)}"?`
+        : `Como você se sentiria se o produto <strong>não tivesse</strong> "${escapeHtml(f.name)}"?`;
+
+      return `
+        <article class="kano-question-card">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap;">
+            <div>
+              <span class="label-small" style="color:var(--md-sys-color-primary); font-weight:700;">FUNCIONALIDADE ${idx + 1} DE ${proj.features.length}</span>
+              <h3 class="title-large">${escapeHtml(f.name)}</h3>
+              ${f.context ? `<p class="body-small" style="color:var(--md-sys-color-on-surface-variant); margin-top:4px;"><strong>Contexto:</strong> ${escapeHtml(f.context)}</p>` : ""}
+            </div>
+            ${previewMeta ? `<span class="kano-badge kano-${previewMeta.code}">Classificação Individual: ${previewMeta.name}</span>` : ""}
+          </div>
+
+          <div class="kano-axis-block">
+            <div class="body-medium"><strong>1. Pergunta Funcional (Positiva):</strong> ${funcQuestion}</div>
+            <div class="kano-options-grid">
+              ${KANO_SCALE.map(opt => `
+                <button type="button" class="kano-option-btn ${draft.func === opt.key ? "selected" : ""}" onclick="setDraftAnswer('${f.id}', 'func', '${opt.key}')">
+                  <span class="material-symbols-outlined" style="font-size:20px;">${opt.icon}</span>
+                  <span>${opt.label}</span>
+                  <span class="label-small" style="opacity:0.8;">(${opt.en})</span>
+                </button>
+              `).join("")}
+            </div>
+          </div>
+
+          <div class="kano-axis-block">
+            <div class="body-medium"><strong>2. Pergunta Disfuncional (Negativa):</strong> ${dysQuestion}</div>
+            <div class="kano-options-grid">
+              ${KANO_SCALE.map(opt => `
+                <button type="button" class="kano-option-btn ${draft.dys === opt.key ? "selected" : ""}" onclick="setDraftAnswer('${f.id}', 'dys', '${opt.key}')">
+                  <span class="material-symbols-outlined" style="font-size:20px;">${opt.icon}</span>
+                  <span>${opt.label}</span>
+                  <span class="label-small" style="opacity:0.8;">(${opt.en})</span>
+                </button>
+              `).join("")}
+            </div>
+          </div>
+
+          ${proj.includeImportance ? `
+            <div class="kano-axis-block">
+              <div class="body-medium"><strong>3. Escala de Importância Auto-declarada (John Hauser — MIT):</strong> Quão importante é para o produto/serviço ter esta funcionalidade?</div>
+              <div class="importance-scale-grid">
+                ${[
+                  { v: 1, lbl: "1 - Nada importante" },
+                  { v: 2, lbl: "2 - Pouco" },
+                  { v: 3, lbl: "3 - Algo importante" },
+                  { v: 4, lbl: "4 - Importante" },
+                  { v: 5, lbl: "5 - Bastante" },
+                  { v: 6, lbl: "6 - Muito importante" },
+                  { v: 7, lbl: "7 - Extremamente" }
+                ].map(item => `
+                  <button type="button" class="kano-option-btn ${Number(draft.importance) === item.v ? "selected" : ""}" style="min-height:48px;" onclick="setDraftAnswer('${f.id}', 'importance', ${item.v})">
+                    <span class="label-medium">${item.lbl}</span>
+                  </button>
+                `).join("")}
+              </div>
+            </div>
+          ` : ""}
+
+          <div class="m3-field">
+            <label class="label-small" for="note_${f.id}">Contexto Qualitativo / Entrevista de Acompanhamento (Opcional — "Por quê?")</label>
+            <input id="note_${f.id}" class="m3-input" type="text" value="${escapeHtml(draft.note || "")}"
+              placeholder="Registre o motivo emocional ou contexto do cliente..."
+              oninput="if(!appState.draftAnswers['${f.id}']) appState.draftAnswers['${f.id}']={func:null,dys:null,importance:4,note:''}; appState.draftAnswers['${f.id}'].note=this.value;" />
+          </div>
+        </article>
+      `;
+    }).join("");
+
+    document.getElementById("respondentCountLabel").textContent = proj.responses.length;
+    const respList = document.getElementById("respondentsListContainer");
+    respList.innerHTML = !proj.responses.length
+      ? `<span class="body-small" style="color:var(--md-sys-color-on-surface-variant);">Nenhuma resposta registrada ainda.</span>`
+      : proj.responses.map(r => `
+          <span class="m3-chip selected">
+            <span class="material-symbols-outlined" style="font-size:16px;">person</span>
+            ${escapeHtml(r.respondent)} (${escapeHtml(r.persona)}) • NPS ${r.nps}
+          </span>
+        `).join("");
+  }
+
+  function submitSurveyResponse() {
+    const proj = getActiveProject();
+    if (!proj.features.length) return;
+    for (const f of proj.features) {
+      const ans = appState.draftAnswers[f.id];
+      if (!ans || !ans.func || !ans.dys) {
+        showSnackbar(`Responda às perguntas Funcional e Disfuncional para "${f.name}".`);
+        return;
+      }
+    }
+    const respName = document.getElementById("respName").value.trim() || `Participante #${proj.responses.length + 1}`;
+    const persona = document.getElementById("respPersona").value || proj.personas[0];
+    const nps = Math.max(0, Math.min(10, Number(document.getElementById("respNps").value) || 8));
+
+    proj.responses.push({
+      id: "resp_" + Date.now(),
+      respondent: respName,
+      persona,
+      nps,
+      answers: JSON.parse(JSON.stringify(appState.draftAnswers))
+    });
+
+    appState.draftAnswers = {};
+    document.getElementById("respName").value = "";
+    saveState();
+    renderProjectHeaderAndViews();
+    showSnackbar(`Resposta de "${respName}" registrada!`);
+  }
+
+  function simulateSampleResponses(count) {
+    const proj = getActiveProject();
+    if (!proj.features.length) {
+      showSnackbar("Adicione funcionalidades antes de simular respostas.");
+      return;
+    }
+    const sampleProfiles = [
+      { func: "expect", dys: "dislike", imp: 7 },
+      { func: "like", dys: "dislike", imp: 6 },
+      { func: "like", dys: "neutral", imp: 5 },
+      { func: "neutral", dys: "neutral", imp: 2 },
+      { func: "dislike", dys: "expect", imp: 4 }
+    ];
+    for (let i = 0; i < count; i++) {
+      const persona = proj.personas[i % proj.personas.length];
+      const answers = {};
+      proj.features.forEach((f, fIdx) => {
+        const seed = (fIdx * 2 + (i % 4)) % sampleProfiles.length;
+        const prof = sampleProfiles[seed];
+        answers[f.id] = { func: prof.func, dys: prof.dys, importance: prof.imp, note: "" };
+      });
+      proj.responses.push({
+        id: `sim_${Date.now()}_${i}`,
+        respondent: `Respondente Amostra #${proj.responses.length + 1}`,
+        persona,
+        nps: 7 + (i % 4),
+        answers
+      });
+    }
+    saveState();
+    renderProjectHeaderAndViews();
+    showSnackbar(`${count} respostas simuladas adicionadas!`);
+  }
+
+  function clearProjectResponses() {
+    const proj = getActiveProject();
+    proj.responses = [];
+    saveState();
+    renderProjectHeaderAndViews();
+    showSnackbar("Respostas do projeto foram limpas.");
+  }
+
+  /* ============================================================================
+     7. ANÁLISE KANO & GRÁFICO DE REAÇÃO (PASSOS 3 A 5)
+     ============================================================================ */
+  function analyzeFeatures(proj, personaFilter = "ALL") {
+    const filteredResponses = personaFilter === "ALL"
+      ? proj.responses
+      : proj.responses.filter(r => r.persona === personaFilter);
+
+    return proj.features.map(feat => {
+      const counts = { A: 0, P: 0, M: 0, I: 0, R: 0, Q: 0 };
+      let impSum = 0, impCount = 0;
+      const notes = [];
+
+      filteredResponses.forEach(resp => {
+        const ans = resp.answers ? resp.answers[feat.id] : null;
+        if (ans && ans.func && ans.dys) {
+          const cat = KANO_MATRIX[ans.func][ans.dys] || "Q";
+          counts[cat]++;
+          if (ans.importance) { impSum += Number(ans.importance); impCount++; }
+          if (ans.note && ans.note.trim()) {
+            notes.push({ respondent: resp.respondent, persona: resp.persona, text: ans.note.trim(), category: cat });
+          }
+        }
+      });
+
+      const order = ["M", "P", "A", "I", "R", "Q"];
+      let dominant = "I", maxVotes = -1;
+      order.forEach(code => { if (counts[code] > maxVotes) { maxVotes = counts[code]; dominant = code; } });
+      if (maxVotes === 0) dominant = "I";
+
+      const denom = counts.A + counts.P + counts.M + counts.I;
+      const better = denom > 0 ? (counts.A + counts.P) / denom : 0;
+      const worse = denom > 0 ? -((counts.P + counts.M) / denom) : 0;
+
+      let xFunc = 50, ySat = 0;
+      if (dominant === "A") { xFunc = 75 + (better * 20); ySat = 45 + (better * 50); }
+      else if (dominant === "P") { xFunc = 55 + (better * 35); ySat = (better + worse) * 85; }
+      else if (dominant === "M") { xFunc = 65 + (Math.abs(worse) * 25); ySat = -15 + (worse * 35); }
+      else if (dominant === "R") { xFunc = 80; ySat = -75; }
+      else { xFunc = 40; ySat = 0; }
+
+      const avgImportance = impCount > 0 ? (impSum / impCount) : 4.0;
+      return {
+        feature: feat, dominant, meta: CATEGORY_META[dominant], counts,
+        totalVotes: filteredResponses.length, better, worse, avgImportance,
+        xFunc: Math.max(8, Math.min(96, xFunc)), ySat: Math.max(-92, Math.min(92, ySat)), notes
+      };
+    }).sort((a, b) => {
+      if (a.meta.priorityRank !== b.meta.priorityRank) return a.meta.priorityRank - b.meta.priorityRank;
+      return (b.avgImportance - b.feature.cost * 0.4) - (a.avgImportance - a.feature.cost * 0.4);
+    });
+  }
+
+  function renderAnalytics() {
+    const proj = getActiveProject();
+    const filterEl = document.getElementById("analyticsPersonaFilter");
+    const selectedFilter = filterEl.value || "ALL";
+    filterEl.innerHTML = `<option value="ALL">Todas as Personas (Amostra Total: ${proj.responses.length})</option>` +
+      proj.personas.map(p => {
+        const cnt = proj.responses.filter(r => r.persona === p).length;
+        return `<option value="${escapeHtml(p)}" ${selectedFilter === p ? "selected" : ""}>${escapeHtml(p)} (${cnt} resp.)</option>`;
+      }).join("");
+
+    const results = analyzeFeatures(proj, filterEl.value);
+    const tbody = document.getElementById("resultsTableBody");
+
+    if (!results.length) {
+      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:24px;">Nenhuma funcionalidade cadastrada.</td></tr>`;
+    } else {
+      tbody.innerHTML = results.map(item => {
+        const c = item.counts;
+        const roiHint = (item.dominant === "A" || item.dominant === "P") && item.feature.cost <= 2
+          ? "<strong>Quick Win (Alto Retorno / Baixo Custo)</strong>"
+          : item.meta.action;
+        return `
+          <tr>
+            <td><strong>${escapeHtml(item.feature.name)}</strong><div class="body-small" style="color:var(--md-sys-color-on-surface-variant);">${item.feature.status === "existing" ? "Atual" : "Roadmap"}</div></td>
+            <td><span class="kano-badge kano-${item.dominant}">${item.meta.name}</span></td>
+            <td><span class="label-small">A:${c.A} | P:${c.P} | M:${c.M} | I:${c.I} | R:${c.R} | Q:${c.Q}</span></td>
+            <td style="color:var(--md-sys-color-primary); font-weight:600;">+${(item.better * 100).toFixed(0)}%</td>
+            <td style="color:var(--md-sys-color-error); font-weight:600;">${(item.worse * 100).toFixed(0)}%</td>
+            <td><strong>${item.avgImportance.toFixed(1)}</strong> / 7</td>
+            <td>${item.feature.cost} / 5</td>
+            <td class="body-small">${roiHint}</td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    const mustBes = results.filter(r => r.dominant === "M");
+    const attractives = results.filter(r => r.dominant === "A");
+    const reverses = results.filter(r => r.dominant === "R");
+    const indifferents = results.filter(r => r.dominant === "I");
+
+    document.getElementById("strategicInsightsContainer").innerHTML = `
+      <div class="m3-card m3-card-outlined" style="padding:14px;">
+        <div class="title-small" style="color:var(--kano-m-border);">1. Garantir Base Competitiva (Must-Be: ${mustBes.length})</div>
+        <p class="body-small" style="color:var(--md-sys-color-on-surface-variant); margin-top:4px;">
+          ${mustBes.length ? `Priorize a entrega impecável de: <strong>${mustBes.map(m => escapeHtml(m.feature.name)).join(", ")}</strong>.` : "Nenhuma funcionalidade classificada como Must-Be."}
+        </p>
+      </div>
+      <div class="m3-card m3-card-outlined" style="padding:14px;">
+        <div class="title-small" style="color:var(--kano-a-border);">2. Maximizar Encantamento & NPS (Attractive: ${attractives.length})</div>
+        <p class="body-small" style="color:var(--md-sys-color-on-surface-variant); margin-top:4px;">
+          ${attractives.length ? `Use <strong>${attractives.map(a => escapeHtml(a.feature.name)).join(", ")}</strong> como diferencial para elevar o NPS.` : "Explore ideias inovadoras para gerar Delighters."}
+        </p>
+      </div>
+      <div class="m3-card m3-card-outlined" style="padding:14px;">
+        <div class="title-small" style="color:var(--kano-r-border);">3. Eliminar Atrito & Desperdício (Reversas: ${reverses.length} | Indiferentes: ${indifferents.length})</div>
+        <p class="body-small" style="color:var(--md-sys-color-on-surface-variant); margin-top:4px;">
+          ${reverses.length ? `Remova ou torne opcionais as reversas: <strong>${reverses.map(r => escapeHtml(r.feature.name)).join(", ")}</strong>.` : "Nenhuma funcionalidade reversa detectada."}
+          ${indifferents.length ? ` Economize orçamento cortando indiferentes (${indifferents.length}).` : ""}
+        </p>
+      </div>
+    `;
+
+    const allNotes = results.flatMap(r => r.notes.map(n => ({ ...n, featureName: r.feature.name })));
+    const notesEl = document.getElementById("qualitativeNotesContainer");
+    notesEl.innerHTML = !allNotes.length
+      ? `<p class="body-small" style="color:var(--md-sys-color-on-surface-variant);">Nenhuma observação qualitativa registrada.</p>`
+      : allNotes.map(n => `
+          <div class="m3-card m3-card-outlined" style="padding:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:6px;">
+              <strong class="label-large">${escapeHtml(n.featureName)}</strong>
+              <span class="kano-badge kano-${n.category}">${n.category}</span>
+            </div>
+            <p class="body-small">"${escapeHtml(n.text)}"</p>
+            <div class="label-small" style="color:var(--md-sys-color-on-surface-variant); margin-top:6px;">— ${escapeHtml(n.respondent)} (${escapeHtml(n.persona)})</div>
+          </div>
+        `).join("");
+
+    renderKanoReactionChart(results);
+  }
+
+  function renderKanoReactionChart(results) {
+    const ctx = document.getElementById("kanoReactionChart").getContext("2d");
+    if (appState.chartInstance) appState.chartInstance.destroy();
+
+    const styles = getComputedStyle(document.documentElement);
+    const textColor = styles.getPropertyValue("--md-sys-color-on-surface").trim();
+    const gridColor = styles.getPropertyValue("--md-sys-color-outline-variant").trim();
+    const primaryColor = styles.getPropertyValue("--md-sys-color-primary").trim();
+
+    const xVals = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+    const excitementCurve = xVals.map(x => ({ x, y: Math.min(98, 12 + Math.pow(x / 100, 2.2) * 86) }));
+    const performanceCurve = xVals.map(x => ({ x, y: -80 + (x / 100) * 165 }));
+    const thresholdCurve = xVals.map(x => ({ x, y: Math.min(-8, -95 + (1 - Math.exp(-x / 32)) * 90) }));
+    const indifferentLine = xVals.map(x => ({ x, y: 0 }));
+
+    const colorMap = { A: "#0B57D0", P: "#146C2E", M: "#6B5778", I: "#74777F", R: "#BA1A1A", Q: "#7A5900" };
+    const featurePoints = results.map(r => ({
+      x: r.xFunc, y: r.ySat, label: r.feature.name, category: r.meta.name, code: r.dominant, imp: r.avgImportance.toFixed(1)
+    }));
+
+    appState.chartInstance = new Chart(ctx, {
+      type: "scatter",
+      data: {
+        datasets: [
+          { label: "Funcionalidades Avaliadas", data: featurePoints, backgroundColor: featurePoints.map(p => colorMap[p.code] || primaryColor), borderColor: "#FFFFFF", borderWidth: 2, pointRadius: 9, pointHoverRadius: 12, order: 1 },
+          { type: "line", label: "Excitement Attribute (Attractive)", data: excitementCurve, borderColor: "#0B57D0", borderWidth: 2, pointRadius: 0, tension: 0.4, order: 2 },
+          { type: "line", label: "Performance Attribute", data: performanceCurve, borderColor: "#146C2E", borderWidth: 2, pointRadius: 0, tension: 0.1, order: 3 },
+          { type: "line", label: "Threshold Attribute (Must-Be)", data: thresholdCurve, borderColor: "#6B5778", borderWidth: 2, pointRadius: 0, tension: 0.4, order: 4 },
+          { type: "line", label: "Indifferent", data: indifferentLine, borderColor: "#8E9099", borderDash: [6, 6], borderWidth: 1.5, pointRadius: 0, order: 5 }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: "bottom", labels: { color: textColor, usePointStyle: true, boxWidth: 10 } },
+          tooltip: {
+            callbacks: {
+              label: c => (c.raw && c.raw.label) ? `${c.raw.label} [${c.raw.category}] — Imp: ${c.raw.imp}/7` : c.dataset.label
+            }
+          }
+        },
+        scales: {
+          x: {
+            min: 0, max: 100,
+            title: { display: true, text: "Funcionalidade / Investimento (None / Absent → Best / Fully Implemented)", color: textColor, font: { weight: "600" } },
+            ticks: { color: textColor, callback: v => v === 0 ? "None" : v === 25 ? "Some" : v === 50 ? "Basic" : v === 75 ? "Good" : v === 100 ? "Best" : "" },
+            grid: { color: gridColor }
+          },
+          y: {
+            min: -100, max: 100,
+            title: { display: true, text: "Satisfação do Cliente (Frustrated → Delighted)", color: textColor, font: { weight: "600" } },
+            ticks: { color: textColor, callback: v => v === 100 ? "Delighted" : v === 50 ? "Satisfied" : v === 0 ? "Neutral" : v === -50 ? "Dissatisfied" : v === -100 ? "Frustrated" : "" },
+            grid: { color: gridColor }
+          }
+        }
+      }
+    });
+  }
+
+  /* ============================================================================
+     8. CASA DA QUALIDADE (HOUSE OF QUALITY — QFD) INTERATIVA & VISUAL
+     ============================================================================ */
+  function importKanoToHoq() {
+    const proj = getActiveProject();
+    const results = analyzeFeatures(proj, "ALL").filter(r => ["M", "P", "A"].includes(r.dominant));
+    if (!results.length) {
+      showSnackbar("Nenhuma funcionalidade M, P ou A encontrada na análise Kano.");
+      return;
+    }
+
+    let added = 0;
+    results.forEach(r => {
+      const exists = proj.hoq.whats.some(w => w.text.toLowerCase() === r.feature.name.toLowerCase());
+      if (!exists) {
+        // Converter escala Hauser (1..7) para escala QFD (1..5)
+        const scaledImp = Math.max(1, Math.min(5, Math.round((r.avgImportance / 7) * 5)));
+        proj.hoq.whats.push({
+          id: "w_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+          text: `${r.feature.name} [${r.dominant}]`,
+          importance: scaledImp,
+          compUs: 3, compA: 3, compB: 3
+        });
+        added++;
+      }
+    });
+
+    saveState();
+    renderHoqView();
+    showSnackbar(added > 0 ? `${added} requisito(s) prioritário(s) importado(s) do Modelo Kano!` : "Os requisitos prioritários do Kano já estão na Casa da Qualidade.");
+  }
+
+  function addHoqWhat() {
+    const proj = getActiveProject();
+    proj.hoq.whats.push({
+      id: "w_" + Date.now(),
+      text: `Necessidade do Cliente #${proj.hoq.whats.length + 1}`,
+      importance: 4,
+      compUs: 3, compA: 3, compB: 3
+    });
+    saveState();
+    renderHoqView();
+    showSnackbar("Novo Requisito do Cliente (WHAT) adicionado.");
+  }
+
+  function removeHoqWhat(whatId) {
+    const proj = getActiveProject();
+    if (proj.hoq.whats.length <= 1) {
+      showSnackbar("A Casa da Qualidade precisa de pelo menos 1 Requisito do Cliente.");
+      return;
+    }
+    proj.hoq.whats = proj.hoq.whats.filter(w => w.id !== whatId);
+    saveState();
+    renderHoqView();
+  }
+
+  function addHoqHow() {
+    const proj = getActiveProject();
+    proj.hoq.hows.push({
+      id: "h_" + Date.now(),
+      text: `Req. Técnico #${proj.hoq.hows.length + 1}`,
+      goal: "up",
+      target: "Meta",
+      difficulty: 3,
+      techUs: 3, techA: 3, techB: 3
+    });
+    saveState();
+    renderHoqView();
+    showSnackbar("Novo Requisito Técnico (HOW) adicionado.");
+  }
+
+  function removeHoqHow(howId) {
+    const proj = getActiveProject();
+    if (proj.hoq.hows.length <= 2) {
+      showSnackbar("Mantenha pelo menos 2 Requisitos Técnicos para formar o telhado de correlação.");
+      return;
+    }
+    proj.hoq.hows = proj.hoq.hows.filter(h => h.id !== howId);
+    saveState();
+    renderHoqView();
+  }
+
+  function updateHoqWhat(whatId, field, value) {
+    const proj = getActiveProject();
+    const w = proj.hoq.whats.find(item => item.id === whatId);
+    if (!w) return;
+    w[field] = field === "text" ? value : Math.max(1, Math.min(5, Number(value) || 1));
+    saveState();
+    renderHoqView();
+  }
+
+  function updateHoqHow(howId, field, value) {
+    const proj = getActiveProject();
+    const h = proj.hoq.hows.find(item => item.id === howId);
+    if (!h) return;
+    if (field === "text" || field === "target" || field === "goal") {
+      h[field] = value;
+    } else if (field === "difficulty") {
+      h[field] = Math.max(1, Math.min(5, Number(value) || 1));
+    } else {
+      h[field] = Math.max(1, Math.min(4, Number(value) || 1));
+    }
+    saveState();
+    renderHoqView();
+  }
+
+  function updateHoqCompName(key, value) {
+    const proj = getActiveProject();
+    proj.hoq.compNames[key] = value.trim() || key;
+    saveState();
+    renderHoqView();
+  }
+
+  function cycleHoqRelationship(whatId, howId) {
+    const proj = getActiveProject();
+    const key = `${whatId}_${howId}`;
+    const current = proj.hoq.relationships[key] || 0;
+    const idx = HOQ_REL_STATES.findIndex(s => s.val === current);
+    const next = HOQ_REL_STATES[(idx + 1) % HOQ_REL_STATES.length].val;
+    if (next === 0) delete proj.hoq.relationships[key];
+    else proj.hoq.relationships[key] = next;
+    saveState();
+    renderHoqView();
+  }
+
+  function cycleHoqGoal(howId) {
+    const proj = getActiveProject();
+    const h = proj.hoq.hows.find(item => item.id === howId);
+    if (!h) return;
+    const idx = HOQ_GOALS.findIndex(g => g.key === h.goal);
+    h.goal = HOQ_GOALS[(idx + 1) % HOQ_GOALS.length].key;
+    saveState();
+    renderHoqView();
+  }
+
+  function cycleHoqCorrelation(howId1, howId2) {
+    const proj = getActiveProject();
+    const key = `${howId1}_${howId2}`;
+    const current = proj.hoq.correlations[key] || "none";
+    const idx = HOQ_CORRELATIONS.findIndex(c => c.key === current);
+    const next = HOQ_CORRELATIONS[(idx + 1) % HOQ_CORRELATIONS.length].key;
+    if (next === "none") delete proj.hoq.correlations[key];
+    else proj.hoq.correlations[key] = next;
+    saveState();
+    renderHoqView();
+  }
+
+  function renderHoqView() {
+    const proj = getActiveProject();
+    const hoq = proj.hoq;
+    const whats = hoq.whats;
+    const hows = hoq.hows;
+    const n = hows.length;
+    const colW = 68; // Largura exata de cada coluna técnica (px)
+
+    // 1. Cálculos Matemáticos Oficiais do QFD (Lucidchart & ASQ)
+    const totalCustomerImp = whats.reduce((acc, w) => acc + Number(w.importance || 0), 0) || 1;
+    const whatsWithPct = whats.map(w => ({
+      ...w,
+      pctImp: (Number(w.importance || 0) / totalCustomerImp) * 100
+    }));
+
+    // Peso Absoluto de cada HOW = Soma(Importância_Cliente * Relação)
+    // Peso Ponderado (% Imp * Relação)
+    const howMetrics = hows.map(h => {
+      let absWeight = 0;
+      let weightedScore = 0;
+      let relCount = 0;
+      whatsWithPct.forEach(w => {
+        const rel = hoq.relationships[`${w.id}_${h.id}`] || 0;
+        if (rel > 0) relCount++;
+        absWeight += Number(w.importance) * rel;
+        weightedScore += (w.pctImp / 100) * rel;
+      });
+      return { id: h.id, absWeight, weightedScore, relCount };
+    });
+
+    const totalWeighted = howMetrics.reduce((acc, m) => acc + m.weightedScore, 0) || 1;
+    howMetrics.forEach(m => { m.relPct = (m.weightedScore / totalWeighted) * 100; });
+    const maxWeight = Math.max(...howMetrics.map(m => m.absWeight), 1);
+
+    // 2. Diagnósticos Metodológicos Automáticos (ASQ & Wikipedia Rules)
+    const emptyRows = whats.filter(w => hows.every(h => !(hoq.relationships[`${w.id}_${h.id}`] > 0)));
+    const emptyCols = hows.filter((h, idx) => howMetrics[idx].relCount === 0);
+
+    // Verificar inconsistência Benchmarking Competitivo vs. Técnico (ASQ pág. 1)
+    const avgCompUs = whats.reduce((s, w) => s + Number(w.compUs), 0) / whats.length;
+    const avgTechUs = hows.reduce((s, h) => s + Number(h.techUs), 0) / hows.length;
+    const hasBenchInconsistency = (avgCompUs >= 4 && avgTechUs <= 2) || (avgCompUs <= 2 && avgTechUs >= 3.5);
+
+    const diagBanner = document.getElementById("hoqDiagnosticBanner");
+    const alerts = [];
+    if (emptyRows.length) alerts.push(`<strong>Linhas vazias (WHATs sem cobertura técnica):</strong> "${emptyRows.map(r => escapeHtml(r.text)).join(", ")}" não possuem requisitos técnicos vinculados.`);
+    if (emptyCols.length) alerts.push(`<strong>Colunas vazias (HOWs desnecessários):</strong> "${emptyCols.map(c => escapeHtml(c.text)).join(", ")}" não impactam nenhum desejo do cliente.`);
+    if (hasBenchInconsistency) alerts.push(`<strong>Alerta de Consistência (Regra ASQ):</strong> Há divergência entre o Benchmarking Competitivo (média ${avgCompUs.toFixed(1)}/5) e o Benchmarking Técnico (média ${avgTechUs.toFixed(1)}/4) — revise os requisitos de projeto.`);
+
+    if (alerts.length) {
+      diagBanner.style.display = "flex";
+      diagBanner.innerHTML = `<div style="display:flex; gap:12px; align-items:flex-start;"><span class="material-symbols-outlined">analytics</span><div class="body-small">${alerts.join("<br>")}</div></div>`;
+    } else {
+      diagBanner.style.display = "none";
+    }
+
+    // 3. Construção Geométrica Exata do Telhado Triangular (SVG)
+    const roofWidth = n * colW;
+    const roofHeight = Math.max(60, (n * colW) / 2);
+    let roofPolygons = "";
+
+    for (let i = 0; i < n; i++) {
+      for (let j = i + 1; j < n; j++) {
+        const d = j - i;
+        // Centro do losango que conecta a coluna i e a coluna j
+        const cx = ((i + j + 1) * colW) / 2;
+        const cy = roofHeight - (d * (colW / 2));
+        const halfW = colW / 2;
+        const halfH = colW / 2;
+
+        const pts = `${cx},${cy - halfH} ${cx + halfW},${cy} ${cx},${cy + halfH} ${cx - halfW},${cy}`;
+        const corrKey = `${hows[i].id}_${hows[j].id}`;
+        const corrVal = hoq.correlations[corrKey] || "none";
+        const corrMeta = HOQ_CORRELATIONS.find(c => c.key === corrVal) || HOQ_CORRELATIONS[0];
+
+        roofPolygons += `
+          <g class="hoq-roof-diamond" onclick="cycleHoqCorrelation('${hows[i].id}', '${hows[j].id}')">
+            <title>${escapeHtml(hows[i].text)} × ${escapeHtml(hows[j].text)}: ${corrMeta.title} (Clique para alternar)</title>
+            <polygon points="${pts}" fill="var(--md-sys-color-surface-container-low)" stroke="var(--md-sys-color-outline-variant)" stroke-width="1.2" />
+            ${corrMeta.symbol ? `<text x="${cx}" y="${cy + 5}" text-anchor="middle" font-size="13" font-weight="700" fill="${corrMeta.color}">${corrMeta.symbol}</text>` : ""}
+          </g>
+        `;
+      }
+    }
+
+    const roofHtml = `
+      <div class="hoq-roof-row">
+        <div class="hoq-roof-spacer-left">
+          <div class="label-small" style="color:var(--md-sys-color-on-surface-variant); font-weight:700;">LEGENDA CORRELAÇÕES (TELHADO)</div>
+          <div class="body-small" style="color:var(--md-sys-color-on-surface-variant);">
+            <strong style="color:#146C2E;">++</strong> Forte Pos. | <strong style="color:#0B57D0;">+</strong> Positiva | <strong style="color:#B26A00;">-</strong> Neg. | <strong style="color:#BA1A1A;">--</strong> Forte Neg.
+          </div>
+          <div class="label-small" style="color:var(--md-sys-color-primary); margin-top:4px;">Clique nos losangos do telhado →</div>
+        </div>
+        <div class="hoq-roof-svg-box" style="width:${roofWidth}px; height:${roofHeight}px;">
+          <svg width="${roofWidth}" height="${roofHeight}" viewBox="0 0 ${roofWidth} ${roofHeight}" style="display:block; overflow:visible;">
+            ${roofPolygons}
+          </svg>
+        </div>
+      </div>
+    `;
+
+    // 4. Montagem da Matriz Principal + Paredes + Alicerce
+    const tableHtml = `
+      <table class="hoq-grid">
+        <thead>
+          <!-- Linha 1: Direção de Melhoria (Goal: ▲, ▼, ◎) -->
+          <tr>
+            <th colspan="2" class="hoq-base-label" title="Indica se o parâmetro técnico deve ser maximizado, minimizado ou atingir um alvo">Direção de Melhoria (Goal) →</th>
+            ${hows.map(h => {
+              const g = HOQ_GOALS.find(item => item.key === h.goal) || HOQ_GOALS[0];
+              return `<th class="hoq-how-col"><button type="button" class="hoq-goal-btn" onclick="cycleHoqGoal('${h.id}')" title="${g.title} (Clique para alternar)">${g.symbol}</button></th>`;
+            }).join("")}
+            <th colspan="4" style="background:var(--md-sys-color-tertiary-container); color:var(--md-sys-color-on-tertiary-container); padding:6px; font-size:12px;">
+              Benchmarking Competitivo (1 a 5)
+            </th>
+          </tr>
+
+          <!-- Linha 2: Cabeçalho dos Requisitos do Cliente (WHATs) e Requisitos Técnicos (HOWs) -->
+          <tr>
+            <th style="background:var(--md-sys-color-primary); color:var(--md-sys-color-on-primary); padding:10px; font-size:13px;">
+              Requisitos do Cliente (WHATs / VOC)
+            </th>
+            <th style="background:var(--md-sys-color-primary); color:var(--md-sys-color-on-primary); padding:6px; font-size:11px; width:80px;">
+              Importância<br>(1–5) & %
+            </th>
+            ${hows.map(h => `
+              <th class="hoq-how-col hoq-how-header-cell">
+                <div class="hoq-how-vertical-wrap">
+                  <button type="button" class="hoq-del-col-btn" onclick="removeHoqHow('${h.id}')" title="Remover requisito técnico">✕</button>
+                  <textarea class="hoq-how-input" aria-label="Requisito Técnico" onchange="updateHoqHow('${h.id}', 'text', this.value)">${escapeHtml(h.text)}</textarea>
+                </div>
+              </th>
+            `).join("")}
+            <th class="hoq-comp-cell" style="background:var(--md-sys-color-surface-container); font-size:11px;">
+              <input type="text" value="${escapeHtml(hoq.compNames.us)}" onchange="updateHoqCompName('us', this.value)" style="width:46px; font-size:10px; text-align:center; border:none; background:transparent; font-weight:700; color:var(--md-sys-color-primary);" title="Editar nome da sua empresa" />
+            </th>
+            <th class="hoq-comp-cell" style="background:var(--md-sys-color-surface-container); font-size:11px;">
+              <input type="text" value="${escapeHtml(hoq.compNames.compA)}" onchange="updateHoqCompName('compA', this.value)" style="width:46px; font-size:10px; text-align:center; border:none; background:transparent; font-weight:600; color:var(--md-sys-color-on-surface);" title="Editar nome do Concorrente A" />
+            </th>
+            <th class="hoq-comp-cell" style="background:var(--md-sys-color-surface-container); font-size:11px;">
+              <input type="text" value="${escapeHtml(hoq.compNames.compB)}" onchange="updateHoqCompName('compB', this.value)" style="width:46px; font-size:10px; text-align:center; border:none; background:transparent; font-weight:600; color:var(--md-sys-color-on-surface);" title="Editar nome do Concorrente B" />
+            </th>
+            <th class="hoq-comp-chart-cell" style="font-size:11px; text-align:center;">
+              Perfil (1 → 5)<br><span style="color:var(--md-sys-color-primary);">● Nós</span> vs <span style="color:#B26A00;">▲ A</span>
+            </th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <!-- Linhas dos Requisitos do Cliente (WHATs) -->
+          ${whatsWithPct.map(w => {
+            const xUs = ((Number(w.compUs) - 1) / 4) * 96 + 12;
+            const xA = ((Number(w.compA) - 1) / 4) * 96 + 12;
+            const xB = ((Number(w.compB) - 1) / 4) * 96 + 12;
+
+            return `
+              <tr>
+                <td class="hoq-what-cell">
+                  <div class="hoq-what-row-inner">
+                    <input class="hoq-what-input" type="text" value="${escapeHtml(w.text)}" aria-label="Requisito do cliente" onchange="updateHoqWhat('${w.id}', 'text', this.value)" />
+                    <button type="button" class="hoq-del-col-btn" style="color:var(--md-sys-color-on-primary-container);" onclick="removeHoqWhat('${w.id}')" title="Remover linha">✕</button>
+                  </div>
+                </td>
+                <td class="hoq-imp-cell">
+                  <input class="hoq-num-input" type="number" min="1" max="5" step="0.5" value="${w.importance}" aria-label="Importância do cliente 1 a 5" onchange="updateHoqWhat('${w.id}', 'importance', this.value)" />
+                  <div class="label-small" style="color:var(--md-sys-color-primary); font-weight:700; margin-top:2px;">${w.pctImp.toFixed(0)}%</div>
+                </td>
+
+                <!-- Células de Relacionamento (◎ = 9, ○ = 3, △ = 1) -->
+                ${hows.map(h => {
+                  const val = hoq.relationships[`${w.id}_${h.id}`] || 0;
+                  const state = HOQ_REL_STATES.find(s => s.val === val) || HOQ_REL_STATES[0];
+                  return `
+                    <td class="hoq-how-col">
+                      <button type="button" class="hoq-rel-btn ${val ? "rel-" + val : ""}" onclick="cycleHoqRelationship('${w.id}', '${h.id}')" title="${escapeHtml(w.text)} × ${escapeHtml(h.text)}: ${state.label} (Clique para alternar)">
+                        <span class="hoq-rel-symbol">${state.symbol || "·"}</span>
+                        ${val ? `<span class="hoq-rel-val">${val}</span>` : ""}
+                      </button>
+                    </td>
+                  `;
+                }).join("")}
+
+                <!-- Parede Direita: Notas Competitivas (1 a 5) + Gráfico Visual -->
+                <td class="hoq-comp-cell">
+                  <input class="hoq-num-input" style="width:40px;" type="number" min="1" max="5" value="${w.compUs}" onchange="updateHoqWhat('${w.id}', 'compUs', this.value)" />
+                </td>
+                <td class="hoq-comp-cell">
+                  <input class="hoq-num-input" style="width:40px;" type="number" min="1" max="5" value="${w.compA}" onchange="updateHoqWhat('${w.id}', 'compA', this.value)" />
+                </td>
+                <td class="hoq-comp-cell">
+                  <input class="hoq-num-input" style="width:40px;" type="number" min="1" max="5" value="${w.compB}" onchange="updateHoqWhat('${w.id}', 'compB', this.value)" />
+                </td>
+                <td class="hoq-comp-chart-cell">
+                  <svg width="114" height="32" viewBox="0 0 120 32" style="display:block;">
+                    <line x1="12" y1="16" x2="108" y2="16" stroke="var(--md-sys-color-outline-variant)" stroke-width="1" />
+                    <polygon points="${xB},9 ${xB + 5},16 ${xB},23 ${xB - 5},16" fill="#74777F" opacity="0.7" />
+                    <polygon points="${xA},9 ${xA + 5},22 ${xA - 5},22" fill="#B26A00" />
+                    <circle cx="${xUs}" cy="16" r="6" fill="var(--md-sys-color-primary)" />
+                  </svg>
+                </td>
+              </tr>
+            `;
+          }).join("")}
+
+          <!-- BASE / ALICERCE DA CASA DA QUALIDADE -->
+          <tr>
+            <td colspan="2" class="hoq-base-label">Valores-Alvo (Target Specifications)</td>
+            ${hows.map(h => `
+              <td class="hoq-how-col" style="padding:4px; text-align:center;">
+                <input class="hoq-target-input" type="text" value="${escapeHtml(h.target)}" aria-label="Valor-alvo técnico" onchange="updateHoqHow('${h.id}', 'target', this.value)" />
+              </td>
+            `).join("")}
+            <td colspan="4" rowspan="6" style="background:var(--md-sys-color-surface-container-low); padding:12px; vertical-align:top;">
+              <div class="label-medium" style="font-weight:700; margin-bottom:6px;">Legenda de Relacionamentos</div>
+              <div class="body-small" style="display:flex; flex-direction:column; gap:4px;">
+                <div><strong>◎ (9)</strong> — Relação Forte</div>
+                <div><strong>○ (3)</strong> — Relação Média</div>
+                <div><strong>△ (1)</strong> — Relação Fraca</div>
+                <div><strong>· (0)</strong> — Sem atribuição</div>
+              </div>
+              <div class="label-medium" style="font-weight:700; margin-top:12px; margin-bottom:4px;">Benchmarking Técnico (1–4)</div>
+              <div class="body-small" style="color:var(--md-sys-color-on-surface-variant);">
+                Escala ASQ (1 = Pior, 4 = Melhor capacidade técnica frente aos concorrentes).
+              </div>
+            </td>
+          </tr>
+
+          <tr>
+            <td colspan="2" class="hoq-base-label">Dificuldade Técnica (1-Baixa, 5-Alta)</td>
+            ${hows.map(h => `
+              <td class="hoq-how-col" style="padding:4px; text-align:center;">
+                <input class="hoq-num-input" style="width:44px;" type="number" min="1" max="5" value="${h.difficulty}" onchange="updateHoqHow('${h.id}', 'difficulty', this.value)" />
+              </td>
+            `).join("")}
+          </tr>
+
+          <tr>
+            <td colspan="2" class="hoq-base-label">Peso Absoluto (Importância × Relação)</td>
+            ${howMetrics.map(m => `
+              <td class="hoq-weight-cell ${m.absWeight === maxWeight && maxWeight > 0 ? "hoq-weight-top" : ""}">${m.absWeight}</td>
+            `).join("")}
+          </tr>
+
+          <tr>
+            <td colspan="2" class="hoq-base-label">% de Importância Relativa (Prioridade)</td>
+            ${howMetrics.map(m => `
+              <td class="hoq-weight-cell ${m.absWeight === maxWeight && maxWeight > 0 ? "hoq-weight-top" : ""}">${m.relPct.toFixed(0)}%</td>
+            `).join("")}
+          </tr>
+
+          <tr>
+            <td colspan="2" class="hoq-base-label" style="color:var(--md-sys-color-primary);">Bench. Técnico: ${escapeHtml(hoq.compNames.us)} (1–4)</td>
+            ${hows.map(h => `
+              <td class="hoq-how-col" style="padding:4px; text-align:center;">
+                <input class="hoq-num-input" style="width:44px; border-color:var(--md-sys-color-primary);" type="number" min="1" max="4" value="${h.techUs}" onchange="updateHoqHow('${h.id}', 'techUs', this.value)" />
+              </td>
+            `).join("")}
+          </tr>
+
+          <tr>
+            <td colspan="2" class="hoq-base-label">Bench. Técnico: ${escapeHtml(hoq.compNames.compA)} / ${escapeHtml(hoq.compNames.compB)} (1–4)</td>
+            ${hows.map(h => `
+              <td class="hoq-how-col" style="padding:4px; text-align:center;">
+                <div style="display:flex; gap:2px; justify-content:center;">
+                  <input class="hoq-num-input" style="width:28px; padding:0; font-size:11px;" type="number" min="1" max="4" value="${h.techA}" title="Nota técnica ${escapeHtml(hoq.compNames.compA)}" onchange="updateHoqHow('${h.id}', 'techA', this.value)" />
+                  <input class="hoq-num-input" style="width:28px; padding:0; font-size:11px;" type="number" min="1" max="4" value="${h.techB}" title="Nota técnica ${escapeHtml(hoq.compNames.compB)}" onchange="updateHoqHow('${h.id}', 'techB', this.value)" />
+                </div>
+              </td>
+            `).join("")}
+          </tr>
+        </tbody>
+      </table>
+    `;
+
+    document.getElementById("hoqDiagramMount").innerHTML = roofHtml + tableHtml;
+  }
+
+  /* ============================================================================
+     9. EXPORTAÇÃO / IMPORTAÇÃO JSON & UTILITÁRIOS
+     ============================================================================ */
+  function exportProjectJSON() {
+    const proj = getActiveProject();
+    const blob = new Blob([JSON.stringify(proj, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `kano-qfd-${proj.id}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showSnackbar("Arquivo JSON do projeto (Kano + Casa da Qualidade) exportado.");
+  }
+
+  function importProjectJSON(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const imported = JSON.parse(e.target.result);
+        if (!imported.name || !Array.isArray(imported.features)) throw new Error("Formato inválido");
+        imported.id = "proj_" + Date.now();
+        imported.responses = imported.responses || [];
+        imported.personas = imported.personas || ["Público Geral"];
+        ensureHoqStructure(imported);
+        appState.projects.push(imported);
+        appState.activeProjectId = imported.id;
+        saveState();
+        renderProjectHeaderAndViews();
+        showSnackbar(`Projeto "${imported.name}" importado!`);
+      } catch (err) {
+        showSnackbar("Erro ao importar JSON: verifique o formato do arquivo.");
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = "";
+  }
+
+  function escapeHtml(str) {
+    return String(str || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  loadState();
+  renderProjectHeaderAndViews();
+</script>
+</body>
+</html>
