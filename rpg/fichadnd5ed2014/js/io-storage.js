@@ -4,8 +4,13 @@ function obterObjetoFicha() {
     return el ? el.value : fallback;
   };
 
+  const deathChecks = document.querySelectorAll('.death-saves-box .circles input[type="checkbox"]');
+  const deathSavesList = deathChecks.length > 0
+    ? deathChecks
+    : document.querySelectorAll('.circles input[type="checkbox"]');
+
   return {
-    version: "7.1",
+    version: "7.2",
     info: {
       char_name: getV("char_name"),
       char_sex: getV("char_sex"),
@@ -58,7 +63,7 @@ function obterObjetoFicha() {
       speed_val: getV("speed_val", "9m"),
       hit_dice: getV("hit_dice"),
       passive_perc: getV("passive_perc"),
-      death_saves: Array.from(document.querySelectorAll('.circles input[type="checkbox"]')).slice(0, 6).map(cb => cb.checked || false)
+      death_saves: Array.from(deathSavesList).slice(0, 6).map(cb => cb.checked || false)
     },
     listas: {
       talentos: Array.from(document.querySelectorAll(".talento-select")).map(sel => sel.value || ""),
@@ -134,13 +139,16 @@ function carregarDadosNaFicha(d) {
   document.getElementById("subclass_name").value = info.subclass_name || "";
   document.getElementById("bg_name").value = info.bg_name || "";
   document.getElementById("align").value = info.align || "";
-  if (info.char_image_url) document.getElementById("char_img").src = info.char_image_url;
+  const imgEl = document.getElementById("char_img");
+  if (imgEl && info.char_image_url) imgEl.src = info.char_image_url;
 
   carregarCaracteristicasAntecedente();
 
-  for (let id in d.habilidades) {
-    const el = document.getElementById(id + "_score");
-    if (el) el.value = d.habilidades[id];
+  if (d.habilidades) {
+    for (let id in d.habilidades) {
+      const el = document.getElementById(id + "_score");
+      if (el) el.value = d.habilidades[id];
+    }
   }
 
   if (d.pericias) {
@@ -162,7 +170,7 @@ function carregarDadosNaFicha(d) {
     for (let id in d.saves) {
       const item = d.saves[id];
       const cb = document.querySelector(`.save-prof[data-attr="${id}"]`);
-      if (cb) cb.checked = item.prof;
+      if (cb) cb.checked = Boolean(item.prof);
       const span = document.getElementById(`save_${id}`);
       if (span) span.dataset.manual = item.manual || "0";
     }
@@ -188,15 +196,16 @@ function carregarDadosNaFicha(d) {
   document.getElementById("speed_val").value = c.speed_val || "9m";
   document.getElementById("hit_dice").value = c.hit_dice || "";
 
-  if (d.listas && d.listas.idiomas) {
-    d.listas.idiomas.forEach(v => {
+  const listas = d.listas || {};
+  if (listas.idiomas) {
+    listas.idiomas.forEach(v => {
       adicionarIdioma();
       const sel = document.querySelector("#idiomas-container .idioma-row:last-child select");
       if (sel) sel.value = v;
     });
   }
-  if (d.listas && d.listas.talentos) {
-    d.listas.talentos.forEach(v => {
+  if (listas.talentos) {
+    listas.talentos.forEach(v => {
       adicionarTalento();
       const sel = document.querySelector("#talentos-container .talento-row:last-child select");
       if (sel) sel.value = v;
@@ -209,8 +218,8 @@ function carregarDadosNaFicha(d) {
       if (sel) sel.value = v;
     });
   }
-  if (d.listas && d.listas.infusoes) {
-    d.listas.infusoes.forEach(v => {
+  if (listas.infusoes) {
+    listas.infusoes.forEach(v => {
       adicionarInfusao();
       const row = document.querySelector("#infusoes-container .infusao-row:last-child");
       if (row) {
@@ -218,7 +227,7 @@ function carregarDadosNaFicha(d) {
         const chk = row.querySelector(".infusao-ativo-check");
         if (typeof v === "object" && v !== null) {
           if (sel) sel.value = v.nome || "";
-          if (chk) chk.checked = v.ativa || false;
+          if (chk) chk.checked = Boolean(v.ativa);
         } else {
           if (sel) sel.value = v || "";
         }
@@ -229,6 +238,7 @@ function carregarDadosNaFicha(d) {
   const restaurarItens = (lista, containerGuiaId, cardContainerId, tipo) => {
     const containerGuia = document.getElementById(containerGuiaId);
     const containerCards = document.getElementById(cardContainerId);
+    if (!containerGuia || !containerCards) return;
     if (!lista || lista.length === 0) {
       containerGuia.innerText = "---";
       return;
@@ -285,9 +295,9 @@ function carregarDadosNaFicha(d) {
     });
   };
 
-  restaurarItens(d.listas.armas, "desc-weapons-guia", "weapon-cards-container", "weapon");
-  restaurarItens(d.listas.armaduras, "desc-armors-guia", "armor-cards-container", "armor");
-  restaurarItens(d.listas.itens, "desc-items-guia", "item-cards-container", "item");
+  restaurarItens(listas.armas, "desc-weapons-guia", "weapon-cards-container", "weapon");
+  restaurarItens(listas.armaduras, "desc-armors-guia", "armor-cards-container", "armor");
+  restaurarItens(listas.itens, "desc-items-guia", "item-cards-container", "item");
 
   const t = d.textos || {};
   ["t1", "t2", "t3", "t4"].forEach(id => {
@@ -299,39 +309,49 @@ function carregarDadosNaFicha(d) {
       mostrarTextoCompleto(el, id + "_display", id + "_custom");
     }
   });
-  document.getElementById("t5").value = t.t5 || "";
-  document.getElementById("equip_area").value = t.equip || "";
+  if (document.getElementById("t5")) document.getElementById("t5").value = t.t5 || "";
+  if (document.getElementById("equip_area")) document.getElementById("equip_area").value = t.equip || "";
   if (document.getElementById("notes_full_page")) {
     document.getElementById("notes_full_page").value = t.notes || "";
   }
 
-  const deathChecks = document.querySelectorAll('.circles input[type="checkbox"]');
-  if (d.combate && d.combate.death_saves) {
-    d.combate.death_saves.forEach((val, i) => { if (deathChecks[i]) deathChecks[i].checked = val; });
+  const deathChecksPrimary = document.querySelectorAll('.death-saves-box .circles input[type="checkbox"]');
+  const deathChecks = deathChecksPrimary.length > 0
+    ? deathChecksPrimary
+    : document.querySelectorAll('.circles input[type="checkbox"]');
+  if (c.death_saves && Array.isArray(c.death_saves)) {
+    c.death_saves.forEach((val, i) => { if (deathChecks[i]) deathChecks[i].checked = Boolean(val); });
   }
 
   const status = d.combate_status || {};
   const condChecks = document.querySelectorAll(".condicao-check");
   if (status.condicoes && Array.isArray(status.condicoes)) {
-    status.condicoes.forEach((marcado, i) => { if (condChecks[i]) condChecks[i].checked = marcado; });
+    status.condicoes.forEach((marcado, i) => { if (condChecks[i]) condChecks[i].checked = Boolean(marcado); });
   }
   const exInput = document.getElementById("exaustao_val");
   if (exInput) exInput.value = status.exaustao || 0;
   const logInput = document.getElementById("combat_log");
   if (logInput) logInput.value = status.log || "";
+  if (typeof atualizarAlertaCondicoes === "function") atualizarAlertaCondicoes();
 
+  // 1º cálculo e renderização dos trackers dinâmicos
   calcular();
   atualizarSlotsMagia();
   atualizarRecursosClasse();
 
-  if (d.magia && d.magia.slots_gastos) {
+  // Restaura os checkboxes dinâmicos (slots de magia e recursos de classe)
+  if (d.magia && Array.isArray(d.magia.slots_gastos)) {
     const spellChecks = document.querySelectorAll("#spell-slots-tracker input[type='checkbox']");
-    d.magia.slots_gastos.forEach((val, i) => { if (spellChecks[i]) spellChecks[i].checked = val; });
+    d.magia.slots_gastos.forEach((val, i) => { if (spellChecks[i]) spellChecks[i].checked = Boolean(val); });
   }
-  if (d.recursos_gastos) {
+  if (Array.isArray(d.recursos_gastos)) {
     const resourceChecks = document.querySelectorAll("#class-resources-tracker input[type='checkbox']");
-    d.recursos_gastos.forEach((val, i) => { if (resourceChecks[i]) resourceChecks[i].checked = val; });
+    d.recursos_gastos.forEach((val, i) => { if (resourceChecks[i]) resourceChecks[i].checked = Boolean(val); });
   }
+
+  // Recalcula após restaurar recursos (garante que Fúria Ativa atualize dano das armas)
+  calcular();
+  if (typeof atualizarResumoPericias === "function") atualizarResumoPericias();
   atualizarGuia();
 }
 
