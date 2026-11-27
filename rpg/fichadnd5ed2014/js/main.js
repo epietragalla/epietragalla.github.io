@@ -298,6 +298,11 @@ function registrarEventosInterface() {
   document.getElementById("btn-add-magia")?.addEventListener("click", adicionarMagia);
   document.getElementById("btn-add-infusao")?.addEventListener("click", adicionarInfusao);
   document.getElementById("btn-add-idioma")?.addEventListener("click", () => adicionarIdioma());
+  // Avatar, Cabeçalho e Descansos
+  document.getElementById("char-image-container")?.addEventListener("click", alterarImagemPersonagem);
+  document.getElementById("btn-gerar-nome")?.addEventListener("click", gerarNomeAleatorio);
+  document.getElementById("btn-descanso-curto")?.addEventListener("click", descansoCurto);
+  document.getElementById("btn-descanso-longo")?.addEventListener("click", descansoLongo);
 
   // Condições e exaustão (alerta automático)
   document.querySelectorAll(".condicao-check").forEach(cb => {

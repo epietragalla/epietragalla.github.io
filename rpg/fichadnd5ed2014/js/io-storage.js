@@ -5,7 +5,7 @@ function obterObjetoFicha() {
   };
 
   return {
-    version: "7.0",
+    version: "7.1",
     info: {
       char_name: getV("char_name"),
       char_sex: getV("char_sex"),
@@ -337,7 +337,7 @@ function carregarDadosNaFicha(d) {
 
 function exportarFichaJSON() {
   const dados = obterObjetoFicha();
-  dados.version = "7.0";
+  dados.version = "7.1";
   const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dados, null, 2));
   const a = document.createElement('a');
   a.setAttribute("href", dataStr);
@@ -472,19 +472,159 @@ function limparFicha() {
   alert("Ficha reiniciada com sucesso!");
 }
 
-function descansoLongo() {
-  if (!confirm("Deseja realizar um Descanso Longo? Isso restaurará a sua vida ao máximo e recuperará todos os espaços de magia.")) {
+function descansoCurto() {
+  const lvl = parseInt(document.getElementById("level_val")?.value) || 1;
+  const className = document.getElementById("class_name")?.value || "";
+  const subClassName = document.getElementById("subclass_name")?.value || "";
+  const hitDiceStr = document.getElementById("hit_dice")?.value || `${lvl}d8`;
+  const faces = parseInt(hitDiceStr.split("d")[1]) || 8;
+  const modCon = parseInt(document.getElementById("CON_mod")?.innerText) || 0;
+
+  const hpMax = parseInt(document.getElementById("hp_max")?.value) || 0;
+  const hpAtInput = document.getElementById("hp_at");
+  let hpAtual = hpAtInput && hpAtInput.value !== "" ? parseInt(hpAtInput.value) : hpMax;
+
+  if (!confirm("Realizar um Descanso Curto (1 hora)?\nIsso permitirá gastar Dados de Vida para cura e recuperará recursos de descanso curto (Ki, Canalizar Divindade, Forma Selvagem, Surto de Ação, Slots de Bruxo, etc.).")) {
     return;
   }
-  const hpMax = document.getElementById("hp_max").value;
-  if (hpMax) {
+
+  let msgCura = "";
+  const qtdGastarStr = prompt(
+    `Você possui até ${lvl} Dados de Vida (1d${faces} ${modCon >= 0 ? "+" : ""}${modCon} cada).\nQuantos Dados de Vida deseja gastar agora? (0 para nenhum):`,
+    "0"
+  );
+  const qtdGastar = Math.max(0, Math.min(lvl, parseInt(qtdGastarStr) || 0));
+
+  if (qtdGastar > 0 && hpMax > 0) {
+    let somaDados = 0;
+    let rolagens = [];
+    let curaTotal = 0;
+
+    for (let i = 0; i < qtdGastar; i++) {
+      let r = Math.floor(randomCriptografico() * faces) + 1;
+      somaDados += r;
+      rolagens.push(r);
+      curaTotal += Math.max(1, r + modCon);
+    }
+
+    let bonusCancaoDescanso = 0;
+    let infoCancao = "";
+    if (className === "Bardo (Bard)" && lvl >= 2) {
+      const facesCancao = lvl >= 17 ? 12 : (lvl >= 13 ? 10 : (lvl >= 9 ? 8 : 6));
+      bonusCancaoDescanso = Math.floor(randomCriptografico() * facesCancao) + 1;
+      curaTotal += bonusCancaoDescanso;
+      infoCancao = ` + ${bonusCancaoDescanso} (Canção de Descanso 1d${facesCancao})`;
+    }
+
+    const novoHP = Math.min(hpMax, hpAtual + curaTotal);
+    const recuperadoReal = novoHP - hpAtual;
+    if (hpAtInput) hpAtInput.value = novoHP;
+
+    if (typeof registrarNoLog === "function") {
+      registrarNoLog(
+        `${qtdGastar}d${faces} [${rolagens.join(", ")}]${infoCancao}`,
+        somaDados + bonusCancaoDescanso,
+        qtdGastar * modCon,
+        curaTotal,
+        "Descanso Curto (Dados de Vida)"
+      );
+    }
+    msgCura = `\n• Dados de Vida (${qtdGastar}d${faces}): +${recuperadoReal} PV recuperados${infoCancao ? " (inclui Canção de Descanso)" : ""}.`;
+  }
+
+  let recuperouSlotsBruxo = false;
+  if (className === "Bruxo (Warlock)") {
+    const slotBoxes = document.querySelectorAll("#spell-slots-tracker .box-list");
+    slotBoxes.forEach(box => {
+      const labelTxt = box.querySelector("label")?.innerText || "";
+      if (labelTxt.includes("Pacto")) {
+        box.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+          cb.checked = false;
+          recuperouSlotsBruxo = true;
+        });
+      }
+    });
+  }
+
+  const classesRecuperamCurto = [
+    "Monge (Monk)",
+    "Clérigo (Cleric)",
+    "Paladino (Paladin)",
+    "Druida (Druid)",
+    "Guerreiro (Fighter)"
+  ];
+
+  let recuperouRecursos = false;
+  if (classesRecuperamCurto.includes(className)) {
+    document.querySelectorAll("#class-resources-tracker > div").forEach(row => {
+      const labelTxt = row.querySelector("label")?.innerText || "";
+      if (!labelTxt.includes("Indomável")) {
+        row.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+          cb.checked = false;
+          recuperouRecursos = true;
+        });
+      }
+    });
+  } else if (className === "Bardo (Bard)" && lvl >= 5) {
+    document.querySelectorAll('#class-resources-tracker input[type="checkbox"]').forEach(cb => {
+      cb.checked = false;
+      recuperouRecursos = true;
+    });
+  }
+
+  let msgRecuperacaoExtra = "";
+  if (className === "Druida (Druid)" && lvl >= 2 && subClassName.toLowerCase().includes("terra")) {
+    const maxNiveisRec = Math.ceil(lvl / 2);
+    msgRecuperacaoExtra += `\n• Recuperação Natural: você pode desmarcar espaços de magia até ${maxNiveisRec} níveis combinados (máx. 5º círculo).`;
+  } else if (className === "Mago (Wizard)") {
+    const maxNiveisRec = Math.ceil(lvl / 2);
+    msgRecuperacaoExtra += `\n• Recuperação Arcana (1x/Descanso Longo): você pode desmarcar espaços de magia até ${maxNiveisRec} níveis combinados (máx. 5º círculo).`;
+  }
+
+  let resumo = "Descanso Curto concluído!";
+  if (msgCura) resumo += msgCura;
+  if (recuperouSlotsBruxo) resumo += "\n• Espaços de Magia de Pacto restaurados.";
+  if (recuperouRecursos) resumo += "\n• Recursos de classe de descanso curto restaurados.";
+  if (msgRecuperacaoExtra) resumo += msgRecuperacaoExtra;
+  if (!msgCura && !recuperouSlotsBruxo && !recuperouRecursos && !msgRecuperacaoExtra) {
+    resumo += "\n• Nenhum dado gasto ou recurso curto pendente.";
+  }
+
+  alert(resumo);
+}
+
+function descansoLongo() {
+  if (!confirm("Realizar um Descanso Longo (8 horas)?\nIsso restaurará todos os Pontos de Vida, espaços de magia, recursos de classe e reduzirá 1 nível de Exaustão.")) {
+    return;
+  }
+
+  // 1. Pontos de Vida Máximos e zera PV Temporários
+  const hpMax = document.getElementById("hp_max")?.value;
+  if (hpMax && document.getElementById("hp_at")) {
     document.getElementById("hp_at").value = hpMax;
   }
-  if (document.getElementById("hp_temp")) document.getElementById("hp_temp").value = "";
-  document.querySelectorAll('#spell-slots-tracker input[type="checkbox"]').forEach((s) => (s.checked = false));
-  document.querySelectorAll('#class-resources-tracker input[type="checkbox"]').forEach((r) => (r.checked = false));
-  document.querySelectorAll('.circles input[type="checkbox"]').forEach((ds) => (ds.checked = false));
-  alert("Descanso concluído! Vida e magias restauradas.");
+  if (document.getElementById("hp_temp")) {
+    document.getElementById("hp_temp").value = "";
+  }
+
+  // 2. Restaura todos os Slots de Magia, Recursos de Classe e Salvaguardas contra Morte
+  document.querySelectorAll('#spell-slots-tracker input[type="checkbox"]').forEach(s => (s.checked = false));
+  document.querySelectorAll('#class-resources-tracker input[type="checkbox"]').forEach(r => (r.checked = false));
+  document.querySelectorAll('.death-saves-box .circles input[type="checkbox"]').forEach(ds => (ds.checked = false));
+
+  // 3. Reduz 1 nível de Exaustão (se houver)
+  let msgExaustao = "";
+  const exInput = document.getElementById("exaustao_val");
+  if (exInput) {
+    const exAtual = parseInt(exInput.value) || 0;
+    if (exAtual > 0) {
+      exInput.value = exAtual - 1;
+      if (typeof atualizarAlertaCondicoes === "function") atualizarAlertaCondicoes();
+      msgExaustao = `\n• Exaustão reduzida para nível ${exAtual - 1}.`;
+    }
+  }
+
+  alert("Descanso Longo concluído!\n• Pontos de Vida, magias e recursos restaurados." + msgExaustao);
 }
 
 function gerarNomeAleatorio() {

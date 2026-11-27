@@ -12,6 +12,9 @@ function calcular(resetProficiencies = false) {
   const backgroundRaw = document.getElementById("bg_name").value;
   const background = backgroundRaw.split(" (")[0];
 
+  // Garante que os seletores estejam populados antes de qualquer inserção automática
+  atualizarOpcoesArmadura();
+
   if (resetProficiencies) {
     document.querySelectorAll(".skill-prof, .save-prof").forEach((c) => {
       if (c.dataset.auto === "true") {
@@ -55,15 +58,17 @@ function calcular(resetProficiencies = false) {
   }
 
   let bonusAtributos = { FOR: 0, DES: 0, CON: 0, INT: 0, SAB: 0, CAR: 0 };
+  let baseSpeedStr = "9m";
+
   if (mecanicasPHB.races[race]) {
     const rData = mecanicasPHB.races[race];
     Object.keys(bonusAtributos).forEach(k => { if (rData[k]) bonusAtributos[k] += rData[k]; });
-    if (rData.speed) document.getElementById("speed_val").value = rData.speed;
+    if (rData.speed) baseSpeedStr = rData.speed;
   }
   if (subrace && mecanicasPHB.subraces[subrace]) {
     const srData = mecanicasPHB.subraces[subrace];
     Object.keys(bonusAtributos).forEach(k => { if (srData[k]) bonusAtributos[k] += srData[k]; });
-    if (srData.speed) document.getElementById("speed_val").value = srData.speed;
+    if (srData.speed) baseSpeedStr = srData.speed;
   }
 
   let mods = {};
@@ -108,6 +113,10 @@ function calcular(resetProficiencies = false) {
     document.getElementById("hit_dice").value = lvl + "d" + valorDado;
   }
 
+  // Versatilidade (Jack of All Trades) do Bardo no Nível 2+
+  const halfProf = Math.floor(prof / 2);
+  const temVersatilidade = (className === "Bardo (Bard)" && lvl >= 2);
+
   skills.forEach(sk => {
     const safeId = sk.n.replace(/\s+/g, "");
     const checkEl = document.getElementById(`check_${safeId}`);
@@ -115,22 +124,26 @@ function calcular(resetProficiencies = false) {
     if (checkEl && valEl) {
       const profLevel = parseInt(checkEl.dataset.profLevel) || 0;
       const manualBonus = parseInt(valEl.dataset.manual) || 0;
-      const total = mods[sk.a] + (prof * profLevel) + manualBonus;
+      const bonusProfEfetivo = profLevel > 0 ? (prof * profLevel) : (temVersatilidade ? halfProf : 0);
+      const total = mods[sk.a] + bonusProfEfetivo + manualBonus;
       valEl.innerText = (total >= 0 ? "+" : "") + total;
     }
   });
 
-  document.getElementById("inic_val").value = (mods["DES"] >= 0 ? "+" : "") + mods["DES"];
+  const inicBonus = mods["DES"] + (temVersatilidade ? halfProf : 0);
+  document.getElementById("inic_val").value = (inicBonus >= 0 ? "+" : "") + inicBonus;
 
   const percCheck = document.getElementById("check_Percepção");
   const percProfLvl = percCheck ? (parseInt(percCheck.dataset.profLevel) || 0) : 0;
-  document.getElementById("passive_perc").value = 10 + mods["SAB"] + (percProfLvl * prof);
+  const percBonusProf = percProfLvl > 0 ? (percProfLvl * prof) : (temVersatilidade ? halfProf : 0);
+  document.getElementById("passive_perc").value = 10 + mods["SAB"] + percBonusProf;
 
-  // Cálculo da Classe de Armadura (CA)
+  // Cálculo da Classe de Armadura (CA) e detecção de Armadura Pesada
   let baseCA = 10;
   let modDex = mods["DES"] || 0;
   let bonusEscudo = 0;
   let temArmadura = false;
+  let usandoArmaduraPesada = false;
 
   const armorEntries = document.querySelectorAll(".armor-entry-guia");
   armorEntries.forEach(entry => {
@@ -151,6 +164,7 @@ function calcular(resetProficiencies = false) {
           baseCA = armorData.ca + Math.min(modDex, 2);
         } else if (categoria === "Armadura Pesada") {
           baseCA = armorData.ca;
+          usandoArmaduraPesada = true;
         }
       }
     }
@@ -161,11 +175,20 @@ function calcular(resetProficiencies = false) {
       baseCA = 10 + modDex + (mods["SAB"] || 0);
     } else if (className === "Bárbaro (Barbarian)") {
       baseCA = 10 + modDex + (mods["CON"] || 0);
+    } else if (className === "Feiticeiro (Sorcerer)" && subClassName.includes("Dracônica")) {
+      baseCA = 13 + modDex;
     } else {
       baseCA = 10 + modDex;
     }
   }
   document.getElementById("ca_val").value = baseCA + bonusEscudo;
+
+  // Cálculo de Deslocamento (com Movimento Rápido do Bárbaro no Nível 5+)
+  let speedNum = parseFloat(baseSpeedStr.replace(",", ".").replace("m", "")) || 9;
+  if (className === "Bárbaro (Barbarian)" && lvl >= 5 && !usandoArmaduraPesada) {
+    speedNum += 3;
+  }
+  document.getElementById("speed_val").value = `${speedNum.toString().replace(".", ",")}m`;
 
   // Painel e Botão de Infusões exclusivos do Artífice
   const isArtificer = className === "Artífice (Artificer)";
@@ -186,26 +209,43 @@ function calcular(resetProficiencies = false) {
     if (btnInfusoes) btnInfusoes.innerText = "Infusões";
   }
 
+  // Bônus de Fúria do Bárbaro (se checkbox de Fúria Ativa estiver marcado)
+  const furiaAtiva = document.getElementById("check-furia-ativa")?.checked || false;
+  let bonusFuria = 0;
+  if (className === "Bárbaro (Barbarian)" && furiaAtiva && !usandoArmaduraPesada) {
+    bonusFuria = lvl >= 16 ? 4 : (lvl >= 9 ? 3 : 2);
+  }
+
   // Cálculo de Ataque e Dano das Armas
   const profVal = parseInt(document.getElementById("prof_bonus").value.replace("+", "")) || 2;
   document.querySelectorAll(".weapon-entry-guia").forEach(entry => {
     let modAtaque = 0;
     let baseDmg = "";
     let magicB = 0;
+    let attrUsado = "FOR";
+    let ehCorpoACorpo = true;
     const wName = entry.dataset.weaponName;
 
     if (entry.dataset.isCustom === "true") {
-      const attrUsado = entry.dataset.attr || "FOR";
+      attrUsado = entry.dataset.attr || "FOR";
       modAtaque = mods[attrUsado] || 0;
       baseDmg = entry.dataset.baseDmg || "1d4";
       magicB = parseInt(entry.dataset.magicBonus) || 0;
+      ehCorpoACorpo = !(entry.dataset.prop || "").toLowerCase().includes("distância");
     } else {
       let wData = null;
-      for (const cat in armasDB) { if (armasDB[cat][wName]) wData = armasDB[cat][wName]; }
+      let catEncontrada = "";
+      for (const cat in armasDB) {
+        if (armasDB[cat][wName]) {
+          wData = armasDB[cat][wName];
+          catEncontrada = cat;
+        }
+      }
       if (!wData) return;
       baseDmg = wData.dano;
       const prop = wData.prop.toLowerCase();
-      let attrUsado = "FOR";
+      ehCorpoACorpo = catEncontrada.includes("Corpo-a-Corpo");
+
       if (prop.includes("distância") || (prop.includes("arremesso") && !prop.includes("acuidade"))) {
         attrUsado = "DES";
       } else if (prop.includes("acuidade")) {
@@ -214,13 +254,14 @@ function calcular(resetProficiencies = false) {
       modAtaque = mods[attrUsado];
     }
 
+    const extraFuria = (ehCorpoACorpo && attrUsado === "FOR") ? bonusFuria : 0;
     const totalAtk = modAtaque + profVal + magicB;
-    const totalDmgMod = modAtaque + magicB;
+    const totalDmgMod = modAtaque + magicB + extraFuria;
 
     const atkEl = entry.querySelector(".atk-val");
     const dmgEl = entry.querySelector(".dmg-val");
     if (atkEl) atkEl.innerText = (totalAtk >= 0 ? "+" : "") + totalAtk;
-    if (dmgEl) dmgEl.innerText = baseDmg + (totalDmgMod >= 0 ? "+" : "") + totalDmgMod;
+    if (dmgEl) dmgEl.innerText = baseDmg === "-" ? "-" : (baseDmg + (totalDmgMod >= 0 ? "+" : "") + totalDmgMod);
 
     const uid = entry.dataset.uid;
     let cardEls = uid
@@ -231,7 +272,7 @@ function calcular(resetProficiencies = false) {
       const cardAtk = cardEl.querySelector(".card-atk-val");
       const cardDmg = cardEl.querySelector(".card-dmg-val");
       if (cardAtk) cardAtk.innerText = (totalAtk >= 0 ? "+" : "") + totalAtk;
-      if (cardDmg) cardDmg.innerText = baseDmg + (totalDmgMod >= 0 ? "+" : "") + totalDmgMod;
+      if (cardDmg) cardDmg.innerText = baseDmg === "-" ? "-" : (baseDmg + (totalDmgMod >= 0 ? "+" : "") + totalDmgMod);
     });
   });
 
@@ -242,7 +283,6 @@ function calcular(resetProficiencies = false) {
   atualizarRecursosClasse();
   vincularCliquesRolagem();
   atualizarBlocoConjuracao();
-  atualizarOpcoesArmadura();
 }
 
 function modificarScore(attrId, delta) {
@@ -404,5 +444,71 @@ function sincronizarTudoAutomatico() {
   if (startingEquipmentDB.subclasses) processarEquip(startingEquipmentDB.subclasses[subclasse]);
   if (startingEquipmentDB.backgrounds) processarEquip(startingEquipmentDB.backgrounds[antec]);
 
+  // Restaura placeholders "---" se alguma categoria ficou vazia
+  if (document.querySelectorAll("#desc-weapons-guia .weapon-entry-guia").length === 0) {
+    document.getElementById("desc-weapons-guia").innerText = "---";
+  }
+  if (document.querySelectorAll("#desc-armors-guia .armor-entry-guia").length === 0) {
+    document.getElementById("desc-armors-guia").innerText = "---";
+  }
+  if (document.querySelectorAll("#desc-items-guia .item-entry-guia").length === 0) {
+    document.getElementById("desc-items-guia").innerText = "---";
+  }
+
   atualizarMoedasIniciais();
+}
+
+function atualizarOpcoesArmadura() {
+  const classeSelecionada = document.getElementById("class_name").value;
+  const subclasseSelecionada = document.getElementById("subclass_name")?.value || "";
+  const lvl = parseInt(document.getElementById("level_val")?.value) || 1;
+  const selectArmadura = document.getElementById("select_armadura_phb");
+  if (!selectArmadura) return;
+  const valorPreDefinido = selectArmadura.value;
+  selectArmadura.innerHTML = '<option value="">Selecione uma armadura</option>';
+
+  if (!classeSelecionada) {
+    armadurasPHB_Lista.forEach(arm => {
+      let opt = document.createElement("option");
+      opt.value = arm.valor;
+      opt.innerText = arm.texto;
+      selectArmadura.appendChild(opt);
+    });
+    selectArmadura.value = valorPreDefinido;
+    return;
+  }
+
+  let tiposPermitidos = [...(proficienciasArmaduraDB[classeSelecionada] || [])];
+
+  // Bardo: Colégio da Bravura ganha armaduras médias e escudos no 3º nível
+  if (classeSelecionada === "Bardo (Bard)" && subclasseSelecionada.includes("Bravura") && lvl >= 3) {
+    tiposPermitidos = ["leve", "media", "escudo"];
+  }
+
+  // Clérigo: Domínios que concedem proficiência com Armaduras Pesadas no 1º nível
+  if (classeSelecionada === "Clérigo (Cleric)") {
+    const dominiosPesados = ["Vida", "Guerra", "Natureza", "Tempestade", "Ordem", "Crepúsculo"];
+    if (dominiosPesados.some(dom => subclasseSelecionada.includes(dom))) {
+      tiposPermitidos = ["leve", "media", "pesada", "escudo"];
+    }
+  }
+
+  armadurasPHB_Lista.forEach(arm => {
+    if (tiposPermitidos.includes(arm.tipo)) {
+      let opt = document.createElement("option");
+      opt.value = arm.valor;
+      opt.innerText = arm.texto;
+      selectArmadura.appendChild(opt);
+    }
+  });
+
+  if (tiposPermitidos.length === 0) {
+    let opt = document.createElement("option");
+    opt.value = "";
+    opt.innerText = "Nenhuma proficiência de armadura por classe";
+    opt.disabled = true;
+    selectArmadura.appendChild(opt);
+  } else {
+    selectArmadura.value = valorPreDefinido;
+  }
 }
